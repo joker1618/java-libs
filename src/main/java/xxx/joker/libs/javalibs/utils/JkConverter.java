@@ -111,20 +111,6 @@ public class JkConverter {
 		return toRet;
 	}
 
-	/* Date and time conversions */
-	public static long localDateToMillis(LocalDate ld) {
-		return localDateTimeToMillis(LocalDateTime.of(ld, LocalTime.of(0, 0)));
-	}
-	public static long localDateTimeToMillis(LocalDateTime ldt) {
-		return ldt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-	}
-	public static LocalDateTime millisToLocalDateTime(long millis) {
-		return Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDateTime();
-	}
-	public static LocalDateTime dateToLocalDateTime(Date date) {
-		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-	}
-
 	// Windows <--> Cygwin  path format conversions
 	public static String cygwinPathFormat(Path windowsPath) {
 		return cygwinPathFormat(windowsPath.toString());

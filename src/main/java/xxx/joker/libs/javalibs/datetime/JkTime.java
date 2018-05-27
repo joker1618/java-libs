@@ -1,7 +1,8 @@
 package xxx.joker.libs.javalibs.datetime;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 import static java.time.temporal.ChronoUnit.HOURS;
 import static java.time.temporal.ChronoUnit.MINUTES;
@@ -41,12 +42,23 @@ public class JkTime {
 		this.seconds =  rem;
 	}
 
+	public static JkTime now() {
+		return of(LocalDateTime.now());
+	}
 	public static JkTime of(long totalMillis) {
 		return new JkTime(totalMillis);
 	}
 	public static JkTime of(LocalDateTime ldt) {
 		long totmilli = ldt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-		return new JkTime(totmilli);
+		return of(totmilli);
+	}
+	public static JkTime of(LocalDate ld) {
+		long totmilli = LocalDateTime.of(ld, LocalTime.of(0, 0, 0)).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+		return of(totmilli);
+	}
+	public static JkTime of(Date date) {
+		LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+		return of(ldt);
 	}
 
 	public String toStringElapsed(boolean showMilli) {
@@ -59,5 +71,12 @@ public class JkTime {
 
 		return sb.toString();
 	}
+	public String toStringDateTime(String pattern) {
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
+		return dtf.format(getLocalDateTime());
+	}
 
+	public LocalDateTime getLocalDateTime() {
+		return Instant.ofEpochMilli(totalMillis).atZone(ZoneId.systemDefault()).toLocalDateTime();
+	}
 }

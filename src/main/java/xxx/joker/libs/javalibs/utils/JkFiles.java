@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static xxx.joker.libs.javalibs.utils.JkStrings.strf;
 
@@ -210,6 +211,37 @@ public class JkFiles {
 		Path newPath = computeSafelyPath(targetPath);
 		moveFile(sourcePath, newPath, false);
 		return newPath;
+	}
+
+	/* REMOVE methods */
+	public static void removeDirectory(Path folderToDel) throws IOException {
+		if(!Files.exists(folderToDel)) {
+			throw new FileNotFoundException("[" + folderToDel + "] does not exists");
+		}
+
+		if(!Files.isDirectory(folderToDel)) {
+			throw new IllegalArgumentException("[" + folderToDel + "] is not a directory");
+		}
+
+		removeDirContent(folderToDel);
+		Files.delete(folderToDel);
+	}
+	public static void removeDirectoryIfExists(Path folderToDel) throws IOException {
+		if(Files.isDirectory(folderToDel)) {
+			removeDirectory(folderToDel);
+		}
+	}
+	private static void removeDirContent(Path folder) throws IOException {
+		// remove all files
+		List<Path> files = Files.find(folder, 1, (p, a) -> !Files.isDirectory(p)).collect(Collectors.toList());
+		for(Path f : files)	Files.delete(f);
+
+		// delete recursively the content of dirs
+		List<Path> dirs = Files.find(folder, 1, (p, a) -> Files.isDirectory(p)).filter(p -> !p.equals(folder)).collect(Collectors.toList());
+		for(Path d : dirs) {
+			removeDirContent(d);
+			Files.delete(d);
+		}
 	}
 
 	/* MISCELLANEA methods */
