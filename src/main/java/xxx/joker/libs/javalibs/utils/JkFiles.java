@@ -3,6 +3,7 @@ package xxx.joker.libs.javalibs.utils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
@@ -12,8 +13,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static xxx.joker.libs.javalibs.utils.JkStrings.strf;
 
@@ -244,6 +247,21 @@ public class JkFiles {
 		}
 	}
 
+	/* FIND methods */
+	public static List<Path> findFiles(Path root, boolean recursive) throws IOException {
+		return findFiles1(root, recursive, Collections.emptyList());
+	}
+	public static List<Path> findFiles(Path root, boolean recursive, Predicate<Path>... filterConds) throws IOException {
+		return findFiles1(root, recursive, Arrays.asList(filterConds));
+	}
+	private static List<Path> findFiles1(Path root, boolean recursive, List<Predicate<Path>> filterConds) throws IOException {
+		Stream<Path> stream = Files.find(root, recursive ? Integer.MAX_VALUE : 1, (p, a) -> !areEquals(p, root));
+		for(Predicate<Path> pred : filterConds) {
+			stream = stream.filter(pred);
+		}
+		return stream.distinct().sorted().collect(Collectors.toList());
+	}
+
 	/* MISCELLANEA methods */
 	public static String getFileName(Path path) {
 		String fn = path.toAbsolutePath().normalize().getFileName().toString();
@@ -317,5 +335,13 @@ public class JkFiles {
 			}
 		}
 		return false;
+	}
+
+	public static String toUrlString(Path source) {
+		try {
+			return source.toUri().toURL().toExternalForm();
+		} catch (MalformedURLException e) {
+			return null;
+		}
 	}
 }
