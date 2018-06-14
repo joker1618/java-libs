@@ -18,9 +18,6 @@ public class JkConsole {
 
 	// Out display
 	public static void display(String mexFormat, Object... params) {
-		out.print(strf(mexFormat, params));
-	}
-	public static void displayln(String mexFormat, Object... params) {
 		out.println(strf(mexFormat, params));
 	}
 
