@@ -34,7 +34,7 @@ public class JkStrings {
 
 		int pos = 0;
 		for(; pos < splitted.length; pos++) {
-			String str = removeSeparator ? splitted[pos] : splitted[pos] + separatorString;
+			String str = removeSeparator || pos == numFields-1 ? splitted[pos] : splitted[pos] + separatorString;
 			toRet[pos] = trimValues ? str.trim() : str;
 		}
 		for(; pos < numFields; pos++) {

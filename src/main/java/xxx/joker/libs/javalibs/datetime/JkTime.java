@@ -66,12 +66,25 @@ public class JkTime {
 	}
 
 	public String toStringElapsed(boolean showMilli) {
+		return toStringElapsed(showMilli, null);
+	}
+	public String toStringElapsed(boolean showMilli, ChronoUnit minUnit) {
 		StringBuilder sb = new StringBuilder();
 
-		if(hours > 0)	sb.append(strf("%02d:", hours));
-		if(minutes > 0)	sb.append(strf("%02d:", minutes));
-		sb.append(strf("%02d", seconds));
-		if(showMilli)	sb.append(strf(".%03d:", milli));
+		if(hours > 0 || minUnit == HOURS) {
+			sb.append(strf("%02d:", hours));
+			sb.append(strf("%02d:", minutes));
+			sb.append(strf("%02d", seconds));
+		} else if(minutes > 0 || minUnit == MINUTES) {
+			sb.append(strf("%02d:", minutes));
+			sb.append(strf("%02d", seconds));
+		} else {
+			sb.append(strf("%02d", seconds));
+		}
+
+		if(showMilli) {
+			sb.append(strf(".%03d:", milli));
+		}
 
 		return sb.toString();
 	}
@@ -82,5 +95,9 @@ public class JkTime {
 
 	public LocalDateTime getLocalDateTime() {
 		return Instant.ofEpochMilli(totalMillis).atZone(ZoneId.systemDefault()).toLocalDateTime();
+	}
+
+	public long getTotalMillis() {
+		return totalMillis;
 	}
 }

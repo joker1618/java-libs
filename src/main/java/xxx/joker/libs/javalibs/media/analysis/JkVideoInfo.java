@@ -1,7 +1,7 @@
-package xxx.joker.libs.javalibs.analysis;
+package xxx.joker.libs.javalibs.media.analysis;
 
-import it.sauronsoftware.jave.AudioInfo;
 import it.sauronsoftware.jave.MultimediaInfo;
+import it.sauronsoftware.jave.VideoInfo;
 import xxx.joker.libs.javalibs.format.JkColumnFmtBuilder;
 import xxx.joker.libs.javalibs.utils.JkStrings;
 
@@ -10,49 +10,51 @@ import java.nio.file.Path;
 /**
  * Created by f.barbano on 10/07/2017.
  */
-public class JkAudioInfo {
+public class JkVideoInfo {
 
-	private Path audioPath;
+	private Path videoPath;
 	// Multimedia info
 	private long duration;	// in millis
 	private String format;
-	// Audio specific info
-	private int samplingRate = -1;
-	private int channels = -1;
-	private int bitRate = -1;
+	// Video specific info
+	private int width;
+	private int height;
+	private int bitRate;
+	private float frameRate;
 	private String decoder;
-
-
-	JkAudioInfo(Path audioPath, MultimediaInfo mInfo) {
-		this.audioPath = audioPath;
+	
+	
+	JkVideoInfo(Path videoPath, MultimediaInfo mInfo) {
+		this.videoPath = videoPath;
 
 		this.duration = mInfo.getDuration();
 		this.format = mInfo.getFormat();
 
-		AudioInfo audio = mInfo.getAudio();
-		this.samplingRate = audio.getSamplingRate();
-		this.channels = audio.getChannels();
-		this.bitRate = audio.getBitRate();
-		this.decoder = audio.getDecoder();
+		VideoInfo video = mInfo.getVideo();
+		this.width = video.getSize().getWidth();
+		this.height = video.getSize().getHeight();
+		this.bitRate = video.getBitRate();
+		this.frameRate = video.getFrameRate();
+		this.decoder = video.getDecoder();
 	}
 
 
 	@Override
 	public String toString() {
 		StringBuilder sbfields = new StringBuilder();
-		sbfields.append("Path:|").append(audioPath.toAbsolutePath()).append("\n");
+		sbfields.append("Path:|").append(videoPath.toAbsolutePath()).append("\n");
+		sbfields.append("Resolution:|").append(width).append(" x ").append(height).append("\n");
 		sbfields.append("Duration:|").append(duration).append("\n");
 		sbfields.append("Format:|").append(format).append("\n");
-		sbfields.append("Sampling rate:|").append(samplingRate).append("\n");
 		sbfields.append("Bit rate:|").append(bitRate).append("\n");
-		sbfields.append("Channels:|").append(channels).append("\n");
+		sbfields.append("Frame rate:|").append(frameRate).append("\n");
 		sbfields.append("Decoder:|").append(decoder).append("\n");
 		String fieldStr = new JkColumnFmtBuilder().addLines(sbfields.toString()).toString("|", 2);
 		fieldStr = JkStrings.leftPadLines(fieldStr, " ", 3);
 
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("Audio file \"").append(audioPath.getFileName()).append("\" ");
+		sb.append("Video file \"").append(videoPath.getFileName()).append("\" ");
 		sb.append("{\n");
 		sb.append(fieldStr);
 		sb.append("}");
@@ -61,20 +63,23 @@ public class JkAudioInfo {
 	}
 
 
+	public int getWidth() {
+		return width;
+	}
+	public int getHeight() {
+		return height;
+	}
 	public long getDuration() {
 		return duration;
 	}
 	public String getFormat() {
 		return format;
 	}
-	public int getSamplingRate() {
-		return samplingRate;
-	}
-	public int getChannels() {
-		return channels;
-	}
 	public int getBitRate() {
 		return bitRate;
+	}
+	public float getFrameRate() {
+		return frameRate;
 	}
 	public String getDecoder() {
 		return decoder;

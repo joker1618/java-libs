@@ -1,4 +1,4 @@
-package xxx.joker.libs.javalibs.analysis;
+package xxx.joker.libs.javalibs.media.analysis;
 
 import it.sauronsoftware.jave.Encoder;
 import it.sauronsoftware.jave.EncoderException;

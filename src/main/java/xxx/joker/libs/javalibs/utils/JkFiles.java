@@ -162,30 +162,34 @@ public class JkFiles {
 		copyFile(sourcePath, targetPath, overwrite, false);
 	}
 	public static void copyFile(Path sourcePath, Path targetPath, boolean overwrite, boolean holdAttributes) throws IOException {
-		if(!Files.exists(sourcePath) || !Files.isRegularFile(sourcePath))  {
-			throw new FileNotFoundException(strf("Source file [%s] not exists or not a regular file!", sourcePath));
-		}
-		if(Files.exists(targetPath) && !Files.isRegularFile(targetPath)) {
-			throw new FileAlreadyExistsException(String.format("Unable to copy [%s] to [%s]: target path is a folder", sourcePath.toAbsolutePath(), targetPath.toAbsolutePath()));
-		}
-		if(!overwrite && Files.exists(targetPath)) {
-			throw new FileAlreadyExistsException(String.format("Unable to copy [%s] to [%s]: target path already exists", sourcePath.toAbsolutePath(), targetPath.toAbsolutePath()));
-		}
-
-		Files.deleteIfExists(targetPath);
-		Files.createDirectories(targetPath.toAbsolutePath().getParent());
-		Files.copy(sourcePath, targetPath);
-		if(holdAttributes) {
-			copyAttributes(sourcePath, targetPath);
-		}
+		copyFile1(sourcePath, targetPath, overwrite, holdAttributes, false);
 	}
 	public static Path copyFileSafely(Path sourcePath, Path targetPath) throws IOException {
 		return copyFileSafely(sourcePath, targetPath, false);
 	}
 	public static Path copyFileSafely(Path sourcePath, Path targetPath, boolean holdAttributes) throws IOException {
-		Path newPath = computeSafelyPath(targetPath);
-		copyFile(sourcePath, newPath, false, holdAttributes);
-		return newPath;
+		return copyFile1(sourcePath, targetPath, false, holdAttributes, true);
+	}
+	private static Path copyFile1(Path sourcePath, Path targetPath, boolean overwrite, boolean holdAttributes, boolean safePath) throws IOException {
+		if(!Files.exists(sourcePath) || !Files.isRegularFile(sourcePath))  {
+			throw new FileNotFoundException(strf("Source file [%s] not exists or not a regular file!", sourcePath));
+		}
+
+		Path outPath = Files.isDirectory(targetPath) ? targetPath.resolve(sourcePath.getFileName()) : targetPath;
+		if(safePath)	outPath = computeSafelyPath(outPath);
+
+		if(!overwrite && Files.exists(outPath)) {
+			throw new FileAlreadyExistsException(String.format("Unable to copy [%s] to [%s]: target path already exists", sourcePath.toAbsolutePath(), outPath.toAbsolutePath()));
+		}
+
+		Files.deleteIfExists(outPath);
+		Files.createDirectories(getParent(outPath));
+		Files.copy(sourcePath, outPath);
+		if(holdAttributes) {
+			copyAttributes(sourcePath, outPath);
+		}
+
+		return outPath;
 	}
 
 	public static void copyAttributes(Path sourcePath, Path targetPath) throws IOException {
@@ -196,26 +200,29 @@ public class JkFiles {
 	}
 
 	public static void moveFile(Path sourcePath, Path targetPath, boolean overwrite) throws IOException {
+		moveFile1(sourcePath, targetPath, overwrite, false);
+	}
+	public static Path moveFileSafely(Path sourcePath, Path targetPath) throws IOException {
+		return moveFile1(sourcePath, targetPath, false, true);
+	}
+	private static Path moveFile1(Path sourcePath, Path targetPath, boolean overwrite, boolean safePath) throws IOException {
 		if(!Files.exists(sourcePath) || !Files.isRegularFile(sourcePath))  {
 			throw new FileNotFoundException(strf("Source file [%s] not exists or not a regular file!", sourcePath));
 		}
-		if(Files.exists(targetPath) && !Files.isRegularFile(targetPath)) {
-			throw new FileAlreadyExistsException(String.format("Unable to move [%s] to [%s]: target path is a folder", sourcePath.toAbsolutePath(), targetPath.toAbsolutePath()));
-		}
-		if(!overwrite && Files.exists(targetPath)) {
-			throw new FileAlreadyExistsException(String.format("Unable to move [%s] to [%s]: target path already exists", sourcePath.toAbsolutePath(), targetPath.toAbsolutePath()));
+
+		Path outPath = Files.isDirectory(targetPath) ? targetPath.resolve(sourcePath.getFileName()) : targetPath;
+		if(safePath)	outPath = computeSafelyPath(outPath);
+
+		if(!overwrite && Files.exists(outPath)) {
+			throw new FileAlreadyExistsException(String.format("Unable to move [%s] to [%s]: target path already exists", sourcePath.toAbsolutePath(), outPath.toAbsolutePath()));
 		}
 
-		Files.deleteIfExists(targetPath);
-		Files.createDirectories(getParent(targetPath));
-		Files.move(sourcePath, targetPath);
-	}
-	public static Path moveFileSafely(Path sourcePath, Path targetPath) throws IOException {
-		Path newPath = computeSafelyPath(targetPath);
-		moveFile(sourcePath, newPath, false);
-		return newPath;
-	}
+		Files.deleteIfExists(outPath);
+		Files.createDirectories(getParent(outPath));
+		Files.move(sourcePath, outPath);
 
+		return outPath;
+	}
 	/* REMOVE methods */
 	public static void removeDirectory(Path folderToDel) throws IOException {
 		if(!Files.exists(folderToDel)) {
