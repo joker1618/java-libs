@@ -103,6 +103,10 @@ public class JkColumnFmtBuilder {
 		return lines;
 	}
 
+	public void insertPrefix(String prefix) {
+		lines = JkStreams.map(lines, l -> strf("%s%s", prefix, l));
+	}
+
 	private ColDescr[] computeColumnDescriptors(List<String[]> fieldLines) {
 		// Retrieve max number of fields for one line
 		int columnNumber = fieldLines.stream().mapToInt(sarr -> sarr.length).max().orElse(0);

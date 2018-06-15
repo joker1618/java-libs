@@ -1,19 +1,23 @@
 package xxx.joker.libs.javalibs.datetime;
 
+import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.javalibs.utils.JkConverter;
+import xxx.joker.libs.javalibs.utils.JkStrings;
+
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalField;
 import java.util.Date;
 
-import static java.time.temporal.ChronoUnit.HOURS;
-import static java.time.temporal.ChronoUnit.MILLIS;
-import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.time.temporal.ChronoUnit.*;
 import static xxx.joker.libs.javalibs.utils.JkStrings.strf;
 
 /**
  * Created by f.barbano on 25/05/2018.
  */
-public class JkTime {
+public class JkTime implements Comparable<JkTime> {
 
 	private long totalMillis;
 
@@ -65,6 +69,24 @@ public class JkTime {
 		return of(ldt);
 	}
 
+	public static JkTime fromElapsedString(String str) {
+		long milli = 0;
+		int idx = str.indexOf('.');
+		if(idx != -1) {
+			milli += JkConverter.stringToInteger(str.substring(idx+1));
+			str = str.substring(0, idx);
+		}
+
+		String[] split = JkStrings.splitAllFields(str, ":");
+		int mult = 1000;
+		for(int i = split.length-1; i >= 0; i--) {
+			Integer num = JkConverter.stringToInteger(split[i]);
+			milli += num * mult;
+			mult *= 60;
+		}
+		return of(milli);
+	}
+
 	public String toStringElapsed(boolean showMilli) {
 		return toStringElapsed(showMilli, null);
 	}
@@ -83,7 +105,7 @@ public class JkTime {
 		}
 
 		if(showMilli) {
-			sb.append(strf(".%03d:", milli));
+			sb.append(strf(".%03d", milli));
 		}
 
 		return sb.toString();
@@ -99,5 +121,10 @@ public class JkTime {
 
 	public long getTotalMillis() {
 		return totalMillis;
+	}
+
+	@Override
+	public int compareTo(JkTime o) {
+		return Long.compare(totalMillis, o.totalMillis);
 	}
 }

@@ -27,16 +27,20 @@ public class JkFxUtil {
 		setTableCellFactory(column, bindVarName, String::valueOf, Integer::valueOf);
 	}
 
+	public static void setTableCellFactoryLong(TableColumn<?, Long> column, String bindVarName) {
+		setTableCellFactory(column, bindVarName, String::valueOf, Long::valueOf);
+	}
+
+	public static void setTableCellFactoryDouble(TableColumn<?, Double> column, String bindVarName) {
+		setTableCellFactory(column, bindVarName, String::valueOf, Double::valueOf);
+	}
+
 	public static void setTableCellFactoryLocalDate(TableColumn<?, LocalDate> column, String bindVarName, DateTimeFormatter formatter) {
 		setTableCellFactory(column, bindVarName, (LocalDate ldt) -> ldt.format(formatter), (s) -> (LocalDate)formatter.parse(s));
 	}
 
 	public static void setTableCellFactoryLocalDateTime(TableColumn<?, LocalDateTime> column, String bindVarName, DateTimeFormatter formatter) {
 		setTableCellFactory(column, bindVarName, (LocalDateTime ldt) -> ldt.format(formatter), (s) -> (LocalDateTime)formatter.parse(s));
-	}
-
-	public static <V> void setTableCellFactory(TableColumn<?, V> column, String bindVarName, Function<V, String> toStringFunc) {
-		setTableCellFactory(column, bindVarName, toStringFunc, s -> null);
 	}
 
 	public static <V> void setTableCellFactory(TableColumn<?, V> column, String bindVarName, Function<V, String> toStringFunc, Function<String, V> fromStringFunc) {
