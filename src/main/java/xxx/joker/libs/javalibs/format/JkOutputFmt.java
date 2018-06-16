@@ -28,7 +28,7 @@ public class JkOutputFmt {
 		if(roundInt) {
 			return String.format("%d %s", (int)value, scale.label());
 		} else {
-			return String.format("%.2f %s", value, scale.label());
+			return String.format("%s %s", getNumberFmtEN(2).format(value), scale.label());
 		}
 	}
 

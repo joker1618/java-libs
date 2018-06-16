@@ -48,6 +48,44 @@ public class JkColumnFmtBuilder {
 		return this;
 	}
 
+	public JkColumnFmtBuilder addColumnRight(String separator, List<String> colValues) {
+		if(lines.isEmpty()) {
+			lines.addAll(colValues);
+		} else {
+			while (lines.size() < colValues.size()) {
+				lines.add("");
+			}
+			while (colValues.size() < lines.size()) {
+				colValues.add("");
+			}
+
+			List<String> cols = new ArrayList<>();
+			for(int i = 0; i < lines.size(); i++) {
+				cols.add(strf("%s%s%s", lines.get(i), separator, colValues.get(i)));
+			}
+			lines = cols;
+		}
+
+		return this;
+	}
+
+	public JkColumnFmtBuilder addColumns(String separator, List<String> colValues1, List<String> colValues2) {
+		while (colValues1.size() < colValues2.size()) {
+			colValues1.add("");
+		}
+		while (colValues2.size() < colValues1.size()) {
+			colValues2.add("");
+		}
+
+		List<String> cols = new ArrayList<>();
+		for(int i = 0; i < colValues1.size(); i++) {
+			cols.add(strf("%s%s%s", colValues1.get(i), separator, colValues2.get(i)));
+		}
+
+		lines.addAll(cols);
+		return this;
+	}
+
 	public JkColumnFmtBuilder setHeaderAlign(TextAlignment align, Integer... columnIndexes) {
 		if(columnIndexes.length == 0) {
 			headerAlign = align;
