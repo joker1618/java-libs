@@ -50,10 +50,11 @@ public class JkEncryption {
 		}
 
 		File inputFile = inputPath.toFile();
-		FileInputStream inStream = new FileInputStream(inputFile);
-		byte[] inputBytes = new byte[(int)inputFile.length()];
-		inStream.read(inputBytes);
-		inStream.close();
+		byte[] inputBytes;
+		try (FileInputStream inStream = new FileInputStream(inputFile)) {
+			inputBytes = new byte[(int) inputFile.length()];
+			inStream.read(inputBytes);
+		}
 
 		byte[] encData = encryptBytes(inputBytes, password);
 
@@ -66,10 +67,11 @@ public class JkEncryption {
 		}
 
 		File inputFile = inputPath.toFile();
-		FileInputStream inStream = new FileInputStream(inputFile);
-		byte[] encData = new byte[(int) inputFile.length()];
-		inStream.read(encData);
-		inStream.close();
+		byte[] encData;
+		try (FileInputStream inStream = new FileInputStream(inputFile)) {
+			encData = new byte[(int) inputFile.length()];
+			inStream.read(encData);
+		}
 
 		byte[] decrBytes = decryptBytes(encData, password);
 
@@ -79,10 +81,9 @@ public class JkEncryption {
 
 	public static String getMD5(Path inputPath) throws NoSuchAlgorithmException, IOException {
 		MessageDigest md = MessageDigest.getInstance("MD5");
+
 		try(FileInputStream fis = new FileInputStream(inputPath.toFile())) {
-
 			byte[] dataBytes = new byte[1024];
-
 			int nread;
 			while ((nread = fis.read(dataBytes)) != -1) {
 				md.update(dataBytes, 0, nread);
