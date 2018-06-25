@@ -2,6 +2,7 @@ package xxx.joker.libs.javalibs.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,6 +72,20 @@ public class JkStrings {
 	}
 	public static List<String> leftPadLines(List<String> list, String padStr, int padSize) {
 		return list.stream().map(str -> StringUtils.repeat(padStr, padSize) + str).collect(Collectors.toList());
+	}
+
+	public static String mergeLines(String left, String right, String separator) {
+		List<String> mergedLines = mergeLines(splitFieldsList(left, StringUtils.LF), splitFieldsList(right, StringUtils.LF), separator);
+		return JkStreams.join(mergedLines, StringUtils.LF);
+	}
+	public static List<String> mergeLines(List<String> left, List<String> right, String separator) {
+		List<String> merged = new ArrayList<>();
+		for(int i = 0; i < Math.max(left.size(), right.size()); i++) {
+			String l = i < left.size() ? left.get(i) : "";
+			String r = i < right.size() ? right.get(i) : "";
+			merged.add(l + separator + r);
+		}
+		return merged;
 	}
 
 	public static String safeTrim(String source) {

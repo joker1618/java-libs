@@ -270,6 +270,14 @@ public class JkFiles {
 	}
 
 	/* MISCELLANEA methods */
+	public static Long safeSize(Path path) {
+		try {
+			return Files.size(path);
+		} catch (IOException e) {
+			return null;
+		}
+	}    
+
 	public static String getFileName(Path path) {
 		String fn = path.toAbsolutePath().normalize().getFileName().toString();
 		String ext = getExtension(path);

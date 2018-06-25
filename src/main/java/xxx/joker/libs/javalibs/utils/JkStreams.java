@@ -46,29 +46,35 @@ public class JkStreams {
 	}
 
 	public static <V,K> Map<K,List<V>> toMap(Collection<V> source, Function<V,K> keyMapper) {
-		Map<K,List<V>> map = new HashMap<>();
+		return toMap(source, keyMapper, v -> v);
+	}
+	public static <V,K,T> Map<K,List<T>> toMap(Collection<V> source, Function<V,K> keyMapper, Function<V,T> valueMapper) {
+		Map<K,List<T>> map = new HashMap<>();
 
 		if(source != null) {
 			source.forEach(v -> {
 				K key = keyMapper.apply(v);
-				List<V> value = map.get(key);
+				List<T> value = map.get(key);
 				if(value == null) {
 					value = new ArrayList<>();
 					map.put(key, value);
 				}
-				value.add(v);
+				value.add(valueMapper.apply(v));
 			});
 		}
 
 		return map;
 	}
 	public static <V,K> Map<K,V> toMapSingle(Collection<V> source, Function<V,K> keyMapper) {
-		Map<K,V> map = new HashMap<>();
+		return toMapSingle(source, keyMapper, v -> v);
+	}
+	public static <V,K,T> Map<K,T> toMapSingle(Collection<V> source, Function<V,K> keyMapper, Function<V,T> valueMapper) {
+		Map<K,T> map = new HashMap<>();
 
 		if(source != null) {
 			source.forEach(v -> {
 				K key = keyMapper.apply(v);
-				map.put(key, v);
+				map.put(key, valueMapper.apply(v));
 			});
 		}
 

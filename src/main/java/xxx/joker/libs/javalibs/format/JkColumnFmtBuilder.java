@@ -48,6 +48,9 @@ public class JkColumnFmtBuilder {
 		return this;
 	}
 
+	public JkColumnFmtBuilder addColumnRight(String separator, String colValues) {
+		return addColumnRight(separator, JkStrings.splitFieldsList(colValues, StringUtils.LF));
+	}
 	public JkColumnFmtBuilder addColumnRight(String separator, List<String> colValues) {
 		if(lines.isEmpty()) {
 			lines.addAll(colValues);
@@ -69,20 +72,14 @@ public class JkColumnFmtBuilder {
 		return this;
 	}
 
+	public JkColumnFmtBuilder addColumns(String separator, String col1, String col2) {
+		List<String> colValues1 = JkStrings.splitFieldsList(col1.trim(), StringUtils.LF, true);
+		List<String> colValues2 = JkStrings.splitFieldsList(col2.trim(), StringUtils.LF, true);
+		return addColumns(separator, colValues1, colValues2);
+	}
 	public JkColumnFmtBuilder addColumns(String separator, List<String> colValues1, List<String> colValues2) {
-		while (colValues1.size() < colValues2.size()) {
-			colValues1.add("");
-		}
-		while (colValues2.size() < colValues1.size()) {
-			colValues2.add("");
-		}
-
-		List<String> cols = new ArrayList<>();
-		for(int i = 0; i < colValues1.size(); i++) {
-			cols.add(strf("%s%s%s", colValues1.get(i), separator, colValues2.get(i)));
-		}
-
-		lines.addAll(cols);
+		addColumnRight(separator, colValues1);
+		addColumnRight(separator, colValues2);
 		return this;
 	}
 
@@ -107,19 +104,24 @@ public class JkColumnFmtBuilder {
 		return toString(separator, columnDistance, false);
 	}
 	public String toString(String separator, int columnDistance, boolean trimValues) {
-		return JkStreams.join(toLines(separator, columnDistance, trimValues), StringUtils.LF);
+		return toString(separator, StringUtils.repeat(" ", columnDistance), trimValues);
+	}
+	public String toString(String separator, String columnsSeparator, boolean trimValues) {
+		return JkStreams.join(toLines(separator, columnsSeparator, trimValues), StringUtils.LF);
 	}
 
 	public List<String> toLines(String separator, int columnDistance) {
 		return toLines(separator, columnDistance, false);
 	}
 	public List<String> toLines(String separator, int columnDistance, boolean trimValues) {
-		if(columnDistance < 0) {
-			columnDistance = 0;
-		}
-
+		return toLines(separator, StringUtils.repeat(" ", columnDistance), trimValues);
+	}
+	public List<String> toLines(String separator, String columnsSeparator, boolean trimValues) {
 		// Split lines in fields
 		List<String[]> fieldLines = JkStreams.map(lines, line -> JkStrings.splitAllFields(line, separator, trimValues));
+
+		// Fix columns number: every row must have the same number of fields
+		fieldLines = adaptColumnsNumber(fieldLines);
 
 		// Compute column descriptors
 		ColDescr[] columnDescrs = computeColumnDescriptors(fieldLines);
@@ -127,7 +129,6 @@ public class JkColumnFmtBuilder {
 		// create the view
 		List<String> lines = new ArrayList<>();
 
-		String columnSep = StringUtils.repeat(" ", columnDistance);
 		for(int row = 0; row < fieldLines.size(); row++) {
 			List<String> fields = new ArrayList<>();
 			for(int col = 0; col < columnDescrs.length; col++) {
@@ -135,7 +136,7 @@ public class JkColumnFmtBuilder {
 				String field = columnDescrs[col].formatText(str, row == 0);
 				fields.add(field);
 			}
-			lines.add(JkStreams.join(fields, columnSep));
+			lines.add(JkStreams.join(fields, columnsSeparator));
 		}
 
 		return lines;
@@ -145,6 +146,18 @@ public class JkColumnFmtBuilder {
 		lines = JkStreams.map(lines, l -> strf("%s%s", prefix, l));
 	}
 
+	private List<String[]> adaptColumnsNumber(List<String[]> lines) {
+		int numCols = lines.stream().mapToInt(arr -> arr.length).max().orElse(0);
+		List<String[]> toRet = new ArrayList<>();
+		for(String[] line : lines) {
+			String[] row = new String[numCols];
+			for(int i = 0; i < numCols; i++) {
+				row[i] = i < line.length ? line[i] : "";
+			}
+			toRet.add(row);
+		}
+		return toRet;
+	}
 	private ColDescr[] computeColumnDescriptors(List<String[]> fieldLines) {
 		// Retrieve max number of fields for one line
 		int columnNumber = fieldLines.stream().mapToInt(sarr -> sarr.length).max().orElse(0);
@@ -193,8 +206,7 @@ public class JkColumnFmtBuilder {
 			} else {	// CENTER
 				int filler = width - source.length();
 				int left = filler / 2;
-				String temp = strf("%" + left + "s", source);
-				toRet = strf("%-" + width + "s", temp);
+				toRet = strf("%s%s%s", StringUtils.repeat(" ", left), source, StringUtils.repeat(" ", filler - left));
 			}
 			return toRet;
 		}

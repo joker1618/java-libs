@@ -79,13 +79,14 @@ public class JkEncryption {
 
 	public static String getMD5(Path inputPath) throws NoSuchAlgorithmException, IOException {
 		MessageDigest md = MessageDigest.getInstance("MD5");
-		FileInputStream fis = new FileInputStream(inputPath.toFile());
+		try(FileInputStream fis = new FileInputStream(inputPath.toFile())) {
 
-		byte[] dataBytes = new byte[1024];
+			byte[] dataBytes = new byte[1024];
 
-		int nread;
-		while ((nread = fis.read(dataBytes)) != -1) {
-			md.update(dataBytes, 0, nread);
+			int nread;
+			while ((nread = fis.read(dataBytes)) != -1) {
+				md.update(dataBytes, 0, nread);
+			}
 		}
 
 		return computeMD5(md);

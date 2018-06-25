@@ -35,6 +35,13 @@ public class JkConverter {
 			return null;
 		}
 	}
+	public static Integer stringToInteger(String str, int defaultValue) {
+		try {
+			return Integer.valueOf(str);
+		} catch(NumberFormatException ex) {
+			return defaultValue;
+		}
+	}
 	public static Integer[] stringToInteger(String[] source) {
 		Integer[] toRet = new Integer[source.length];
 		for(int i = 0; i < source.length; i++) {
