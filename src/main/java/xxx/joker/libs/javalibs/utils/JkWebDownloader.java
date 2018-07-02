@@ -7,12 +7,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Created by f.barbano on 29/10/2017.
  */
-public class WebUtils {
+public class JkWebDownloader {
 
 	public static String downloadHtml(String webPageURL) throws IOException {
 		List<String> lines = downloadHtmlLines(webPageURL);
@@ -48,6 +49,23 @@ public class WebUtils {
 				os.write(arr, 0, nread);
 			}
 		}
+	}
+
+	public static byte[] downloadResource(String resourceURL) throws IOException {
+		URL webURL = new URL(resourceURL);
+		URLConnection conn = webURL.openConnection();
+
+		byte[] arr = new byte[500*1024];
+		byte[] toRet = new byte[0];
+		try(InputStream is = new BufferedInputStream(conn.getInputStream())) {
+			int nread;
+			while((nread = is.read(arr)) != -1) {
+				byte[] readBytes = Arrays.copyOfRange(arr, 0, nread);
+				toRet = JkBytes.mergeArrays(toRet, readBytes);
+			}
+		}
+
+		return toRet;
 	}
 
 }
