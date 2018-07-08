@@ -6,6 +6,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
@@ -68,6 +69,9 @@ public class JkFxUtil {
 
 	public static Window getWindow(Event e) {
 		return ((Node)e.getSource()).getScene().getWindow();
+	}
+	public static Stage getStage(Event e) {
+		return (Stage)getWindow(e);
 	}
 
 	public static <T extends Pane> T getChildren(Pane root, int... childrenIndexes) {

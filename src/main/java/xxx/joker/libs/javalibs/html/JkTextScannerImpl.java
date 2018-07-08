@@ -101,6 +101,12 @@ public class JkTextScannerImpl implements JkTextScanner {
 	}
 
 	@Override
+	public String nextValueUntil(String end) {
+		int idx = buffer.indexOf(end);
+		return idx == -1 ? buffer.toString() : buffer.substring(0, idx);
+	}
+
+	@Override
 	public String nextString(int start, int offset) {
 		return buffer.substring(start, start + offset);
 	}
@@ -113,6 +119,11 @@ public class JkTextScannerImpl implements JkTextScanner {
 	@Override
 	public boolean isCursorStartWith(String str) {
 		return buffer.toString().startsWith(str);
+	}
+
+	@Override
+	public String toString() {
+		return buffer.toString();
 	}
 
 	private boolean setCursor(boolean setStart, String toFind, boolean cursorAfterToFind, boolean findForward) {
