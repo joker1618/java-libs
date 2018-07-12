@@ -16,16 +16,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static xxx.joker.libs.javalibs.utils.JkConsole.display;
 import static xxx.joker.libs.javalibs.utils.JkStrings.strf;
 
-public class JkCsvDaoNew<T extends CsvElement> {
+public class JkCsvDao<T extends CsvElement> {
 
 	private static final String LINE_SEP = StringUtils.LF;
-	private static final CsvSep FIELD_SEP = new CsvSep(";", ";");
-	private static final CsvSep LIST_SEP = new CsvSep(",", ",");
-//	private static final CsvSep FIELD_SEP = new CsvSep("###FIELD_SEP###", ";");
-//	private static final CsvSep LIST_SEP = new CsvSep("###LIST_SEP###", ",");
+//	private static final CsvSep FIELD_SEP = new CsvSep(";", ";");
+//	private static final CsvSep LIST_SEP = new CsvSep(",", ",");
+	private static final CsvSep FIELD_SEP = new CsvSep("###FIELD_SEP###", ";");
+	private static final CsvSep LIST_SEP = new CsvSep("###LIST_SEP###", ",");
 
 	private static final String PLACEHOLDER_TAB = "##TAB##";
 	private static final String PLACEHOLDER_NEWLINE = "##NEWLINE##";
@@ -34,10 +33,10 @@ public class JkCsvDaoNew<T extends CsvElement> {
 	private Path depsPath;
 	private Class<T> csvClass;
 	private Map<Integer,AnnField> fieldMap;
-	private Map<Class<?>,JkCsvDaoNew> daoParsers;
+	private Map<Class<?>,JkCsvDao> daoParsers;
 	private int numFields;
 
-	public JkCsvDaoNew(Path csvPath, Class<T> csvClass) {
+	public JkCsvDao(Path csvPath, Class<T> csvClass) {
 		this.csvPath = csvPath;
 		this.depsPath = JkFiles.getParent(csvPath).resolve(strf("%s.dependencies.%s", JkFiles.getFileName(csvPath), JkFiles.getExtension(csvPath)));
 		this.csvClass = csvClass;
@@ -46,7 +45,7 @@ public class JkCsvDaoNew<T extends CsvElement> {
 		initialize();
 	}
 
-	private JkCsvDaoNew(Class<T> csvClass) {
+	private JkCsvDao(Class<T> csvClass) {
 		this.csvClass = csvClass;
 		this.fieldMap = new HashMap<>();
 		this.daoParsers = new HashMap<>();
@@ -94,7 +93,7 @@ public class JkCsvDaoNew<T extends CsvElement> {
 
 		try {
 			// Parse instance
-			JkCsvDaoNew daoParser = daoParsers.get(elem.getClass());
+			JkCsvDao daoParser = daoParsers.get(elem.getClass());
 			List<String> deps = new ArrayList<>();
 			List<String> row = Stream.generate(() -> "").limit(daoParser.numFields).collect(Collectors.toList());
 			for (Object key : daoParser.fieldMap.keySet()) {
@@ -132,7 +131,7 @@ public class JkCsvDaoNew<T extends CsvElement> {
 				}
 				if(isCsvElementClass(f.getType())) {
 					Class<? extends CsvElement> ftype = (Class<? extends CsvElement>)f.getType();
-					daoParsers.putIfAbsent(ftype, new JkCsvDaoNew<>(ftype));
+					daoParsers.putIfAbsent(ftype, new JkCsvDao<>(ftype));
 				}
 				fieldMap.put(csvField.index(), new AnnField(csvField, f));
 			}
@@ -258,7 +257,7 @@ public class JkCsvDaoNew<T extends CsvElement> {
 				CsvElement cel = (CsvElement) fclazz.newInstance();
 				cel.setElemID(value);
 				String depLine = depMap.get(getCsvElementsPrefix(cel));
-				JkCsvDaoNew daop = daoParsers.get(fclazz);
+				JkCsvDao daop = daoParsers.get(fclazz);
 				o = daop.parseElem(depLine, depMap);
 			} else {
 				o = value.replaceAll(PLACEHOLDER_TAB, "\t").replaceAll(PLACEHOLDER_NEWLINE, "\n");
@@ -270,8 +269,7 @@ public class JkCsvDaoNew<T extends CsvElement> {
 			throw new RuntimeException(e);
 		}
 	}
-
-
+	
 
 	private static class AnnField {
 		CsvField ann;

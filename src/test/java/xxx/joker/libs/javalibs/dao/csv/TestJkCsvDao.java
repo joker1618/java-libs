@@ -3,12 +3,9 @@ package xxx.joker.libs.javalibs.dao.csv;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,9 +38,9 @@ public class TestJkCsvDao {
 
 		// Persist
 		Path dbPath = Paths.get("src/test/resources/csvDao/testFile.db");
-		JkCsvDaoNew<CsvObj> csvDao = new JkCsvDaoNew<>(dbPath, CsvObj.class);
-//		csvDao.persist(list);
-//		display("Persisted DB second file %s", dbPath);
+		JkCsvDao<CsvObj> csvDao = new JkCsvDao<>(dbPath, CsvObj.class);
+		csvDao.persist(list);
+		display("Persisted DB second file %s", dbPath);
 
 		// Read
 		List<CsvObj> readList = csvDao.readAll();
