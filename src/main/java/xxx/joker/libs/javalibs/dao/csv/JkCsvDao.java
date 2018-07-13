@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.javalibs.utils.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +18,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static xxx.joker.libs.javalibs.utils.JkStrings.strf;
+
+//import xxx.joker.libs.javalibs.dao.csv.CsvElement;
+//import xxx.joker.libs.javalibs.dao.csv.CsvField;
 
 public class JkCsvDao<T extends CsvElement> {
 
@@ -33,7 +37,7 @@ public class JkCsvDao<T extends CsvElement> {
 	private Path depsPath;
 	private Class<T> csvClass;
 	private Map<Integer,AnnField> fieldMap;
-	private Map<Class<?>,JkCsvDao> daoParsers;
+	private Map<Class<?>, JkCsvDao> daoParsers;
 	private int numFields;
 
 	public JkCsvDao(Path csvPath, Class<T> csvClass) {
@@ -52,12 +56,13 @@ public class JkCsvDao<T extends CsvElement> {
 		initialize();
 	}
 
-	public List<T> readAll() throws Exception {
+	public List<T> readAll() throws IOException {
 		if(!Files.exists(csvPath)) {
 			return Collections.emptyList();
 		}
 
-		Map<String, String> depsMap = JkStreams.toMapSingle(Files.readAllLines(depsPath), l -> l.split(":")[0], l -> l.split(":")[1]);
+		List<String> list = JkStreams.filter(Files.readAllLines(depsPath), StringUtils::isNotBlank);
+		Map<String, String> depsMap = JkStreams.toMapSingle(list, l -> l.split(":")[0], l -> l.split(":")[1]);
 		List<String> lines = Files.readAllLines(csvPath);
 
 		return JkStreams.map(lines, line -> parseElem(line, depsMap));
@@ -78,7 +83,7 @@ public class JkCsvDao<T extends CsvElement> {
 		}
 	}
 
-	public void persist(List<T> elems) throws Exception {
+	public void persist(Collection<T> elems) throws IOException {
 		List<StringCSV> csvList = JkStreams.map(elems, this::formatElem);
 		List<String> mainLines = JkStreams.map(csvList, StringCSV::getMainValue);
 		List<String> depLines = csvList.stream().flatMap(csv -> csv.getDependencies().stream())
@@ -129,38 +134,48 @@ public class JkCsvDao<T extends CsvElement> {
 				if (fieldMap.containsKey(csvField.index())) {
 					throw new IllegalArgumentException(strf("Duplicated index %d", csvField.index()));
 				}
-				if(isCsvElementClass(f.getType())) {
+				if(isImplOf(f.getType(), CsvElement.class)) {
 					Class<? extends CsvElement> ftype = (Class<? extends CsvElement>)f.getType();
 					daoParsers.putIfAbsent(ftype, new JkCsvDao<>(ftype));
+				}
+				if(isImplOf(csvField.subElemType(), CsvElement.class)) {
+					Class<? extends CsvElement> subType = (Class<? extends CsvElement>)csvField.subElemType();
+					daoParsers.putIfAbsent(subType, new JkCsvDao<>(subType));
 				}
 				fieldMap.put(csvField.index(), new AnnField(csvField, f));
 			}
 		}
 	}
-	
-	private boolean isCsvElementClass(Class<?> clazz) {
+
+	private boolean isImplOf(Class<?> clazz, Class<?> expected) {
 		List<Class<?>> interfaces = Arrays.asList(clazz.getInterfaces());
-		return interfaces.contains(CsvElement.class);
+		return interfaces.contains(expected);
 	}
 
 	private String getCsvElementsPrefix(CsvElement elem) {
-		return strf("%s_%s", elem.getClassHash(), elem.getElemID());
+		return strf("%s_%s", elem.getClassID(), elem.getElemID());
 	}
 
 	private StringCSV toStringValue(Object value, AnnField annField) {
 		StringCSV retVal = new StringCSV();
 
 		Class<?> fclazz = annField.field.getType();
-		if(fclazz == List.class) {
-			Class<?> elemClazz = annField.ann.listElemType();
+
+		if(fclazz == List.class || fclazz == Set.class || fclazz.isArray()) {
+			Class<?> elemClazz = annField.ann.subElemType();
 			if(value != null) {
-				List list = (List) value;
+				List list;
+				if(fclazz.isArray()) 		 list = Arrays.asList((Object[])value);
+				else if(fclazz == Set.class) list = JkConverter.toArrayList((Set)value);
+				else 						 list = (List)value;
+
 				if(!list.isEmpty()) {
 					List<StringCSV> csvList = JkStreams.map(list, e -> toStringSingleValue(e, elemClazz));
 					retVal.mainValue = JkStreams.join(csvList, LIST_SEP.safeSep, StringCSV::getMainValue);
 					retVal.dependencies = csvList.stream().flatMap(c -> c.getDependencies().stream()).collect(Collectors.toList());
 				}
 			}
+
 		} else {
 			retVal = toStringSingleValue(value, fclazz);
 		}
@@ -184,7 +199,7 @@ public class JkCsvDao<T extends CsvElement> {
 				str.mainValue = DateTimeFormatter.ISO_DATE.format((LocalDate) value);
 			} else if (fclazz == LocalDateTime.class) {
 				str.mainValue = DateTimeFormatter.ISO_DATE_TIME.format((LocalDateTime) value);
-			} else if (isCsvElementClass(fclazz)) {
+			} else if (isImplOf(fclazz, CsvElement.class)) {
 				CsvElement cel = (CsvElement) value;
 				str.mainValue = cel.getElemID();
 				StringCSV csv = formatElem(cel);
@@ -206,15 +221,41 @@ public class JkCsvDao<T extends CsvElement> {
 		Object retVal;
 
 		Class<?> fclazz = annField.field.getType();
-		if(fclazz == List.class) {
+		if(fclazz.isArray() || fclazz == Set.class || fclazz == List.class) {
 			List<String> strElems = JkStrings.splitFieldsList(value, LIST_SEP.safeSep);
-			Class<?> elemClazz = annField.ann.listElemType();
-			retVal = JkStreams.map(strElems, elem -> fromStringSingleValue(elem, elemClazz, depMap));
+			Class<?> elemClazz = annField.ann.subElemType();
+			List<Object> list = JkStreams.map(strElems, elem -> fromStringSingleValue(elem, elemClazz, depMap));
+			if(fclazz.isArray()) {
+				retVal = toArray(list,fclazz);
+			} else if(fclazz == Set.class) {
+				retVal = isImplOf(elemClazz, Comparable.class) ? JkConverter.toTreeSet(list) : JkConverter.toHashSet(list);
+			} else {
+				retVal = list;
+			}
+
 		} else {
 			retVal = fromStringSingleValue(value, fclazz, depMap);
 		}
 
 		return retVal;
+	}
+
+	private Object toArray(List list, Class<?> fclazz) {
+		Object[] typeArray = null;
+
+		if(fclazz == Boolean[].class)		typeArray = new Boolean[0];
+		if(fclazz == Integer[].class)		typeArray = new Integer[0];
+		if(fclazz == Long[].class)			typeArray = new Long[0];
+		if(fclazz == Float[].class)			typeArray = new Float[0];
+		if(fclazz == Double[].class)		typeArray = new Double[0];
+		if(fclazz == File[].class)			typeArray = new File[0];
+		if(fclazz == Path[].class)			typeArray = new Path[0];
+		if(fclazz == LocalTime[].class)		typeArray = new LocalTime[0];
+		if(fclazz == LocalDate[].class)		typeArray = new LocalDate[0];
+		if(fclazz == LocalDateTime[].class)	typeArray = new LocalDateTime[0];
+		if(fclazz == String[].class)		typeArray = new String[0];
+
+		return list.toArray(typeArray);
 	}
 
 	private Object fromStringSingleValue(String value, Class<?> fclazz, Map<String, String> depMap) {
@@ -253,10 +294,11 @@ public class JkCsvDao<T extends CsvElement> {
 				o = LocalDate.parse(value, DateTimeFormatter.ISO_DATE);
 			} else if (fclazz == LocalDateTime.class) {
 				o = LocalDateTime.parse(value, DateTimeFormatter.ISO_DATE_TIME);
-			} else if (isCsvElementClass(fclazz)) {
+			} else if (isImplOf(fclazz, CsvElement.class)) {
 				CsvElement cel = (CsvElement) fclazz.newInstance();
 				cel.setElemID(value);
 				String depLine = depMap.get(getCsvElementsPrefix(cel));
+//				display(depLine);
 				JkCsvDao daop = daoParsers.get(fclazz);
 				o = daop.parseElem(depLine, depMap);
 			} else {

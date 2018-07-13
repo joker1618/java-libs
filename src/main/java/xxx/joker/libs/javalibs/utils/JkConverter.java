@@ -20,6 +20,13 @@ public class JkConverter {
 		return source == null ? null : new TreeSet<>(source);
 	}
 
+	public static <T> HashSet<T> toHashSet(T[] source) {
+		return source == null ? null : new HashSet<>(Arrays.asList(source));
+	}
+	public static <T> HashSet<T> toHashSet(Collection<T> source) {
+		return source == null ? null : new HashSet<>(source);
+	}
+
 	public static <T> ArrayList<T> toArrayList(T[] source) {
 		return source == null ? null : new ArrayList<>(Arrays.asList(source));
 	}

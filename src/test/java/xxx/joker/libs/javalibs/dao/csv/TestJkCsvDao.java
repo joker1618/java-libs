@@ -77,7 +77,7 @@ public class TestJkCsvDao {
 //		co.setString("federico");
 		co.setListInt(Arrays.asList(12, 3*mult, 67));
 		co.setListLDate(Arrays.asList(LocalDate.now(), LocalDate.now().plusDays(4)));
-		co.setSub1(new SubCsv1("fede", Arrays.asList(new SubCsv2("asdd"), new SubCsv2("QQEE")), new SubCsv2("maronna")));
+		co.setSub1(new SubCsv1("fede", Arrays.asList(new SubCsv2("asdd"), new SubCsv2("QQEE")), new SubCsv2("maronna", new Double[]{2.1*mult, 3.2*mult})));
 		co.setSub1List(Arrays.asList(
 			new SubCsv1("zio", Collections.emptyList(), new SubCsv2("dioffa")),
 			new SubCsv1("mamma", Collections.emptyList(), new SubCsv2("grooossso")),
@@ -93,7 +93,7 @@ class SubCsv1 implements CsvElement {
 
 	@CsvField(index = 0, header = "str")
 	private String str="";
-	@CsvField(index = 1, header = "refs", listElemType = SubCsv2.class)
+	@CsvField(index = 1, header = "refs", subElemType = SubCsv2.class)
 	private List<SubCsv2> refs;
 	@CsvField(index = 2, header = "ref_obj")
 	private SubCsv2 refObj;
@@ -152,7 +152,7 @@ class SubCsv1 implements CsvElement {
 	}
 
 	@Override
-	public String getClassHash() {
+	public String getClassID() {
 		return "SD46843959";
 	}
 
@@ -176,12 +176,19 @@ class SubCsv2 implements CsvElement {
 
 	@CsvField(index = 0, header = "str")
 	private String str = "";
+	@CsvField(index = 1, header = "doubleArr", subElemType = Double.class)
+	private Double[] doubleArr = new Double[0];
 
 	public SubCsv2() {
 	}
 
 	public SubCsv2(String str) {
 		this.str = str;
+	}
+
+	public SubCsv2(String str, Double[] doubleArr) {
+		this.str = str;
+		this.doubleArr = doubleArr;
 	}
 
 	public String getStr() {
@@ -192,9 +199,16 @@ class SubCsv2 implements CsvElement {
 		this.str = str;
 	}
 
+	public Double[] getDoubleArr() {
+		return doubleArr;
+	}
+
+	public void setDoubleArr(Double[] doubleArr) {
+		this.doubleArr = doubleArr;
+	}
 
 	@Override
-	public String getClassHash() {
+	public String getClassID() {
 		return "46843xxdf959";
 	}
 
@@ -216,12 +230,16 @@ class SubCsv2 implements CsvElement {
 
 		SubCsv2 subCsv2 = (SubCsv2) o;
 
-		return str != null ? str.equals(subCsv2.str) : subCsv2.str == null;
+		if (str != null ? !str.equals(subCsv2.str) : subCsv2.str != null) return false;
+		// Probably incorrect - comparing Object[] arrays with Arrays.equals
+		return Arrays.equals(doubleArr, subCsv2.doubleArr);
 	}
 
 	@Override
 	public int hashCode() {
-		return str != null ? str.hashCode() : 0;
+		int result = str != null ? str.hashCode() : 0;
+		result = 31 * result + Arrays.hashCode(doubleArr);
+		return result;
 	}
 }
 
@@ -261,13 +279,13 @@ class CsvObj implements CsvElement {
 //	private LocalDateTime ldt;
 //	@CsvField(index = 15, header = "String")
 //	private String string = "";
-	@CsvField(index = 18, header = "List_int", listElemType = Integer.class)
+	@CsvField(index = 18, header = "List_int", subElemType = Integer.class)
 	private List<Integer> listInt = new ArrayList<>();
-	@CsvField(index = 19, header = "List_LocalDate", listElemType = LocalDate.class)
+	@CsvField(index = 19, header = "List_LocalDate", subElemType = LocalDate.class)
 	private List<LocalDate> listLDate = new ArrayList<>();
 	@CsvField(index = 20, header = "SUB 1")
 	private SubCsv1 sub1;
-	@CsvField(index = 21, header = "SUB 1 LIST", listElemType = SubCsv1.class)
+	@CsvField(index = 21, header = "SUB 1 LIST", subElemType = SubCsv1.class)
 	private List<SubCsv1> sub1List = new ArrayList<>();
 
 	public SubCsv1 getSub1() {
@@ -458,7 +476,7 @@ class CsvObj implements CsvElement {
 	}
 
 	@Override
-	public String getClassHash() {
+	public String getClassID() {
 		return "123456";
 	}
 
