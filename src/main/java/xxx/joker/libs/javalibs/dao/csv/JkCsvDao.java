@@ -61,11 +61,18 @@ public class JkCsvDao<T extends CsvElement> {
 			return Collections.emptyList();
 		}
 
-		List<String> list = JkStreams.filter(Files.readAllLines(depsPath), StringUtils::isNotBlank);
-		Map<String, String> depsMap = JkStreams.toMapSingle(list, l -> l.split(":")[0], l -> l.split(":")[1]);
-		List<String> lines = Files.readAllLines(csvPath);
+		List<String> mainLines = JkStreams.filter(Files.readAllLines(csvPath), StringUtils::isNotBlank);
+		if(mainLines.isEmpty()) {
+			return Collections.emptyList();
+		}
 
-		return JkStreams.map(lines, line -> parseElem(line, depsMap));
+		List<String> depsLines = JkStreams.filter(Files.readAllLines(depsPath), StringUtils::isNotBlank);
+		Map<String, String> depsMap = new HashMap<>();
+		if(depsLines.isEmpty()) {
+			depsMap.putAll(JkStreams.toMapSingle(depsLines, l -> l.split(":")[0], l -> l.split(":")[1]));
+		}
+
+		return JkStreams.map(mainLines, line -> parseElem(line, depsMap));
 	}
 
 	private T parseElem(String line, Map<String, String> depsMap) {
@@ -84,13 +91,18 @@ public class JkCsvDao<T extends CsvElement> {
 	}
 
 	public void persist(Collection<T> elems) throws IOException {
-		List<StringCSV> csvList = JkStreams.map(elems, this::formatElem);
-		List<String> mainLines = JkStreams.map(csvList, StringCSV::getMainValue);
-		List<String> depLines = csvList.stream().flatMap(csv -> csv.getDependencies().stream())
-									.sorted().distinct().collect(Collectors.toList());
+		if(elems.isEmpty()) {
+			Files.deleteIfExists(csvPath);
+			Files.deleteIfExists(depsPath);
+		} else {
+			List<StringCSV> csvList = JkStreams.map(elems, this::formatElem);
+			List<String> mainLines = JkStreams.map(csvList, StringCSV::getMainValue);
+			List<String> depLines = csvList.stream().flatMap(csv -> csv.getDependencies().stream())
+										.sorted().distinct().collect(Collectors.toList());
 
-		JkFiles.writeFile(csvPath, mainLines, true);
-		JkFiles.writeFile(depsPath, depLines, true);
+			JkFiles.writeFile(csvPath, mainLines, true);
+			JkFiles.writeFile(depsPath, depLines, true);
+		}
 	}
 
 	private StringCSV formatElem(CsvElement elem) {
