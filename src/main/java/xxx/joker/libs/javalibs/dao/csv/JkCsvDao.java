@@ -68,7 +68,7 @@ public class JkCsvDao<T extends CsvElement> {
 
 		List<String> depsLines = JkStreams.filter(Files.readAllLines(depsPath), StringUtils::isNotBlank);
 		Map<String, String> depsMap = new HashMap<>();
-		if(depsLines.isEmpty()) {
+		if(!depsLines.isEmpty()) {
 			depsMap.putAll(JkStreams.toMapSingle(depsLines, l -> l.split(":")[0], l -> l.split(":")[1]));
 		}
 
