@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.*;
 import java.util.*;
 
 /**
@@ -38,16 +37,13 @@ public class JkConverter {
 	public static Integer stringToInteger(String str) {
 		try {
 			return Integer.valueOf(str);
-		} catch(NumberFormatException ex) {
+		} catch(Exception ex) {
 			return null;
 		}
 	}
 	public static Integer stringToInteger(String str, int defaultValue) {
-		try {
-			return Integer.valueOf(str);
-		} catch(NumberFormatException ex) {
-			return defaultValue;
-		}
+        Integer num = stringToInteger(str);
+        return num == null ? defaultValue : num;
 	}
 	public static Integer[] stringToInteger(String[] source) {
 		Integer[] toRet = new Integer[source.length];
@@ -62,7 +58,7 @@ public class JkConverter {
 	public static Long stringToLong(String str) {
 		try {
 			return Long.valueOf(str);
-		} catch(NumberFormatException ex) {
+		} catch(Exception ex) {
 			return null;
 		}
 	}
@@ -79,7 +75,7 @@ public class JkConverter {
 	public static Double stringToDouble(String str) {
 		try {
 			return Double.valueOf(str);
-		} catch(NumberFormatException ex) {
+		} catch(Exception ex) {
 			return null;
 		}
 	}
@@ -96,7 +92,7 @@ public class JkConverter {
 	public static Float stringToFloat(String str) {
 		try {
 			return Float.valueOf(str);
-		} catch(NumberFormatException ex) {
+		} catch(Exception ex) {
 			return null;
 		}
 	}
