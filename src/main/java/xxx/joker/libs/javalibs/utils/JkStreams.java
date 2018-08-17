@@ -71,7 +71,7 @@ public class JkStreams {
 	public static <V,K,T> Map<K,T> toMapSingle(Collection<V> source, Function<V,K> keyMapper, Function<V,T> valueMapper) {
 		Map<K,T> map = new HashMap<>();
 
-		if(source != null) {
+		if(source != null && !source.isEmpty()) {
 			source.forEach(v -> {
 				K key = keyMapper.apply(v);
 				map.put(key, valueMapper.apply(v));
