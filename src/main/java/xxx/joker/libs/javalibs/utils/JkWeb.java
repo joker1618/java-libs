@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by f.barbano on 29/10/2017.
  */
-public class JkWebDownloader {
+public class JkWeb {
 
 	public static String downloadHtml(String webPageURL) throws IOException {
 		List<String> lines = downloadHtmlLines(webPageURL);

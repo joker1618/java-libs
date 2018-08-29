@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 
 /**
- * ALLOWED SIMPLE FIELD TYPES:
+ * ALLOWED FIELD TYPES:
  *
  * 	boolean.class 	Boolean.class
  * 	int.class     	Integer.class
@@ -26,8 +26,10 @@ import java.lang.annotation.Target;
  *
  * 	? extends CsvElement
  *
- * ALLOWED COLLECTION FIELD TYPES:   (elements class type must be one of simple allowed above)
- * 	- List<>
+ * ALLOWED COLLECTION TYPES:   (elements class type must be one of simple allowed above)
+ * 	- List
+ * 	- Set
+ * 	- T[]
  *
  * PARAMETERS:
  * - subElemType: must be specified for 'List' and 'Arrays[]' fields. Must be one of the classes specified above.
@@ -46,7 +48,7 @@ public @interface CsvField {
 
 	String header() default "";
 
-	// Must be specified for 'List' and 'Arrays[]' fields
+	// Must be specified for Collections (List, Set)
 	Class<?> subElemType() default String.class;
 
 }

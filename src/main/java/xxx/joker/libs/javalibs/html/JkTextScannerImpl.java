@@ -23,8 +23,16 @@ public class JkTextScannerImpl implements JkTextScanner {
 	}
 
 	@Override
-	public boolean startCursorAfter(String toFind) {
-		return setCursor(true, toFind, true, true);
+	public boolean startCursorAfter(String... toFind) {
+        JkTextScannerImpl sc = new JkTextScannerImpl(buffer.toString());
+        for(String findStr : toFind) {
+            if(!sc.setCursor(true, findStr, true, true)) {
+                return false;
+            }
+        }
+
+        this.buffer = sc.buffer;
+        return true;
 	}
 
 	@Override
@@ -116,7 +124,17 @@ public class JkTextScannerImpl implements JkTextScanner {
 		return buffer.substring(0, offset);
 	}
 
-	@Override
+    @Override
+    public JkTextScanner subScannerUntil(String end) {
+        return new JkTextScannerImpl(nextValueUntil(end));
+    }
+
+    @Override
+    public JkTextScanner subScannerBetween(String start, String end) {
+        return new JkTextScannerImpl(nextValueBetween(start, end));
+    }
+
+    @Override
 	public boolean isCursorStartWith(String str) {
 		return buffer.toString().startsWith(str);
 	}

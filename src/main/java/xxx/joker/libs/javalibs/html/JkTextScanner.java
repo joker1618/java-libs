@@ -6,7 +6,7 @@ package xxx.joker.libs.javalibs.html;
 public interface JkTextScanner {
 
 	boolean startCursorAt(String toFind);
-	boolean startCursorAfter(String toFind);
+	boolean startCursorAfter(String... toFind);
 	boolean startCursorAtBackward(String toFind);
 	boolean startCursorAfterBackward(String toFind);
 
@@ -22,6 +22,9 @@ public interface JkTextScanner {
 	String nextValueUntil(String end);
 	String nextString(int start, int offset);
 	String nextString(int offset);
+
+	JkTextScanner subScannerUntil(String end);
+	JkTextScanner subScannerBetween(String start, String end);
 
 	boolean isCursorStartWith(String str);
 

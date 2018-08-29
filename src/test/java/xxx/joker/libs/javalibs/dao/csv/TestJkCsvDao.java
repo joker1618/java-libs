@@ -152,21 +152,10 @@ class SubCsv1 implements CsvElement {
 	}
 
 	@Override
-	public String getClassID() {
-		return "SD46843959";
-	}
-
-	@Override
 	public String getElemID() {
 		if(elemID == null)	elemID = String.valueOf(hashCode());
 		return elemID;
 	}
-
-	@Override
-	public void setElemID(String elemID) {
-		this.elemID = elemID;
-	}
-
 
 }
 
@@ -208,19 +197,9 @@ class SubCsv2 implements CsvElement {
 	}
 
 	@Override
-	public String getClassID() {
-		return "46843xxdf959";
-	}
-
-	@Override
 	public String getElemID() {
 		if(elemID == null)	elemID = String.valueOf(hashCode());
 		return elemID;
-	}
-
-	@Override
-	public void setElemID(String elemID) {
-		this.elemID = elemID;
 	}
 
 	@Override
@@ -476,11 +455,6 @@ class CsvObj implements CsvElement {
 	}
 
 	@Override
-	public String getClassID() {
-		return "123456";
-	}
-
-	@Override
 	public String getElemID() {
 		if(elemID == null) {
 			elemID = strf("%d", hashCode());
@@ -488,8 +462,4 @@ class CsvObj implements CsvElement {
 		return elemID;
 	}
 
-	@Override
-	public void setElemID(String elemID) {
-		this.elemID = elemID;
-	}
 }

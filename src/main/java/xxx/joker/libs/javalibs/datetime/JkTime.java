@@ -1,6 +1,5 @@
 package xxx.joker.libs.javalibs.datetime;
 
-import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.javalibs.utils.JkConverter;
 import xxx.joker.libs.javalibs.utils.JkStrings;
 
@@ -8,7 +7,6 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalField;
 import java.util.Date;
 
 import static java.time.temporal.ChronoUnit.*;
@@ -56,10 +54,16 @@ public class JkTime implements Comparable<JkTime> {
 	public static JkTime of(Duration duration) {
 		return of(duration.toMillis());
 	}
-	public static JkTime of(LocalDateTime ldt) {
-		long totmilli = ldt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-		return of(totmilli);
-	}
+    public static JkTime of(LocalDateTime ldt) {
+        long totmilli = ldt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        return of(totmilli);
+    }
+    public static JkTime of(LocalTime lt) {
+	    int sec = lt.getHour() * 60 * 60;
+	    sec += lt.getMinute() * 60 + lt.getSecond();
+	    long milli = 1000L * sec + lt.get(ChronoField.MILLI_OF_SECOND);
+        return of(milli);
+    }
 	public static JkTime of(LocalDate ld) {
 		long totmilli = LocalDateTime.of(ld, LocalTime.of(0, 0, 0)).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 		return of(totmilli);
@@ -70,6 +74,7 @@ public class JkTime implements Comparable<JkTime> {
 	}
 
 	public static JkTime fromElapsedString(String str) {
+	    str = str.replaceAll("^\\+", "");
 		long milli = 0;
 		int idx = str.indexOf('.');
 		if(idx != -1) {
@@ -122,6 +127,10 @@ public class JkTime implements Comparable<JkTime> {
 	public long getTotalMillis() {
 		return totalMillis;
 	}
+
+	public JkTime add(JkTime jkTime) {
+	    return new JkTime(milli + jkTime.milli);
+    }
 
 	@Override
 	public int compareTo(JkTime o) {

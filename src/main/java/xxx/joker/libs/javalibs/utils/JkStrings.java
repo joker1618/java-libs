@@ -1,5 +1,6 @@
 package xxx.joker.libs.javalibs.utils;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -91,4 +92,13 @@ public class JkStrings {
 	public static String safeTrim(String source) {
 		return StringUtils.isBlank(source) ? "" : source.trim();
 	}
+
+
+    public static String unescapeHtmlSpecialChars(String htmlText) {
+        // Custom replacements before undecoding using StringUtils
+        htmlText = htmlText.replace("&#160;", "");  // Non-breaking space
+
+        htmlText = StringEscapeUtils.unescapeHtml4(htmlText);
+        return htmlText;
+    }
 }

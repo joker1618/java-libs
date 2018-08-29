@@ -19,9 +19,6 @@ import java.util.stream.Stream;
 
 import static xxx.joker.libs.javalibs.utils.JkStrings.strf;
 
-//import xxx.joker.libs.javalibs.dao.csv.CsvElement;
-//import xxx.joker.libs.javalibs.dao.csv.CsvField;
-
 public class JkCsvDao<T extends CsvElement> {
 
 	private static final String LINE_SEP = StringUtils.LF;
@@ -72,8 +69,10 @@ public class JkCsvDao<T extends CsvElement> {
 			depsMap.putAll(JkStreams.toMapSingle(depsLines, l -> l.split(":")[0], l -> l.split(":")[1]));
 		}
 
-		return JkStreams.map(mainLines, line -> parseElem(line, depsMap));
-	}
+        List<T> readList = JkStreams.map(mainLines, line -> parseElem(line, depsMap));
+		readList.sort(Comparator.comparing(CsvElement::getElemID));
+		return readList;
+    }
 
 	private T parseElem(String line, Map<String, String> depsMap) {
 		try {
@@ -90,22 +89,40 @@ public class JkCsvDao<T extends CsvElement> {
 		}
 	}
 
-	public void persist(Collection<T> elems) throws IOException {
-		if(elems.isEmpty()) {
-			Files.deleteIfExists(csvPath);
-			Files.deleteIfExists(depsPath);
-		} else {
-			List<StringCSV> csvList = JkStreams.map(elems, this::formatElem);
-			List<String> mainLines = JkStreams.map(csvList, StringCSV::getMainValue);
-			List<String> depLines = csvList.stream().flatMap(csv -> csv.getDependencies().stream())
-										.sorted().distinct().collect(Collectors.toList());
+	public void deleteAll() throws IOException {
+        Files.deleteIfExists(csvPath);
+        Files.deleteIfExists(depsPath);
+    }
 
-			JkFiles.writeFile(csvPath, mainLines, true);
-			JkFiles.writeFile(depsPath, depLines, true);
-		}
-	}
+    public void persist(Collection<T> elems) throws IOException {
+        if(elems.isEmpty()) {
+            Files.deleteIfExists(csvPath);
+            Files.deleteIfExists(depsPath);
 
-	private StringCSV formatElem(CsvElement elem) {
+        } else {
+            List<StringCSV> csvList = elems.stream()
+                    .distinct()
+                    .sorted(Comparator.comparing(CsvElement::getElemID))
+                    .map(this::formatElem)
+                    .collect(Collectors.toList());
+
+            List<String> mainLines = JkStreams.map(csvList, StringCSV::getMainValue);
+            List<String> depLines = csvList.stream().flatMap(csv -> csv.getDependencies().stream())
+                    .sorted().distinct().collect(Collectors.toList());
+
+            JkFiles.writeFile(csvPath, mainLines, true);
+            JkFiles.writeFile(depsPath, depLines, true);
+        }
+    }
+
+    public void update(Collection<T> elems) throws IOException {
+        Set<T> set = new TreeSet<>(Comparator.comparing(CsvElement::getElemID));
+        set.addAll(elems);
+        set.addAll(readAll());
+        persist(set);
+    }
+
+    private StringCSV formatElem(CsvElement elem) {
 		StringCSV toRet = new StringCSV();
 
 		try {
@@ -165,7 +182,10 @@ public class JkCsvDao<T extends CsvElement> {
 	}
 
 	private String getCsvElementsPrefix(CsvElement elem) {
-		return strf("%s_%s", elem.getClassID(), elem.getElemID());
+		return getCsvElementsPrefix(elem.getClass().getName(), elem.getElemID());
+	}
+	private String getCsvElementsPrefix(String classID, String elemID) {
+		return strf("%s_%s", classID, elemID);
 	}
 
 	private StringCSV toStringValue(Object value, AnnField annField) {
@@ -308,9 +328,7 @@ public class JkCsvDao<T extends CsvElement> {
 				o = LocalDateTime.parse(value, DateTimeFormatter.ISO_DATE_TIME);
 			} else if (isImplOf(fclazz, CsvElement.class)) {
 				CsvElement cel = (CsvElement) fclazz.newInstance();
-				cel.setElemID(value);
-				String depLine = depMap.get(getCsvElementsPrefix(cel));
-//				display(depLine);
+				String depLine = depMap.get(getCsvElementsPrefix(cel.getClass().getName(), value));
 				JkCsvDao daop = daoParsers.get(fclazz);
 				o = daop.parseElem(depLine, depMap);
 			} else {

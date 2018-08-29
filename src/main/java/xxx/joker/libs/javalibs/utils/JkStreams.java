@@ -36,10 +36,13 @@ public class JkStreams {
 		return source.stream().map(mapper).filter(filter).collect(Collectors.toList());
 	}
 
-	public static <T> List<T> distinct(List<T> source) {
-		return source.stream().distinct().collect(Collectors.toList());
-	}
-	public static <T> List<T> duplicates(List<T> source) {
+    public static <T> List<T> distinct(Collection<T> source) {
+        return source.stream().distinct().collect(Collectors.toList());
+    }
+    public static <T> List<T> distinctSorted(Collection<T> source) {
+        return source.stream().distinct().sorted().collect(Collectors.toList());
+    }
+	public static <T> List<T> duplicates(Collection<T> source) {
 		List<T> duplicates = new ArrayList<>(source);
 		source.stream().distinct().forEach(duplicates::remove);
 		return duplicates;
