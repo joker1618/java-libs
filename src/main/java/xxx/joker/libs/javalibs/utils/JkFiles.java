@@ -279,6 +279,7 @@ public class JkFiles {
 	}    
 
 	public static String getFileName(Path path) {
+		if(path == null) return null;
 		String fn = path.toAbsolutePath().normalize().getFileName().toString();
 		String ext = getExtension(path);
 		return fn.replaceAll(Pattern.quote(".") + ext + "$", "");

@@ -15,6 +15,10 @@ import static xxx.joker.libs.javalibs.utils.JkConsole.display;
 import static xxx.joker.libs.javalibs.utils.JkStrings.strf;
 
 public class TestJkCsvDao {
+
+}
+/*
+public class TestJkCsvDao {
 	
 	@Test
 	public void various() throws Exception {
@@ -87,7 +91,7 @@ public class TestJkCsvDao {
 	}
 }
 
-class SubCsv1 implements CsvElement {
+class SubCsv1 implements CsvTable {
 
 	private String elemID;
 
@@ -152,14 +156,14 @@ class SubCsv1 implements CsvElement {
 	}
 
 	@Override
-	public String getElemID() {
+	public String getPrimaryKey() {
 		if(elemID == null)	elemID = String.valueOf(hashCode());
 		return elemID;
 	}
 
 }
 
-class SubCsv2 implements CsvElement {
+class SubCsv2 implements CsvTable {
 
 	private String elemID;
 
@@ -197,7 +201,7 @@ class SubCsv2 implements CsvElement {
 	}
 
 	@Override
-	public String getElemID() {
+	public String getPrimaryKey() {
 		if(elemID == null)	elemID = String.valueOf(hashCode());
 		return elemID;
 	}
@@ -222,7 +226,7 @@ class SubCsv2 implements CsvElement {
 	}
 }
 
-class CsvObj implements CsvElement {
+class CsvObj implements CsvTable {
 
 	private String elemID;
 
@@ -455,7 +459,7 @@ class CsvObj implements CsvElement {
 	}
 
 	@Override
-	public String getElemID() {
+	public String getPrimaryKey() {
 		if(elemID == null) {
 			elemID = strf("%d", hashCode());
 		}
@@ -463,3 +467,4 @@ class CsvObj implements CsvElement {
 	}
 
 }
+*/
