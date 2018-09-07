@@ -12,6 +12,10 @@
 
     <url>http://maven.apache.org</url>
 
+    <properties>
+        <maven.test.skip>true</maven.test.skip>
+    </properties>
+
     <dependencies>
         <!-- Apache String Utils -->
         <dependency>
