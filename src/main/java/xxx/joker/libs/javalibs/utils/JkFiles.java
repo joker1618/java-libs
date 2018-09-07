@@ -262,6 +262,9 @@ public class JkFiles {
 		return findFiles1(root, recursive, Arrays.asList(filterConds));
 	}
 	private static List<Path> findFiles1(Path root, boolean recursive, List<Predicate<Path>> filterConds) throws IOException {
+		if(Files.notExists(root)) {
+			return Collections.emptyList();
+		}
 		Stream<Path> stream = Files.find(root, recursive ? Integer.MAX_VALUE : 1, (p, a) -> !areEquals(p, root));
 		for(Predicate<Path> pred : filterConds) {
 			stream = stream.filter(pred);
