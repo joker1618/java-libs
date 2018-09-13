@@ -8,7 +8,6 @@ import java.nio.file.Path;
 public class JkVideoInfo {
 
 	private Path videoPath;
-	// Multimedia info
 	private long duration;	// in millis
 	private String contentType;
 	private int width;
