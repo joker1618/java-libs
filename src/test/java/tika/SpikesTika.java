@@ -3,20 +3,10 @@ package tika;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.junit.Test;
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.mp4.MP4Parser;
-import org.apache.tika.sax.BodyContentHandler;
-import org.xml.sax.SAXException;
 import xxx.joker.libs.javalibs.media.analysis.JkMediaAnalyzer;
 import xxx.joker.libs.javalibs.media.analysis.JkVideoInfo;
-import xxx.joker.libs.javalibs.utils.JkFiles;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import static xxx.joker.libs.javalibs.utils.JkConsole.display;
 

@@ -1,10 +1,5 @@
 package xxx.joker.libs.javalibs.media.analysis;
 
-import it.sauronsoftware.jave.MultimediaInfo;
-import it.sauronsoftware.jave.VideoInfo;
-import xxx.joker.libs.javalibs.format.JkColumnFmtBuilder;
-import xxx.joker.libs.javalibs.utils.JkStrings;
-
 import java.nio.file.Path;
 
 /**
