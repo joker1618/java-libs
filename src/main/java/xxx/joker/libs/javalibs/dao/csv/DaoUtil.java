@@ -33,4 +33,5 @@ public class DaoUtil {
 		List.class,
 		Set.class
 	);
+
 }

@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 import static xxx.joker.libs.javalibs.utils.JkStrings.strf;
 
-public class JkCsvDao<T extends CsvElement> {
+public class JkCsvDao<T extends CsvEntity> {
 
 	private static final String LINE_SEP = StringUtils.LF;
 //	private static final CsvSep FIELD_SEP = new CsvSep(";", ";");
@@ -70,7 +70,7 @@ public class JkCsvDao<T extends CsvElement> {
 		}
 
         List<T> readList = JkStreams.map(mainLines, line -> parseElem(line, depsMap));
-		readList.sort(Comparator.comparing(CsvElement::getElemID));
+		Collections.sort(readList);
 		return readList;
     }
 
@@ -89,11 +89,6 @@ public class JkCsvDao<T extends CsvElement> {
 		}
 	}
 
-	public void deleteAll() throws IOException {
-        Files.deleteIfExists(csvPath);
-        Files.deleteIfExists(depsPath);
-    }
-
     public void persist(Collection<T> elems) throws IOException {
         if(elems.isEmpty()) {
             Files.deleteIfExists(csvPath);
@@ -102,7 +97,7 @@ public class JkCsvDao<T extends CsvElement> {
         } else {
             List<StringCSV> csvList = elems.stream()
                     .distinct()
-                    .sorted(Comparator.comparing(CsvElement::getElemID))
+                    .sorted(Comparator.comparing(CsvEntity::getPrimaryKey))
                     .map(this::formatElem)
                     .collect(Collectors.toList());
 
@@ -115,14 +110,7 @@ public class JkCsvDao<T extends CsvElement> {
         }
     }
 
-    public void update(Collection<T> elems) throws IOException {
-        Set<T> set = new TreeSet<>(Comparator.comparing(CsvElement::getElemID));
-        set.addAll(elems);
-        set.addAll(readAll());
-        persist(set);
-    }
-
-    private StringCSV formatElem(CsvElement elem) {
+    private StringCSV formatElem(CsvEntity elem) {
 		StringCSV toRet = new StringCSV();
 
 		try {
@@ -163,12 +151,12 @@ public class JkCsvDao<T extends CsvElement> {
 				if (fieldMap.containsKey(csvField.index())) {
 					throw new IllegalArgumentException(strf("Duplicated index %d", csvField.index()));
 				}
-				if(isImplOf(f.getType(), CsvElement.class)) {
-					Class<? extends CsvElement> ftype = (Class<? extends CsvElement>)f.getType();
+				if(isImplOf(f.getType(), CsvEntity.class)) {
+					Class<? extends CsvEntity> ftype = (Class<? extends CsvEntity>)f.getType();
 					daoParsers.putIfAbsent(ftype, new JkCsvDao<>(ftype));
 				}
-				if(isImplOf(csvField.subElemType(), CsvElement.class)) {
-					Class<? extends CsvElement> subType = (Class<? extends CsvElement>)csvField.subElemType();
+				if(isImplOf(csvField.subElemType(), CsvEntity.class)) {
+					Class<? extends CsvEntity> subType = (Class<? extends CsvEntity>)csvField.subElemType();
 					daoParsers.putIfAbsent(subType, new JkCsvDao<>(subType));
 				}
 				fieldMap.put(csvField.index(), new AnnField(csvField, f));
@@ -181,8 +169,8 @@ public class JkCsvDao<T extends CsvElement> {
 		return interfaces.contains(expected);
 	}
 
-	private String getCsvElementsPrefix(CsvElement elem) {
-		return getCsvElementsPrefix(elem.getClass().getName(), elem.getElemID());
+	private String getCsvElementsPrefix(CsvEntity elem) {
+		return getCsvElementsPrefix(elem.getClass().getName(), elem.getPrimaryKey());
 	}
 	private String getCsvElementsPrefix(String classID, String elemID) {
 		return strf("%s_%s", classID, elemID);
@@ -231,9 +219,9 @@ public class JkCsvDao<T extends CsvElement> {
 				str.mainValue = DateTimeFormatter.ISO_DATE.format((LocalDate) value);
 			} else if (fclazz == LocalDateTime.class) {
 				str.mainValue = DateTimeFormatter.ISO_DATE_TIME.format((LocalDateTime) value);
-			} else if (isImplOf(fclazz, CsvElement.class)) {
-				CsvElement cel = (CsvElement) value;
-				str.mainValue = cel.getElemID();
+			} else if (isImplOf(fclazz, CsvEntity.class)) {
+				CsvEntity cel = (CsvEntity) value;
+				str.mainValue = cel.getPrimaryKey();
 				StringCSV csv = formatElem(cel);
 				String ml = strf("%s:%s", getCsvElementsPrefix(cel), csv.mainValue);
 				str.dependencies.add(ml);
@@ -326,8 +314,8 @@ public class JkCsvDao<T extends CsvElement> {
 				o = LocalDate.parse(value, DateTimeFormatter.ISO_DATE);
 			} else if (fclazz == LocalDateTime.class) {
 				o = LocalDateTime.parse(value, DateTimeFormatter.ISO_DATE_TIME);
-			} else if (isImplOf(fclazz, CsvElement.class)) {
-				CsvElement cel = (CsvElement) fclazz.newInstance();
+			} else if (isImplOf(fclazz, CsvEntity.class)) {
+				CsvEntity cel = (CsvEntity) fclazz.newInstance();
 				String depLine = depMap.get(getCsvElementsPrefix(cel.getClass().getName(), value));
 				JkCsvDao daop = daoParsers.get(fclazz);
 				o = daop.parseElem(depLine, depMap);

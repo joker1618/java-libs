@@ -1,13 +1,6 @@
 package xxx.joker.libs.javalibs.dao.csv;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Objects;
-
-public class SimpleFieldsElem implements CsvTable {
+public class SimpleFieldsElem implements CsvEntity {
 
     @Override
     public String getPrimaryKey() {

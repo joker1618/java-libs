@@ -46,8 +46,6 @@ public @interface CsvField {
 
 	int index();
 
-	String header() default "";
-
 	// Must be specified for Collections (List, Set)
 	Class<?> subElemType() default String.class;
 
