@@ -70,7 +70,6 @@ public class JkCsvDao<T extends CsvEntity> {
 		}
 
         List<T> readList = JkStreams.map(mainLines, line -> parseElem(line, depsMap));
-		Collections.sort(readList);
 		return readList;
     }
 
