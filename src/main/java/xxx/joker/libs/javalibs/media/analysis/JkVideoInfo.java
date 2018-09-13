@@ -3,7 +3,7 @@ package xxx.joker.libs.javalibs.media.analysis;
 import java.nio.file.Path;
 
 /**
- * Created by f.barbano on 10/07/2017.
+ * Created by f.barbano on 12/07/2017.
  */
 public class JkVideoInfo {
 
