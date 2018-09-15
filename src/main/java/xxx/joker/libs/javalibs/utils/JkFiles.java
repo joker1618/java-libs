@@ -255,21 +255,26 @@ public class JkFiles {
 	}
 
 	/* FIND methods */
-	public static List<Path> findFiles(Path root, boolean recursive) throws IOException {
+	public static List<Path> findFiles(Path root, boolean recursive) {
 		return findFiles1(root, recursive, Collections.emptyList());
 	}
-	public static List<Path> findFiles(Path root, boolean recursive, Predicate<Path>... filterConds) throws IOException {
+	public static List<Path> findFiles(Path root, boolean recursive, Predicate<Path>... filterConds) {
 		return findFiles1(root, recursive, Arrays.asList(filterConds));
 	}
-	private static List<Path> findFiles1(Path root, boolean recursive, List<Predicate<Path>> filterConds) throws IOException {
-		if(Files.notExists(root)) {
-			return Collections.emptyList();
-		}
-		Stream<Path> stream = Files.find(root, recursive ? Integer.MAX_VALUE : 1, (p, a) -> !areEquals(p, root));
-		for(Predicate<Path> pred : filterConds) {
-			stream = stream.filter(pred);
-		}
-		return stream.distinct().sorted().collect(Collectors.toList());
+	private static List<Path> findFiles1(Path root, boolean recursive, List<Predicate<Path>> filterConds) {
+		try {
+            if (Files.notExists(root)) {
+                return Collections.emptyList();
+            }
+            Stream<Path> stream = Files.find(root, recursive ? Integer.MAX_VALUE : 1, (p, a) -> !areEquals(p, root));
+            for (Predicate<Path> pred : filterConds) {
+                stream = stream.filter(pred);
+            }
+            return stream.distinct().sorted().collect(Collectors.toList());
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 	}
 
 	/* MISCELLANEA methods */

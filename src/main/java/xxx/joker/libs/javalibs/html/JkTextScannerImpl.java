@@ -131,7 +131,8 @@ public class JkTextScannerImpl implements JkTextScanner {
 
     @Override
     public JkTextScanner subScannerBetween(String start, String end) {
-        return new JkTextScannerImpl(nextValueBetween(start, end));
+        String val = nextValueBetween(start, end);
+        return val == null ? null : new JkTextScannerImpl(val);
     }
 
     @Override

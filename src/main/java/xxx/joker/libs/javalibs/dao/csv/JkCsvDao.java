@@ -39,14 +39,18 @@ public class JkCsvDao<T extends CsvEntity> {
 
 	public JkCsvDao(Path csvPath, Class<T> csvClass) {
 		this.csvPath = csvPath;
-		this.depsPath = JkFiles.getParent(csvPath).resolve(strf("%s.dependencies.%s", JkFiles.getFileName(csvPath), JkFiles.getExtension(csvPath)));
+		this.depsPath = createDependeciesFilepath(csvPath);
 		this.csvClass = csvClass;
 		this.fieldMap = new HashMap<>();
 		this.daoParsers = new HashMap<>();
 		initialize();
 	}
 
-	private JkCsvDao(Class<T> csvClass) {
+    private Path createDependeciesFilepath(Path csvPath) {
+        return JkFiles.getParent(csvPath).resolve(strf("%s.dependencies.%s", JkFiles.getFileName(csvPath), JkFiles.getExtension(csvPath)));
+    }
+
+    private JkCsvDao(Class<T> csvClass) {
 		this.csvClass = csvClass;
 		this.fieldMap = new HashMap<>();
 		this.daoParsers = new HashMap<>();
@@ -87,6 +91,13 @@ public class JkCsvDao<T extends CsvEntity> {
 			throw new RuntimeException(e);
 		}
 	}
+
+    public void insertUpdate(Collection<T> elems) throws IOException {
+        List<T> olds = readAll();
+        HashSet<T> set = new HashSet<>(elems);
+        set.addAll(olds);
+        persist(set);
+    }
 
     public void persist(Collection<T> elems) throws IOException {
         if(elems.isEmpty()) {
