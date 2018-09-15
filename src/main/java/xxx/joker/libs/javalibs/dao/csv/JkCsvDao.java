@@ -82,8 +82,10 @@ public class JkCsvDao<T extends CsvEntity> {
 			T instance = csvClass.newInstance();
 			List<String> row = JkStrings.splitFieldsList(line, FIELD_SEP.safeSep);
 			for(Map.Entry<Integer,AnnField> entry : fieldMap.entrySet()) {
-				Object o = fromStringValue(row.get(entry.getKey()), entry.getValue(), depsMap);
-				entry.getValue().setValue(instance, o);
+			    if(entry.getKey() < row.size()) {
+                    Object o = fromStringValue(row.get(entry.getKey()), entry.getValue(), depsMap);
+                    entry.getValue().setValue(instance, o);
+                }
 			}
 			return instance;
 
