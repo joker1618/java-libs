@@ -2,6 +2,7 @@ package xxx.joker.libs.javalibs.media.analysis;
 
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.jpeg.JpegParser;
 import org.apache.tika.parser.mp4.MP4Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import xxx.joker.libs.javalibs.utils.JkConverter;
@@ -39,6 +40,27 @@ public class JkMediaAnalyzer {
             jkVideoInfo.setSamplingRate(JkConverter.stringToInteger(metadata.get("xmpDM:audioSampleRate")));
 
             return jkVideoInfo;
+        }
+    }
+
+    public static JkImageInfo analyzeImage(Path imagePath) throws Exception {
+        if (!Files.exists(imagePath)) throw new FileNotFoundException(imagePath + " not found");
+
+        try (FileInputStream inputstream = new FileInputStream(imagePath.toFile())) {
+            BodyContentHandler handler = new BodyContentHandler();
+            Metadata metadata = new Metadata();
+            ParseContext pcontext = new ParseContext();
+
+            //Jpeg Parse
+            JpegParser JpegParser = new JpegParser();
+            JpegParser.parse(inputstream, handler, metadata,pcontext);
+
+            JkImageInfo imageInfo = new JkImageInfo();
+            imageInfo.setImagePath(imagePath);
+            imageInfo.setWidth(JkConverter.stringToInteger(metadata.get("tiff:ImageWidth")));
+            imageInfo.setHeight(JkConverter.stringToInteger(metadata.get("tiff:ImageLength")));
+
+            return imageInfo;
         }
     }
 
