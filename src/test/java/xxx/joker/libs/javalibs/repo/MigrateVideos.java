@@ -2,13 +2,9 @@ package xxx.joker.libs.javalibs.repo;
 
 import org.junit.Test;
 import xxx.joker.libs.javalibs.dao.csv.JkCsvDao;
-import static xxx.joker.libs.javalibs.utils.JkConsole.display;
-
 import xxx.joker.libs.javalibs.repository.JkRepository;
-import xxx.joker.libs.javalibs.utils.JkConsole;
 import xxx.joker.libs.javalibs.utils.JkStreams;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;

@@ -47,7 +47,7 @@ public class JkRepository {
         String clazzName = lines.remove(0);
         Class<?> repoClazz = Class.forName(clazzName);
 
-        Path depsPath = createDependeciesPath(repoPath);
+        Path depsPath = createDependenciesPath(repoPath);
         List<String> depsLines = JkStreams.filter(Files.readAllLines(depsPath), StringUtils::isNotBlank);
         Map<String, String> depsMap = new HashMap<>();
         if(!depsLines.isEmpty()) {
@@ -59,7 +59,7 @@ public class JkRepository {
     }
 
     public static <T extends JkRepoTable> void save(Path repoPath, Collection<T> elems) throws IOException {
-        Path depsPath = createDependeciesPath(repoPath);
+        Path depsPath = createDependenciesPath(repoPath);
 
         if(elems.isEmpty()) {
             Files.deleteIfExists(repoPath);
@@ -83,8 +83,17 @@ public class JkRepository {
         }
     }
 
+    public static <T extends JkRepoTable> void update(Path repoPath, Collection<T> elems) throws IOException, ClassNotFoundException {
+        Set<T> elemSet = new TreeSet<>(elems);
 
-    private static Path createDependeciesPath(Path repoPath) {
+        List<T> existings = load(repoPath);
+        elemSet.addAll(existings);
+
+        save(repoPath, elemSet);
+    }
+
+
+    private static Path createDependenciesPath(Path repoPath) {
         String fname = strf("%s.dependencies", JkFiles.getFileName(repoPath));
 
         String ext = JkFiles.getExtension(repoPath);

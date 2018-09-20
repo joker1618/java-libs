@@ -4,8 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public abstract class JkDefaultRepoTable implements JkRepoTable, Comparable<JkRepoTable> {
-
+public abstract class JkDefaultRepoTable implements JkRepoTable {
 
     @Override
     public int compareTo(JkRepoTable o) {

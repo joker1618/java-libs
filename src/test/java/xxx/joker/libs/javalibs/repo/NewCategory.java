@@ -1,7 +1,7 @@
 package xxx.joker.libs.javalibs.repo;
 
-import xxx.joker.libs.javalibs.repository.JkRepoField;
 import xxx.joker.libs.javalibs.repository.JkDefaultRepoTable;
+import xxx.joker.libs.javalibs.repository.JkRepoField;
 
 public class NewCategory extends JkDefaultRepoTable {
 
