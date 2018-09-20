@@ -83,18 +83,30 @@ public class JkRepository {
         }
     }
 
-    public static <T extends JkRepoTable> List<T> update(Path repoPath, Collection<T> elems) throws IOException, ClassNotFoundException {
-        Set<T> elemSet = new TreeSet<>(elems);
+    public static <T extends JkRepoTable> void update(Path repoPath, Collection<T> elems) throws IOException, ClassNotFoundException {
+        if(!elems.isEmpty()) {
+            Set<T> elemSet = new TreeSet<>(elems);
 
-        List<T> existings = load(repoPath);
-        elemSet.addAll(existings);
+            List<T> existings = load(repoPath);
+            elemSet.addAll(existings);
 
-        save(repoPath, elemSet);
+            save(repoPath, elemSet);
+        }
+    }
 
-        List<T> toRet = JkConverter.toArrayList(elemSet);
-        Collections.sort(toRet);
-
-        return toRet;
+    public static <T extends JkRepoTable> int insert(Path repoPath, Collection<T> elems) throws IOException, ClassNotFoundException {
+        int added = 0;
+        if(!elems.isEmpty()) {
+            List<T> existings = load(repoPath);
+            Set<T> elemSet = new TreeSet<>(existings);
+            List<T> filtered = JkStreams.filter(elems, e -> !elemSet.contains(e));
+            added = filtered.size();
+            if(added > 0) {
+                elemSet.addAll(filtered);
+                save(repoPath, elemSet);
+            }
+        }
+        return added;
     }
 
 
