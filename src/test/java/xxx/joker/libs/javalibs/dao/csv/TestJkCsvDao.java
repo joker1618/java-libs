@@ -83,7 +83,7 @@ class SubCsv1 implements CsvTable {
 
 	@CsvField(index = 0, header = "str")
 	private String str="";
-	@CsvField(index = 1, header = "refs", subElemType = SubCsv2.class)
+	@CsvField(index = 1, header = "refs", collectionType = SubCsv2.class)
 	private List<SubCsv2> refs;
 	@CsvField(index = 2, header = "ref_obj")
 	private SubCsv2 refObj;
@@ -155,7 +155,7 @@ class SubCsv2 implements CsvTable {
 
 	@CsvField(index = 0, header = "str")
 	private String str = "";
-	@CsvField(index = 1, header = "doubleArr", subElemType = Double.class)
+	@CsvField(index = 1, header = "doubleArr", collectionType = Double.class)
 	private Double[] doubleArr = new Double[0];
 
 	public SubCsv2() {
@@ -248,13 +248,13 @@ class CsvObj implements CsvTable {
 //	private LocalDateTime ldt;
 //	@CsvField(index = 15, header = "String")
 //	private String string = "";
-	@CsvField(index = 18, header = "List_int", subElemType = Integer.class)
+	@CsvField(index = 18, header = "List_int", collectionType = Integer.class)
 	private List<Integer> listInt = new ArrayList<>();
-	@CsvField(index = 19, header = "List_LocalDate", subElemType = LocalDate.class)
+	@CsvField(index = 19, header = "List_LocalDate", collectionType = LocalDate.class)
 	private List<LocalDate> listLDate = new ArrayList<>();
 	@CsvField(index = 20, header = "SUB 1")
 	private SubCsv1 sub1;
-	@CsvField(index = 21, header = "SUB 1 LIST", subElemType = SubCsv1.class)
+	@CsvField(index = 21, header = "SUB 1 LIST", collectionType = SubCsv1.class)
 	private List<SubCsv1> sub1List = new ArrayList<>();
 
 	public SubCsv1 getSub1() {
