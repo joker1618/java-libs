@@ -83,13 +83,18 @@ public class JkRepository {
         }
     }
 
-    public static <T extends JkRepoTable> void update(Path repoPath, Collection<T> elems) throws IOException, ClassNotFoundException {
+    public static <T extends JkRepoTable> List<T> update(Path repoPath, Collection<T> elems) throws IOException, ClassNotFoundException {
         Set<T> elemSet = new TreeSet<>(elems);
 
         List<T> existings = load(repoPath);
         elemSet.addAll(existings);
 
         save(repoPath, elemSet);
+
+        List<T> toRet = JkConverter.toArrayList(elemSet);
+        Collections.sort(toRet);
+
+        return toRet;
     }
 
 
