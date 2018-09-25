@@ -7,7 +7,7 @@ import xxx.joker.libs.javalibs.datamodel.persistence.JkPersistor;
 import java.nio.file.Path;
 import java.util.List;
 
-public class JkDataModel {
+public abstract class JkDataModel {
 
     private JkPersistor persistor;
 
