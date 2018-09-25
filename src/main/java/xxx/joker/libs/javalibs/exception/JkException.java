@@ -3,7 +3,7 @@ package xxx.joker.libs.javalibs.exception;
 /**
  * Created by f.barbano on 19/11/2017.
  */
-public abstract class JkException extends Exception {
+public class JkException extends Exception {
 
 	public JkException(String message, Object... params) {
 		super(String.format(message, params));
