@@ -1,9 +1,7 @@
 package stuff;
 
 import org.junit.Test;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import xxx.joker.libs.javalibs.utils.JkStrings;
 
 import static xxx.joker.libs.javalibs.utils.JkConsole.display;
 
@@ -12,9 +10,8 @@ public class Writer {
 	@Test
 	public void our() {
 
-	    String s = "26 March";
-        LocalDate d_l = LocalDate.parse(s+" 2017", DateTimeFormatter.ofPattern("dd MMMM yyyy"));
-        display("%s", d_l);
+	    String s = "as/.m2/repository/fede";
+        display("%s", JkStrings.matchRegExp(".*[/\\\\]{1}.m2[/\\\\]{1}repository[/\\\\]{1}.*", s));
 
 //        for (Class<?> clazz : DaoUtil.allowedClasses) {
 //			if(!clazz.isArray() && !clazz.isPrimitive()) {

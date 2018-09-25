@@ -13,39 +13,39 @@ import java.util.jar.JarFile;
  */
 public class JkReflection {
 
-    public static List<Field> getFieldsByAnnotation(Class<?> sourceClass, Class<? extends Annotation> annotationClass) {
-        List<Field> toRet = new ArrayList<>();
-        Field[] declaredFields = sourceClass.getDeclaredFields();
-        if(!JkTests.isEmpty(declaredFields)) {
-            for (Field field : declaredFields) {
-                if (field.getAnnotation(annotationClass) != null) {
-                    toRet.add(field);
-                }
-            }
-        }
-        return toRet;
-    }
+	public static List<Field> getFieldsByAnnotation(Class<?> sourceClass, Class<? extends Annotation> annotationClass) {
+		List<Field> toRet = new ArrayList<>();
+		Field[] declaredFields = sourceClass.getDeclaredFields();
+		if(!JkTests.isEmpty(declaredFields)) {
+			for (Field field : declaredFields) {
+				if (field.getAnnotation(annotationClass) != null) {
+					toRet.add(field);
+				}
+			}
+		}
+		return toRet;
+	}
 
-    public static List<Field> getFieldsByType(Class<?> sourceClass, Class<?> fieldType) {
-        List<Field> toRet = new ArrayList<>();
-        Field[] declaredFields = sourceClass.getDeclaredFields();
-        if(!JkTests.isEmpty(declaredFields)) {
-            for (Field field : declaredFields) {
-                if (field.getType() == fieldType) {
-                    toRet.add(field);
-                }
-            }
-        }
-        return toRet;
-    }
+	public static List<Field> getFieldsByType(Class<?> sourceClass, Class<?> fieldType) {
+		List<Field> toRet = new ArrayList<>();
+		Field[] declaredFields = sourceClass.getDeclaredFields();
+		if(!JkTests.isEmpty(declaredFields)) {
+			for (Field field : declaredFields) {
+				if (field.getType() == fieldType) {
+					toRet.add(field);
+				}
+			}
+		}
+		return toRet;
+	}
 
-    public static Field getFieldByName(Class<?> sourceClass, String fieldName) {
-        List<Field> declaredFields = Arrays.asList(sourceClass.getDeclaredFields());
-        List<Field> fields = JkStreams.filter(declaredFields, f -> f.getName().equals(fieldName));
-        return fields.isEmpty() ? null : fields.get(0);
-    }
+	public static Field getFieldByName(Class<?> sourceClass, String fieldName) {
+		List<Field> declaredFields = Arrays.asList(sourceClass.getDeclaredFields());
+		List<Field> fields = JkStreams.filter(declaredFields, f -> f.getName().equals(fieldName));
+		return fields.isEmpty() ? null : fields.get(0);
+	}
 
-    public static Enum getEnumByName(Class<?> enumClass, String enumName) {
+	public static Enum getEnumByName(Class<?> enumClass, String enumName) {
 		Enum[] enumConstants = (Enum[]) enumClass.getEnumConstants();
 		for(Enum elem : enumConstants) {
 			if(elem.name().equals(enumName)) {
@@ -55,40 +55,40 @@ public class JkReflection {
 		return null;
 	}
 
-    public static boolean isOfType(Class<?> clazz, Class<?> expected) {
-        Set<Class<?>> types = new HashSet<>();
+	public static boolean isOfType(Class<?> clazz, Class<?> expected) {
+		Set<Class<?>> types = new HashSet<>();
 
-        Class<?> tmp = clazz;
-        while(tmp != null) {
-            types.add(tmp);
-            types.addAll(findAllInterfaces(tmp));
-            tmp = tmp.getSuperclass();
-        }
+		Class<?> tmp = clazz;
+		while(tmp != null) {
+			types.add(tmp);
+			types.addAll(findAllInterfaces(tmp));
+			tmp = tmp.getSuperclass();
+		}
 
-        return types.contains(expected);
-    }
+		return types.contains(expected);
+	}
 
-    private static Set<Class<?>> findAllInterfaces(Class<?> clazz) {
-        Set<Class<?>> interfaces = new HashSet<>();
-        interfaces.add(clazz);
-        for(Class<?> interf : clazz.getInterfaces()) {
-            interfaces.addAll(findAllInterfaces(interf));
-        }
-        return interfaces;
-    }
+	private static Set<Class<?>> findAllInterfaces(Class<?> clazz) {
+		Set<Class<?>> interfaces = new HashSet<>();
+		interfaces.add(clazz);
+		for(Class<?> interf : clazz.getInterfaces()) {
+			interfaces.addAll(findAllInterfaces(interf));
+		}
+		return interfaces;
+	}
 
 	public static List<Class<?>> findClasses(String packageName) {
 		File launcherPath = JkFiles.getLauncherPath(JkReflection.class).toFile();
 		List<Class<?>> classes;
-			if(launcherPath.isDirectory()) {
-			classes = getClasses(packageName);
+		if(launcherPath.isDirectory() || JkStrings.matchRegExp(".*[/\\\\]{1}.m2[/\\\\]{1}repository[/\\\\]{1}.*", launcherPath.getPath())) {
+			classes = getClassesFromClassLoader(packageName);
 		} else {
-			classes = getClasses(launcherPath, packageName);
+			classes = getClassesFromJar(launcherPath, packageName);
 		}
 		return classes;
 	}
 
-	private static List<Class<?>> getClasses(String packageName) {
+	private static List<Class<?>> getClassesFromClassLoader(String packageName) {
 		try {
 			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 			String path = packageName.replace('.', '/');
@@ -127,7 +127,7 @@ public class JkReflection {
 		return classes;
 	}
 
-	private static List<Class<?>> getClasses(File jarFile, String packageName) {
+	private static List<Class<?>> getClassesFromJar(File jarFile, String packageName) {
 		List<Class<?>> classes = new ArrayList<>();
 		try {
 			JarFile file = new JarFile(jarFile);

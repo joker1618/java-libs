@@ -50,7 +50,7 @@ public class JkFiles {
 		appendToFile(outputPath, lines, null);
 	}
 	public static void appendToFile(Path outputPath, List<String> lines, Charset encoding) throws IOException {
-		appendToFile(outputPath, lines, encoding, true);
+		appendToFile(outputPath, lines, encoding, !lines.isEmpty());
 	}
 	public static void appendToFile(Path outputPath, List<String> lines, Charset encoding, boolean finalNewline) throws IOException {
 		Files.createDirectories(outputPath.toAbsolutePath().getParent());
@@ -94,7 +94,7 @@ public class JkFiles {
 		writeFile(outputPath, lines, overwrite, null);
 	}
 	public static void writeFile(Path outputPath, List<String> lines, boolean overwrite, Charset encoding) throws IOException {
-		writeFile(outputPath, lines, overwrite, encoding, true);
+		writeFile(outputPath, lines, overwrite, encoding, !lines.isEmpty());
 	}
 	public static void writeFile(Path outputPath, List<String> lines, boolean overwrite, Charset encoding, boolean finalNewline) throws IOException {
 		if(Files.exists(outputPath) && !overwrite) {

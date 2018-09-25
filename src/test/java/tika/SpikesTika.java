@@ -14,7 +14,7 @@ public class SpikesTika {
 
     @Test
     public void tt() throws Exception {
-        File source = new File("C:\\Users\\feder\\IdeaProjects\\APPS\\video-manager\\videos\\Amateur_African_Girl_Fucked_and_Covered_in_Cum-240-XHamster.1.mp4");
+        File source = new File("C:\\Users\\feder\\IdeaProjects\\APPS\\video-persistence\\videos\\Amateur_African_Girl_Fucked_and_Covered_in_Cum-240-XHamster.1.mp4");
 
         //detecting the file type
 //        try (FileInputStream inputstream = new FileInputStream(source)) {
