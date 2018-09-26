@@ -125,7 +125,7 @@ class EntityParser {
 
             Map<Class<?>, List<JkEntity>> toRet = new HashMap<>();
             for(Class<?> c : entityMap.keySet()) {
-                toRet.put(c, JkStreams.sorted(entityMap.get(c).values()));
+                toRet.put(c, JkStreams.distinctSorted(entityMap.get(c).values()));
             }
 
             return toRet;

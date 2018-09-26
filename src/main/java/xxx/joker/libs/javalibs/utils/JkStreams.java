@@ -40,7 +40,7 @@ public class JkStreams {
         return source.stream().distinct().collect(Collectors.toList());
     }
 	public static <T> List<T> distinctSorted(Collection<T> source) {
-		return source.stream().distinct().sorted().collect(Collectors.toList());
+		return source.stream().sorted().distinct().collect(Collectors.toList());
 	}
 	public static <T> List<T> sorted(Collection<T> source) {
 		return source.stream().sorted().collect(Collectors.toList());
