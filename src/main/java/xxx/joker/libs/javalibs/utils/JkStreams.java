@@ -1,5 +1,7 @@
 package xxx.joker.libs.javalibs.utils;
 
+import xxx.joker.libs.javalibs.exception.JkRuntimeException;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -75,6 +77,9 @@ public class JkStreams {
 		if(source != null && !source.isEmpty()) {
 			source.forEach(v -> {
 				K key = keyMapper.apply(v);
+				if(map.containsKey(key)) {
+					throw new JkRuntimeException("Multiple values found for key [%s]", key);
+				}
 				map.put(key, valueMapper.apply(v));
 			});
 		}
