@@ -246,7 +246,7 @@ class EntityParser {
             Map<Integer, AnnField> clazzFields = entityFields.get(clazz);
             int numFields = clazzFields.keySet().stream().mapToInt(i->i).max().orElse(-1) + 1;
             
-            for(JkEntity elem : JkStreams.sorted(dataList)) {
+            for(JkEntity elem : JkStreams.distinctSorted(dataList)) {
                 List<String> row = Stream.generate(() -> "").limit(numFields).collect(Collectors.toList());
                 for (Integer index : clazzFields.keySet()) {
                     AnnField annField = clazzFields.get(index);
@@ -258,6 +258,7 @@ class EntityParser {
                         Class<?> fkClazz = annField.isCollection() ? annField.getCollectionType() : annField.getFieldType();
                         List<String> fkLines = formattedPair.getValue().stream()
                                 .sorted()
+                                .distinct()
                                 .map(fk -> new ForeignKey(clazz, elem.getPrimaryKey(), index, fkClazz, fk))
                                 .map(ForeignKey::toRepoLine)
                                 .collect(Collectors.toList());
