@@ -47,7 +47,19 @@ class EntityParser {
         logger.info("Scanning package {}", pkgToScan);
         List<Class<?>> entityClasses = retrieveEntityClasses(pkgToScan);
 
+        if(entityClasses.isEmpty()) {
+            throw new JkRuntimeException("No JkEntity class found in package {}", pkgToScan);
+        }
+
+        logger.info("{} JkEntity class found in package {}", entityClasses.size(), pkgToScan);
+
         for(Class<?> clazz : entityClasses) {
+            List<Class<?>> dups = JkStreams.filter(parsedEntities.keySet(), c -> c.getSimpleName().equals(clazz.getSimpleName()));
+            if(!dups.isEmpty()) {
+                // dups has one element only
+                throw new IllegalArgumentException(strf("All entity classes must have different class name. Duplicates: {}, {}", clazz.getName(), dups.get(0).getName()));
+            }
+
             if (!parsedEntities.containsKey(clazz)) {
                 logger.info("Entity class {}", clazz.getName());
 

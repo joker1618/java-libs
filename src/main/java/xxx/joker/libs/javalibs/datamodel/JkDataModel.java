@@ -5,8 +5,6 @@ import xxx.joker.libs.javalibs.datamodel.entity.JkEntity;
 import xxx.joker.libs.javalibs.datamodel.persistence.JkPersistor;
 
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 
 public abstract class JkDataModel {

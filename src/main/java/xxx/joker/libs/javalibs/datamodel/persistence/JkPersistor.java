@@ -11,7 +11,10 @@ import xxx.joker.libs.javalibs.utils.JkStreams;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
 
 import static xxx.joker.libs.javalibs.datamodel.persistence.EntityParser.EntityLines;
 
@@ -26,6 +29,7 @@ public class JkPersistor {
 
     private final Path dbFolder;
     private final String dbName;
+    private final String pkgToScan;
 
     private final EntityParser entityParser;
 
@@ -35,6 +39,7 @@ public class JkPersistor {
         logger.info("Creating persistence persistence:  [dbName={}] [dbFolder={}]", dbName, dbFolder);
         this.dbFolder = dbFolder;
         this.dbName = dbName;
+        this.pkgToScan = pkgToScan;
         this.entityParser = new EntityParser(pkgToScan);
         this.dataMap = new HashMap<>();
     }
@@ -67,7 +72,11 @@ public class JkPersistor {
     }
 
     public TreeSet<JkEntity> getData(Class<?> dataClazz) {
-        return dataMap.get(dataClazz);
+        TreeSet<JkEntity> data = dataMap.get(dataClazz);
+        if(data == null) {
+            throw new JkRuntimeException("Class {} does not belong to package {}", dataClazz.getName(), pkgToScan);
+        }
+        return data;
     }
 
     private EntityLines readRepoFile(Class<?> clazz) {
