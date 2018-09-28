@@ -11,9 +11,7 @@ import xxx.joker.libs.javalibs.utils.JkStreams;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static xxx.joker.libs.javalibs.datamodel.persistence.EntityParser.EntityLines;
 
@@ -31,7 +29,7 @@ public class JkPersistor {
 
     private final EntityParser entityParser;
 
-    private Map<Class<?>, List<JkEntity>> dataMap;
+    private Map<Class<?>, TreeSet<JkEntity>> dataMap;
 
     public JkPersistor(Path dbFolder, String dbName, String pkgToScan) {
         logger.info("Creating persistence persistence:  [dbName={}] [dbFolder={}]", dbName, dbFolder);
@@ -68,7 +66,7 @@ public class JkPersistor {
         }
     }
 
-    public List<JkEntity> getData(Class<?> dataClazz) {
+    public TreeSet<JkEntity> getData(Class<?> dataClazz) {
         return dataMap.get(dataClazz);
     }
 

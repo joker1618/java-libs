@@ -98,7 +98,7 @@ class EntityParser {
         return JkConverter.toArrayList(entityFields.keySet());
     }
     
-    public Map<Class<?>, List<JkEntity>> parseData(Map<Class<?>, EntityLines> csvDataMap) {
+    public Map<Class<?>, TreeSet<JkEntity>> parseData(Map<Class<?>, EntityLines> csvDataMap) {
         Map<Class<?>, Map<String, JkEntity>> entityMap = new HashMap<>();
 
         for(Class<?> clazz : csvDataMap.keySet()) {
@@ -123,9 +123,9 @@ class EntityParser {
                 }
             }
 
-            Map<Class<?>, List<JkEntity>> toRet = new HashMap<>();
+            Map<Class<?>, TreeSet<JkEntity>> toRet = new HashMap<>();
             for(Class<?> c : entityMap.keySet()) {
-                toRet.put(c, JkStreams.distinctSorted(entityMap.get(c).values()));
+                toRet.put(c, JkConverter.toTreeSet(entityMap.get(c).values()));
             }
 
             return toRet;
@@ -135,7 +135,7 @@ class EntityParser {
         }
     }
 
-    public Map<Class<?>, EntityLines> formatData(Map<Class<?>, List<JkEntity>> dataMap) {
+    public Map<Class<?>, EntityLines> formatData(Map<Class<?>, TreeSet<JkEntity>> dataMap) {
         Map<Class<?>, EntityLines> toRet = new HashMap<>();
         for (Class<?> clazz : dataMap.keySet()) {
             EntityLines el = formatEntityClass(clazz, dataMap.get(clazz));

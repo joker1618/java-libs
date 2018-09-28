@@ -6,6 +6,8 @@ import xxx.joker.libs.javalibs.datamodel.persistence.JkPersistor;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public abstract class JkDataModel {
 
@@ -20,8 +22,8 @@ public abstract class JkDataModel {
         persistor.saveData();
     }
 
-    protected <T extends JkEntity> List<T> getData(Class<T> entityClazz) {
-        return (List<T>) persistor.getData(entityClazz);
+    protected <T extends JkEntity> TreeSet<T> getData(Class<T> entityClazz) {
+        return (TreeSet<T>) persistor.getData(entityClazz);
     }
 
 }
