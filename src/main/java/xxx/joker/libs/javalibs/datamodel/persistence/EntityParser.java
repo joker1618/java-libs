@@ -113,11 +113,13 @@ class EntityParser {
     public Map<Class<?>, TreeSet<JkEntity>> parseData(Map<Class<?>, EntityLines> csvDataMap) {
         Map<Class<?>, Map<String, JkEntity>> entityMap = new HashMap<>();
 
+        // Parse entities
         for(Class<?> clazz : csvDataMap.keySet()) {
             List<JkEntity> elist = JkStreams.map(csvDataMap.get(clazz).getEntityLines(), l -> parseElem(clazz, l));
             entityMap.put(clazz, JkStreams.toMapSingle(elist, JkEntity::getPrimaryKey));
         }
 
+        // Resolve dependencies and fill entities objects
         try {
             for (Class<?> fromClazz : csvDataMap.keySet()) {
                 List<ForeignKey> fkOfClass = JkStreams.map(csvDataMap.get(fromClazz).getDepLines(), ForeignKey::new);
@@ -128,9 +130,11 @@ class EntityParser {
                     for (int index : fkIndexMap.keySet()) {
                         List<ForeignKey> fklist = fkIndexMap.get(index);
                         List<JkEntity> elist = JkStreams.mapAndFilter(fklist, fk -> entityMap.get(fk.getTargetClazz()).get(fk.getTargetPK()), Objects::nonNull);
-                        AnnField annField = entityFields.get(fromClazz).get(index);
-                        Object objValue = listToSafeObject(elist, annField);
-                        annField.setValue(fromObj, objValue);
+                        if(!elist.isEmpty()) {
+                            AnnField annField = entityFields.get(fromClazz).get(index);
+                            Object objValue = annField.isCollection() ? listToSafeObject(elist, annField) : elist.get(0);
+                            annField.setValue(fromObj, objValue);
+                        }
                     }
                 }
             }
@@ -308,7 +312,11 @@ class EntityParser {
                 }
 
             } else {
-                strValue = toStringSingleValue(value, fclazz);
+                if (JkReflection.isOfType(fclazz, JkEntity.class)) {
+                    foreignKeys.add(((JkEntity) value).getPrimaryKey());
+                } else {
+                    strValue = toStringSingleValue(value, fclazz);
+                }
             }
         }
 
