@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by f.barbano on 25/05/2018.
@@ -51,31 +52,39 @@ public class JkStreams {
 	public static <V,K> Map<K,List<V>> toMap(Collection<V> source, Function<V,K> keyMapper) {
 		return toMap(source, keyMapper, v -> v);
 	}
-	public static <V,K,T> Map<K,List<T>> toMap(Collection<V> source, Function<V,K> keyMapper, Function<V,T> valueMapper) {
-		Map<K,List<T>> map = new HashMap<>();
+    public static <V,K,T> Map<K,List<T>> toMap(Collection<V> source, Function<V,K> keyMapper, Function<V,T> valueMapper, Predicate<V>... filters) {
+        Map<K,List<T>> map = new HashMap<>();
 
-		if(source != null) {
-			source.forEach(v -> {
-				K key = keyMapper.apply(v);
-				List<T> value = map.get(key);
-				if(value == null) {
-					value = new ArrayList<>();
-					map.put(key, value);
-				}
-				value.add(valueMapper.apply(v));
-			});
-		}
+        if(source != null && !source.isEmpty()) {
+            Stream<V> stream = source.stream();
+            for(Predicate<V> filter : filters) {
+                stream = stream.filter(filter);
+            }
+            stream.forEach(v -> {
+                K key = keyMapper.apply(v);
+                List<T> value = map.get(key);
+                if(value == null) {
+                    value = new ArrayList<>();
+                    map.put(key, value);
+                }
+                value.add(valueMapper.apply(v));
+            });
+        }
 
-		return map;
-	}
+        return map;
+    }
 	public static <V,K> Map<K,V> toMapSingle(Collection<V> source, Function<V,K> keyMapper) {
 		return toMapSingle(source, keyMapper, v -> v);
 	}
-	public static <V,K,T> Map<K,T> toMapSingle(Collection<V> source, Function<V,K> keyMapper, Function<V,T> valueMapper) {
+	public static <V,K,T> Map<K,T> toMapSingle(Collection<V> source, Function<V,K> keyMapper, Function<V,T> valueMapper, Predicate<V>... filters) {
 		Map<K,T> map = new HashMap<>();
 
 		if(source != null && !source.isEmpty()) {
-			source.forEach(v -> {
+            Stream<V> stream = source.stream();
+            for(Predicate<V> filter : filters) {
+                stream = stream.filter(filter);
+            }
+            stream.forEach(v -> {
 				K key = keyMapper.apply(v);
 				if(map.containsKey(key)) {
 					throw new JkRuntimeException("Multiple values found for key [%s]", key);
