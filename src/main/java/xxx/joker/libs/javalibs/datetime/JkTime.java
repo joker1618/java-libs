@@ -77,22 +77,27 @@ public class JkTime implements Comparable<JkTime> {
 	    return fromElapsedString(str, ":");
     }
 	public static JkTime fromElapsedString(String str, String separator) {
-	    str = str.replaceAll("^\\+", "");
-		long milli = 0;
-		int idx = str.indexOf('.');
-		if(idx != -1) {
-			milli += JkConverter.stringToInteger(str.substring(idx+1));
-			str = str.substring(0, idx);
-		}
+	    try {
+            str = str.replaceAll("^\\+", "");
+            long milli = 0;
+            int idx = str.indexOf('.');
+            if (idx != -1) {
+                milli += JkConverter.stringToInteger(str.substring(idx + 1));
+                str = str.substring(0, idx);
+            }
 
-		String[] split = JkStrings.splitAllFields(str, separator);
-		int mult = 1000;
-		for(int i = split.length-1; i >= 0; i--) {
-			Integer num = JkConverter.stringToInteger(split[i]);
-			milli += num * mult;
-			mult *= 60;
-		}
-		return of(milli);
+            String[] split = JkStrings.splitAllFields(str, separator);
+            int mult = 1000;
+            for (int i = split.length - 1; i >= 0; i--) {
+                Integer num = JkConverter.stringToInteger(split[i]);
+                milli += num * mult;
+                mult *= 60;
+            }
+            return of(milli);
+
+        } catch (Exception e) {
+	        return null;
+        }
 	}
 
 	public String toStringElapsed(boolean showMilli) {
