@@ -515,14 +515,6 @@ class EntityParser {
         public List<String> getDepLines() {
             return depLines;
         }
-
-        public void merge(EntityLines el) {
-            if(el.getEntityClazz() != entityClazz) {
-                throw new JkRuntimeException("Class entity mismatch  (%s != %s)", entityClazz, el.getEntityClazz());
-            }
-            this.entityLines.addAll(el.getEntityLines());
-            this.depLines.addAll(el.getDepLines());
-        }
     }
     
 }
