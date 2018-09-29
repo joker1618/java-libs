@@ -74,6 +74,9 @@ public class JkTime implements Comparable<JkTime> {
 	}
 
 	public static JkTime fromElapsedString(String str) {
+	    return fromElapsedString(str, ":");
+    }
+	public static JkTime fromElapsedString(String str, String separator) {
 	    str = str.replaceAll("^\\+", "");
 		long milli = 0;
 		int idx = str.indexOf('.');
@@ -82,7 +85,7 @@ public class JkTime implements Comparable<JkTime> {
 			str = str.substring(0, idx);
 		}
 
-		String[] split = JkStrings.splitAllFields(str, ":");
+		String[] split = JkStrings.splitAllFields(str, separator);
 		int mult = 1000;
 		for(int i = split.length-1; i >= 0; i--) {
 			Integer num = JkConverter.stringToInteger(split[i]);

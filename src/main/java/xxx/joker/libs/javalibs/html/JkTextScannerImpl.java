@@ -1,6 +1,9 @@
 package xxx.joker.libs.javalibs.html;
 
 import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.javalibs.utils.JkConverter;
+import xxx.joker.libs.javalibs.utils.JkStreams;
+import xxx.joker.libs.javalibs.utils.JkStrings;
 
 /**
  * Created by f.barbano on 14/08/2017.
@@ -108,7 +111,12 @@ public class JkTextScannerImpl implements JkTextScanner {
 		return StringUtils.substringBetween(buffer.toString(), start, end);
 	}
 
-	@Override
+    @Override
+    public Integer nextIntBetween(String start, String end) {
+        return JkConverter.stringToInteger(JkStrings.safeTrim(nextValueBetween(start, end)));
+    }
+
+    @Override
 	public String nextValueUntil(String end) {
 		int idx = buffer.indexOf(end);
 		return idx == -1 ? buffer.toString() : buffer.substring(0, idx);

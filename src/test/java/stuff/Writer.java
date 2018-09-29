@@ -11,6 +11,12 @@ import static xxx.joker.libs.javalibs.utils.JkConsole.display;
 
 public class Writer {
 
+    @Test
+    public void a() {
+        List<String> strings = Arrays.asList("fede", "ciao");
+        Object o = strings.get(0);
+    }
+
 	@Test
 	public void trytest() {
 	    dostreamtest(0);

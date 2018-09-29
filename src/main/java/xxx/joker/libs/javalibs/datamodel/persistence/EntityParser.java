@@ -160,6 +160,30 @@ class EntityParser {
         return toRet;
     }
 
+    public void spreadDependencies(Map<Class<?>, TreeSet<JkEntity>> dataMap) throws IllegalAccessException {
+        for(Class<?> clazz : dataMap.keySet()) {
+            for(JkEntity entity : dataMap.get(clazz)) {
+                Map<Class<?>, Set<JkEntity>> dependencies = getDependencies(entity);
+                dependencies.forEach((k,v) -> dataMap.get(k).addAll(v));
+            }
+        }
+    }
+
+    private Map<Class<?>, Set<JkEntity>> getDependencies(JkEntity obj) throws IllegalAccessException {
+        List<AnnField> depAnnFields = JkStreams.filter(entityFields.get(obj.getClass()).values(), AnnField::isEntityImpl);
+        Map<Class<?>, Set<JkEntity>> toRet = new HashMap<>();
+        for(AnnField annField : depAnnFields) {
+            toRet.putIfAbsent(annField.getEntityClass(), new TreeSet<>());
+            Object value = annField.getValue(obj);
+            if(annField.isCollection()) {
+                toRet.get(annField.getEntityClass()).addAll(JkStreams.map((Collection) value, v -> (JkEntity)v));
+            } else {
+                toRet.get(annField.getEntityClass()).add((JkEntity)value);
+            }
+        }
+        return toRet;
+    }
+
     private JkEntity parseElem(Class<?> elemClazz, String line) {
         try {
             Object instance = elemClazz.newInstance();
@@ -377,6 +401,16 @@ class EntityParser {
 
         Class<?> getCollectionType() {
             return annot.collectionType();
+        }
+
+        boolean isEntityImpl() {
+            Class<?> fclazz = isCollection() ? getCollectionType() : getFieldType();
+            return JkReflection.isOfType(fclazz, JkEntity.class);
+        }
+
+        Class<?> getEntityClass() {
+            Class<?> fclazz = isCollection() ? getCollectionType() : getFieldType();
+            return !isEntityImpl() ? null : fclazz;
         }
 
         boolean isCollection() {
