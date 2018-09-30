@@ -78,7 +78,11 @@ public class JkTime implements Comparable<JkTime> {
     }
 	public static JkTime fromElapsedString(String str, String separator) {
 	    try {
-            str = str.replaceAll("^\\+", "");
+            str = str.trim().replaceAll("^\\+", "");
+            if(str.isEmpty()) {
+            	return null;
+			}
+
             long milli = 0;
             int idx = str.indexOf('.');
             if (idx != -1) {

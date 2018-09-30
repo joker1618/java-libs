@@ -230,9 +230,6 @@ class JkEntityManager {
             return annField.isComparable() ? JkConverter.toTreeSet(values) : JkConverter.toHashSet(values);
         }
 
-        if(annField.isComparable()) {
-            Collections.sort((List<Comparable>)values);
-        }
         return values;
     }
 

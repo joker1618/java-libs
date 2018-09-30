@@ -50,15 +50,17 @@ public abstract class JkDataModel {
     }
 
     protected void spreadBrokenDependencies() {
+        dataMap.keySet().forEach(this::spreadBrokenDependencies);
+    }
+
+    protected void spreadBrokenDependencies(Class<?> clazz) {
         int counter = 0;
-        for(Class<?> clazz : dataMap.keySet()) {
-            for(JkEntity entity : dataMap.get(clazz)) {
-                Map<Class<?>, Set<JkEntity>> dependencies = entityManager.getDependencies(entity);
-                counter += dependencies.values().stream().mapToInt(Set::size).sum();
-                dependencies.forEach((k,v) -> dataMap.get(k).addAll(v));
-            }
+        for(JkEntity entity : dataMap.get(clazz)) {
+            Map<Class<?>, Set<JkEntity>> dependencies = entityManager.getDependencies(entity);
+            counter += dependencies.values().stream().mapToInt(Set::size).sum();
+            dependencies.forEach((k,v) -> dataMap.get(k).addAll(v));
         }
-        logger.info("Spread broken dependencies: {}", counter);
+        logger.info("Spread {} broken dependencies for {}", counter, clazz.getSimpleName());
     }
 
 }
