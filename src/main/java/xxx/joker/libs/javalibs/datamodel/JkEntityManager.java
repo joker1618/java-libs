@@ -1,4 +1,4 @@
-package xxx.joker.libs.javalibs.datamodel.persistence;
+package xxx.joker.libs.javalibs.datamodel;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -24,11 +24,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static xxx.joker.libs.javalibs.datamodel.JkPersistenceManager.EntityLines;
 import static xxx.joker.libs.javalibs.utils.JkStrings.strf;
 
-class EntityParser {
+class JkEntityManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(EntityParser.class);
+    private static final Logger logger = LoggerFactory.getLogger(JkEntityManager.class);
 
     private static final String DATA_FIELD_SEP = "###FIELD_SEP###";
     private static final String DATA_LIST_SEP = "###LIST_SEP###";
@@ -37,7 +38,7 @@ class EntityParser {
     
     private Map<Class<?>, Map<Integer, AnnField>> entityFields;
 
-    protected EntityParser(String pkgToScan) {
+    public JkEntityManager(String pkgToScan) {
         this.entityFields = parseEntityClasses(pkgToScan);
     }
 
@@ -52,6 +53,7 @@ class EntityParser {
         }
 
         logger.info("{} JkEntity class found in package {}", entityClasses.size(), pkgToScan);
+        entityClasses.forEach(c -> logger.info("Entity class: {}", c.getName()));
 
         for(Class<?> clazz : entityClasses) {
             List<Class<?>> dups = JkStreams.filter(parsedEntities.keySet(), c -> c.getSimpleName().equals(clazz.getSimpleName()));
@@ -61,7 +63,7 @@ class EntityParser {
             }
 
             if (!parsedEntities.containsKey(clazz)) {
-                logger.info("Entity class {}", clazz.getName());
+                logger.debug("Entity class {}", clazz.getName());
 
                 Map<Integer, AnnField> annMap = new HashMap<>();
                 parsedEntities.put(clazz, annMap);
@@ -106,23 +108,23 @@ class EntityParser {
         return classes;
     }
     
-    public List<Class<?>> getEntityClasses() {
-        return JkConverter.toArrayList(entityFields.keySet());
+    public Set<Class<?>> getEntityClasses() {
+        return entityFields.keySet();
     }
     
-    public Map<Class<?>, TreeSet<JkEntity>> parseData(Map<Class<?>, EntityLines> csvDataMap) {
+    public Map<Class<?>, TreeSet<JkEntity>> parseData(Map<Class<?>, EntityLines> dataMap) {
         Map<Class<?>, Map<String, JkEntity>> entityMap = new HashMap<>();
 
         // Parse entities
-        for(Class<?> clazz : csvDataMap.keySet()) {
-            List<JkEntity> elist = JkStreams.map(csvDataMap.get(clazz).getEntityLines(), l -> parseElem(clazz, l));
+        for(Class<?> clazz : dataMap.keySet()) {
+            List<JkEntity> elist = JkStreams.map(dataMap.get(clazz).getEntityLines(), l -> parseElem(clazz, l));
             entityMap.put(clazz, JkStreams.toMapSingle(elist, JkEntity::getPrimaryKey));
         }
 
         // Resolve dependencies and fill entities objects
         try {
-            for (Class<?> fromClazz : csvDataMap.keySet()) {
-                List<ForeignKey> fkOfClass = JkStreams.map(csvDataMap.get(fromClazz).getDepLines(), ForeignKey::new);
+            for (Class<?> fromClazz : dataMap.keySet()) {
+                List<ForeignKey> fkOfClass = JkStreams.map(dataMap.get(fromClazz).getForeignKeyLines(), ForeignKey::new);
                 Map<String, List<ForeignKey>> fromPKmap = JkStreams.toMap(fkOfClass, ForeignKey::getFromPK);
                 for (String fromPK : fromPKmap.keySet()) {
                     JkEntity fromObj = entityMap.get(fromClazz).get(fromPK);
@@ -160,28 +162,24 @@ class EntityParser {
         return toRet;
     }
 
-    public void spreadDependencies(Map<Class<?>, TreeSet<JkEntity>> dataMap) throws IllegalAccessException {
-        for(Class<?> clazz : dataMap.keySet()) {
-            for(JkEntity entity : dataMap.get(clazz)) {
-                Map<Class<?>, Set<JkEntity>> dependencies = getDependencies(entity);
-                dependencies.forEach((k,v) -> dataMap.get(k).addAll(v));
+    public Map<Class<?>, Set<JkEntity>> getDependencies(JkEntity obj) {
+        try {
+            List<AnnField> depAnnFields = JkStreams.filter(entityFields.get(obj.getClass()).values(), AnnField::isEntityImpl);
+            Map<Class<?>, Set<JkEntity>> toRet = new HashMap<>();
+            for (AnnField annField : depAnnFields) {
+                toRet.putIfAbsent(annField.getEntityClass(), new TreeSet<>());
+                Object value = annField.getValue(obj);
+                if (annField.isCollection()) {
+                    toRet.get(annField.getEntityClass()).addAll(JkStreams.map((Collection) value, v -> (JkEntity) v));
+                } else {
+                    toRet.get(annField.getEntityClass()).add((JkEntity) value);
+                }
             }
-        }
-    }
+            return toRet;
 
-    private Map<Class<?>, Set<JkEntity>> getDependencies(JkEntity obj) throws IllegalAccessException {
-        List<AnnField> depAnnFields = JkStreams.filter(entityFields.get(obj.getClass()).values(), AnnField::isEntityImpl);
-        Map<Class<?>, Set<JkEntity>> toRet = new HashMap<>();
-        for(AnnField annField : depAnnFields) {
-            toRet.putIfAbsent(annField.getEntityClass(), new TreeSet<>());
-            Object value = annField.getValue(obj);
-            if(annField.isCollection()) {
-                toRet.get(annField.getEntityClass()).addAll(JkStreams.map((Collection) value, v -> (JkEntity)v));
-            } else {
-                toRet.get(annField.getEntityClass()).add((JkEntity)value);
-            }
+        } catch(IllegalAccessException ex) {
+            throw new JkRuntimeException(ex);
         }
-        return toRet;
     }
 
     private JkEntity parseElem(Class<?> elemClazz, String line) {
@@ -302,7 +300,7 @@ class EntityParser {
                                 .map(fk -> new ForeignKey(clazz, elem.getPrimaryKey(), index, fkClazz, fk))
                                 .map(ForeignKey::toRepoLine)
                                 .collect(Collectors.toList());
-                        toRet.getDepLines().addAll(fkLines);
+                        toRet.getForeignKeyLines().addAll(fkLines);
                     }
                 }
                 toRet.getEntityLines().add(JkStreams.join(row, DATA_FIELD_SEP));
@@ -527,28 +525,6 @@ class EntityParser {
         }
     }
 
-    public static class EntityLines {
-        private Class<?> entityClazz;
-        private List<String> entityLines;
-        private List<String> depLines;
 
-        protected EntityLines(Class<?> entityClazz) {
-            this.entityClazz = entityClazz;
-            this.entityLines = new ArrayList<>();
-            this.depLines = new ArrayList<>();
-        }
-
-        public Class<?> getEntityClazz() {
-            return entityClazz;
-        }
-
-        public List<String> getEntityLines() {
-            return entityLines;
-        }
-
-        public List<String> getDepLines() {
-            return depLines;
-        }
-    }
     
 }

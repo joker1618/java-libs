@@ -1,4 +1,4 @@
-package xxx.joker.libs.javalibs.datamodel.persistence;
+package xxx.joker.libs.javalibs.datamodel;
 
 import xxx.joker.libs.javalibs.datamodel.entity.JkEntity;
 import xxx.joker.libs.javalibs.utils.JkReflection;
