@@ -45,9 +45,15 @@ public class JkStreams {
 	public static <T> List<T> distinctSorted(Collection<T> source) {
 		return source.stream().sorted().distinct().collect(Collectors.toList());
 	}
+	public static <T> List<T> distinctSorted(Collection<T> source, Comparator<T> comparator) {
+		return source.stream().sorted(comparator).distinct().collect(Collectors.toList());
+	}
 	public static <T> List<T> sorted(Collection<T> source) {
 		return source.stream().sorted().collect(Collectors.toList());
 	}
+    public static <T> List<T> sorted(Collection<T> source, Comparator<T> comparator) {
+        return source.stream().sorted(comparator).collect(Collectors.toList());
+    }
 
 	public static <V,K> Map<K,List<V>> toMap(Collection<V> source, Function<V,K> keyMapper) {
 		return toMap(source, keyMapper, v -> v);
