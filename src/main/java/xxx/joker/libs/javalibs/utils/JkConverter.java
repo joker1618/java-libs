@@ -36,7 +36,7 @@ public class JkConverter {
 	/* Conversions between numbers */
 	public static Integer stringToInteger(String str) {
 		try {
-			return Integer.valueOf(str);
+			return Integer.valueOf(str.trim());
 		} catch(Exception ex) {
 			return null;
 		}
@@ -74,7 +74,7 @@ public class JkConverter {
 
 	public static Double stringToDouble(String str) {
 		try {
-			return Double.valueOf(str);
+			return Double.valueOf(str.trim());
 		} catch(Exception ex) {
 			return null;
 		}
@@ -91,7 +91,7 @@ public class JkConverter {
 
 	public static Float stringToFloat(String str) {
 		try {
-			return Float.valueOf(str);
+			return Float.valueOf(str.trim());
 		} catch(Exception ex) {
 			return null;
 		}

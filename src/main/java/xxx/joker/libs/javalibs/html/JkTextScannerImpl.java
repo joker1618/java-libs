@@ -20,51 +20,43 @@ public class JkTextScannerImpl implements JkTextScanner {
 
 
 	@Override
-	public boolean startCursorAt(String toFind) {
-		return setCursor(true, toFind, false, true);
+	public boolean startCursorAt(String... toFind) {
+		return setCursorMulti(true, false, true, toFind);
 	}
 
 	@Override
 	public boolean startCursorAfter(String... toFind) {
-        JkTextScannerImpl sc = new JkTextScannerImpl(buffer.toString());
-        for(String findStr : toFind) {
-            if(!sc.setCursor(true, findStr, true, true)) {
-                return false;
-            }
-        }
-
-        this.buffer = sc.buffer;
-        return true;
+        return setCursorMulti(true, true, true, toFind);
 	}
 
 	@Override
-	public boolean startCursorAtBackward(String toFind) {
-		return setCursor(true, toFind, false, false);
+	public boolean startCursorAtBackward(String... toFind) {
+		return setCursorMulti(true, false, false, toFind);
 	}
 
 	@Override
-	public boolean startCursorAfterBackward(String toFind) {
-		return setCursor(true, toFind, true, false);
+	public boolean startCursorAfterBackward(String... toFind) {
+		return setCursorMulti(true, true, false, toFind);
 	}
 
 	@Override
-	public boolean endCursorAt(String toFind) {
-		return setCursor(false, toFind, false, true);
+	public boolean endCursorAt(String... toFind) {
+		return setCursorMulti(false, false, true, toFind);
 	}
 
 	@Override
-	public boolean endCursorAfter(String toFind) {
-		return setCursor(false, toFind, true, true);
+	public boolean endCursorAfter(String... toFind) {
+		return setCursorMulti(false, true, true, toFind);
 	}
 
 	@Override
-	public boolean endCursorAtBackward(String toFind) {
-		return setCursor(false, toFind, false, false);
+	public boolean endCursorAtBackward(String... toFind) {
+		return setCursorMulti(false, false, false, toFind);
 	}
 
 	@Override
-	public boolean endCursorAfterBackward(String toFind) {
-		return setCursor(false, toFind, true, false);
+	public boolean endCursorAfterBackward(String... toFind) {
+		return setCursorMulti(false, true, false, toFind);
 	}
 
 	@Override
@@ -74,7 +66,7 @@ public class JkTextScannerImpl implements JkTextScanner {
 
 	@Override
 	public String nextAttrValue(String attrName) {
-		int idx = buffer.toString().indexOf(attrName);
+		int idx = StringUtils.indexOfIgnoreCase(buffer.toString(), attrName);
 		if(idx == -1) {
 			return null;
 		}
@@ -117,7 +109,7 @@ public class JkTextScannerImpl implements JkTextScanner {
 
     @Override
 	public String nextValueUntil(String end) {
-		int idx = buffer.indexOf(end);
+		int idx = StringUtils.isEmpty(end) ? -1 : buffer.indexOf(end);
 		return idx == -1 ? buffer.toString() : buffer.substring(0, idx);
 	}
 
@@ -152,26 +144,37 @@ public class JkTextScannerImpl implements JkTextScanner {
 		return buffer.toString();
 	}
 
-	private boolean setCursor(boolean setStart, String toFind, boolean cursorAfterToFind, boolean findForward) {
-		int idx;
-		if(findForward) {
-			idx = buffer.toString().indexOf(toFind);
-		} else {
-			idx = buffer.toString().lastIndexOf(toFind);
-		}
+    private boolean setCursorMulti(boolean setStart, boolean cursorAfterToFind, boolean findForward, String... toFind) {
+        JkTextScannerImpl sc = new JkTextScannerImpl(buffer.toString());
+        for(String findStr : toFind) {
+            if(!sc.setCursor(setStart, cursorAfterToFind, findForward, findStr)) {
+                return false;
+            }
+        }
 
-		if(idx == -1) {
-			return false;
-		}
+        this.buffer = sc.buffer;
+        return true;
+    }
+    private boolean setCursor(boolean setStart, boolean cursorAfterToFind, boolean findForward, String toFind) {
+        int idx;
+        if(findForward) {
+            idx = buffer.toString().indexOf(toFind);
+        } else {
+            idx = buffer.toString().lastIndexOf(toFind);
+        }
 
-		if(cursorAfterToFind) {
-			idx += toFind.length();
-		}
+        if(idx == -1) {
+            return false;
+        }
 
-		int begin = setStart ? 0 : idx;
-		int end = setStart ? idx : buffer.length();
-		buffer.delete(begin, end);
-		
-		return true;
-	}
+        if(cursorAfterToFind) {
+            idx += toFind.length();
+        }
+
+        int begin = setStart ? 0 : idx;
+        int end = setStart ? idx : buffer.length();
+        buffer.delete(begin, end);
+
+        return true;
+    }
 }

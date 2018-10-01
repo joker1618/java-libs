@@ -5,15 +5,15 @@ package xxx.joker.libs.javalibs.html;
  */
 public interface JkTextScanner {
 
-	boolean startCursorAt(String toFind);
+	boolean startCursorAt(String... toFind);
 	boolean startCursorAfter(String... toFind);
-	boolean startCursorAtBackward(String toFind);
-	boolean startCursorAfterBackward(String toFind);
+	boolean startCursorAtBackward(String... toFind);
+	boolean startCursorAfterBackward(String... toFind);
 
-	boolean endCursorAt(String toFind);
-	boolean endCursorAfter(String toFind);
-	boolean endCursorAtBackward(String toFind);
-	boolean endCursorAfterBackward(String toFind);
+	boolean endCursorAt(String... toFind);
+	boolean endCursorAfter(String... toFind);
+	boolean endCursorAtBackward(String... toFind);
+	boolean endCursorAfterBackward(String... toFind);
 
 	void reset();
 
