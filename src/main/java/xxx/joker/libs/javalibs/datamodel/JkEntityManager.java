@@ -169,10 +169,12 @@ class JkEntityManager {
             for (AnnField annField : depAnnFields) {
                 toRet.putIfAbsent(annField.getEntityClass(), new TreeSet<>());
                 Object value = annField.getValue(obj);
-                if (annField.isCollection()) {
-                    toRet.get(annField.getEntityClass()).addAll(JkStreams.map((Collection) value, v -> (JkEntity) v));
-                } else {
-                    toRet.get(annField.getEntityClass()).add((JkEntity) value);
+                if(value != null) {
+                    if (annField.isCollection()) {
+                        toRet.get(annField.getEntityClass()).addAll(JkStreams.map((Collection) value, v -> (JkEntity) v));
+                    } else {
+                        toRet.get(annField.getEntityClass()).add((JkEntity) value);
+                    }
                 }
             }
             return toRet;
