@@ -49,6 +49,14 @@ public abstract class JkDataModel {
         return (TreeSet<T>) data;
     }
 
+//    protected void removeEntity(JkEntity entity) {
+//        TreeSet<JkEntity> data = dataMap.get(entityClazz);
+//        if(data == null) {
+//            throw new JkRuntimeException("Class {} does not belong to package {}", entityClazz.getName(), pkgToScan);
+//        }
+//        return (TreeSet<T>) data;
+//    }
+
     protected void spreadBrokenDependencies() {
         dataMap.keySet().forEach(this::spreadBrokenDependencies);
     }
@@ -61,6 +69,14 @@ public abstract class JkDataModel {
             dependencies.forEach((k,v) -> dataMap.get(k).addAll(v));
         }
         logger.info("Spread {} broken dependencies for {}", counter, clazz.getSimpleName());
+    }
+
+    protected void spreadBrokenDependencies(JkEntity entity) {
+        int counter = 0;
+        Map<Class<?>, Set<JkEntity>> dependencies = entityManager.getDependencies(entity);
+        counter += dependencies.values().stream().mapToInt(Set::size).sum();
+        dependencies.forEach((k,v) -> dataMap.get(k).addAll(v));
+        logger.info("Spread {} broken dependencies for entity {}", counter, entity.getPrimaryKey());
     }
 
 }

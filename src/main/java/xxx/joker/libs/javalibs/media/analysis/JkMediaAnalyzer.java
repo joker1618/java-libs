@@ -5,10 +5,12 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.jpeg.JpegParser;
 import org.apache.tika.parser.mp4.MP4Parser;
 import org.apache.tika.sax.BodyContentHandler;
+import xxx.joker.libs.javalibs.exception.JkRuntimeException;
 import xxx.joker.libs.javalibs.utils.JkConverter;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -17,9 +19,7 @@ import java.nio.file.Path;
  */
 public class JkMediaAnalyzer {
 
-    public static JkVideoInfo analyzeVideo(Path videoPath) throws Exception {
-        if (!Files.exists(videoPath)) throw new FileNotFoundException(videoPath + " not found");
-
+    public static JkVideoInfo analyzeVideo(Path videoPath) throws JkRuntimeException {
         try (FileInputStream inputstream = new FileInputStream(videoPath.toFile())) {
             BodyContentHandler handler = new BodyContentHandler();
             Metadata metadata = new Metadata();
@@ -40,13 +40,14 @@ public class JkMediaAnalyzer {
             jkVideoInfo.setSamplingRate(JkConverter.stringToInteger(metadata.get("xmpDM:audioSampleRate")));
 
             return jkVideoInfo;
+
+        } catch (Exception e) {
+            throw new JkRuntimeException(e);
         }
     }
 
-    public static JkImageInfo analyzeImage(Path imagePath) throws Exception {
-        if (!Files.exists(imagePath)) throw new FileNotFoundException(imagePath + " not found");
-
-        try (FileInputStream inputstream = new FileInputStream(imagePath.toFile())) {
+    public static JkPictureInfo analyzePicture(Path picturePath) throws JkRuntimeException {
+        try (FileInputStream inputstream = new FileInputStream(picturePath.toFile())) {
             BodyContentHandler handler = new BodyContentHandler();
             Metadata metadata = new Metadata();
             ParseContext pcontext = new ParseContext();
@@ -55,12 +56,15 @@ public class JkMediaAnalyzer {
             JpegParser JpegParser = new JpegParser();
             JpegParser.parse(inputstream, handler, metadata,pcontext);
 
-            JkImageInfo imageInfo = new JkImageInfo();
-            imageInfo.setImagePath(imagePath);
+            JkPictureInfo imageInfo = new JkPictureInfo();
+            imageInfo.setImagePath(picturePath);
             imageInfo.setWidth(JkConverter.stringToInteger(metadata.get("tiff:ImageWidth")));
             imageInfo.setHeight(JkConverter.stringToInteger(metadata.get("tiff:ImageLength")));
 
             return imageInfo;
+
+        } catch (Exception e) {
+            throw new JkRuntimeException(e);
         }
     }
 

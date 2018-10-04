@@ -5,14 +5,14 @@ import java.nio.file.Path;
 /**
  * Created by f.barbano on 12/07/2017.
  */
-public class JkImageInfo {
+public class JkPictureInfo {
 
 	private Path imagePath;
 	private int width;
 	private int height;
 
 
-	protected JkImageInfo() {
+	protected JkPictureInfo() {
 	    
 	}
 

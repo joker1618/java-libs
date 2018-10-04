@@ -1,6 +1,7 @@
 package xxx.joker.libs.javalibs.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.javalibs.exception.JkRuntimeException;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -36,222 +37,279 @@ public class JkFiles {
 	/* WRITE methods */
 
 	// Append
-	public static void appendToFile(Path outputPath, String data) throws IOException {
+	public static void appendToFile(Path outputPath, String data) throws JkRuntimeException {
 		appendToFile(outputPath, data, null);
 	}
-	public static void appendToFile(Path outputPath, String data, Charset encoding) throws IOException {
+	public static void appendToFile(Path outputPath, String data, Charset encoding) throws JkRuntimeException {
 		appendToFile(outputPath, data, encoding, false);
 	}
-	public static void appendToFile(Path outputPath, String data, Charset encoding, boolean finalNewline) throws IOException {
+	public static void appendToFile(Path outputPath, String data, Charset encoding, boolean finalNewline) throws JkRuntimeException {
 		appendToFile(outputPath, Collections.singletonList(data), encoding, finalNewline);
 	}
 
-	public static void appendToFile(Path outputPath, List<String> lines) throws IOException {
+	public static void appendToFile(Path outputPath, List<String> lines) throws JkRuntimeException {
 		appendToFile(outputPath, lines, null);
 	}
-	public static void appendToFile(Path outputPath, List<String> lines, Charset encoding) throws IOException {
+	public static void appendToFile(Path outputPath, List<String> lines, Charset encoding) throws JkRuntimeException {
 		appendToFile(outputPath, lines, encoding, !lines.isEmpty());
 	}
-	public static void appendToFile(Path outputPath, List<String> lines, Charset encoding, boolean finalNewline) throws IOException {
-		Files.createDirectories(outputPath.toAbsolutePath().getParent());
-		BufferedWriter writer = null;
+	public static void appendToFile(Path outputPath, List<String> lines, Charset encoding, boolean finalNewline) throws JkRuntimeException {
+	    try {
+            Files.createDirectories(outputPath.toAbsolutePath().getParent());
+            BufferedWriter writer = null;
 
-		try {
-			if(encoding == null) {
-				writer = Files.newBufferedWriter(outputPath, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-			} else {
-				writer = Files.newBufferedWriter(outputPath, encoding, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-			}
+            try {
+                if (encoding == null) {
+                    writer = Files.newBufferedWriter(outputPath, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                } else {
+                    writer = Files.newBufferedWriter(outputPath, encoding, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                }
 
-			for(int i = 0 ; i < lines.size(); i++) {
-				if(i > 0) 	writer.write(NEWLINE);
-				writer.write(lines.get(i));
-			}
+                for (int i = 0; i < lines.size(); i++) {
+                    if (i > 0) writer.write(NEWLINE);
+                    writer.write(lines.get(i));
+                }
 
-			if(finalNewline) {
-				writer.write(NEWLINE);
-			}
+                if (finalNewline) {
+                    writer.write(NEWLINE);
+                }
 
-		} finally {
-			if(writer != null) {
-				writer.close();
-			}
-		}
+            } finally {
+                if (writer != null) {
+                    writer.close();
+                }
+            }
+
+        } catch (IOException ex) {
+            throw new JkRuntimeException(ex);
+        }
 	}
 
 	// Write
-	public static void writeFile(Path outputPath, String content, boolean overwrite) throws IOException {
+	public static void writeFile(Path outputPath, String content, boolean overwrite) throws JkRuntimeException {
 		writeFile(outputPath, content, overwrite, null);
 	}
-	public static void writeFile(Path outputPath, String content, boolean overwrite, Charset encoding) throws IOException {
+	public static void writeFile(Path outputPath, String content, boolean overwrite, Charset encoding) throws JkRuntimeException {
 		writeFile(outputPath, content, overwrite, encoding, false);
 	}
-	public static void writeFile(Path outputPath, String content, boolean overwrite, Charset encoding, boolean finalNewLine) throws IOException {
+	public static void writeFile(Path outputPath, String content, boolean overwrite, Charset encoding, boolean finalNewLine) throws JkRuntimeException {
 		writeFile(outputPath, Arrays.asList(content), overwrite, encoding, finalNewLine);
 	}
 
-	public static void writeFile(Path outputPath, List<String> lines, boolean overwrite) throws IOException {
+	public static void writeFile(Path outputPath, List<String> lines, boolean overwrite) throws JkRuntimeException {
 		writeFile(outputPath, lines, overwrite, null);
 	}
-	public static void writeFile(Path outputPath, List<String> lines, boolean overwrite, Charset encoding) throws IOException {
+	public static void writeFile(Path outputPath, List<String> lines, boolean overwrite, Charset encoding) throws JkRuntimeException {
 		writeFile(outputPath, lines, overwrite, encoding, !lines.isEmpty());
 	}
-	public static void writeFile(Path outputPath, List<String> lines, boolean overwrite, Charset encoding, boolean finalNewline) throws IOException {
-		if(Files.exists(outputPath) && !overwrite) {
-			throw new IOException("File [" + outputPath.normalize().toString() + "] already exists");
-		}
-		Files.deleteIfExists(outputPath);
-		appendToFile(outputPath, lines, encoding, finalNewline);
+	public static void writeFile(Path outputPath, List<String> lines, boolean overwrite, Charset encoding, boolean finalNewline) throws JkRuntimeException {
+	    try {
+            if (Files.exists(outputPath) && !overwrite) {
+                throw new JkRuntimeException("File [" + outputPath.normalize().toString() + "] already exists");
+            }
+            Files.deleteIfExists(outputPath);
+            appendToFile(outputPath, lines, encoding, finalNewline);
+        } catch (IOException ex) {
+            throw new JkRuntimeException(ex);
+        }
 	}
 
-	public static void writeFile(Path outputPath, byte[] bytes, boolean overwrite) throws IOException {
-		if(Files.exists(outputPath) && !overwrite) {
-			throw new IOException("File [" + outputPath.normalize().toString() + "] already exists");
-		}
+	public static void writeFile(Path outputPath, byte[] bytes, boolean overwrite) throws JkRuntimeException {
+	    try {
+            if (Files.exists(outputPath) && !overwrite) {
+                throw new JkRuntimeException("File [" + outputPath.normalize().toString() + "] already exists");
+            }
 
-		Files.createDirectories(outputPath.toAbsolutePath().getParent());
-		Files.deleteIfExists(outputPath);
-		Files.createFile(outputPath);
+            Files.createDirectories(outputPath.toAbsolutePath().getParent());
+            Files.deleteIfExists(outputPath);
+            Files.createFile(outputPath);
 
-		try (OutputStream writer = new FileOutputStream(outputPath.toFile())) {
-			writer.write(bytes);
-		}
+            try (OutputStream writer = new FileOutputStream(outputPath.toFile())) {
+                writer.write(bytes);
+            }
+
+        } catch (IOException ex) {
+            throw new JkRuntimeException(ex);
+        }
 	}
 
 	// Insert header
-	public static void insertFirstToFile(Path outputPath, String content) throws IOException {
+	public static void insertFirstToFile(Path outputPath, String content) throws JkRuntimeException {
 		insertFirstToFile(outputPath, content, null);
 	}
-	public static void insertFirstToFile(Path outputPath, String content, Charset encoding) throws IOException {
+	public static void insertFirstToFile(Path outputPath, String content, Charset encoding) throws JkRuntimeException {
 		insertFirstToFile(outputPath, Collections.singletonList(content), encoding);
 	}
 
-	public static void insertFirstToFile(Path outputPath, List<String> lines) throws IOException {
+	public static void insertFirstToFile(Path outputPath, List<String> lines) throws JkRuntimeException {
 		insertFirstToFile(outputPath, lines, null);
 	}
-	public static void insertFirstToFile(Path outputPath, List<String> lines, Charset encoding) throws IOException {
-		if(!Files.exists(outputPath)) {
-			writeFile(outputPath, lines, false, encoding);
-		} else {
-			Path tempFile = Paths.get(TEMP_FILE);
-			writeFile(tempFile, lines, true, encoding);
-			appendToFile(tempFile, Files.readAllLines(outputPath, encoding));
-			copyAttributes(outputPath, tempFile);
-			Files.delete(outputPath);
-			Files.move(tempFile, outputPath);
-		}
+	public static void insertFirstToFile(Path outputPath, List<String> lines, Charset encoding) throws JkRuntimeException {
+		try {
+            if (!Files.exists(outputPath)) {
+                writeFile(outputPath, lines, false, encoding);
+            } else {
+                Path tempFile = Paths.get(TEMP_FILE);
+                writeFile(tempFile, lines, true, encoding);
+                appendToFile(tempFile, Files.readAllLines(outputPath, encoding));
+                copyAttributes(outputPath, tempFile);
+                Files.delete(outputPath);
+                Files.move(tempFile, outputPath);
+            }
+
+        } catch (IOException ex) {
+            throw new JkRuntimeException(ex);
+        }
 	}
 
 	/* READ methods */
-	public static List<String> readLines(InputStream is) throws IOException {
-		try (InputStreamReader isr = new InputStreamReader(is);
-			 BufferedReader reader = new BufferedReader(isr)) {
+	public static List<String> readLines(InputStream is) throws JkRuntimeException {
+	    try {
+            try (InputStreamReader isr = new InputStreamReader(is);
+                 BufferedReader reader = new BufferedReader(isr)) {
 
-			List<String> lines = new ArrayList<>();
-			String line;
-			while ((line = reader.readLine()) != null) {
-				lines.add(line);
-			}
+                List<String> lines = new ArrayList<>();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    lines.add(line);
+                }
 
-			return lines;
-		}
+                return lines;
+            }
+
+        } catch (IOException ex) {
+            throw new JkRuntimeException(ex);
+        }
 	}
 
 	/* COPY-MOVE methods */
-	public static void copyFile(Path sourcePath, Path targetPath, boolean overwrite) throws IOException {
+	public static void copyFile(Path sourcePath, Path targetPath, boolean overwrite) throws JkRuntimeException {
 		copyFile(sourcePath, targetPath, overwrite, false);
 	}
-	public static void copyFile(Path sourcePath, Path targetPath, boolean overwrite, boolean holdAttributes) throws IOException {
+	public static void copyFile(Path sourcePath, Path targetPath, boolean overwrite, boolean holdAttributes) throws JkRuntimeException {
 		copyFile1(sourcePath, targetPath, overwrite, holdAttributes, false);
 	}
-	public static Path copyFileSafely(Path sourcePath, Path targetPath) throws IOException {
+	public static Path copyFileSafely(Path sourcePath, Path targetPath) throws JkRuntimeException {
 		return copyFileSafely(sourcePath, targetPath, false);
 	}
-	public static Path copyFileSafely(Path sourcePath, Path targetPath, boolean holdAttributes) throws IOException {
+	public static Path copyFileSafely(Path sourcePath, Path targetPath, boolean holdAttributes) throws JkRuntimeException {
 		return copyFile1(sourcePath, targetPath, false, holdAttributes, true);
 	}
-	private static Path copyFile1(Path sourcePath, Path targetPath, boolean overwrite, boolean holdAttributes, boolean safePath) throws IOException {
-		if(!Files.exists(sourcePath) || !Files.isRegularFile(sourcePath))  {
-			throw new FileNotFoundException(strf("Source file [%s] not exists or not a regular file!", sourcePath));
-		}
+	private static Path copyFile1(Path sourcePath, Path targetPath, boolean overwrite, boolean holdAttributes, boolean safePath) throws JkRuntimeException {
+		try {
+            if (!Files.exists(sourcePath) || !Files.isRegularFile(sourcePath)) {
+                throw new FileNotFoundException(strf("Source file [%s] not exists or not a regular file!", sourcePath));
+            }
 
-		Path outPath = Files.isDirectory(targetPath) ? targetPath.resolve(sourcePath.getFileName()) : targetPath;
-		if(safePath)	outPath = computeSafelyPath(outPath);
+            Path outPath = Files.isDirectory(targetPath) ? targetPath.resolve(sourcePath.getFileName()) : targetPath;
+            if (safePath) outPath = computeSafelyPath(outPath);
 
-		if(!overwrite && Files.exists(outPath)) {
-			throw new FileAlreadyExistsException(String.format("Unable to copy [%s] to [%s]: target path already exists", sourcePath.toAbsolutePath(), outPath.toAbsolutePath()));
-		}
+            if (!overwrite && Files.exists(outPath)) {
+                throw new FileAlreadyExistsException(String.format("Unable to copy [%s] to [%s]: target path already exists", sourcePath.toAbsolutePath(), outPath.toAbsolutePath()));
+            }
 
-		Files.deleteIfExists(outPath);
-		Files.createDirectories(getParent(outPath));
-		Files.copy(sourcePath, outPath);
-		if(holdAttributes) {
-			copyAttributes(sourcePath, outPath);
-		}
+            Files.deleteIfExists(outPath);
+            Files.createDirectories(getParent(outPath));
+            Files.copy(sourcePath, outPath);
+            if (holdAttributes) {
+                copyAttributes(sourcePath, outPath);
+            }
 
-		return outPath;
+            return outPath;
+
+        } catch (IOException ex) {
+		    throw new JkRuntimeException(ex);
+        }
 	}
 
-	public static void copyAttributes(Path sourcePath, Path targetPath) throws IOException {
-		FileTime lastMod = Files.getLastModifiedTime(sourcePath);
-		UserPrincipal owner = Files.getOwner(sourcePath);
-		Files.setLastModifiedTime(targetPath, lastMod);
-		Files.setOwner(targetPath, owner);
+	public static void copyAttributes(Path sourcePath, Path targetPath) throws JkRuntimeException {
+	    try {
+            FileTime lastMod = Files.getLastModifiedTime(sourcePath);
+            UserPrincipal owner = Files.getOwner(sourcePath);
+            Files.setLastModifiedTime(targetPath, lastMod);
+            Files.setOwner(targetPath, owner);
+
+        } catch (IOException ex) {
+            throw new JkRuntimeException(ex);
+        }
 	}
 
-	public static void moveFile(Path sourcePath, Path targetPath, boolean overwrite) throws IOException {
+	public static void moveFile(Path sourcePath, Path targetPath, boolean overwrite) throws JkRuntimeException {
 		moveFile1(sourcePath, targetPath, overwrite, false);
 	}
-	public static Path moveFileSafely(Path sourcePath, Path targetPath) throws IOException {
+	public static Path moveFileSafely(Path sourcePath, Path targetPath) throws JkRuntimeException {
 		return moveFile1(sourcePath, targetPath, false, true);
 	}
-	private static Path moveFile1(Path sourcePath, Path targetPath, boolean overwrite, boolean safePath) throws IOException {
-		if(!Files.exists(sourcePath) || !Files.isRegularFile(sourcePath))  {
-			throw new FileNotFoundException(strf("Source file [%s] not exists or not a regular file!", sourcePath));
-		}
+	private static Path moveFile1(Path sourcePath, Path targetPath, boolean overwrite, boolean safePath) throws JkRuntimeException {
+	    try {
+            if (!Files.exists(sourcePath) || !Files.isRegularFile(sourcePath)) {
+                throw new FileNotFoundException(strf("Source file [%s] not exists or not a regular file!", sourcePath));
+            }
 
-		Path outPath = Files.isDirectory(targetPath) ? targetPath.resolve(sourcePath.getFileName()) : targetPath;
-		if(safePath)	outPath = computeSafelyPath(outPath);
+            Path outPath = Files.isDirectory(targetPath) ? targetPath.resolve(sourcePath.getFileName()) : targetPath;
+            if (safePath) outPath = computeSafelyPath(outPath);
 
-		if(!overwrite && Files.exists(outPath)) {
-			throw new FileAlreadyExistsException(String.format("Unable to move [%s] to [%s]: target path already exists", sourcePath.toAbsolutePath(), outPath.toAbsolutePath()));
-		}
+            if (!overwrite && Files.exists(outPath)) {
+                throw new FileAlreadyExistsException(String.format("Unable to move [%s] to [%s]: target path already exists", sourcePath.toAbsolutePath(), outPath.toAbsolutePath()));
+            }
 
-		Files.deleteIfExists(outPath);
-		Files.createDirectories(getParent(outPath));
-		Files.move(sourcePath, outPath);
+            Files.deleteIfExists(outPath);
+            Files.createDirectories(getParent(outPath));
+            Files.move(sourcePath, outPath);
 
-		return outPath;
+            return outPath;
+
+        } catch (IOException ex) {
+            throw new JkRuntimeException(ex);
+        }
 	}
+
 	/* REMOVE methods */
-	public static void removeDirectory(Path folderToDel) throws IOException {
-		if(!Files.exists(folderToDel)) {
-			throw new FileNotFoundException("[" + folderToDel + "] does not exists");
-		}
-
-		if(!Files.isDirectory(folderToDel)) {
-			throw new IllegalArgumentException("[" + folderToDel + "] is not a directory");
-		}
-
-		removeDirContent(folderToDel);
-		Files.delete(folderToDel);
+	public static boolean removeFile(Path pathToDel) throws JkRuntimeException {
+	    try {
+            return Files.deleteIfExists(pathToDel);
+        } catch (IOException ex) {
+            throw new JkRuntimeException(ex);
+        }
 	}
-	public static void removeDirectoryIfExists(Path folderToDel) throws IOException {
+	public static void removeDirectory(Path folderToDel) throws JkRuntimeException {
+	    try {
+            if (!Files.exists(folderToDel)) {
+                throw new FileNotFoundException("[" + folderToDel + "] does not exists");
+            }
+
+            if (!Files.isDirectory(folderToDel)) {
+                throw new IllegalArgumentException("[" + folderToDel + "] is not a directory");
+            }
+
+            removeDirContent(folderToDel);
+            Files.delete(folderToDel);
+
+        } catch (IOException ex) {
+            throw new JkRuntimeException(ex);
+        }
+	}
+	public static void removeDirectoryIfExists(Path folderToDel) throws JkRuntimeException {
 		if(Files.isDirectory(folderToDel)) {
 			removeDirectory(folderToDel);
 		}
 	}
-	private static void removeDirContent(Path folder) throws IOException {
-		// remove all files
-		List<Path> files = Files.find(folder, 1, (p, a) -> !Files.isDirectory(p)).collect(Collectors.toList());
-		for(Path f : files)	Files.delete(f);
+	private static void removeDirContent(Path folder) throws JkRuntimeException {
+	    try {
+            // remove all files
+            List<Path> files = Files.find(folder, 1, (p, a) -> !Files.isDirectory(p)).collect(Collectors.toList());
+            for (Path f : files) Files.delete(f);
 
-		// delete recursively the content of dirs
-		List<Path> dirs = Files.find(folder, 1, (p, a) -> Files.isDirectory(p)).filter(p -> !p.equals(folder)).collect(Collectors.toList());
-		for(Path d : dirs) {
-			removeDirContent(d);
-			Files.delete(d);
-		}
+            // delete recursively the content of dirs
+            List<Path> dirs = Files.find(folder, 1, (p, a) -> Files.isDirectory(p)).filter(p -> !p.equals(folder)).collect(Collectors.toList());
+            for (Path d : dirs) {
+                removeDirContent(d);
+                Files.delete(d);
+            }
+
+        } catch (IOException ex) {
+            throw new JkRuntimeException(ex);
+        }
 	}
 
 	/* FIND methods */
@@ -293,7 +351,7 @@ public class JkFiles {
 		return fn.replaceAll(Pattern.quote(".") + ext + "$", "");
 	}
 	public static String getFileName(String fileName) {
-		return getFileName(Paths.get(fileName));
+		return StringUtils.isBlank(fileName) ? null : getFileName(Paths.get(fileName));
 	}
 
 	public static String getExtension(Path path) {

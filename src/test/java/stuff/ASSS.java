@@ -9,7 +9,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static xxx.joker.libs.javalibs.utils.JkConsole.display;
+
 public class ASSS {
+
+    @Test
+    public void tres34t() {
+        String str = "2015_3_ciao.mp4";
+        display(str.replaceFirst("^[0-9]{4}_[0-9]{1,2}_", ""));
+
+        str = "2015_21_federico.mp4";
+        display(str.replaceFirst("^[0-9]{4}_[0-9]{1,2}_", ""));
+    }
 
     @Test
     public void trest() {
