@@ -49,14 +49,6 @@ public abstract class JkDataModel {
         return (TreeSet<T>) data;
     }
 
-//    protected void removeEntity(JkEntity entity) {
-//        TreeSet<JkEntity> data = dataMap.get(entityClazz);
-//        if(data == null) {
-//            throw new JkRuntimeException("Class {} does not belong to package {}", entityClazz.getName(), pkgToScan);
-//        }
-//        return (TreeSet<T>) data;
-//    }
-
     protected void spreadBrokenDependencies() {
         dataMap.keySet().forEach(this::spreadBrokenDependencies);
     }
