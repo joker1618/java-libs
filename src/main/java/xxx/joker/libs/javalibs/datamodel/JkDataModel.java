@@ -49,15 +49,15 @@ public abstract class JkDataModel {
         return (TreeSet<T>) data;
     }
 
-    protected void cascadeDependencies() {
+    public void cascadeDependencies() {
         dataMap.keySet().forEach(this::cascadeDependencies);
     }
 
-    protected void cascadeDependencies(Class<?> clazz) {
+    public void cascadeDependencies(Class<?> clazz) {
         dataMap.get(clazz).forEach(this::cascadeDependencies);
     }
 
-    protected void cascadeDependencies(JkEntity entity) {
+    public void cascadeDependencies(JkEntity entity) {
         Map<Class<?>, Set<JkEntity>> dependencies = entityManager.getDependencies(entity);
         int counter = dependencies.values().stream().mapToInt(Set::size).sum();
         dependencies.forEach((k,v) -> dataMap.get(k).addAll(v));
