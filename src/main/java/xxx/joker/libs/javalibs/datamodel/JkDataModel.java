@@ -49,26 +49,20 @@ public abstract class JkDataModel {
         return (TreeSet<T>) data;
     }
 
-    protected void spreadBrokenDependencies() {
-        dataMap.keySet().forEach(this::spreadBrokenDependencies);
+    protected void cascadeDependencies() {
+        dataMap.keySet().forEach(this::cascadeDependencies);
     }
 
-    protected void spreadBrokenDependencies(Class<?> clazz) {
-        int counter = 0;
-        for(JkEntity entity : dataMap.get(clazz)) {
-            Map<Class<?>, Set<JkEntity>> dependencies = entityManager.getDependencies(entity);
-            counter += dependencies.values().stream().mapToInt(Set::size).sum();
-            dependencies.forEach((k,v) -> dataMap.get(k).addAll(v));
-        }
-        logger.info("Spread {} broken dependencies for {}", counter, clazz.getSimpleName());
+    protected void cascadeDependencies(Class<?> clazz) {
+        dataMap.get(clazz).forEach(this::cascadeDependencies);
     }
 
-    protected void spreadBrokenDependencies(JkEntity entity) {
-        int counter = 0;
+    protected void cascadeDependencies(JkEntity entity) {
         Map<Class<?>, Set<JkEntity>> dependencies = entityManager.getDependencies(entity);
-        counter += dependencies.values().stream().mapToInt(Set::size).sum();
+        int counter = dependencies.values().stream().mapToInt(Set::size).sum();
         dependencies.forEach((k,v) -> dataMap.get(k).addAll(v));
-        logger.info("Spread {} broken dependencies for entity {}", counter, entity.getPrimaryKey());
+        dependencies.forEach((k,v) -> v.forEach(this::cascadeDependencies));
+        logger.debug("Spread {} broken dependencies for entity {}", counter, entity.getPrimaryKey());
     }
 
 }
