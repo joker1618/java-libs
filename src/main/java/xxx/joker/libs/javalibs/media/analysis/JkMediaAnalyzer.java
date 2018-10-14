@@ -9,9 +9,6 @@ import xxx.joker.libs.javalibs.exception.JkRuntimeException;
 import xxx.joker.libs.javalibs.utils.JkConverter;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -67,5 +64,33 @@ public class JkMediaAnalyzer {
             throw new JkRuntimeException(e);
         }
     }
+
+//    public static void analyzeMP3(Path mp3Path) throws JkRuntimeException {
+//        try (FileInputStream inputstream = new FileInputStream(mp3Path.toFile())) {
+//            BodyContentHandler handler = new BodyContentHandler();
+//            Metadata metadata = new Metadata();
+//            ParseContext pcontext = new ParseContext();
+//
+//            //Jpeg Parse
+//            Mp3Parser parser = new Mp3Parser();
+//            parser.parse(inputstream, handler, metadata,pcontext);
+//            Arrays.stream(metadata.names()).forEach(n -> display("%-20s:\t%s", n, metadata.get(n)));
+//
+//
+////            JkPictureInfo imageInfo = new JkPictureInfo();
+////            imageInfo.setImagePath(picturePath);
+////            imageInfo.setWidth(JkConverter.stringToInteger(metadata.get("tiff:ImageWidth")));
+////            imageInfo.setHeight(JkConverter.stringToInteger(metadata.get("tiff:ImageLength")));
+////
+////            return imageInfo;
+//
+//        } catch (Exception e) {
+//            throw new JkRuntimeException(e);
+//        }
+//    }
+//
+//    public static void main(String[] args) {
+//        JkMediaAnalyzer.analyzeMP3(Paths.get("C:\\Users\\f.barbano\\Desktop\\03 Sexy dream.mp3"));
+//    }
 
 }

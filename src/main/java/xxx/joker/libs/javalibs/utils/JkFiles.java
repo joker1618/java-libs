@@ -272,27 +272,18 @@ public class JkFiles {
             throw new JkRuntimeException(ex);
         }
 	}
-	public static void removeDirectory(Path folderToDel) throws JkRuntimeException {
+	public static boolean removeDirectory(Path folderToDel) throws JkRuntimeException {
 	    try {
-            if (!Files.exists(folderToDel)) {
-                throw new FileNotFoundException("[" + folderToDel + "] does not exists");
-            }
-
-            if (!Files.isDirectory(folderToDel)) {
-                throw new IllegalArgumentException("[" + folderToDel + "] is not a directory");
-            }
-
-            removeDirContent(folderToDel);
-            Files.delete(folderToDel);
+			if(Files.isDirectory(folderToDel)) {
+				removeDirContent(folderToDel);
+				Files.delete(folderToDel);
+				return true;
+			}
+			return false;
 
         } catch (IOException ex) {
             throw new JkRuntimeException(ex);
         }
-	}
-	public static void removeDirectoryIfExists(Path folderToDel) throws JkRuntimeException {
-		if(Files.isDirectory(folderToDel)) {
-			removeDirectory(folderToDel);
-		}
 	}
 	private static void removeDirContent(Path folder) throws JkRuntimeException {
 	    try {

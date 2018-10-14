@@ -62,7 +62,7 @@ public abstract class JkDataModel {
         int counter = dependencies.values().stream().mapToInt(Set::size).sum();
         dependencies.forEach((k,v) -> dataMap.get(k).addAll(v));
         dependencies.forEach((k,v) -> v.forEach(this::cascadeDependencies));
-        logger.debug("Spread {} broken dependencies for entity {}", counter, entity.getPrimaryKey());
+        logger.trace("Spread {} broken dependencies for entity {}", counter, entity.getPrimaryKey());
     }
 
 }

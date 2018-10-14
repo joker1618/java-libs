@@ -141,7 +141,7 @@ public class JkTime implements Comparable<JkTime> {
 	}
 
 	public JkTime add(JkTime jkTime) {
-	    return new JkTime(milli + jkTime.milli);
+	    return new JkTime(totalMillis + jkTime.totalMillis);
     }
 
 	@Override
