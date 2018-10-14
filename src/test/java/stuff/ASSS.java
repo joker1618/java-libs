@@ -15,11 +15,10 @@ public class ASSS {
 
     @Test
     public void tres34t() {
-        String str = "2015_3_ciao.mp4";
-        display(str.replaceFirst("^[0-9]{4}_[0-9]{1,2}_", ""));
+        int[] bytes = {0, 34, 12};
+        display(Arrays.toString(Arrays.copyOfRange(bytes, 4, 5)));
 
-        str = "2015_21_federico.mp4";
-        display(str.replaceFirst("^[0-9]{4}_[0-9]{1,2}_", ""));
+
     }
 
     @Test

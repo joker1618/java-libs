@@ -62,6 +62,13 @@ public class JkConverter {
 			return null;
 		}
 	}
+	public static Long stringToLong(String str, long defaultValue) {
+		try {
+			return Long.valueOf(str);
+		} catch(Exception ex) {
+			return defaultValue;
+		}
+	}
 	public static Long[] stringToLong(String[] source) {
 		Long[] toRet = new Long[source.length];
 		for(int i = 0; i < source.length; i++) {
