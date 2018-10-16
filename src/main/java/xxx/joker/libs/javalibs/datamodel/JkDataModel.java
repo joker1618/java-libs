@@ -18,7 +18,9 @@ public abstract class JkDataModel {
     private static final Logger logger = LoggerFactory.getLogger(JkDataModel.class);
 
     private final JkPersistenceManager persistenceManager;
+    private final JkPersistenceManager pmNewFormat;
     private final JkEntityManager entityManager;
+    private final JkEM2 emNewFormat;
     private final Map<Class<?>, TreeSet<JkEntity>> dataMap;
     private final String pkgToScan;
 
@@ -26,7 +28,9 @@ public abstract class JkDataModel {
         logger.info("Initializing data model:  [dbName={}] [dbFolder={}] [pkgToScan={}]", dbName, dbFolder, pkgToScan);
         this.pkgToScan = pkgToScan;
         this.entityManager = new JkEntityManager(pkgToScan);
+        this.emNewFormat = new JkEM2(pkgToScan);
         this.persistenceManager = new JkPersistenceManager(dbFolder, dbName, entityManager.getEntityClasses());
+        this.pmNewFormat = new JkPersistenceManager(dbFolder, dbName+"NEWFMT", entityManager.getEntityClasses());
         this.dataMap = readModelData();
     }
 
@@ -39,6 +43,12 @@ public abstract class JkDataModel {
         Map<Class<?>, EntityLines> map = entityManager.formatData(dataMap);
         persistenceManager.saveData(map);
         logger.info("Committed model data");
+    }
+
+    public void commitNewFormat() {
+        Map<Class<?>, EntityLines> map = emNewFormat.formatData(dataMap);
+        pmNewFormat.saveData(map);
+        logger.info("Committed model data NEW FORMAT");
     }
 
     protected <T extends JkEntity> TreeSet<T> getData(Class<T> entityClazz) {
