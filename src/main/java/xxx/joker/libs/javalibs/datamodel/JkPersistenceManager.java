@@ -42,7 +42,7 @@ class JkPersistenceManager {
 
     public void saveData(Map<Class<?>, EntityLines> elMap) {
         try {
-            logger.debug("Saving data to DB [dbName={}] [dbFolder={}]", dbName, dbFolder);
+            logger.info("Saving data to DB [dbName={}] [dbFolder={}]", dbName, dbFolder);
             // Delete all existing files
             List<Path> dbPaths = JkFiles.findFiles(dbFolder, false, Files::isRegularFile, p -> JkFiles.getFileName(p).startsWith(dbName));
             for(Path p : dbPaths) {
