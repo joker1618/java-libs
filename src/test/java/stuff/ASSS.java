@@ -1,10 +1,13 @@
 package stuff;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.junit.Test;
 import xxx.joker.libs.javalibs.datamodel.entity.JkComparableEntity;
 import xxx.joker.libs.javalibs.datamodel.entity.JkEntityField;
 import xxx.joker.libs.javalibs.utils.JkConverter;
 
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -16,11 +19,22 @@ import static xxx.joker.libs.javalibs.utils.JkConsole.display;
 public class ASSS {
 
     @Test
-    public void tres34t() {
-        int[] bytes = {0, 34, 12};
-        display(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+    public void tres34t() throws Exception {
 
+        AA aa = new AA();
+        aa.setBb(new BB(78));
 
+        Method mget = AA.class.getMethod("getBb");
+        BB gotBB = (BB) mget.invoke(aa);
+        display(gotBB.toString());
+
+        BB bb = new BB(5);
+
+        Method mset = AA.class.getMethod("setBb", BB.class);
+        mset.invoke(aa, bb);
+
+        gotBB = (BB) mget.invoke(aa);
+        display(gotBB.toString());
     }
 
     @Test
@@ -57,10 +71,22 @@ public class ASSS {
             this.s=s;
         }
 
+        public BB getBb() {
+            return bb;
+        }
+
+        public void setBb(BB bb) {
+            this.bb = bb;
+        }
 
         @Override
         public String getPrimaryKey() {
             return s;
+        }
+
+        @Override
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
         }
     }
 
@@ -79,6 +105,11 @@ public class ASSS {
         public String getPrimaryKey() {
             return nummo+"";
         }
+
+        @Override
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
+        }
     }
 
     static class CC extends JkComparableEntity {
@@ -95,6 +126,11 @@ public class ASSS {
         @Override
         public String getPrimaryKey() {
             return str;
+        }
+
+        @Override
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
         }
     }
 }

@@ -44,7 +44,7 @@ class JkPersistenceManager {
         try {
             logger.info("Saving data to DB [dbName={}] [dbFolder={}]", dbName, dbFolder);
             // Delete all existing files
-            List<Path> dbPaths = JkFiles.findFiles(dbFolder, false, Files::isRegularFile, p -> JkFiles.getFileName(p).startsWith(dbName));
+            List<Path> dbPaths = JkFiles.findFiles(dbFolder, false, Files::isRegularFile, p -> JkFiles.getFileName(p).startsWith(dbName+FILENAME_SEP));
             for(Path p : dbPaths) {
                 Files.delete(p);
                 logger.debug("Deleted file {}", p);
