@@ -4,8 +4,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.javalibs.exception.JkRuntimeException;
+import xxx.joker.libs.javalibs.utils.JkConverter;
 import xxx.joker.libs.javalibs.utils.JkFiles;
 import xxx.joker.libs.javalibs.utils.JkStreams;
+import xxx.joker.libs.javalibs.utils.JkStrings;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,6 +20,7 @@ class JkPersistenceManager {
 
     private static final String FILENAME_SEP = "###";
     private static final String FILENAME_EXT = "jkrepo";
+    private static final String SEQUENCE_EXT = "jkseq";
     private static final String PH_ENTITY = "ENTITY";
     private static final String PH_DEPENDENCIES = "DEPENDENCIES";
 
@@ -136,4 +139,32 @@ class JkPersistenceManager {
             return foreignKeyLines;
         }
     }
+//
+//    private static class EntitySequence {
+//        private Path seqPath;
+//
+//        public EntitySequence(Path dbFolder, String dbName) {
+//            this.seqPath = dbFolder.resolve(dbName + "." + SEQUENCE_EXT);
+//        }
+//
+//        public synchronized long nextValue() {
+//            try {
+//                long seqValue;
+//
+//                if (!Files.exists(seqPath)) {
+//                    seqValue = 0L;
+//                } else {
+//                    List<String> lines = Files.readAllLines(seqPath);
+//                    seqValue = JkConverter.stringToLong(lines.get(0));
+//                }
+//
+//                JkFiles.writeFile(seqPath, String.valueOf(seqValue + 1), true);
+//
+//                return seqValue;
+//
+//            } catch (IOException ex) {
+//                throw new JkRuntimeException(ex);
+//            }
+//        }
+//    }
 }

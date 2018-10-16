@@ -5,6 +5,8 @@ import xxx.joker.libs.javalibs.datamodel.entity.JkComparableEntity;
 import xxx.joker.libs.javalibs.datamodel.entity.JkEntityField;
 import xxx.joker.libs.javalibs.utils.JkConverter;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +18,7 @@ public class ASSS {
     @Test
     public void tres34t() {
         int[] bytes = {0, 34, 12};
-        display(Arrays.toString(Arrays.copyOfRange(bytes, 4, 5)));
+        display(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 
 
     }
