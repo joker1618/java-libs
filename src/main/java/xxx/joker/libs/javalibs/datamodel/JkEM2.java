@@ -151,8 +151,8 @@ class JkEM2 {
                         toRet.getForeignKeyLines().addAll(fkLines);
                     }
                 }
-                row.add(idmap.get(elem.getClass()).get(elem.getPrimaryKey())+"");
-                row.add(strTs);
+                row.add(0, idmap.get(elem.getClass()).get(elem.getPrimaryKey())+"");
+                row.add(1, strTs);
                 toRet.getEntityLines().add(JkStreams.join(row, DATA_FIELD_SEP));
             }
 
