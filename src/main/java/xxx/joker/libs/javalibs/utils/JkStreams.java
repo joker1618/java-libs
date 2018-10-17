@@ -55,6 +55,16 @@ public class JkStreams {
         return source.stream().sorted(comparator).collect(Collectors.toList());
     }
 
+    public static <T> List<T> duplicates(Collection<T> source) {
+        List<T> uniques = new ArrayList<>();
+        List<T> dups = new ArrayList<>();
+        for(T elem : source) {
+            if(!uniques.contains(elem))     uniques.add(elem);
+            else                            dups.add(elem);
+        }
+        return sorted(dups);
+    }
+
 	public static <V,K> Map<K,List<V>> toMap(Collection<V> source, Function<V,K> keyMapper) {
 		return toMap(source, keyMapper, v -> v);
 	}
