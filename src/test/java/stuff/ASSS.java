@@ -3,8 +3,8 @@ package stuff;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.junit.Test;
-import xxx.joker.libs.javalibs.datamodel.entity.JkComparableEntity;
-import xxx.joker.libs.javalibs.datamodel.entity.JkEntityField;
+import xxx.joker.libs.javalibs.repository.entity.JkDefaultEntity;
+import xxx.joker.libs.javalibs.repository.entity.JkEntityField;
 import xxx.joker.libs.javalibs.utils.JkConverter;
 
 import java.lang.reflect.Method;
@@ -53,7 +53,7 @@ public class ASSS {
     }
 
 
-    static class AA extends JkComparableEntity {
+    static class AA extends JkDefaultEntity {
         @JkEntityField(index = 0)
         BB bb;
         @JkEntityField(index = 1, collectionType = BB.class)
@@ -90,7 +90,7 @@ public class ASSS {
         }
     }
 
-    static class BB extends JkComparableEntity {
+    static class BB extends JkDefaultEntity {
         @JkEntityField(index = 0)
         int nummo;
 
@@ -112,7 +112,7 @@ public class ASSS {
         }
     }
 
-    static class CC extends JkComparableEntity {
+    static class CC extends JkDefaultEntity {
         @JkEntityField(index = 0)
         String str;
 

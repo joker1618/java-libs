@@ -1,36 +1,38 @@
-package xxx.joker.libs.javalibs.datamodel;
+package xxx.joker.libs.javalibs.repository;
 
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.libs.javalibs.datamodel.entity.JkEntity;
 import xxx.joker.libs.javalibs.exception.JkRuntimeException;
+import xxx.joker.libs.javalibs.repository.entity.JkEntity;
+import xxx.joker.libs.javalibs.utils.JkReflection;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicLong;
 
-import static xxx.joker.libs.javalibs.datamodel.JkPersistenceManager.EntityLines;
+import static xxx.joker.libs.javalibs.repository.JkPersistenceManager.EntityLines;
 
 public abstract class JkDataModel {
 
     private static final Logger logger = LoggerFactory.getLogger(JkDataModel.class);
 
     private final JkPersistenceManager persistenceManager;
-    private final JkPersistenceManager pmNewFormat;
     private final JkEntityManager entityManager;
-    private final JkEM2 emNewFormat;
     private final Map<Class<?>, TreeSet<JkEntity>> dataMap;
     private final String pkgToScan;
+    private final AtomicLong sequence;
 
     protected JkDataModel(Path dbFolder, String dbName, String pkgToScan) {
         logger.info("Initializing data model:  [dbName={}] [dbFolder={}] [pkgToScan={}]", dbName, dbFolder, pkgToScan);
         this.pkgToScan = pkgToScan;
-        this.entityManager = new JkEntityManager(pkgToScan);
-        this.emNewFormat = new JkEM2(pkgToScan);
-        this.persistenceManager = new JkPersistenceManager(dbFolder, dbName, entityManager.getEntityClasses());
-        this.pmNewFormat = new JkPersistenceManager(dbFolder, dbName+"NEWFMT", entityManager.getEntityClasses());
+        List<Class<?>> classes = retrieveEntityClasses(pkgToScan);
+        this.persistenceManager = new JkPersistenceManager(dbFolder, dbName, classes);
+        this.sequence = new AtomicLong(persistenceManager.readSequence());
+        this.entityManager = new JkEntityManager(classes, sequence);
         this.dataMap = readModelData();
     }
 
@@ -39,16 +41,10 @@ public abstract class JkDataModel {
         return entityManager.parseData(elinesMap);
     }
 
-    protected void commit() {
-        Map<Class<?>, EntityLines> map = entityManager.formatData(dataMap);
-        persistenceManager.saveData(map);
+    public void commit() {
+        Map<Class<?>, EntityLines> map = entityManager.formatEntities(dataMap);
+        persistenceManager.saveData(map, sequence.get());
         logger.info("Committed model data");
-    }
-
-    public void commitNewFormat() {
-        Map<Class<?>, EntityLines> map = emNewFormat.formatData(dataMap);
-        pmNewFormat.saveData(map);
-        logger.info("Committed model data NEW FORMAT");
     }
 
     protected <T extends JkEntity> TreeSet<T> getData(Class<T> entityClazz) {
@@ -73,6 +69,17 @@ public abstract class JkDataModel {
         dependencies.forEach((k,v) -> dataMap.get(k).addAll(v));
         dependencies.forEach((k,v) -> v.forEach(this::cascadeDependencies));
         logger.trace("Spread {} broken dependencies for entity {}", counter, entity.getPrimaryKey());
+    }
+
+    private List<Class<?>> retrieveEntityClasses(String pkgToScan) {
+        logger.info("Scanning package {}", pkgToScan);
+        List<Class<?>> classes = JkReflection.findClasses(pkgToScan);
+        classes.removeIf(c -> !JkReflection.isOfType(c, JkEntity.class));
+        if(classes.isEmpty()) {
+            throw new JkRuntimeException("No JkEntity class found in package {}", pkgToScan);
+        }
+        logger.info("{} JkEntity class found in package {}", classes.size(), pkgToScan);
+        return classes;
     }
 
 }

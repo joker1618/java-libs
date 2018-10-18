@@ -1,4 +1,4 @@
-package xxx.joker.libs.javalibs.datamodel;
+package xxx.joker.libs.javalibs.repository;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -7,12 +7,12 @@ import xxx.joker.libs.javalibs.exception.JkRuntimeException;
 import xxx.joker.libs.javalibs.utils.JkConverter;
 import xxx.joker.libs.javalibs.utils.JkFiles;
 import xxx.joker.libs.javalibs.utils.JkStreams;
-import xxx.joker.libs.javalibs.utils.JkStrings;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 class JkPersistenceManager {
 
@@ -27,12 +27,14 @@ class JkPersistenceManager {
     private final Path dbFolder;
     private final String dbName;
     private final Map<Class<?>, EntityPath> entityPaths;
+    private final Path sequencePath;
 
     public JkPersistenceManager(Path dbFolder, String dbName, Collection<Class<?>> entityClasses) {
         this.dbFolder = dbFolder;
         this.dbName = dbName;
         this.entityPaths = new HashMap<>();
         entityClasses.forEach(c -> entityPaths.put(c, new EntityPath(c)));
+        this.sequencePath = dbFolder.resolve(dbName + "." + SEQUENCE_EXT);
     }
 
     public Map<Class<?>, EntityLines> readData() {
@@ -40,11 +42,24 @@ class JkPersistenceManager {
         return JkStreams.toMapSingle(list, EntityLines::getEntityClazz);
     }
 
-    public void saveData(Map<Class<?>, EntityLines> elMap) {
+    public long readSequence() {
+        if(!Files.exists(sequencePath)){
+            return 0L;
+        }
+
+        try {
+            String line = Files.readAllLines(sequencePath).get(0);
+            return JkConverter.stringToLong(line);
+        } catch(IOException ex) {
+            throw new JkRuntimeException(ex);
+        }
+    }
+
+    public void saveData(Map<Class<?>, EntityLines> elMap, long sequenceValue) {
         try {
             logger.info("Saving data to DB [dbName={}] [dbFolder={}]", dbName, dbFolder);
             // Delete all existing files
-            List<Path> dbPaths = JkFiles.findFiles(dbFolder, false, Files::isRegularFile, p -> JkFiles.getFileName(p).startsWith(dbName+FILENAME_SEP));
+            List<Path> dbPaths = JkFiles.findFiles(dbFolder, false, Files::isRegularFile, p -> JkFiles.getFileName(p).startsWith(dbName));
             for(Path p : dbPaths) {
                 Files.delete(p);
                 logger.debug("Deleted file {}", p);
@@ -55,6 +70,7 @@ class JkPersistenceManager {
                 JkFiles.writeFile(epath.getForeignKeysPath(), el.getForeignKeyLines(), false);
                 logger.debug("Persisted entity {}", el.getEntityClazz().getName());
             }
+            JkFiles.writeFile(sequencePath, sequenceValue+"", false);
 
         } catch(IOException ex) {
             throw new JkRuntimeException(ex);

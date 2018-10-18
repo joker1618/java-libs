@@ -1,10 +1,15 @@
-package xxx.joker.libs.javalibs.datamodel.entity;
+package xxx.joker.libs.javalibs.repository.entity;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.time.LocalDateTime;
+
 public abstract class JkDefaultEntity implements JkEntity {
+
+    protected Long entityID;
+    protected LocalDateTime insertTstamp;
 
     @Override
     public int hashCode() {
@@ -22,6 +27,26 @@ public abstract class JkDefaultEntity implements JkEntity {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
+    }
+
+    @Override
+    public final Long getEntityID() {
+        return entityID;
+    }
+
+    @Override
+    public final void setEntityID(long entityID) {
+        this.entityID = entityID;
+    }
+
+    @Override
+    public final LocalDateTime getInsertTstamp() {
+        return insertTstamp;
+    }
+
+    @Override
+    public final void setInsertTstamp(LocalDateTime insertTstamp) {
+        this.insertTstamp = insertTstamp;
     }
 
 }

@@ -1,6 +1,6 @@
-package xxx.joker.libs.javalibs.datamodel;
+package xxx.joker.libs.javalibs.repository;
 
-import xxx.joker.libs.javalibs.datamodel.entity.JkEntity;
+import xxx.joker.libs.javalibs.repository.entity.JkEntity;
 import xxx.joker.libs.javalibs.utils.JkReflection;
 
 import java.io.File;

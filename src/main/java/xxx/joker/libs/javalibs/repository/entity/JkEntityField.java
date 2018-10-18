@@ -1,4 +1,4 @@
-package xxx.joker.libs.javalibs.datamodel.entity;
+package xxx.joker.libs.javalibs.repository.entity;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
