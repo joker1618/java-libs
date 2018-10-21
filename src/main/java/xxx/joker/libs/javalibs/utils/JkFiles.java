@@ -322,7 +322,7 @@ public class JkFiles {
             return stream.distinct().sorted().collect(Collectors.toList());
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new JkRuntimeException(e);
         }
 	}
 
