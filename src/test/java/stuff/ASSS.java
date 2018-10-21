@@ -8,6 +8,8 @@ import xxx.joker.libs.javalibs.repository.entity.JkEntityField;
 import xxx.joker.libs.javalibs.utils.JkConverter;
 
 import java.lang.reflect.Method;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -52,6 +54,27 @@ public class ASSS {
         io.cclist = Arrays.asList(cc2,cc3);
     }
 
+    @Test
+    public void fe() {
+        Path p1, p2;
+
+        p1 = Paths.get("");
+        p2 = Paths.get("").toAbsolutePath();
+        display("EQ %s", p1.equals(p2));
+        display("CM %s\n", p1.compareTo(p2));
+
+        p1 = Paths.get("").toAbsolutePath();
+        p2 = Paths.get("ciccio/..").toAbsolutePath();
+        display("EQ %s", p1.equals(p2));
+        display("CM %s\n", p1.compareTo(p2));
+
+        p1 = Paths.get("").toAbsolutePath();
+        p2 = Paths.get("ciccio/..").normalize().toAbsolutePath();
+        display("EQ %s", p1.equals(p2));
+        display("CM %s\n", p1.compareTo(p2));
+
+        display("%s\n", System.getProperty("user.dir"));
+    }
 
     static class AA extends JkDefaultEntity {
         @JkEntityField(index = 0)

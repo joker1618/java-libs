@@ -80,7 +80,6 @@ public class JkMediaAnalyzer {
             //Jpeg Parse
             Mp3Parser parser = new Mp3Parser();
             parser.parse(inputstream, handler, metadata,pcontext);
-            Arrays.stream(metadata.names()).forEach(n -> display("%-20s:\t%s", n, metadata.get(n)));
 
             JkAudioInfo audioInfo = new JkAudioInfo();
             audioInfo.setAudioPath(mp3Path);
@@ -94,10 +93,6 @@ public class JkMediaAnalyzer {
         } catch (Exception e) {
             throw new JkRuntimeException(e);
         }
-    }
-
-    public static void main(String[] args) {
-        JkMediaAnalyzer.analyzeMP3(Paths.get("C:\\Users\\feder\\Desktop\\Vivere.mp3"));
     }
 
 }
