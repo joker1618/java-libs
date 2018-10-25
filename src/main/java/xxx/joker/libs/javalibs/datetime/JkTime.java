@@ -69,7 +69,10 @@ public class JkTime implements Comparable<JkTime> {
 		return of(totmilli);
 	}
 	public static JkTime of(Date date) {
-		LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+		return of(date.toInstant());
+	}
+	public static JkTime of(Instant instant) {
+		LocalDateTime ldt = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
 		return of(ldt);
 	}
 
