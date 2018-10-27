@@ -10,7 +10,9 @@ import xxx.joker.libs.javalibs.datetime.JkTime;
 import xxx.joker.libs.javalibs.exception.JkRuntimeException;
 import xxx.joker.libs.javalibs.utils.JkConverter;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -49,18 +51,33 @@ public class JkMediaAnalyzer {
         }
     }
 
+    public static JkPictureInfo analyzePicture(byte[] bytes) throws JkRuntimeException {
+        try(InputStream is = new ByteArrayInputStream(bytes)) {
+            return analyzePicture(is);
+        } catch (Exception e) {
+            throw new JkRuntimeException(e);
+        }
+    }
     public static JkPictureInfo analyzePicture(Path picturePath) throws JkRuntimeException {
-        try (FileInputStream inputstream = new FileInputStream(picturePath.toFile())) {
+        try(InputStream is = new FileInputStream(picturePath.toFile())) {
+            JkPictureInfo pic = analyzePicture(is);
+            pic.setImagePath(picturePath);
+            return pic;
+        } catch (Exception e) {
+            throw new JkRuntimeException(e);
+        }
+    }
+    private static JkPictureInfo analyzePicture(InputStream inputstream) throws JkRuntimeException {
+        try {
             BodyContentHandler handler = new BodyContentHandler();
             Metadata metadata = new Metadata();
             ParseContext pcontext = new ParseContext();
 
             //Jpeg Parse
-            JpegParser JpegParser = new JpegParser();
-            JpegParser.parse(inputstream, handler, metadata,pcontext);
+            JpegParser jpegParser = new JpegParser();
+            jpegParser.parse(inputstream, handler, metadata, pcontext);
 
             JkPictureInfo imageInfo = new JkPictureInfo();
-            imageInfo.setImagePath(picturePath);
             imageInfo.setWidth(JkConverter.stringToInteger(metadata.get("tiff:ImageWidth")));
             imageInfo.setHeight(JkConverter.stringToInteger(metadata.get("tiff:ImageLength")));
 
