@@ -9,7 +9,9 @@ public enum JkLanguage {
 
 	ITALIAN("ita"),
 	ENGLISH("eng"),
-	RUSSIAN("rus"),
+	GERMAN("ger"),
+	FRENCH("fra"),
+	SPANISH("spa"),
 
 
 	;
