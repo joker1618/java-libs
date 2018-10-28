@@ -56,8 +56,6 @@ class JkEntityManager {
             }
 
             if (!parsedEntities.containsKey(clazz)) {
-                logger.debug("Entity class {}", clazz.getName());
-
                 Map<Integer, AnnField> annMap = new HashMap<>();
                 parsedEntities.put(clazz, annMap);
 
@@ -166,6 +164,10 @@ class JkEntityManager {
         } catch(IllegalAccessException ex) {
             throw new JkRuntimeException(ex);
         }
+    }
+
+    public Long getNextSequenceValue() {
+        return sequence.getAndIncrement();
     }
 
     private JkEntity parseLine(Class<?> elemClazz, String line) {
@@ -342,7 +344,7 @@ class JkEntityManager {
 
     private void setIDIfMissing(JkEntity entity) {
         if(entity.getEntityID() == null) {
-            entity.setEntityID(sequence.getAndIncrement());
+            entity.setEntityID(getNextSequenceValue());
             entity.setInsertTstamp(LocalDateTime.now());
         }
     }

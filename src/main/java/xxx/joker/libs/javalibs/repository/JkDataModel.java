@@ -47,7 +47,7 @@ public abstract class JkDataModel {
         logger.info("Committed model data");
     }
 
-    protected <T extends JkEntity> TreeSet<T> getData(Class<T> entityClazz) {
+    public <T extends JkEntity> TreeSet<T> getData(Class<T> entityClazz) {
         TreeSet<JkEntity> data = dataMap.get(entityClazz);
         if(data == null) {
             throw new JkRuntimeException("Class {} does not belong to package {}", entityClazz.getName(), pkgToScan);
