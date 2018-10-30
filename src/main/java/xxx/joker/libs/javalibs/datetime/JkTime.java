@@ -151,4 +151,9 @@ public class JkTime implements Comparable<JkTime> {
 	public int compareTo(JkTime o) {
 		return Long.compare(totalMillis, o.totalMillis);
 	}
+
+	@Override
+    public String toString() {
+	    return toStringElapsed(true);
+    }
 }

@@ -113,6 +113,9 @@ public class JkConverter {
 		return toRet;
 	}
 
+	public static boolean stringToBoolean(String source, boolean defValue) {
+		return StringUtils.equalsAnyIgnoreCase(source, "true", "false") ? Boolean.valueOf(source) : defValue;
+	}
 	public static Boolean[] stringToBoolean(String[] source) {
 		Boolean[] toRet = new Boolean[source.length];
 		for(int i = 0; i < source.length; i++) {
