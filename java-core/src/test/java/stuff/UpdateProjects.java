@@ -16,7 +16,7 @@ public class UpdateProjects {
 
     @Test
     public void update() throws IOException {
-        Path appFolder = Paths.get("C:\\Users\\feder\\IdeaProjects\\APPS\\encryptor");
+        Path appFolder = Paths.get("C:\\Users\\feder\\IdeaProjects\\APPS\\f1-manager");
 
         List<Path> files = JkFiles.findFiles(appFolder, true, f -> f.toString().endsWith(".java"));
 

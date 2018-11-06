@@ -5,6 +5,7 @@ package xxx.joker.libs.core.html;
  */
 public interface JkTextScanner {
 
+	void startCursorAt(int offset);
 	boolean startCursorAt(String... toFind);
 	boolean startCursorAfter(String... toFind);
 	boolean startCursorAtBackward(String... toFind);
@@ -28,6 +29,9 @@ public interface JkTextScanner {
 	JkTextScanner subScannerBetween(String start, String end);
 
 	boolean isCursorStartWith(String str);
+	boolean contains(String str);
+
+	JkHtmlTag nextHtmlTag(String tagName);
 
 	String toString();
 
