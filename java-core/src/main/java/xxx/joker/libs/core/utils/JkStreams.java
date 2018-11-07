@@ -26,8 +26,12 @@ public class JkStreams {
 		return source.stream().map(mapFunc).collect(Collectors.joining(separator));
 	}
 
-	public static <T> List<T> filter(Collection<T> source, Predicate<T> filter) {
-		return source.stream().filter(filter).collect(Collectors.toList());
+	public static <T> List<T> filter(Collection<T> source, Predicate<T>... filters) {
+		Stream<T> stream = source.stream();
+		for(Predicate<T> filter : filters) {
+			stream = stream.filter(filter);
+		}
+		return stream.collect(Collectors.toList());
 	}
 	public static <T,U> List<U> map(Collection<T> source, Function<T,U> mapper) {
 		return source.stream().map(mapper).collect(Collectors.toList());
@@ -35,8 +39,12 @@ public class JkStreams {
 	public static <T,U> List<U> filterAndMap(Collection<T> source, Predicate<T> filter, Function<T,U> mapper) {
 		return source.stream().filter(filter).map(mapper).collect(Collectors.toList());
 	}
-	public static <T,U> List<U> mapAndFilter(Collection<T> source, Function<T,U> mapper, Predicate<U> filter) {
-		return source.stream().map(mapper).filter(filter).collect(Collectors.toList());
+	public static <T,U> List<U> mapAndFilter(Collection<T> source, Function<T,U> mapper, Predicate<U>... filters) {
+		Stream<U> stream = source.stream().map(mapper);
+		for(Predicate<U> filter : filters) {
+			stream = stream.filter(filter);
+		}
+		return stream.collect(Collectors.toList());
 	}
 
     public static <T> List<T> distinct(Collection<T> source) {
