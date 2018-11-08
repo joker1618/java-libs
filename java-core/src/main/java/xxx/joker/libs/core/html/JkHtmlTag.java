@@ -1,8 +1,12 @@
 package xxx.joker.libs.core.html;
 
+
+import org.apache.commons.lang3.tuple.Pair;
 import xxx.joker.libs.core.utils.JkStreams;
 
 import java.util.*;
+
+import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class JkHtmlTag {
 
@@ -10,7 +14,7 @@ public class JkHtmlTag {
     private Map<String, String> attributeMap;
     private List<JkHtmlTag> children;
     private String textInside;
-    private boolean selfClosed;
+    private boolean autoClosed;
 
     protected JkHtmlTag() {
         attributeMap = new HashMap<>();
@@ -19,63 +23,86 @@ public class JkHtmlTag {
 
     protected JkHtmlTag(String tagName) {
         this.tagName = tagName;
-        attributeMap = new HashMap<>();
-        children = new ArrayList<>();
+        this.attributeMap = new HashMap<>();
+        this.children = new ArrayList<>();
+    }
+
+    public JkHtmlTag findFirst(String childName, String... attributes) {
+        List<JkHtmlTag> tags = findFirsts(childName, attributes);
+        return tags.isEmpty() ? null : tags.get(0);
+    }
+    public List<JkHtmlTag> findFirsts(String childName, String... attributes) {
+        return findFirstTagList(childName, attributes);
+    }
+    private List<JkHtmlTag> findFirstTagList(String childName, String... attributes) {
+        List<Pair<String, String>> attrPairs = JkStreams.filterAndMap(Arrays.asList(attributes), s -> s.contains("="), s -> Pair.of(s.split("=")[0], s.split("=")[1]));
+
+        List<JkHtmlTag> toRet = new ArrayList<>();
+
+        for(JkHtmlTag child : children) {
+            if(childName.equalsIgnoreCase(child.getTagName())) {
+                boolean res = true;
+                for(Pair<String,String> attr : attrPairs) {
+                    if(attr.getValue().equals(child.getAttribute(attr.getKey()))) {
+                        res = false;
+                        break;
+                    }
+                }
+                if(res) {
+                    toRet.add(child);
+                }
+            }
+        }
+
+        for(int i = 0; i < children.size() && toRet.isEmpty(); i++) {
+            toRet.addAll(children.get(i).findFirsts(childName, attributes));
+        }
+
+        return toRet;
     }
 
     public String getTagName() {
         return tagName;
     }
-    protected void addAttribute(String attrName, String attrValue) {
-        attributeMap.put(attrName, attrValue);
+
+    public Map<String, String> getAttributes() {
+        return new HashMap<>(attributeMap);
     }
     public String getAttribute(String attrName) {
         return attributeMap.get(attrName);
     }
 
-    protected void setTagName(String tagName) {
-        this.tagName = tagName;
-    }
-
-    public Map<String, String> getAttributes() {
-        return attributeMap;
-    }
-
-    public boolean containsAttribute(String attrName) {
-        return attributeMap.get(attrName) != null;
-    }
     public List<JkHtmlTag> getChildren() {
-        return children;
+        return new ArrayList<>(children);
     }
+
     public String getTextInside() {
         return textInside;
     }
 
+    public boolean isAutoClosed() {
+        return autoClosed;
+    }
+
+    protected void addAttribute(String attrName, String attrValue) {
+        attributeMap.put(attrName, attrValue);
+    }
+    protected void setTagName(String tagName) {
+        this.tagName = tagName;
+    }
     protected void setTextInside(String textInside) {
         this.textInside = textInside;
     }
-
-    public List<JkHtmlTag> getChildrenTags() {
-        return new ArrayList<>(children);
+    protected void addChildren(JkHtmlTag child) {
+        children.add(child);
     }
-    public List<JkHtmlTag> getChildrenTags(String childName) {
-        return getChildrenTags(children, childName);
-    }
-    private List<JkHtmlTag> getChildrenTags(List<JkHtmlTag> source, String childName) {
-        List<JkHtmlTag> filter = JkStreams.filter(source, t -> t.getTagName().equals(childName));
-        if(!filter.isEmpty())   return filter;
-        for(JkHtmlTag f : source) {
-            List<JkHtmlTag> res = getChildrenTags(f.getChildren(), childName);
-            if(!res.isEmpty())   return res;
-        }
-        return Collections.emptyList();
+    protected void setAutoClosed(boolean autoClosed) {
+        this.autoClosed = autoClosed;
     }
 
-    public boolean isSelfClosed() {
-        return selfClosed;
+    @Override
+    public String toString() {
+        return strf("%s%s", tagName, children.isEmpty() ? "" : "  ("+children.size()+")");
     }
 
-    public void setSelfClosed(boolean selfClosed) {
-        this.selfClosed = selfClosed;
-    }
 }

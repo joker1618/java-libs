@@ -78,7 +78,7 @@ public abstract class JkDataModel {
         if(classes.isEmpty()) {
             throw new JkRuntimeException("No JkEntity class found in package {}", pkgToScan);
         }
-        logger.info("{} JkEntity class found in package {}", classes.size(), pkgToScan);
+        logger.debug("{} JkEntity class found in package {}", classes.size(), pkgToScan);
         return classes;
     }
 

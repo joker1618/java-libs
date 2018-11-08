@@ -164,75 +164,11 @@ public class JkTextScannerImpl implements JkTextScanner {
 
     @Override
     public JkHtmlTag nextHtmlTag(String tagName) {
-        String fixedString = buffer.toString().replaceAll("<!--(.*?)-->", "");  // remove html comments
-        int idx = fixedString.indexOf("<" + tagName);
+        int idx = StringUtils.indexOfIgnoreCase(buffer.toString(), "<" + tagName);
         if(idx == -1)   return null;
 
-        JkTextScannerImpl scanner = new JkTextScannerImpl(fixedString.substring(idx));
-
-        List<JkHtmlTag> parents = new ArrayList<>();
-        String tagStr;
-        while((tagStr = scanner.nextTag()) != null) {
-            if(tagStr.startsWith("</")) {
-                // closure tag
-                String tname = tagStr.replaceAll("^</", "").replaceAll(">$", "");
-                if(!parents.isEmpty()) {
-                    JkHtmlTag removed = parents.remove(0);
-                    String pname = removed.getTagName();
-                    while (!parents.isEmpty() && !pname.equals(tname)) {
-                        logger.warn("Unclosed middle tag {}", pname);
-                        removed = parents.remove(0);
-                        pname = removed.getTagName();
-                    }
-                    if(parents.isEmpty()) {
-                        return !pname.equals(tname) ? null : removed;
-                    }
-                    if(removed.getChildren().isEmpty()) {
-                        String insideTag = scanner.nextValueUntil(tagStr);
-                        removed.setTextInside(insideTag.trim());
-                    }
-                }
-
-            } else  {
-                boolean autoclosed = tagStr.endsWith("/>");
-                String content = tagStr.replaceAll("^<", "").replaceAll(">$", "").replaceAll("/$", "").trim();
-                int idxsp = content.indexOf(" ");
-                String tname = idxsp == -1 ? content : content.substring(0, idxsp);
-                JkHtmlTag tag = new JkHtmlTag(tname);
-                if(idxsp != -1) {
-                    String remain = content.substring(idxsp).trim();
-                    JkTextScannerImpl scan = new JkTextScannerImpl(remain);
-                    while (scan.contains("=")) {
-                        String aname = scan.nextValueUntil("=").trim().replaceAll(".*\\s", "");
-                        String aval = scan.nextAttrValue(aname);
-                        tag.addAttribute(aname, aval);
-                        scan.startCursorAfter(aval);
-                    }
-                }
-
-                if(parents.isEmpty()) {
-                    if(autoclosed) {
-                        return tag;
-                    }
-                    parents.add(tag);
-                } else {
-                    parents.get(0).getChildren().add(tag);
-                    if(!autoclosed) {
-                        parents.add(0, tag);
-                    }
-                }
-            }
-
-            scanner.startCursorAfter(tagStr);
-        }
-
-        return null;
-    }
-
-    private String nextTag() {
-        String tagStr = nextValueBetween("<", ">");
-        if(tagStr == null)  return null;
-        return strf("<%s>", tagStr);
+        List<JkHtmlTag> tags = JkHtmlScanner.parseHtml(buffer.substring(idx));
+        return tags.isEmpty() ? null : tags.get(0);
     }
 
 
