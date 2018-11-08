@@ -4,7 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JkHtmlScanner {
 
@@ -14,6 +16,7 @@ public class JkHtmlScanner {
 
         List<JkHtmlTag> rootTags = new ArrayList<>();
         List<JkHtmlTag> openedList = new ArrayList<>();
+        Map<JkHtmlTag, String> txtInsideMap = new HashMap<>();
         int ltIndex;
 
         while((ltIndex = sb.indexOf("<")) != -1) {
@@ -26,7 +29,9 @@ public class JkHtmlScanner {
 
             if(pair.getValue()) {
                 if (!openedList.isEmpty()) {
-                    openedList.get(openedList.size() - 1).addChildren(tag);
+                    JkHtmlTag parent = openedList.get(openedList.size() - 1);
+                    parent.addChildren(tag);
+                    txtInsideMap.put(parent, txtInsideMap.getOrDefault(parent, "") + sb.substring(0, ltIndex));
                 } else {
                     rootTags.add(tag);
                 }
@@ -41,7 +46,7 @@ public class JkHtmlScanner {
                     break;
                 }
 
-                String txtInside = sb.substring(0, ltIndex).trim();
+                String txtInside = (txtInsideMap.getOrDefault(parentTag, "") + sb.substring(0, ltIndex)).trim();
                 if(StringUtils.isNotBlank(txtInside)) {
                     parentTag.setTextInside(txtInside);
                 }
