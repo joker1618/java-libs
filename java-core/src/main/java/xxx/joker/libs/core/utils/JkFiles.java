@@ -242,22 +242,20 @@ public class JkFiles {
 	}
 	private static Path moveFile1(Path sourcePath, Path targetPath, boolean overwrite, boolean safePath) throws JkRuntimeException {
 	    try {
-            if (!Files.exists(sourcePath) || !Files.isRegularFile(sourcePath)) {
-                throw new FileNotFoundException(strf("Source file [%s] not exists or not a regular file!", sourcePath));
+            if (!Files.exists(sourcePath)) {
+                throw new FileNotFoundException(strf("Source file [%s] not exists!", sourcePath));
             }
 
-            Path outPath = Files.isDirectory(targetPath) ? targetPath.resolve(sourcePath.getFileName()) : targetPath;
-            if (safePath) outPath = computeSafelyPath(outPath);
+            if (safePath) targetPath = computeSafelyPath(targetPath);
 
-            if (!overwrite && Files.exists(outPath)) {
-                throw new FileAlreadyExistsException(String.format("Unable to move [%s] to [%s]: target path already exists", sourcePath.toAbsolutePath(), outPath.toAbsolutePath()));
+            if (!overwrite && Files.exists(targetPath)) {
+                throw new FileAlreadyExistsException(String.format("Unable to move [%s] to [%s]: target path already exists", sourcePath.toAbsolutePath(), targetPath.toAbsolutePath()));
             }
 
-            Files.deleteIfExists(outPath);
-            Files.createDirectories(getParent(outPath));
-            Files.move(sourcePath, outPath);
+            Files.createDirectories(getParent(targetPath));
+            Files.move(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
 
-            return outPath;
+            return targetPath;
 
         } catch (IOException ex) {
             throw new JkRuntimeException(ex);

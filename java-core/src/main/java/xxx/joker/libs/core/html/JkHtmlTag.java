@@ -13,7 +13,7 @@ public class JkHtmlTag {
     private String tagName;
     private Map<String, String> attributeMap;
     private List<JkHtmlTag> children;
-    private String textInside;
+    private List<String> textInsideLines;
     private boolean autoClosed;
 
     protected JkHtmlTag() {
@@ -77,7 +77,11 @@ public class JkHtmlTag {
     }
 
     public String getTextInside() {
-        return textInside;
+        return textInsideLines.isEmpty() ? null : JkStreams.join(textInsideLines, "");
+    }
+
+    public List<String> getTextInsideLines() {
+        return new ArrayList<>(textInsideLines);
     }
 
     public boolean isAutoClosed() {
@@ -90,9 +94,11 @@ public class JkHtmlTag {
     protected void setTagName(String tagName) {
         this.tagName = tagName;
     }
-    protected void setTextInside(String textInside) {
-        this.textInside = textInside;
+
+    protected void setTextInsideLines(List<String> textInsideLines) {
+        this.textInsideLines = textInsideLines;
     }
+
     protected void addChildren(JkHtmlTag child) {
         children.add(child);
     }

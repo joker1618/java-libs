@@ -16,7 +16,7 @@ public class JkHtmlScanner {
 
         List<JkHtmlTag> rootTags = new ArrayList<>();
         List<JkHtmlTag> openedList = new ArrayList<>();
-        Map<JkHtmlTag, String> txtInsideMap = new HashMap<>();
+        Map<JkHtmlTag,List<String>> txtInsideMap = new HashMap<>();
         int ltIndex;
 
         while((ltIndex = sb.indexOf("<")) != -1) {
@@ -31,7 +31,12 @@ public class JkHtmlScanner {
                 if (!openedList.isEmpty()) {
                     JkHtmlTag parent = openedList.get(openedList.size() - 1);
                     parent.addChildren(tag);
-                    txtInsideMap.put(parent, txtInsideMap.getOrDefault(parent, "") + sb.substring(0, ltIndex));
+                    String trim = sb.substring(0, ltIndex).trim();
+                    if(!trim.isEmpty()) {
+                        txtInsideMap.putIfAbsent(parent, new ArrayList<>());
+                        txtInsideMap.get(parent).add(trim);
+                    }
+
                 } else {
                     rootTags.add(tag);
                 }
@@ -46,9 +51,13 @@ public class JkHtmlScanner {
                     break;
                 }
 
-                String txtInside = (txtInsideMap.getOrDefault(parentTag, "") + sb.substring(0, ltIndex)).trim();
-                if(StringUtils.isNotBlank(txtInside)) {
-                    parentTag.setTextInside(txtInside);
+                String trim = sb.substring(0, ltIndex).trim();
+                if(!trim.isEmpty()) {
+                    txtInsideMap.putIfAbsent(parentTag, new ArrayList<>());
+                    txtInsideMap.get(parentTag).add(trim);
+                }
+                if(txtInsideMap.containsKey(parentTag)) {
+                    parentTag.setTextInsideLines(txtInsideMap.get(parentTag));
                 }
 
                 openedList.remove(openedList.size()-1);

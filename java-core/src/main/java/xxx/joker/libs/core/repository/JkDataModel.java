@@ -8,11 +8,9 @@ import xxx.joker.libs.core.utils.JkReflection;
 import xxx.joker.libs.core.utils.JkStuff;
 
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 
 import static xxx.joker.libs.core.repository.JkPersistenceManager.EntityLines;
 
@@ -53,6 +51,26 @@ public abstract class JkDataModel {
             throw new JkRuntimeException("Class {} does not belong to package {}", entityClazz.getName(), pkgToScan);
         }
         return (TreeSet<T>) data;
+    }
+
+    public <T extends JkEntity> List<T> getDataList(Class<T> entityClazz, Predicate<T> filter) {
+        TreeSet<JkEntity> data = dataMap.get(entityClazz);
+        if(data == null) {
+            throw new JkRuntimeException("Class {} does not belong to package {}", entityClazz.getName(), pkgToScan);
+        }
+        List<T> ts = new ArrayList<>((TreeSet<T>) data);
+        ts.removeIf(t -> !filter.test(t));
+        return ts;
+    }
+
+    public <T extends JkEntity> T getDataObject(Class<T> entityClazz, Predicate<T> filter) {
+        TreeSet<JkEntity> data = dataMap.get(entityClazz);
+        if(data == null) {
+            throw new JkRuntimeException("Class {} does not belong to package {}", entityClazz.getName(), pkgToScan);
+        }
+        List<T> ts = new ArrayList<>((TreeSet<T>) data);
+        ts.removeIf(t -> !filter.test(t));
+        return ts.size() == 1 ? ts.get(0) : null;
     }
 
     public void cascadeDependencies() {
