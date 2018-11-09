@@ -1,5 +1,7 @@
 package xxx.joker.libs.core.utils;
 
+import xxx.joker.libs.core.exception.JkRuntimeException;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
@@ -59,33 +61,44 @@ public class JkBytes {
 		return toRet;
 	}
 
-	public static byte[] getBytes(Path path) throws IOException {
-		int size = (int) Files.size(path);
-		return getBytes(path, 0, size);
+	public static byte[] getBytes(Path path) throws JkRuntimeException {
+	    try {
+            int size = (int) Files.size(path);
+            return getBytes(path, 0, size);
+        } catch (IOException ex) {
+	        throw new JkRuntimeException(ex);
+        }
 	}
-	public static byte[] getBytes(Path path, int start, int length) throws IOException {
+	public static byte[] getBytes(Path path, int start, int length) throws JkRuntimeException {
 		try (RandomAccessFile raf = new RandomAccessFile(path.toFile(), "r")) {
 			return getBytes(raf, start, length);
-		}
+        } catch (IOException ex) {
+            throw new JkRuntimeException(ex);
+        }
 	}
-	public static byte[] getBytes(RandomAccessFile raf, int start, int length) throws IOException {
-		byte[] toRet = new byte[length];
-		raf.seek(start);
-		int counter = raf.read(toRet);
-		if(counter == length) {
-			return toRet;
-		}
+	public static byte[] getBytes(RandomAccessFile raf, int start, int length) throws JkRuntimeException {
+	    try {
+            byte[] toRet = new byte[length];
+            raf.seek(start);
+            int counter = raf.read(toRet);
+            if (counter == length) {
+                return toRet;
+            }
 
-		toRet = getBytes(toRet, 0, counter);
-		while(counter < length) {
-			int rem = length - counter;
-			byte[] arr = new byte[rem];
-			int read = raf.read(arr);
-			toRet = mergeArrays(toRet, getBytes(arr, 0, read));
-			counter += read;
-		}
+            toRet = getBytes(toRet, 0, counter);
+            while (counter < length) {
+                int rem = length - counter;
+                byte[] arr = new byte[rem];
+                int read = raf.read(arr);
+                toRet = mergeArrays(toRet, getBytes(arr, 0, read));
+                counter += read;
+            }
 
-		return toRet;
+            return toRet;
+
+        } catch (IOException ex) {
+            throw new JkRuntimeException(ex);
+        }
 	}
 
 	public static byte[] getBytes(byte[] byteArr, int start, int length) {
