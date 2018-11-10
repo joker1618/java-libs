@@ -17,14 +17,16 @@ public class JkHtmlTag {
     private boolean autoClosed;
 
     protected JkHtmlTag() {
-        attributeMap = new HashMap<>();
-        children = new ArrayList<>();
+        this.attributeMap = new HashMap<>();
+        this.children = new ArrayList<>();
+        this.textInsideLines = new ArrayList<>();
     }
 
     protected JkHtmlTag(String tagName) {
         this.tagName = tagName;
         this.attributeMap = new HashMap<>();
         this.children = new ArrayList<>();
+        this.textInsideLines = new ArrayList<>();
     }
 
     public JkHtmlTag findFirst(String childName, String... attributes) {

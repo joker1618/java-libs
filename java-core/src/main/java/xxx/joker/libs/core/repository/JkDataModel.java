@@ -45,6 +45,10 @@ public abstract class JkDataModel {
         logger.info("Committed model data");
     }
 
+    public Map<Class<?>, TreeSet<JkEntity>> getDataMap() {
+        return dataMap;
+    }
+
     public <T extends JkEntity> TreeSet<T> getData(Class<T> entityClazz) {
         TreeSet<JkEntity> data = dataMap.get(entityClazz);
         if(data == null) {

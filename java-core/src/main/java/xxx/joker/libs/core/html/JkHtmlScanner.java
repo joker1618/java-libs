@@ -11,7 +11,7 @@ import java.util.Map;
 public class JkHtmlScanner {
 
     public static List<JkHtmlTag> parseHtml(String html) {
-        String finalHtml = html.replaceAll("<!--((.|\\s)*?)-->", "").replaceAll("<!((.|\\s)*?)>", ""); // remove html comments
+        String finalHtml = fixHtml(html);
         StringBuilder sb = new StringBuilder(finalHtml);
 
         List<JkHtmlTag> rootTags = new ArrayList<>();
@@ -130,5 +130,11 @@ public class JkHtmlScanner {
         return Pair.of(tag, true);
     }
 
+    private static String fixHtml(String html) {
+        html = html.replaceAll("<!--((.|\\s)*?)-->", ""); // remove html comments
+        html = html.replaceAll("<!((.|\\s)*?)>", ""); // remove DOCTYPE
+        html = html.replace("&#160;", " ").replace("&nbsp;", " "); // replace spaces
+        return html;
+    }
 
 }

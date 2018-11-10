@@ -19,6 +19,12 @@ import java.util.function.Function;
 public class JkFxUtil {
 
 	/* TableView utilities */
+	public static <T> TableColumn<T, String> createTableColumnString(String header, String bindVarName) {
+        TableColumn<T, String> tcol = new TableColumn<>(header);
+		setTableCellFactory(tcol, bindVarName, s -> s, s -> s);
+		return tcol;
+	}
+
 	public static void setTableCellFactoryString(TableColumn<?, String> column, String bindVarName) {
 		setTableCellFactory(column, bindVarName, s -> s, s -> s);
 	}
