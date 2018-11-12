@@ -1,6 +1,7 @@
 package xxx.joker.libs.core.html;
 
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import xxx.joker.libs.core.utils.JkStreams;
 
@@ -13,20 +14,23 @@ public class JkHtmlTag {
     private String tagName;
     private Map<String, String> attributeMap;
     private List<JkHtmlTag> children;
-    private List<String> textInsideLines;
+    private List<String> textTagLines;
+    private List<String> allTextInsideLines;
     private boolean autoClosed;
 
     protected JkHtmlTag() {
         this.attributeMap = new HashMap<>();
         this.children = new ArrayList<>();
-        this.textInsideLines = new ArrayList<>();
+        this.textTagLines = new ArrayList<>();
+        this.allTextInsideLines = new ArrayList<>();
     }
 
     protected JkHtmlTag(String tagName) {
         this.tagName = tagName;
         this.attributeMap = new HashMap<>();
         this.children = new ArrayList<>();
-        this.textInsideLines = new ArrayList<>();
+        this.textTagLines = new ArrayList<>();
+        this.allTextInsideLines = new ArrayList<>();
     }
 
     public JkHtmlTag findFirst(String childName, String... attributes) {
@@ -75,15 +79,34 @@ public class JkHtmlTag {
     }
 
     public List<JkHtmlTag> getChildren() {
-        return new ArrayList<>(children);
+        return children;
+    }
+    public List<JkHtmlTag> getChildren(String tagName) {
+        return JkStreams.filter(children, t -> t.getTagName().equalsIgnoreCase(tagName));
+    }
+    public JkHtmlTag getChildren(String tagName, int childNum) {
+        List<JkHtmlTag> chlist = getChildren(tagName);
+        return childNum < chlist.size() ? chlist.get(childNum) : null;
     }
 
-    public String getTextInside() {
-        return textInsideLines.isEmpty() ? null : JkStreams.join(textInsideLines, "");
+    public String getTextTag() {
+        return getTextTag("");
+    }
+    public String getTextTag(String joiner) {
+        return textTagLines.isEmpty() ? null : JkStreams.join(textTagLines, joiner);
+    }
+    public String getAllTextInside() {
+        return getAllTextInside("");
+    }
+    public String getAllTextInside(String joiner) {
+        return allTextInsideLines.isEmpty() ? null : JkStreams.join(allTextInsideLines, joiner);
     }
 
-    public List<String> getTextInsideLines() {
-        return new ArrayList<>(textInsideLines);
+    public List<String> getTextTagLines() {
+        return textTagLines;
+    }
+    public List<String> getAllTextInsideLines() {
+        return allTextInsideLines;
     }
 
     public boolean isAutoClosed() {
@@ -97,13 +120,6 @@ public class JkHtmlTag {
         this.tagName = tagName;
     }
 
-    protected void setTextInsideLines(List<String> textInsideLines) {
-        this.textInsideLines = textInsideLines;
-    }
-
-    protected void addChildren(JkHtmlTag child) {
-        children.add(child);
-    }
     protected void setAutoClosed(boolean autoClosed) {
         this.autoClosed = autoClosed;
     }
