@@ -334,8 +334,8 @@ public class JkFiles {
 	}    
 
 	public static String getFileName(Path path) {
-		if(path == null) return null;
 		String fn = path.toAbsolutePath().normalize().getFileName().toString();
+		if(Files.isDirectory(path)) return fn;
 		String ext = getExtension(path);
 		return fn.replaceAll(Pattern.quote(".") + ext + "$", "");
 	}
@@ -344,9 +344,12 @@ public class JkFiles {
 	}
 
 	public static String getExtension(Path path) {
+		if(Files.isDirectory(path)) {
+			return "";
+		}
 		String fn = path.toAbsolutePath().normalize().getFileName().toString();
 		int index = fn.lastIndexOf('.');
-		return index < 0  ? "" : fn.substring(index+1);
+		return index == -1  ? "" : fn.substring(index+1);
 	}
 	public static String getExtension(String fileName) {
 		return getExtension(Paths.get(fileName));
