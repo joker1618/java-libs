@@ -16,7 +16,6 @@ public class JkHtmlScanner {
 
         List<JkHtmlTag> rootTags = new ArrayList<>();
         List<JkHtmlTag> openedList = new ArrayList<>();
-        Map<JkHtmlTag,List<String>> txtInsideMap = new HashMap<>();
         int ltIndex;
 
         while((ltIndex = sb.indexOf("<")) != -1) {
@@ -74,64 +73,6 @@ public class JkHtmlScanner {
 
         return rootTags;
     }
-//    public static List<JkHtmlTag> parseHtml(String html) {
-//        String finalHtml = fixHtml(html);
-//        StringBuilder sb = new StringBuilder(finalHtml);
-//
-//        List<JkHtmlTag> rootTags = new ArrayList<>();
-//        List<JkHtmlTag> openedList = new ArrayList<>();
-//        Map<JkHtmlTag,List<String>> txtInsideMap = new HashMap<>();
-//        int ltIndex;
-//
-//        while((ltIndex = sb.indexOf("<")) != -1) {
-//            int gtIndex = sb.indexOf(">", ltIndex);
-//            if(gtIndex == -1)   break;
-//
-//            String strTag = sb.substring(ltIndex, gtIndex + 1);
-//            Pair<JkHtmlTag, Boolean> pair = parseTagString(strTag);
-//            JkHtmlTag tag = pair.getKey();
-//
-//            if(pair.getValue()) {
-//                if (!openedList.isEmpty()) {
-//                    JkHtmlTag parent = openedList.get(openedList.size() - 1);
-//                    parent.addChildren(tag);
-//                    String trim = sb.substring(0, ltIndex).trim();
-//                    if(!trim.isEmpty()) {
-//                        txtInsideMap.putIfAbsent(parent, new ArrayList<>());
-//                        txtInsideMap.get(parent).add(trim);
-//                    }
-//
-//                } else {
-//                    rootTags.add(tag);
-//                }
-//                if (!tag.isAutoClosed())    openedList.add(tag);
-//
-//            } else if(openedList.isEmpty()) {
-//                break;
-//
-//            } else {
-//                JkHtmlTag parentTag = openedList.get(openedList.size()-1);
-//                if(!parentTag.getTagName().equals(tag.getTagName())) {
-//                    break;
-//                }
-//
-//                String trim = sb.substring(0, ltIndex).trim();
-//                if(!trim.isEmpty()) {
-//                    txtInsideMap.putIfAbsent(parentTag, new ArrayList<>());
-//                    txtInsideMap.get(parentTag).add(trim);
-//                }
-//                if(txtInsideMap.containsKey(parentTag)) {
-//                    parentTag.setTextInsideLines(txtInsideMap.get(parentTag));
-//                }
-//
-//                openedList.remove(openedList.size()-1);
-//            }
-//
-//            sb.delete(0, gtIndex+1);
-//        }
-//
-//        return rootTags;
-//    }
 
     // return <tag; true if is a tag description, false if is a tag closure>
     // strTag = <...>
