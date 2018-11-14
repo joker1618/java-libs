@@ -260,6 +260,7 @@ class JkEntityManager {
         } else if (fclazz == LocalDateTime.class) {
             o = LocalDateTime.parse(value, DateTimeFormatter.ISO_DATE_TIME);
         } else {
+            // String case
             o = value.replaceAll(PH_TAB, "\t").replaceAll(PH_NEWLINE, "\n");
         }
 
@@ -395,6 +396,7 @@ class JkEntityManager {
             } else if (fclazz == LocalDateTime.class) {
                 toRet = DateTimeFormatter.ISO_DATE_TIME.format((LocalDateTime) value);
             } else if (!JkReflection.isOfType(fclazz, JkEntity.class)) {
+                // String case
                 toRet = String.valueOf(value).replaceAll("\t", PH_TAB).replaceAll("\n", PH_NEWLINE);
             }
 
