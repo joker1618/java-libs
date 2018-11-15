@@ -61,7 +61,40 @@ public class JkHtmlTag {
         }
 
         for(int i = 0; i < children.size() && toRet.isEmpty(); i++) {
-            toRet.addAll(children.get(i).findFirsts(childName, attributes));
+            toRet.addAll(children.get(i).findFirstTagList(childName, attributes));
+        }
+
+        return toRet;
+    }
+
+    public JkHtmlTag findAll(String childName, String... attributes) {
+        List<JkHtmlTag> tags = findAlls(childName, attributes);
+        return tags.isEmpty() ? null : tags.get(0);
+    }
+    public List<JkHtmlTag> findAlls(String childName, String... attributes) {
+        return findAllTagList(childName, attributes);
+    }
+    private List<JkHtmlTag> findAllTagList(String childName, String... attributes) {
+        List<Pair<String, String>> attrPairs = JkStreams.filterAndMap(Arrays.asList(attributes), s -> s.contains("="), s -> Pair.of(s.split("=")[0], s.split("=")[1]));
+
+        List<JkHtmlTag> toRet = new ArrayList<>();
+
+        for(JkHtmlTag child : children) {
+            if(childName.equalsIgnoreCase(child.getTagName())) {
+                boolean res = true;
+                for(Pair<String,String> attr : attrPairs) {
+                    if(attr.getValue().equals(child.getAttribute(attr.getKey()))) {
+                        res = false;
+                        break;
+                    }
+                }
+                if(res) {
+                    toRet.add(child);
+                }
+            }
+            for(JkHtmlTag subChild : child.getChildren()) {
+                toRet.addAll(subChild.findAllTagList(childName, attributes));
+            }
         }
 
         return toRet;
@@ -93,13 +126,15 @@ public class JkHtmlTag {
         return getTextTag("");
     }
     public String getTextTag(String joiner) {
-        return textTagLines.isEmpty() ? null : JkStreams.join(textTagLines, joiner);
+        String str = textTagLines.isEmpty() ? null : JkStreams.join(textTagLines, joiner);
+        return str == null ? null : HtmlChars.escapeHtmlChars(str);
     }
     public String getAllTextInside() {
         return getAllTextInside("");
     }
     public String getAllTextInside(String joiner) {
-        return allTextInsideLines.isEmpty() ? null : JkStreams.join(allTextInsideLines, joiner);
+        String str = allTextInsideLines.isEmpty() ? null : JkStreams.join(allTextInsideLines, joiner);
+        return str == null ? null : HtmlChars.escapeHtmlChars(str);
     }
 
     public List<String> getTextTagLines() {

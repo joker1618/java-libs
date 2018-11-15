@@ -2,13 +2,22 @@ package xxx.joker.libs.core.html;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import xxx.joker.libs.core.utils.JkStreams;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class JkHtmlScanner {
+
+    public static void main(String[] args) throws IOException {
+        String html = JkStreams.join(Files.readAllLines(Paths.get("C:\\Users\\f.barbano\\Desktop\\aaa.txt")), "");
+        parseHtml(html);
+    }
 
     public static List<JkHtmlTag> parseHtml(String html) {
         String finalHtml = fixHtml(html);
@@ -138,7 +147,6 @@ public class JkHtmlScanner {
     private static String fixHtml(String html) {
         html = html.replaceAll("<!--((.|\\s)*?)-->", ""); // remove html comments
         html = html.replaceAll("<!((.|\\s)*?)>", ""); // remove DOCTYPE
-        html = html.replace("&#160;", " ").replace("&nbsp;", " "); // replace spaces
         return html;
     }
 

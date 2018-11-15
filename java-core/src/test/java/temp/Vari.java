@@ -4,13 +4,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import xxx.joker.libs.core.html.JkHtmlTag;
 import xxx.joker.libs.core.html.JkTextScannerImpl;
+import xxx.joker.libs.core.utils.JkConverter;
 import xxx.joker.libs.core.utils.JkStreams;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,7 +23,7 @@ import static xxx.joker.libs.core.utils.JkConsole.display;
 public class Vari {
 
     @Test
-    public void prova() throws IOException {
+    public void prova() throws IOException, ParseException {
 
 //        StringBuilder sb = new StringBuilder("  ciao da federico da merda");
 ////        display("%s", sb.toString().replaceAll("da (.*?) da", "1"));
@@ -28,10 +32,10 @@ public class Vari {
 //            display("found");
 //        }
 
-        Matcher m = Pattern.compile("^\\s*(.*)$").matcher("  ciao da federicod  ");
-        if(m.find()) {
-            display("%s*", m.group(1));
-        }
+        NumberFormat nfeng = NumberFormat.getNumberInstance(Locale.ENGLISH);
+        nfeng.setGroupingUsed(false);
+        display("%s", nfeng.format(2212.23));
+        display("%s", nfeng.format(nfeng.parse("4545.63").doubleValue()));
 
     }
     private void printTag(JkHtmlTag tag, int level) {
