@@ -41,7 +41,7 @@ public class JkHtmlTag {
         return findFirstTagList(childName, attributes);
     }
     private List<JkHtmlTag> findFirstTagList(String childName, String... attributes) {
-        List<Pair<String, String>> attrPairs = JkStreams.filterAndMap(Arrays.asList(attributes), s -> s.contains("="), s -> Pair.of(s.split("=")[0], s.split("=")[1]));
+        List<Pair<String, String>> attrPairs = JkStreams.map(Arrays.asList(attributes), s -> Pair.of(s.split("=")[0], s.split("=")[1]));
 
         List<JkHtmlTag> toRet = new ArrayList<>();
 
@@ -49,7 +49,7 @@ public class JkHtmlTag {
             if(childName.equalsIgnoreCase(child.getTagName())) {
                 boolean res = true;
                 for(Pair<String,String> attr : attrPairs) {
-                    if(attr.getValue().equals(child.getAttribute(attr.getKey()))) {
+                    if(!attr.getValue().equals(child.getAttribute(attr.getKey()))) {
                         res = false;
                         break;
                     }
