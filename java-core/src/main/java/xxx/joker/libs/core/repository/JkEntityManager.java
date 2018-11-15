@@ -10,7 +10,7 @@ import xxx.joker.libs.core.repository.entity.JkEntityField;
 import xxx.joker.libs.core.utils.*;
 
 import java.io.File;
-import java.lang.reflect.Field;
+import java.lang.reflect.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static xxx.joker.libs.core.repository.JkPersistenceManager.EntityLines;
+import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 class JkEntityManager {
@@ -90,17 +91,7 @@ class JkEntityManager {
         return parsedEntities;
     }
 
-    private List<Class<?>> retrieveEntityClasses(String pkgToScan) {
-        List<Class<?>> classes = JkStuff.findClasses(pkgToScan);
-        classes.removeIf(c -> !JkReflection.isOfType(c, JkEntity.class));
-        return classes;
-    }
-    
-    public Set<Class<?>> getEntityClasses() {
-        return entityFields.keySet();
-    }
-    
-    public Map<Class<?>, TreeSet<JkEntity>> parseData(Map<Class<?>, EntityLines> dataMap) {
+    public Map<Class<?>, Set<JkEntity>> parseData(Map<Class<?>, EntityLines> dataMap) {
         Map<Class<?>, Map<Long, JkEntity>> entityMap = new HashMap<>();
 
         // Parse entities
@@ -129,9 +120,13 @@ class JkEntityManager {
                 }
             }
 
-            Map<Class<?>, TreeSet<JkEntity>> toRet = new HashMap<>();
+            Map<Class<?>, Set<JkEntity>> toRet = new HashMap<>();
             for(Class<?> c : entityMap.keySet()) {
-                toRet.put(c, JkConverter.toTreeSet(entityMap.get(c).values()));
+                HandlerSet<JkEntity> handlerSet = new HandlerSet<>();
+                Set<JkEntity> proxySet = (Set<JkEntity>) Proxy.newProxyInstance(Set.class.getClassLoader(), new Class[]{Set.class}, handlerSet);
+//                proxySet.addAll(new ArrayList<>(entityMap.get(c).values()));
+                proxySet.addAll(entityMap.get(c).values());
+                toRet.put(c, proxySet);
             }
 
             return toRet;
@@ -161,10 +156,6 @@ class JkEntityManager {
         } catch(IllegalAccessException ex) {
             throw new JkRuntimeException(ex);
         }
-    }
-
-    public Long getNextSequenceValue() {
-        return sequence.getAndIncrement();
     }
 
     private JkEntity parseLine(Class<?> elemClazz, String line) {
@@ -267,7 +258,7 @@ class JkEntityManager {
         return o;
     }
 
-    public Map<Class<?>, EntityLines> formatEntities(Map<Class<?>, TreeSet<JkEntity>> dataMap) {
+    public Map<Class<?>, EntityLines> formatEntities(Map<Class<?>, Set<JkEntity>> dataMap) {
         try {
             Map<Class<?>, EntityLines> toRet = new HashMap<>();
             List<ForeignKey> allDeps = new ArrayList<>();
@@ -277,7 +268,7 @@ class JkEntityManager {
                 toRet.put(clazz, new EntityLines(clazz));
                 mapPkId.put(clazz, new HashMap<>());
                 for (JkEntity elem : dataMap.get(clazz)) {
-                    setIDIfMissing(elem);
+//                    setIDIfMissing(elem);
                     mapPkId.get(clazz).put(elem.getPrimaryKey(), elem.getEntityID());
                     Pair<String, List<ForeignKey>> pair = formatEntity(elem);
                     toRet.get(clazz).getEntityLines().add(pair.getKey());
@@ -340,12 +331,12 @@ class JkEntityManager {
         }
     }
 
-    private void setIDIfMissing(JkEntity entity) {
-        if(entity.getEntityID() == null) {
-            entity.setEntityID(getNextSequenceValue());
-            entity.setInsertTstamp(LocalDateTime.now());
-        }
-    }
+//    private void setIDIfMissing(JkEntity entity) {
+//        if(entity.getEntityID() == null) {
+//            entity.setEntityID(getNextSequenceValue());
+//            entity.setInsertTstamp(LocalDateTime.now());
+//        }
+//    }
 
     // return <toStringOfEntity, Set<foreignKeys(PK)>> (key or value)
     private Pair<String, Set<String>> formatValue(Object value, AnnField annField) {
@@ -578,6 +569,40 @@ class JkEntityManager {
         }
     }
 
+    private class HandlerSet<T> implements InvocationHandler {
+        private final Set<T> original;
+
+        public HandlerSet() {
+            this.original = new TreeSet<>();
+        }
+
+        public Object invoke(Object proxy, Method method, Object[] args)
+                throws IllegalAccessException, IllegalArgumentException,
+                InvocationTargetException {
+
+            if ("add".equals(method.getName())) {
+                if(args.length == 1 && args[0] != null) {
+                    JkEntity e = (JkEntity) args[0];
+                    if(e.getEntityID() == null) {
+                        e.setEntityID(sequence.getAndIncrement());
+                        e.setInsertTstamp(LocalDateTime.now());
+                    }
+                }
+
+            } else if ("addAll".equals(method.getName())) {
+                Collection coll = (Collection)args[0];
+                for(Object obj : coll) {
+                    JkEntity e = (JkEntity) obj;
+                    if(e.getEntityID() == null) {
+                        e.setEntityID(sequence.getAndIncrement());
+                        e.setInsertTstamp(LocalDateTime.now());
+                    }
+                }
+            }
+
+            return method.invoke(original, args);
+        }
+    }
 
     
 }

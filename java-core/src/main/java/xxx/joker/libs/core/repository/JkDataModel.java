@@ -20,7 +20,7 @@ public abstract class JkDataModel {
 
     private final JkPersistenceManager persistenceManager;
     private final JkEntityManager entityManager;
-    private final Map<Class<?>, TreeSet<JkEntity>> dataMap;
+    private final Map<Class<?>, Set<JkEntity>> dataMap;
     private final String pkgToScan;
     private final AtomicLong sequence;
 
@@ -34,7 +34,7 @@ public abstract class JkDataModel {
         this.dataMap = readModelData();
     }
 
-    private Map<Class<?>, TreeSet<JkEntity>> readModelData() {
+    private Map<Class<?>, Set<JkEntity>> readModelData() {
         Map<Class<?>, EntityLines> elinesMap = persistenceManager.readData();
         return entityManager.parseData(elinesMap);
     }
@@ -45,20 +45,20 @@ public abstract class JkDataModel {
         logger.info("Committed model data");
     }
 
-    public Map<Class<?>, TreeSet<JkEntity>> getDataMap() {
+    public Map<Class<?>, Set<JkEntity>> getDataMap() {
         return dataMap;
     }
 
-    public <T extends JkEntity> TreeSet<T> getData(Class<T> entityClazz) {
-        TreeSet<JkEntity> data = dataMap.get(entityClazz);
+    public <T extends JkEntity> Set<T> getData(Class<T> entityClazz) {
+        Set<JkEntity> data = dataMap.get(entityClazz);
         if(data == null) {
             throw new JkRuntimeException("Class {} does not belong to package {}", entityClazz.getName(), pkgToScan);
         }
-        return (TreeSet<T>) data;
+        return (Set<T>) data;
     }
 
     public <T extends JkEntity> List<T> getDataList(Class<T> entityClazz, Predicate<T> filter) {
-        TreeSet<JkEntity> data = dataMap.get(entityClazz);
+        Set<JkEntity> data = dataMap.get(entityClazz);
         if(data == null) {
             throw new JkRuntimeException("Class {} does not belong to package {}", entityClazz.getName(), pkgToScan);
         }
@@ -68,7 +68,7 @@ public abstract class JkDataModel {
     }
 
     public <T extends JkEntity> T getDataObject(Class<T> entityClazz, Predicate<T> filter) {
-        TreeSet<JkEntity> data = dataMap.get(entityClazz);
+        Set<JkEntity> data = dataMap.get(entityClazz);
         if(data == null) {
             throw new JkRuntimeException("Class {} does not belong to package {}", entityClazz.getName(), pkgToScan);
         }
