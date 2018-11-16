@@ -67,11 +67,7 @@ public class JkHtmlTag {
         return toRet;
     }
 
-    public JkHtmlTag findAll(String childName, String... attributes) {
-        List<JkHtmlTag> tags = findAlls(childName, attributes);
-        return tags.isEmpty() ? null : tags.get(0);
-    }
-    public List<JkHtmlTag> findAlls(String childName, String... attributes) {
+    public List<JkHtmlTag> findAll(String childName, String... attributes) {
         return findAllTagList(childName, attributes);
     }
     private List<JkHtmlTag> findAllTagList(String childName, String... attributes) {
@@ -83,7 +79,7 @@ public class JkHtmlTag {
             if(childName.equalsIgnoreCase(child.getTagName())) {
                 boolean res = true;
                 for(Pair<String,String> attr : attrPairs) {
-                    if(attr.getValue().equals(child.getAttribute(attr.getKey()))) {
+                    if(!attr.getValue().equals(child.getAttribute(attr.getKey()))) {
                         res = false;
                         break;
                     }
@@ -92,9 +88,7 @@ public class JkHtmlTag {
                     toRet.add(child);
                 }
             }
-            for(JkHtmlTag subChild : child.getChildren()) {
-                toRet.addAll(subChild.findAllTagList(childName, attributes));
-            }
+            toRet.addAll(child.findAllTagList(childName, attributes));
         }
 
         return toRet;
@@ -121,20 +115,44 @@ public class JkHtmlTag {
         List<JkHtmlTag> chlist = getChildren(tagName);
         return childNum < chlist.size() ? chlist.get(childNum) : null;
     }
+    public JkHtmlTag getFirstChildren(String tagName, String... attributes) {
+        List<JkHtmlTag> chlist = getChildren(tagName, attributes);
+        return chlist.isEmpty() ? null : chlist.get(0);
+    }
+    public List<JkHtmlTag> getChildren(String tagName, String... attributes) {
+        List<JkHtmlTag> chlist = getChildren(tagName);
+        List<Pair<String, String>> attrPairs = JkStreams.filterAndMap(Arrays.asList(attributes), s -> s.contains("="), s -> Pair.of(s.split("=")[0], s.split("=")[1]));
+        List<JkHtmlTag> finalList = new ArrayList<>();
+        for(JkHtmlTag child : chlist) {
+            boolean add = true;
+            for (Pair<String, String> pair : attrPairs) {
+                if (!pair.getValue().equals(child.getAttribute(pair.getKey()))) {
+                    add = false;
+                    break;
+                }
+            }
+            if(add) {
+                finalList.add(child);
+            }
+        }
+        return finalList;
+    }
 
     public String getTextTag() {
         return getTextTag("");
     }
     public String getTextTag(String joiner) {
         String str = textTagLines.isEmpty() ? null : JkStreams.join(textTagLines, joiner);
-        return str == null ? null : HtmlChars.escapeHtmlChars(str);
+        if(str == null) return null;
+        return str.contains("&") ? HtmlChars.escapeHtmlChars(str) : str;
     }
     public String getAllTextInside() {
         return getAllTextInside("");
     }
     public String getAllTextInside(String joiner) {
         String str = allTextInsideLines.isEmpty() ? null : JkStreams.join(allTextInsideLines, joiner);
-        return str == null ? null : HtmlChars.escapeHtmlChars(str);
+        if(str == null) return null;
+        return str.contains("&") ? HtmlChars.escapeHtmlChars(str) : str;
     }
 
     public List<String> getTextTagLines() {

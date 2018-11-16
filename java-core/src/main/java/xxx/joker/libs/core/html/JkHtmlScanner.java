@@ -14,10 +14,12 @@ import java.util.Map;
 
 public class JkHtmlScanner {
 
-    public static void main(String[] args) throws IOException {
-        String html = JkStreams.join(Files.readAllLines(Paths.get("C:\\Users\\f.barbano\\Desktop\\aaa.txt")), "");
-        parseHtml(html);
-    }
+//    public static void main(String[] args) throws IOException {
+//        String html = JkStreams.join(Files.readAllLines(Paths.get("C:\\Users\\f.barbano\\Desktop\\aaa.txt")), "");
+//        parseHtml(html);
+//    }
+
+    private JkHtmlScanner() {}
 
     public static List<JkHtmlTag> parseHtml(String html) {
         String finalHtml = fixHtml(html);

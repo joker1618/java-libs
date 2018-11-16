@@ -21,7 +21,19 @@ public class JkFxUtil {
 	/* TableView utilities */
 	public static <T> TableColumn<T, String> createTableColumnString(String header, String bindVarName) {
         TableColumn<T, String> tcol = new TableColumn<>(header);
-		setTableCellFactory(tcol, bindVarName, s -> s, s -> s);
+		setTableCellFactoryString(tcol, bindVarName);
+		return tcol;
+	}
+
+	public static <T> TableColumn<T, Integer> createTableColumnInteger(String header, String bindVarName) {
+		TableColumn<T, Integer> tcol = new TableColumn<>(header);
+		setTableCellFactoryInteger(tcol, bindVarName);
+		return tcol;
+	}
+
+	public static <T, V> TableColumn<T, V> createTableColumn(String header, String bindVarName, Function<V,String> formatFunc, Function<String,V> parseFunc) {
+		TableColumn<T, V> tcol = new TableColumn<>(header);
+		setTableCellFactory(tcol, bindVarName, formatFunc, parseFunc);
 		return tcol;
 	}
 
