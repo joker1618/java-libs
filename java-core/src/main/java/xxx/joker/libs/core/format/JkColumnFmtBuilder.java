@@ -199,9 +199,11 @@ public class JkColumnFmtBuilder {
 		String formatText(String source, boolean isHeader) {
 			TextAlignment align = isHeader ? headerAlign : columnAlign;
 			String toRet;
-			if(align == TextAlignment.LEFT) {
-				toRet = strf("%-" + width + "s", source);
-			} else if(align == TextAlignment.RIGHT) {
+            if(width == 0) {
+                toRet = strf("%s", source);
+            } else if(align == TextAlignment.LEFT) {
+                toRet = strf("%-" + width + "s", source);
+            } else if(align == TextAlignment.RIGHT) {
 				toRet = strf("%" + width + "s", source);
 			} else {	// CENTER
 				int filler = width - source.length();
