@@ -6,6 +6,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.xmlbeans.impl.piccolo.io.FileFormatException;
+import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.utils.JkFiles;
 
 import java.io.*;
@@ -31,13 +32,13 @@ public class JkExcelUtil {
 		return isExcelFile(file.toPath());
 	}
 
-	public static List<JkExcelSheet> parseExcelFile(Path excelPath) throws IOException, InvalidFormatException {
+	public static List<JkExcelSheet> parseExcelFile(Path excelPath) throws JkRuntimeException {
 		return parseExcelFile(excelPath.toFile());
 	}
-	public static List<JkExcelSheet> parseExcelFile(File excelFile) throws IOException, InvalidFormatException {
+	public static List<JkExcelSheet> parseExcelFile(File excelFile) throws JkRuntimeException {
 
 		if (!excelFile.exists()) {
-			throw new FileNotFoundException("The excel file cannot be found. ["+excelFile+"]");
+			throw new JkRuntimeException("The excel file does not exists. ["+excelFile+"]");
 		} else if (excelFile.isDirectory()) {
 			throw new IllegalArgumentException("The input path is a folder (must be and excel file). ["+excelFile+"]");
 		}
@@ -65,16 +66,21 @@ public class JkExcelUtil {
 		return new JkExcelSheet(sheet.getSheetName(), lines);
 	}
 
-	private static Workbook openWorkbook(File file) throws IOException, InvalidFormatException {
-		FileInputStream fis = null;
+	private static Workbook openWorkbook(File file) throws JkRuntimeException {
 		try {
-			fis = new FileInputStream(file);
-			return WorkbookFactory.create(fis);
+			FileInputStream fis = null;
+			try {
+				fis = new FileInputStream(file);
+				return WorkbookFactory.create(fis);
 
-		} finally {
-			if (fis != null) {
-				fis.close();
+			} finally {
+				if (fis != null) {
+					fis.close();
+				}
 			}
+
+		} catch(IOException | InvalidFormatException ex) {
+			throw new JkRuntimeException(ex);
 		}
 	}
 
