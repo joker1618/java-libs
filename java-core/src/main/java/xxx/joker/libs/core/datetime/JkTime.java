@@ -130,8 +130,13 @@ public class JkTime implements Comparable<JkTime> {
 
 		return sb.toString();
 	}
+
 	public String toStringDateTime(String pattern) {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
+		return toStringDateTime(dtf);
+	}
+
+	public String toStringDateTime(DateTimeFormatter dtf) {
 		return dtf.format(getLocalDateTime());
 	}
 
