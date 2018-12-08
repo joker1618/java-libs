@@ -122,7 +122,7 @@ class JkEntityManager {
 
             Map<Class<?>, Set<JkEntity>> toRet = new HashMap<>();
             for(Class<?> c : entityMap.keySet()) {
-                HandlerSet<JkEntity> handlerSet = new HandlerSet<>();
+                HandlerSet handlerSet = new HandlerSet();
                 Set<JkEntity> proxySet = (Set<JkEntity>) Proxy.newProxyInstance(Set.class.getClassLoader(), new Class[]{Set.class}, handlerSet);
 //                proxySet.addAll(new ArrayList<>(entityMap.get(c).values()));
                 proxySet.addAll(entityMap.get(c).values());
@@ -569,8 +569,8 @@ class JkEntityManager {
         }
     }
 
-    private class HandlerSet<T> implements InvocationHandler {
-        private final Set<T> original;
+    private class HandlerSet implements InvocationHandler {
+        private final Set<JkEntity> original;
 
         public HandlerSet() {
             this.original = new TreeSet<>();
@@ -581,22 +581,42 @@ class JkEntityManager {
                 InvocationTargetException {
 
             if ("add".equals(method.getName())) {
-                if(args.length == 1 && args[0] != null) {
-                    JkEntity e = (JkEntity) args[0];
-                    if(e.getEntityID() == null) {
-                        e.setEntityID(sequence.getAndIncrement());
-                        e.setInsertTstamp(LocalDateTime.now());
-                    }
+                if(args[0] == null) {
+                    return false;
+                }
+
+                JkEntity e = (JkEntity) args[0];
+                if(e.getEntityID() == null) {
+                    e.setEntityID(sequence.get());
+                    e.setInsertTstamp(LocalDateTime.now());
+                }
+
+                if(original.contains(e)) {
+                    return false;
+                } else {
+                    sequence.getAndIncrement();
+                    return method.invoke(original, args);
                 }
 
             } else if ("addAll".equals(method.getName())) {
                 Collection coll = (Collection)args[0];
+                Collection<JkEntity> toAdd = new ArrayList<>();
                 for(Object obj : coll) {
                     JkEntity e = (JkEntity) obj;
                     if(e.getEntityID() == null) {
-                        e.setEntityID(sequence.getAndIncrement());
+                        e.setEntityID(sequence.get());
                         e.setInsertTstamp(LocalDateTime.now());
                     }
+                    if(!original.contains(e)) {
+                        sequence.getAndIncrement();
+                        toAdd.add(e);
+                    }
+                }
+
+                if(toAdd.isEmpty()) {
+                    return false;
+                } else {
+                    return method.invoke(original, toAdd);
                 }
             }
 
