@@ -143,7 +143,7 @@ public class JkTime implements Comparable<JkTime> {
 		return toString(dtf);
 	}
 	public String toString(DateTimeFormatter dtf) {
-		return dtf.format(getLocalDateTime());
+		return dtf.format(toLocalDateTime());
 	}
 	public String toAod() {
 		return toString("yyyyMMdd");
@@ -155,10 +155,10 @@ public class JkTime implements Comparable<JkTime> {
 		return toString(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 	}
 
-	public LocalDate getLocalDate() {
+	public LocalDate toLocalDate() {
 		return Instant.ofEpochMilli(totalMillis).atZone(ZoneId.systemDefault()).toLocalDate();
 	}
-	public LocalDateTime getLocalDateTime() {
+	public LocalDateTime toLocalDateTime() {
 		return Instant.ofEpochMilli(totalMillis).atZone(ZoneId.systemDefault()).toLocalDateTime();
 	}
 
