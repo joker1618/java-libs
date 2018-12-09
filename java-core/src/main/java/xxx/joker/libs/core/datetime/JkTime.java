@@ -131,15 +131,26 @@ public class JkTime implements Comparable<JkTime> {
 		return sb.toString();
 	}
 
-	public String toStringDateTime(String pattern) {
+	public String toString(String pattern) {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
-		return toStringDateTime(dtf);
+		return toString(dtf);
 	}
-
-	public String toStringDateTime(DateTimeFormatter dtf) {
+	public String toString(DateTimeFormatter dtf) {
 		return dtf.format(getLocalDateTime());
 	}
+	public String toAod() {
+		return toString("yyyyMMdd");
+	}
+	public String toStringIsoDate() {
+		return toString(DateTimeFormatter.ISO_LOCAL_DATE);
+	}
+	public String toStringIsoDateTime() {
+		return toString(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+	}
 
+	public LocalDate getLocalDate() {
+		return Instant.ofEpochMilli(totalMillis).atZone(ZoneId.systemDefault()).toLocalDate();
+	}
 	public LocalDateTime getLocalDateTime() {
 		return Instant.ofEpochMilli(totalMillis).atZone(ZoneId.systemDefault()).toLocalDateTime();
 	}
