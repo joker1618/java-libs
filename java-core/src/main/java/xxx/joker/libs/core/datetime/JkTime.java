@@ -75,6 +75,13 @@ public class JkTime implements Comparable<JkTime> {
 		LocalDateTime ldt = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
 		return of(ldt);
 	}
+	public static JkTime of(String strDate, String dateTimePattern) {
+		return of(strDate, DateTimeFormatter.ofPattern(dateTimePattern));
+	}
+	public static JkTime of(String strDate, DateTimeFormatter dateTimeFormatter) {
+		LocalDate parsed = LocalDate.parse(strDate, dateTimeFormatter);
+		return of(parsed);
+	}
 
 	public static JkTime fromElapsedString(String str) {
 	    return fromElapsedString(str, ":");
