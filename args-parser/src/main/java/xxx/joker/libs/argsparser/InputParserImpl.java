@@ -43,7 +43,7 @@ public class InputParserImpl implements IInputParser {
 	}
 
 	@Override
-	public InputOption parse(String[] inputArgs) throws InputParserException {
+	public <T extends InputOption> T parse(String[] inputArgs) throws InputParserException {
 		Map<OptWrapper, List<String>> inputOptMap = inputArgsToMap(inputArgs);
 
 		// find associated command using evolution
@@ -54,9 +54,9 @@ public class InputParserImpl implements IInputParser {
 		}
 
 		// set field 'selectedCommand' in InputOption instance
-		InputOption io;
+		T io;
 		try {
-			io = optService.getOptClass().newInstance();
+			io = (T) optService.getOptClass().newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new InputParserException("Unable to create instance of %s", optService.getOptClass());
 		}
