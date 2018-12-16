@@ -262,6 +262,17 @@ public class JkFiles {
         }
 	}
 
+	/* READ methods */
+	public static List<String> readLines(Path pathToDel, Predicate<String>... filters) throws JkRuntimeException {
+	    try {
+			List<String> lines = Files.readAllLines(pathToDel);
+			Arrays.stream(filters).forEach(lines::removeIf);
+			return lines;
+		} catch (IOException ex) {
+            throw new JkRuntimeException(ex);
+        }
+	}
+
 	/* REMOVE methods */
 	public static boolean removeFile(Path pathToDel) throws JkRuntimeException {
 	    try {
