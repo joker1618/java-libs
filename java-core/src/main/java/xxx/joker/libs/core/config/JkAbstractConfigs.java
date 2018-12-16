@@ -26,11 +26,15 @@ public abstract class JkAbstractConfigs {
 		this.configMap = Collections.synchronizedMap(new HashMap<>());
 	}
 
+	protected void loadConfigFile(Path configFile) throws IOException {
+		loadConfigFile(configFile.toString());
+	}
+	
 	protected void loadConfigFile(String configFilePath) throws IOException {
 		InputStream is = new FileInputStream(configFilePath);
 		loadConfigFile(is);
 	}
-	
+
 	protected void loadConfigFile(InputStream is) throws IOException {
 		// read properties from file
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
