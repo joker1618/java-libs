@@ -1,6 +1,7 @@
 package xxx.joker.libs.core.config;
 
 import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.core.utils.JkConverter;
 import xxx.joker.libs.core.utils.JkFiles;
 import xxx.joker.libs.core.utils.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
@@ -167,7 +168,7 @@ public abstract class JkAbstractConfigs {
 	}
 	protected Integer getInt(String key, Integer _default) {
 		String value = getString(key);
-		return value == null ? _default : Integer.parseInt(value);
+		return value == null ? _default : JkConverter.stringToInteger(value, _default);
 	}
 
 	protected Long getLong(String key) {
@@ -175,7 +176,7 @@ public abstract class JkAbstractConfigs {
 	}
 	protected Long getLong(String key, Long _default) {
 		String value = getString(key);
-		return value == null ? _default : Long.parseLong(value);
+		return value == null ? _default : JkConverter.stringToLong(value, _default);
 	}
 
 	protected Double getDouble(String key) {
@@ -183,7 +184,7 @@ public abstract class JkAbstractConfigs {
 	}
 	protected Double getDouble(String key, Double _default) {
 		String value = getString(key);
-		return value == null ? _default : Double.parseDouble(value);
+		return value == null ? _default : JkConverter.stringToDouble(value, _default);
 	}
 
 	protected BigDecimal getBigDecimal(String key) {
@@ -191,7 +192,9 @@ public abstract class JkAbstractConfigs {
 	}
 	protected BigDecimal getBigDecimal(String key, BigDecimal _default) {
 		String value = getString(key);
-		return value == null ? _default : BigDecimal.valueOf(Double.parseDouble(value));
+		if(value == null)	return _default;
+		Double d = JkConverter.stringToDouble(value);
+		return d == null ? _default : BigDecimal.valueOf(d);
 	}
 
 	protected Path getPath(String key) {
@@ -247,7 +250,7 @@ public abstract class JkAbstractConfigs {
 		}
 	}
 
-	private class Prop {
+	protected class Prop {
 		String key;
 		String originalValue;
 		String evalutedValue;
@@ -258,6 +261,18 @@ public abstract class JkAbstractConfigs {
 		}
 		public String toString() {
 			return String.format("[%s, %s]", originalValue, evalutedValue);
+		}
+
+		public String getKey() {
+			return key;
+		}
+
+		public String getOriginalValue() {
+			return originalValue;
+		}
+
+		public String getEvalutedValue() {
+			return evalutedValue;
 		}
 	}
 }

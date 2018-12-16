@@ -41,7 +41,7 @@ public class JkConverter {
 			return null;
 		}
 	}
-	public static Integer stringToInteger(String str, int defaultValue) {
+	public static Integer stringToInteger(String str, Integer defaultValue) {
         Integer num = stringToInteger(str);
         return num == null ? defaultValue : num;
 	}
@@ -62,7 +62,7 @@ public class JkConverter {
 			return null;
 		}
 	}
-	public static Long stringToLong(String str, long defaultValue) {
+	public static Long stringToLong(String str, Long defaultValue) {
 		try {
 			return Long.valueOf(str);
 		} catch(Exception ex) {
@@ -84,6 +84,13 @@ public class JkConverter {
 			return Double.valueOf(str.trim());
 		} catch(Exception ex) {
 			return null;
+		}
+	}
+	public static Double stringToDouble(String str, Double defaultValue) {
+		try {
+			return Double.valueOf(str.trim());
+		} catch(Exception ex) {
+			return defaultValue;
 		}
 	}
 	public static Double[] stringToDouble(String[] source) {
