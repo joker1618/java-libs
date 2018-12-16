@@ -1,22 +1,27 @@
 package xxx.joker.libs.core.config;
 
 import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.core.utils.JkFiles;
+import xxx.joker.libs.core.utils.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import static xxx.joker.libs.core.utils.JkStrings.strf;
+
 /**
  * Created by f.barbano on 12/10/2017.
  */
 public abstract class JkAbstractConfigs {
 
-	private Map<String, Prop> configMap;
+	protected Map<String, Prop> configMap;
 
 	private static final String KEY_SEP = "=";
 	private static final String COMMENT_START = "#";
@@ -27,12 +32,13 @@ public abstract class JkAbstractConfigs {
 	}
 
 	protected void loadConfigFile(Path configFile) throws IOException {
-		loadConfigFile(configFile.toString());
+		if(Files.exists(configFile)) {
+			loadConfigFile(new FileInputStream(configFile.toString()));
+		}
 	}
 	
 	protected void loadConfigFile(String configFilePath) throws IOException {
-		InputStream is = new FileInputStream(configFilePath);
-		loadConfigFile(is);
+		loadConfigFile(Paths.get(configFilePath));
 	}
 
 	protected void loadConfigFile(InputStream is) throws IOException {
@@ -142,6 +148,11 @@ public abstract class JkAbstractConfigs {
 		return false;
 	}
 
+	protected void persist(Path outputPath) {
+		List<String> lines = JkStreams.map(configMap.values(), p -> strf("%s=%s", p.key, p.evalutedValue));
+		JkFiles.writeFile(outputPath, lines, true);
+	}
+
 
 	protected String getString(String key) {
 		return getString(key, null);
@@ -157,6 +168,14 @@ public abstract class JkAbstractConfigs {
 	protected Integer getInt(String key, Integer _default) {
 		String value = getString(key);
 		return value == null ? _default : Integer.parseInt(value);
+	}
+
+	protected Long getLong(String key) {
+		return getLong(key, null);
+	}
+	protected Long getLong(String key, Long _default) {
+		String value = getString(key);
+		return value == null ? _default : Long.parseLong(value);
 	}
 
 	protected Double getDouble(String key) {
