@@ -1,6 +1,7 @@
 package xxx.joker.libs.core.config;
 
 import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.core.utils.JkStrings;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -34,7 +35,6 @@ public abstract class JkAbstractConfigs {
 		// read properties from file
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		String line;
-		Map<String, Prop> propMap = new HashMap<>();
 		while ((line = reader.readLine()) != null) {
 			if(StringUtils.isNotBlank(line.trim()) && !line.trim().startsWith(COMMENT_START) && line.contains(KEY_SEP)) {
 				int idxSep = line.indexOf(KEY_SEP);
@@ -44,9 +44,27 @@ public abstract class JkAbstractConfigs {
 			}
 		}
 
+		// replace environment variables  ${env:var}
+		evaluateEnvironmentVariables();
+
 		// replace variables
 		// #var#  and  ${var}  allowed
 		evaluateVariables();
+	}
+
+	private void evaluateEnvironmentVariables() {
+		for(Prop prop : configMap.values()) {
+			String[] envVars = StringUtils.substringsBetween(prop.originalValue, "${env:", "}");
+			if(envVars != null) {
+				String fixed = prop.originalValue;
+				for(String evar : envVars) {
+					String strPh = "${env:" + evar + "}";
+					String strRepl = JkStrings.safeTrim(System.getProperty(evar));
+					fixed = fixed.replace(strPh, strRepl);
+				}
+				prop.originalValue = fixed;
+			}
+		}
 	}
 
 	private void evaluateVariables() {
