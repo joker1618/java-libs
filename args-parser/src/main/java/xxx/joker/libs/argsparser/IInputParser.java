@@ -8,6 +8,7 @@ import xxx.joker.libs.argsparser.exception.InputParserException;
  */
 public interface IInputParser {
 
+	<T extends InputOption> T parse(String inputLine) throws InputParserException;
 	<T extends InputOption> T parse(String[] inputArgs) throws InputParserException;
-	
+
 }
