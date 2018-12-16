@@ -1,5 +1,7 @@
 package xxx.joker.libs.argsparser.service;
 
+import xxx.joker.libs.argsparser.design.classType.InputOption;
+
 import java.util.Map;
 
 /**
@@ -7,7 +9,7 @@ import java.util.Map;
  */
 public interface IOptService {
 
-	Class<?> getOptClass();
+	Class<? extends InputOption> getOptClass();
 
 	Map<String, OptWrapper> getOptions();
 

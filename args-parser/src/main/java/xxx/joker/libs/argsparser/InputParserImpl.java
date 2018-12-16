@@ -26,28 +26,24 @@ import java.util.function.UnaryOperator;
 public class InputParserImpl implements IInputParser {
 
 
-	private InputOption inputOption;
-
 	private IOptNameService optNameService;
 	private IOptService optService;
 	private ICmdService cmdService;
 
 
-	public InputParserImpl(InputOption inputOption,
+	public InputParserImpl(Class<? extends InputOption> inputOptionClass,
 						   Class<? extends OptionName> optNameClass,
 						   Class<? extends InputCommand> inputCmdClass,
 						   Path launcherJarPath) {
 
-		this.inputOption = inputOption;
-
-		DesignServices.init(optNameClass, inputOption.getClass(), inputCmdClass, launcherJarPath);
+		DesignServices.init(optNameClass, inputOptionClass, inputCmdClass, launcherJarPath);
 		optNameService = DesignServices.getOptNameService();
 		optService = DesignServices.getOptService();
 		cmdService = DesignServices.getCmdService();
 	}
 
 	@Override
-	public void parse(String[] inputArgs) throws InputParserException {
+	public InputOption parse(String[] inputArgs) throws InputParserException {
 		Map<OptWrapper, List<String>> inputOptMap = inputArgsToMap(inputArgs);
 
 		// find associated command using evolution
@@ -58,13 +54,21 @@ public class InputParserImpl implements IInputParser {
 		}
 
 		// set field 'selectedCommand' in InputOption instance
+		InputOption io;
+		try {
+			io = optService.getOptClass().newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new InputParserException("Unable to create instance of %s", optService.getOptClass());
+		}
 		Field fieldSelCmd = JkReflection.getFieldsByAnnotation(InputOption.class, Cmd.class).get(0);
-		setFieldValue(fieldSelCmd, selectedCmd.getCmdEnum());
+		setFieldValue(io, fieldSelCmd, selectedCmd.getCmdEnum());
 
 		// check input options using 'selectedCmd'
 		for(Map.Entry<OptWrapper, List<String>> arg : inputOptMap.entrySet()) {
-			parseInputArg(arg.getKey(), arg.getValue(), selectedCmd);
+			parseInputArg(io, arg.getKey(), arg.getValue(), selectedCmd);
 		}
+
+		return io;
 	}
 
 	private Map<OptWrapper, List<String>> inputArgsToMap(String[] inputArgs) throws InputParserException {
@@ -107,13 +111,13 @@ public class InputParserImpl implements IInputParser {
 		return sb.toString();
 	}
 
-	private void setFieldValue(Field field, Object value) throws InputParserException {
+	private void setFieldValue(InputOption io, Field field, Object value) throws InputParserException {
 		try {
 			if(field.isAccessible()) {
-				field.set(inputOption, value);
+				field.set(io, value);
 			} else {
 				field.setAccessible(true);
-				field.set(inputOption, value);
+				field.set(io, value);
 				field.setAccessible(false);
 			}
 		} catch (IllegalAccessException e) {
@@ -121,7 +125,7 @@ public class InputParserImpl implements IInputParser {
 		}
 	}
 
-	private void parseInputArg(OptWrapper optWrapper, List<String> values, CmdWrapper selectedCmd) throws InputParserException {
+	private void parseInputArg(InputOption io, OptWrapper optWrapper, List<String> values, CmdWrapper selectedCmd) throws InputParserException {
 		CmdOption cmdOption = selectedCmd.getOption(optWrapper.getOptName());
 		String cmdName = selectedCmd.getName();
 
@@ -181,7 +185,7 @@ public class InputParserImpl implements IInputParser {
 			fieldValue = parseInputValues(cmdOption, errorStart, values, classCheck, classConverter, expectedClass.isArray());
 		}
 
-		setFieldValue(optWrapper.getField(), fieldValue);
+		setFieldValue(io, optWrapper.getField(), fieldValue);
 	}
 
 	private Object parseInputValues(CmdOption cmdOption, String errorStart, List<String> values, Predicate<String[]> classCheck, Function<String[], Object[]> classConverter, boolean isArray) {

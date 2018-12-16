@@ -147,7 +147,7 @@ class OptServiceImpl implements IOptService {
 
 
 	@Override
-	public Class<?> getOptClass() {
+	public Class<? extends InputOption> getOptClass() {
 		return optClass;
 	}
 

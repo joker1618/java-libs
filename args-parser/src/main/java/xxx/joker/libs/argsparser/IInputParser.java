@@ -1,5 +1,6 @@
 package xxx.joker.libs.argsparser;
 
+import xxx.joker.libs.argsparser.design.classType.InputOption;
 import xxx.joker.libs.argsparser.exception.InputParserException;
 
 /**
@@ -7,6 +8,6 @@ import xxx.joker.libs.argsparser.exception.InputParserException;
  */
 public interface IInputParser {
 
-	void parse(String[] inputArgs) throws InputParserException;
+	InputOption parse(String[] inputArgs) throws InputParserException;
 	
 }
