@@ -166,112 +166,52 @@ abstract class JkAbstractSheet implements JkSheet {
     }
 
     @Override
-    public void setValue(int rowNum, int colNum, String value) {
+    public void setValue(int rowNum, int colNum, Object value) {
+        setValue(rowNum, colNum, value, null);
+    }
+
+    @Override
+    public void setValue(int rowNum, int colNum, Object value, CellStyle cellStyle) {
         if(value == null) {
             removeCell(rowNum, colNum);
-        } else {
-            getCell(rowNum, colNum, true).setCellValue(value);
-        }
-    }
 
-    @Override
-    public void setValue(int rowNum, int colNum, LocalDate ld) {
-        if(ld == null) {
-            removeCell(rowNum, colNum);
         } else {
-            getCell(rowNum, colNum, true).setCellValue(Date.valueOf(ld));
-        }
-    }
+            Cell cell = getCell(rowNum, colNum, true);
 
-    @Override
-    public void setValue(int rowNum, int colNum, LocalDateTime ldt) {
-        if(ldt == null) {
-            removeCell(rowNum, colNum);
-        } else {
-            getCell(rowNum, colNum, true).setCellValue(new Date(JkTime.of(ldt).getTotalMillis()));
-        }
-    }
+            if(value instanceof LocalDate) {
+                cell.setCellValue(Date.valueOf((LocalDate) value));
+            } else if(value instanceof LocalDateTime) {
+                cell.setCellValue(new Date(JkTime.of((LocalDate) value).getTotalMillis()));
+            } else if(value instanceof Integer) {
+                cell.setCellValue(JkConverter.stringToInteger(String.valueOf(value)));
+            } else if(value instanceof Long) {
+                cell.setCellValue(JkConverter.stringToLong(String.valueOf(value)));
+            } else if(value instanceof Double) {
+                cell.setCellValue(JkConverter.stringToDouble(String.valueOf(value)));
+            } else {
+                cell.setCellValue(String.valueOf(value));
+            }
 
-    @Override
-    public void setValue(int rowNum, int colNum, Integer num) {
-        if(num == null) {
-            removeCell(rowNum, colNum);
-        } else {
-            getCell(rowNum, colNum, true).setCellValue(num);
-        }
-    }
-
-    @Override
-    public void setValue(int rowNum, int colNum, Long num) {
-        if(num == null) {
-            removeCell(rowNum, colNum);
-        } else {
-            getCell(rowNum, colNum, true).setCellValue(num);
-        }
-    }
-
-    @Override
-    public void setValue(int rowNum, int colNum, Double num) {
-        if(num == null) {
-            removeCell(rowNum, colNum);
-        } else {
-            getCell(rowNum, colNum, true).setCellValue(num);
-        }
-    }
-
-    @Override
-    public void setStrings(int rowNum, int colNum, List<String> values) {
-        if(values != null) {
-            for(int i = 0; i < values.size(); i++) {
-                setValue(rowNum, i+colNum, values.get(i));
+            if(cellStyle != null) {
+                cell.setCellStyle(cellStyle);
             }
         }
     }
 
     @Override
-    public void setDates(int rowNum, int colNum, List<LocalDate> values) {
-        if(values != null) {
+    public void setValues(int rowNum, int colNum, List<?> values) {
+        setValues(rowNum, colNum, values, null);
+    }
+
+    @Override
+    public void setValues(int rowNum, int colNum, List<?> values, CellStyle cellStyle) {
+        if(values != null && !values.isEmpty()) {
             for(int i = 0; i < values.size(); i++) {
-                setValue(rowNum, i+colNum, values.get(i));
+                setValue(rowNum, colNum + i, values.get(i), cellStyle);
             }
         }
     }
 
-    @Override
-    public void setDateTimes(int rowNum, int colNum, List<LocalDateTime> values) {
-        if(values != null) {
-            for(int i = 0; i < values.size(); i++) {
-                setValue(rowNum, i+colNum, values.get(i));
-            }
-        }
-    }
-
-    @Override
-    public void setInts(int rowNum, int colNum, List<Integer> values) {
-        if(values != null) {
-            for(int i = 0; i < values.size(); i++) {
-                setValue(rowNum, i+colNum, values.get(i));
-            }
-        }
-    }
-
-    @Override
-    public void setLongs(int rowNum, int colNum, List<Long> values) {
-        if(values != null) {
-            for(int i = 0; i < values.size(); i++) {
-                setValue(rowNum, i+colNum, values.get(i));
-            }
-        }
-    }
-
-    @Override
-    public void setDoubles(int rowNum, int colNum, List<Double> values) {
-        if(values != null) {
-            for(int i = 0; i < values.size(); i++) {
-                setValue(rowNum, i+colNum, values.get(i));
-            }
-        }
-    }
 
     @Override
     public void setStyle(int rowNum, int colNum, CellStyle cellStyle) {

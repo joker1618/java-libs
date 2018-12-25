@@ -2,6 +2,7 @@ package xxx.joker.libs.excel;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import xxx.joker.libs.core.objects.Area;
 import xxx.joker.libs.core.objects.Pos;
 
@@ -35,18 +36,10 @@ public interface JkSheet {
     LocalDateTime getLocalDateTime(int rowNum, int colNum, String pattern);
     LocalDateTime getLocalDateTime(int rowNum, int colNum, DateTimeFormatter dtf);
 
-    void setValue(int rowNum, int colNum, String value);
-    void setStrings(int rowNum, int colNum, List<String> values);
-    void setValue(int rowNum, int colNum, LocalDate ld);
-    void setDates(int rowNum, int colNum, List<LocalDate> values);
-    void setValue(int rowNum, int colNum, LocalDateTime ldt);
-    void setDateTimes(int rowNum, int colNum, List<LocalDateTime> values);
-    void setValue(int rowNum, int colNum, Integer num);
-    void setInts(int rowNum, int colNum, List<Integer> values);
-    void setValue(int rowNum, int colNum, Long num);
-    void setLongs(int rowNum, int colNum, List<Long> values);
-    void setValue(int rowNum, int colNum, Double num);
-    void setDoubles(int rowNum, int colNum, List<Double> values);
+    void setValue(int rowNum, int colNum, Object value);
+    void setValue(int rowNum, int colNum, Object value, CellStyle cellStyle);
+    void setValues(int rowNum, int colNum, List<?> values);
+    void setValues(int rowNum, int colNum, List<?> values, CellStyle cellStyle);
 
     void setStyle(int rowNum, int colNum, CellStyle cellStyle);
     void setStyle(Area area, CellStyle cellStyle);
