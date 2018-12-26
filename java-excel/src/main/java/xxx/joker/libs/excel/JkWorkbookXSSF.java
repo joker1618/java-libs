@@ -50,8 +50,8 @@ public class JkWorkbookXSSF implements JkWorkbook {
     }
 
     @Override
-    public ExcelType getExcelType() {
-        return ExcelType.XSSF;
+    public JkExcelType getExcelType() {
+        return JkExcelType.XSSF;
     }
 
     @Override

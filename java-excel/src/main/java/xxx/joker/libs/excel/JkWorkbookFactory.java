@@ -21,14 +21,14 @@ public class JkWorkbookFactory {
             throw new JkRuntimeException("The input path is a folder (must be and excel file). ["+excelPath+"]");
         }
 
-        ExcelType excelType = ExcelType.fromExtension(excelPath);
+        JkExcelType excelType = JkExcelType.fromExtension(excelPath);
         if(excelType == null) {
             throw new JkRuntimeException("File %s is not an excel file", excelPath);
         }
 
         try (FileInputStream fis = new FileInputStream(excelPath.toFile())) {
             Workbook wb = WorkbookFactory.create(fis);
-            return excelType == ExcelType.HSSF ? new JkWorkbookHSSF((HSSFWorkbook)wb) : new JkWorkbookXSSF((XSSFWorkbook)wb);
+            return excelType == JkExcelType.HSSF ? new JkWorkbookHSSF((HSSFWorkbook)wb) : new JkWorkbookXSSF((XSSFWorkbook)wb);
 
         } catch(IOException | InvalidFormatException ex) {
             throw new JkRuntimeException(ex, "Error creating workbook from file %s", excelPath);

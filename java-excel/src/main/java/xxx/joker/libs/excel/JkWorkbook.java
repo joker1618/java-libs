@@ -11,7 +11,7 @@ public interface JkWorkbook extends Closeable {
 
     boolean containsSheet(String sheetName);
 
-    ExcelType getExcelType();
+    JkExcelType getExcelType();
 
     JkSheet getSheet(int sheetNumber);
     JkSheet getSheet(String sheetName);

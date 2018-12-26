@@ -16,7 +16,9 @@ public class JkSheetXSSF extends JkAbstractSheet {
         return sheet;
     }
 
-
+    public JkExcelChartBuilder createChartBuilder() {
+        return new JkExcelChartBuilder(this);
+    }
 
 
 }

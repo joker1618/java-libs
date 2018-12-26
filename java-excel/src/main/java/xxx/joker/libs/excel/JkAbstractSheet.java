@@ -2,6 +2,7 @@ package xxx.joker.libs.excel;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellReference;
 import xxx.joker.libs.core.datetime.JkTime;
 import xxx.joker.libs.core.objects.Area;
 import xxx.joker.libs.core.objects.Pos;
@@ -16,6 +17,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
+
+import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 abstract class JkAbstractSheet implements JkSheet {
 
@@ -287,6 +290,15 @@ abstract class JkAbstractSheet implements JkSheet {
         float fixedPoints = fixRowHeightPoints(points);
         sheet.setDefaultRowHeightInPoints(fixedPoints);
     }
+
+    @Override
+    public CellReference createCellReference(int rowNum, int colNum) {
+        CellReference cellReference = new CellReference(rowNum, colNum);
+        String[] refParts = cellReference.getCellRefParts();
+        String strRef = strf("%s!$%s$%s", getName(), refParts[2], refParts[1]);
+        return new CellReference(strRef);
+    }
+
 
     protected Cell getCell(int rowNum, int colNum, boolean createIfMissing) {
         Cell cell = null;

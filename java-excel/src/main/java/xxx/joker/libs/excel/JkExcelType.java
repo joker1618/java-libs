@@ -4,7 +4,7 @@ import xxx.joker.libs.core.utils.JkFiles;
 
 import java.nio.file.Path;
 
-public enum ExcelType {
+public enum JkExcelType {
 
     HSSF("xls"),
     XSSF("xlsx")
@@ -12,7 +12,7 @@ public enum ExcelType {
 
     private String extension;
 
-    ExcelType(String extension) {
+    JkExcelType(String extension) {
         this.extension = extension;
     }
 
@@ -20,11 +20,11 @@ public enum ExcelType {
         return extension;
     }
 
-    public static ExcelType fromExtension(Path path) {
+    public static JkExcelType fromExtension(Path path) {
         return fromExtension(JkFiles.getExtension(path));
     }
-    public static ExcelType fromExtension(String extension) {
-        for(ExcelType et : values()) {
+    public static JkExcelType fromExtension(String extension) {
+        for(JkExcelType et : values()) {
             if(et.extension.equalsIgnoreCase(extension)) {
                 return et;
             }
