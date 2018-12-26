@@ -7,6 +7,9 @@ public class Area {
     int width;
     int height;
 
+    public Area() {
+
+    }
     public Area(Pos startPos, int width, int height) {
         this.x = startPos.getColNum();
         this.y = startPos.getRowNum();
