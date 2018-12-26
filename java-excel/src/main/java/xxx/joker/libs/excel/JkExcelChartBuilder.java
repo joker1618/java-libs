@@ -1,6 +1,5 @@
 package xxx.joker.libs.excel;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -17,21 +16,21 @@ import xxx.joker.libs.core.utils.JkStreams;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class JkExcelChartBuilder {
 
     private final JkSheetXSSF sheet;
 
-    private Serie serieX;
-    private List<Serie> seriesY = new ArrayList<>();
+    private JkExcelChartSerie serieX;
+    private List<JkExcelChartSerie> seriesY = new ArrayList<>();
 
     private Pos dataLocation;
     private boolean dataOrientationVertical = true;
 
     private XSSFCellStyle dataHeaderStyle;
-    private XSSFCellStyle dataValuesStyle;
+    private XSSFCellStyle dataXStyle;
+    private XSSFCellStyle dataYStyle;
 
     protected JkExcelChartBuilder(JkSheetXSSF sheet) {
         this.sheet = sheet;
@@ -43,29 +42,36 @@ public class JkExcelChartBuilder {
         dataLocation = null;
         dataOrientationVertical = true;
         dataHeaderStyle = null;
-        dataValuesStyle = null;
+        dataXStyle = null;
+        dataYStyle = null;
     }
 
+    public void setSerieX(JkExcelChartSerie serie) {
+        serieX = serie;
+    }
     public void setSerieX(String serieName, List<? extends Number> dataList) {
         Double[] data = JkStreams.map(dataList, Number::doubleValue).toArray(new Double[0]);
-        serieX = new Serie(serieName, data);
+        setSerieX(new JkExcelChartSerie(serieName, data));
     }
     public void setSerieX(String serieName, int[] data) {
-        serieX = new Serie(serieName, data);
+        setSerieX(new JkExcelChartSerie(serieName, data));
     }
     public void setSerieX(String serieName, double[] data) {
-        serieX = new Serie(serieName, data);
+        setSerieX(new JkExcelChartSerie(serieName, data));
     }
 
+    public void addSerieY(JkExcelChartSerie serie) {
+        seriesY.add(serie);
+    }
     public void addSerieY(String serieName, List<? extends Number> dataList) {
         Double[] data = JkStreams.map(dataList, Number::doubleValue).toArray(new Double[0]);
-        serieX = new Serie(serieName, data);
+        addSerieY(new JkExcelChartSerie(serieName, data));
     }
     public void addSerieY(String serieName, int[] data) {
-        seriesY.add(new Serie(serieName, data));
+        addSerieY(new JkExcelChartSerie(serieName, data));
     }
     public void addSerieY(String serieName, double[] data) {
-        seriesY.add(new Serie(serieName, data));
+        addSerieY(new JkExcelChartSerie(serieName, data));
     }
 
     public void setDataLocation(int rowNum, int colNum) {
@@ -78,8 +84,11 @@ public class JkExcelChartBuilder {
     public void setDataHeaderStyle(XSSFCellStyle dataHeaderStyle) {
         this.dataHeaderStyle = dataHeaderStyle;
     }
-    public void setDataValuesStyle(XSSFCellStyle dataValuesStyle) {
-        this.dataValuesStyle = dataValuesStyle;
+    public void setDataXStyle(XSSFCellStyle dataXStyle) {
+        this.dataXStyle = dataXStyle;
+    }
+    public void setDataYStyle(XSSFCellStyle dataYStyle) {
+        this.dataYStyle = dataYStyle;
     }
 
     public void drawChart(String chartTitle, Area chartArea) {
@@ -93,7 +102,8 @@ public class JkExcelChartBuilder {
         Pos dataPos = dataLocation == null ? new Pos(0, chartArea.getEndX()+1) : dataLocation;
 
         XSSFCellStyle styleHeader = getHeaderStyle(dataOrientationVertical);
-        XSSFCellStyle styleData = getDataStyle();
+        XSSFCellStyle styleDataX = getDataXStyle();
+        XSSFCellStyle styleDataY = getDataYStyle();
 
         // X axis data
         Area areaX = computeOutputArea(dataPos, 0, serieX.getData().size(), dataOrientationVertical);
@@ -103,7 +113,7 @@ public class JkExcelChartBuilder {
                 if(pos == -1) {
                     sheet.setValue(r, c, serieX.getName(), styleHeader);
                 } else {
-                    sheet.setValue(r, c, serieX.getData().get(pos), styleData);
+                    sheet.setValue(r, c, serieX.getData().get(pos), styleDataX);
                 }
             }
         }
@@ -119,9 +129,20 @@ public class JkExcelChartBuilder {
                     if(pos == -1) {
                         sheet.setValue(r, c, seriesY.get(i).getName(), styleHeader);
                     } else {
-                        sheet.setValue(r, c, seriesY.get(i).getData().get(pos), styleData);
+                        sheet.setValue(r, c, seriesY.get(i).getData().get(pos), styleDataY);
                     }
                 }
+            }
+        }
+
+        // Autosize data column
+        if(!dataOrientationVertical) {
+            for(int c = areaX.getX(); c < areaX.getEndX(); c++) {
+                sheet.autoSizeCol(c);
+            }
+        } else {
+            for(int c = 0; c < seriesY.size() + 1; c++) {
+                sheet.autoSizeCol(c + areaX.getX());
             }
         }
 
@@ -149,6 +170,7 @@ public class JkExcelChartBuilder {
         /* Define chart AXIS */
         ChartAxis bottomAxis = lineChart.getChartAxisFactory().createCategoryAxis(AxisPosition.BOTTOM);
         ValueAxis leftAxis = lineChart.getChartAxisFactory().createValueAxis(AxisPosition.LEFT);
+        leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
 
         /* Plot the chart with the inputs from data and chart axis */
         lineChart.plot(chartData, new ChartAxis[] { bottomAxis, leftAxis });
@@ -189,8 +211,8 @@ public class JkExcelChartBuilder {
         }
         return dataHeaderStyle;
     }
-    private XSSFCellStyle getDataStyle() {
-        if(dataValuesStyle == null) {
+    private XSSFCellStyle getDataXStyle() {
+        if(dataXStyle == null) {
             XSSFFont dfont = sheet.getSheet().getWorkbook().createFont();
             dfont.setFontName("Calibri");
             dfont.setFontHeightInPoints((short) 10);
@@ -199,43 +221,23 @@ public class JkExcelChartBuilder {
             dstyle.setFont(dfont);
             dstyle.setVerticalAlignment(VerticalAlignment.CENTER);
             dstyle.setAlignment(HorizontalAlignment.CENTER);
-            dataValuesStyle = dstyle;
+            dataXStyle = dstyle;
         }
-        return dataValuesStyle;
+        return dataXStyle;
+    }
+    private XSSFCellStyle getDataYStyle() {
+        if(dataYStyle == null) {
+            XSSFFont dfont = sheet.getSheet().getWorkbook().createFont();
+            dfont.setFontName("Calibri");
+            dfont.setFontHeightInPoints((short) 10);
+            dfont.setColor(IndexedColors.BLACK.index);
+            XSSFCellStyle dstyle = sheet.getSheet().getWorkbook().createCellStyle();
+            dstyle.setFont(dfont);
+            dstyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            dstyle.setAlignment(HorizontalAlignment.CENTER);
+            dataYStyle = dstyle;
+        }
+        return dataYStyle;
     }
 
-
-    private static class Serie {
-        private String name;
-        private List<Double> data;
-
-        public Serie(String name, int[] data) {
-            this.name = name;
-            this.data = new ArrayList<>();
-            Arrays.stream(data).forEach(d -> this.data.add((double)d));
-        }
-        public Serie(String name, double[] data) {
-            this.name = name;
-            this.data = new ArrayList<>();
-            Arrays.stream(data).forEach(d -> this.data.add(d));
-        }
-        public Serie(String name, Double[] data) {
-            this.name = name;
-            this.data = new ArrayList<>();
-            this.data.addAll(Arrays.asList(data));
-        }
-
-        public String getName() {
-            return name;
-        }
-        public void setName(String name) {
-            this.name = name;
-        }
-        public List<Double> getData() {
-            return data;
-        }
-        public void setData(List<Double> data) {
-            this.data = data;
-        }
-    }
 }
