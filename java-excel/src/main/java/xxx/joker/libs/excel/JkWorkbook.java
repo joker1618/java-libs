@@ -2,9 +2,10 @@ package xxx.joker.libs.excel;
 
 import org.apache.poi.ss.usermodel.Workbook;
 
+import java.io.Closeable;
 import java.nio.file.Path;
 
-public interface JkWorkbook extends AutoCloseable {
+public interface JkWorkbook extends Closeable {
 
     Workbook getWorkbook();
 

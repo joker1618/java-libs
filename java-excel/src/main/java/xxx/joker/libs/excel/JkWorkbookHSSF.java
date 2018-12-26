@@ -35,7 +35,7 @@ public class JkWorkbookHSSF implements JkWorkbook {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws IOException {
         wb.close();
     }
 
