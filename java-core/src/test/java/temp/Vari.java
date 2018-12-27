@@ -17,8 +17,9 @@ public class Vari {
 
     @Test
     public void prova() throws IOException, ParseException {
-        String s = "{}";
-        display("{}={}%n", s, 5);
+        String s = "er";
+        display("{}={}%n", s);
+        display("{}={}%n", s, 5, 555);
         display("{}={}%n".replace("%n", "\n"), s, 5);
 //        StringBuilder sb = new StringBuilder("  ciao da federico da merda");
 ////        display("%s", sb.toString().replaceAll("da (.*?) da", "1"));
