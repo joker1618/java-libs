@@ -17,7 +17,9 @@ public class Vari {
 
     @Test
     public void prova() throws IOException, ParseException {
-
+        String s = "{}";
+        display("{}={}%n", s, 5);
+        display("{}={}%n".replace("%n", "\n"), s, 5);
 //        StringBuilder sb = new StringBuilder("  ciao da federico da merda");
 ////        display("%s", sb.toString().replaceAll("da (.*?) da", "1"));
 //        Matcher matcher = Pattern.compile("^[a-zA-Z]").matcher(sb.toString());

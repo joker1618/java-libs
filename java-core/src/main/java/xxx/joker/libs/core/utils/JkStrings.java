@@ -48,7 +48,9 @@ public class JkStrings {
 	public static String strfl(String format, Object... params) {
 		StringBuilder sb = new StringBuilder();
 
+		format = format.replace("%n", StringUtils.LF);
 		List<String> splits = JkStrings.splitFieldsList(format, "{}");
+
 		if(!splits.isEmpty()) {
 			int splitPos = 0;
 			sb.append(splits.get(splitPos++));
