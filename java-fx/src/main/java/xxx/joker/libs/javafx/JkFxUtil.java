@@ -87,6 +87,7 @@ public class JkFxUtil {
 	public static Window getWindow(Event e) {
 		return ((Node)e.getSource()).getScene().getWindow();
 	}
+
 	public static Stage getStage(Event e) {
 		return (Stage)getWindow(e);
 	}
@@ -94,7 +95,7 @@ public class JkFxUtil {
 	public static <T extends Pane> T getChildren(Pane root, int... childrenIndexes) {
 		Pane tmp = root;
 		for(int idx : childrenIndexes) {
-			tmp = (Pane) root.getChildren().get(idx);
+			tmp = (Pane) tmp.getChildren().get(idx);
 		}
 		return (T) tmp;
 	}

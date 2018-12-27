@@ -7,7 +7,10 @@ import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.repository.entity.JkEntity;
 import xxx.joker.libs.core.repository.entity.JkEntityField;
-import xxx.joker.libs.core.utils.*;
+import xxx.joker.libs.core.utils.JkConverter;
+import xxx.joker.libs.core.utils.JkReflection;
+import xxx.joker.libs.core.utils.JkStreams;
+import xxx.joker.libs.core.utils.JkStrings;
 
 import java.io.File;
 import java.lang.reflect.*;
@@ -21,7 +24,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static xxx.joker.libs.core.repository.JkPersistenceManager.EntityLines;
-import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 class JkEntityManager {

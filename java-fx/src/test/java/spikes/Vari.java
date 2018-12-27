@@ -3,7 +3,6 @@ package spikes;
 import org.junit.Test;
 import xxx.joker.libs.core.html.JkHtmlTag;
 import xxx.joker.libs.core.html.JkTextScannerImpl;
-import xxx.joker.libs.core.utils.JkConverter;
 import xxx.joker.libs.core.utils.JkStreams;
 
 import java.io.File;
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.Map;
 
 public class Vari {
 

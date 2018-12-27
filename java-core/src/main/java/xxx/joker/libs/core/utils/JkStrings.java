@@ -14,8 +14,53 @@ import java.util.stream.Collectors;
  */
 public class JkStrings {
 
+	/**
+	 * Can be used in 2 different forms:
+	 * 1) using placeholders like String.format (%s, %d, ...)
+	 * 2) using placeholders like Logger ({})
+	 *
+	 * Count string 'format' occurrences of String.format placeholders (a) and {} placeholders (b):
+	 * if the number of (a) does not match the number of params and (b) match --> use (b) placeholder
+	 * else  --> use (a) placeholder
+	 */
 	public static String strf(String format, Object... params) {
+		if(params.length == 0) {
+			return format;
+		}
+
+		String toRet;
+
+		int numPhString = countPlaceholders(format, false);
+		int numPhLogger = countPlaceholders(format, true);
+
+		if(numPhLogger > 0 && numPhLogger != numPhString && (numPhString == 0 || numPhLogger == params.length)) {
+			toRet = strfl(format, params);
+		} else {
+			toRet = strfs(format, params);
+		}
+
+		return toRet;
+	}
+	public static String strfs(String format, Object... params) {
 		return String.format(format, params);
+	}
+	// Use logger placeholders {}
+	public static String strfl(String format, Object... params) {
+		StringBuilder sb = new StringBuilder();
+
+		List<String> splits = JkStrings.splitFieldsList(format, "{}");
+		if(!splits.isEmpty()) {
+			int splitPos = 0;
+			sb.append(splits.get(splitPos++));
+			for(int i = 0; splitPos < splits.size() && i < params.length; i++) {
+				sb.append(params[i] == null ? "_null" : params[i].toString()).append(splits.get(splitPos++));
+			}
+			for(; splitPos < splits.size(); ) {
+				sb.append("{}").append(splits.get(splitPos++));
+			}
+		}
+
+		return sb.toString();
 	}
 
 	public static String[] splitAllFields(String source, String separatorString) {
@@ -101,4 +146,22 @@ public class JkStrings {
         htmlText = StringEscapeUtils.unescapeHtml4(htmlText);
         return htmlText;
     }
+
+
+	private static int countPlaceholders(String str, boolean logStyle) {
+		// %[argument_index$][flags][width][.precision][t]conversion
+		String fmtString = "%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])";
+		String fmtLogger = "\\{}";
+
+		Pattern pattern = Pattern.compile(logStyle ? fmtLogger : fmtString);
+		Matcher matcher = pattern.matcher(str);
+
+		int counter = 0;
+		while (matcher.find()) {
+			counter++;
+		}
+
+		return counter;
+	}
+
 }
