@@ -17,8 +17,10 @@ public class Vari {
 
     @Test
     public void prova() throws IOException, ParseException {
-        String s = "er";
-        display("{}={}%n", s);
+        String s = "d^*fede";
+        String quoted = Pattern.quote("^*");
+        display("{}", s.replaceAll("^"+quoted, "__"));
+        display("{}", s.replaceAll(quoted, "__"));
         display("{}={}%n", s, 5, 555);
         display("{}={}%n".replace("%n", "\n"), s, 5);
 //        StringBuilder sb = new StringBuilder("  ciao da federico da merda");
