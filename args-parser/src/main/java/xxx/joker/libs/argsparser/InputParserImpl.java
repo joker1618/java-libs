@@ -34,10 +34,9 @@ public class InputParserImpl implements IInputParser {
 
 	public InputParserImpl(Class<? extends InputOption> inputOptionClass,
 						   Class<? extends OptionName> optNameClass,
-						   Class<? extends InputCommand> inputCmdClass,
-						   Path launcherJarPath) {
+						   Class<? extends InputCommand> inputCmdClass) {
 
-		DesignServices.init(optNameClass, inputOptionClass, inputCmdClass, launcherJarPath);
+		DesignServices.init(optNameClass, inputOptionClass, inputCmdClass);
 		optNameService = DesignServices.getOptNameService();
 		optService = DesignServices.getOptService();
 		cmdService = DesignServices.getCmdService();

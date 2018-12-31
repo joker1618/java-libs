@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static xxx.joker.libs.core.utils.JkConsole.display;
+
 /**
  * Created by f.barbano on 03/09/2017.
  */
@@ -29,9 +31,8 @@ public class DesignServices {
 
 	public static synchronized void init(Class<? extends OptionName> optNameClass,
 										 Class<? extends InputOption> optClass,
-										 Class<? extends InputCommand> cmdClass,
-										 Path launcherJarPath) {
-		INSTANCE.launcherJarPath = launcherJarPath;
+										 Class<? extends InputCommand> cmdClass) {
+		INSTANCE.launcherJarPath = JkFiles.getLauncherPath(cmdClass);
 		INSTANCE.initProviders(optNameClass, optClass, cmdClass);
 	}
 
@@ -39,25 +40,25 @@ public class DesignServices {
 							   Class<? extends InputOption> optClass,
 							   Class<? extends InputCommand> cmdClass) {
 
-		boolean checkDesign = isPerformDesignCheck();
+		boolean checkDesign = isPerformDesignCheck(cmdClass);
 
 		optNameService = new OptNameServiceImpl(optNameClass, checkDesign);
 		optService = new OptServiceImpl(optClass, checkDesign, optNameService);
 		cmdService = new CmdServiceImpl(cmdClass, checkDesign, optService, optNameService);
 
 		if(checkDesign) {
-			registerDesignChecked();
+			registerDesignChecked(cmdClass);
 		}
 	}
 
-	private boolean isPerformDesignCheck() {
+	private boolean isPerformDesignCheck(Class<?> cmdClass) {
 		if(!Files.isRegularFile(launcherJarPath)) {
 			return true;
 		}
 
 		try {
 			long actualSize = Files.size(launcherJarPath);
-			long lastKnownSize = getLastKnownSize();
+			long lastKnownSize = getLastKnownSize(cmdClass);
 			return actualSize != lastKnownSize;
 
 		} catch(IOException ex) {
@@ -65,8 +66,8 @@ public class DesignServices {
 		}
 	}
 
-	private long getLastKnownSize() {
-		Path sizePath = getLastKnownSizeFilePath();
+	private long getLastKnownSize(Class<?> cmdClass) {
+		Path sizePath = getLastKnownSizeFilePath(cmdClass);
 		long size = 0L;
 
 		if(Files.exists(sizePath)) {
@@ -81,19 +82,19 @@ public class DesignServices {
 		return size;
 	}
 
-	private void registerDesignChecked() {
+	private void registerDesignChecked(Class<?> cmdClass) {
 		if(Files.isRegularFile(launcherJarPath)) {
 			try {
 				long size = Files.size(launcherJarPath);
-				JkFiles.writeFile(getLastKnownSizeFilePath(), String.valueOf(size), true);
+				JkFiles.writeFile(getLastKnownSizeFilePath(cmdClass), String.valueOf(size), true);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
 	}
 
-	private Path getLastKnownSizeFilePath() {
-		String sizeFileName = String.format("%s_%s_", LAST_KNOWN_SIZE_FILENAME_PREFIX, launcherJarPath.getFileName().toString());
+	private Path getLastKnownSizeFilePath(Class<?> cmdClass) {
+		String sizeFileName = String.format("%s_%s_%s", LAST_KNOWN_SIZE_FILENAME_PREFIX, launcherJarPath.getFileName().toString(), cmdClass.getName());
 		return launcherJarPath.toAbsolutePath().getParent().resolve(sizeFileName);
 	}
 
