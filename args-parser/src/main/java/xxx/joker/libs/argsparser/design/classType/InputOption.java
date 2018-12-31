@@ -5,7 +5,7 @@ import xxx.joker.libs.argsparser.design.annotation.Cmd;
 /**
  * Created by f.barbano on 26/08/2017.
  */
-public abstract class InputOption<T> {
+public abstract class InputOption<T extends InputCommand> {
 
 	@Cmd
 	private T selectedCommand;
