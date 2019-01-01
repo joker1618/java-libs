@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.repository.entity.JkEntity;
+import xxx.joker.libs.core.repository.property.JkModelProperty;
 import xxx.joker.libs.core.utils.JkReflection;
+import xxx.joker.libs.core.utils.JkStreams;
 import xxx.joker.libs.core.utils.JkStuff;
 
 import java.nio.file.Path;
@@ -57,13 +59,15 @@ public abstract class JkDataModel {
         return (Set<T>) data;
     }
 
-    public <T extends JkEntity> List<T> getDataList(Class<T> entityClazz, Predicate<T> filter) {
+    public <T extends JkEntity> List<T> getDataList(Class<T> entityClazz, Predicate<T>... filters) {
         Set<JkEntity> data = dataMap.get(entityClazz);
         if(data == null) {
             throw new JkRuntimeException("Class {} does not belong to package {}", entityClazz.getName(), pkgToScan);
         }
         List<T> ts = new ArrayList<>((TreeSet<T>) data);
-        ts.removeIf(t -> !filter.test(t));
+        for(Predicate<T> filter : filters) {
+            ts.removeIf(t -> !filter.test(t));
+        }
         return ts;
     }
 
@@ -93,14 +97,34 @@ public abstract class JkDataModel {
         logger.trace("Spread {} broken dependencies for entity {}", counter, entity.getPrimaryKey());
     }
 
+    public List<JkModelProperty> getAllProperties() {
+        return getDataList(JkModelProperty.class);
+    }
+
+    public JkModelProperty getProperty(String propertyKey) {
+        List<JkModelProperty> filter = JkStreams.filter(getData(JkModelProperty.class), p -> p.getKey().equalsIgnoreCase(propertyKey));
+        return filter.isEmpty() ? null : filter.get(0);
+    }
+
+    public void setProperty(String key, String value) {
+        setProperty(new JkModelProperty(key, value));
+    }
+
+    public void setProperty(JkModelProperty property) {
+        JkModelProperty prop = getProperty(property.getKey());
+        if(prop == null) {
+            getData(JkModelProperty.class).add(property);
+        } else {
+            prop.setValue(property.getValue());
+        }
+    }
+
     private List<Class<?>> retrieveEntityClasses(String pkgToScan) {
         logger.info("Scanning package {}", pkgToScan);
         List<Class<?>> classes = JkStuff.findClasses(pkgToScan);
         classes.removeIf(c -> !JkReflection.isOfType(c, JkEntity.class));
-        if(classes.isEmpty()) {
-            throw new JkRuntimeException("No JkEntity class found in package {}", pkgToScan);
-        }
         logger.debug("{} JkEntity class found in package {}", classes.size(), pkgToScan);
+        classes.add(JkModelProperty.class);
         return classes;
     }
 

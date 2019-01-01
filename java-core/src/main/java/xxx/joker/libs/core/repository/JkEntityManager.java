@@ -126,7 +126,6 @@ class JkEntityManager {
             for(Class<?> c : entityMap.keySet()) {
                 HandlerSet handlerSet = new HandlerSet();
                 Set<JkEntity> proxySet = (Set<JkEntity>) Proxy.newProxyInstance(Set.class.getClassLoader(), new Class[]{Set.class}, handlerSet);
-//                proxySet.addAll(new ArrayList<>(entityMap.get(c).values()));
                 proxySet.addAll(entityMap.get(c).values());
                 toRet.put(c, proxySet);
             }
@@ -270,7 +269,6 @@ class JkEntityManager {
                 toRet.put(clazz, new EntityLines(clazz));
                 mapPkId.put(clazz, new HashMap<>());
                 for (JkEntity elem : dataMap.get(clazz)) {
-//                    setIDIfMissing(elem);
                     mapPkId.get(clazz).put(elem.getPrimaryKey(), elem.getEntityID());
                     Pair<String, List<ForeignKey>> pair = formatEntity(elem);
                     toRet.get(clazz).getEntityLines().add(pair.getKey());
@@ -332,13 +330,6 @@ class JkEntityManager {
             throw new JkRuntimeException(e);
         }
     }
-
-//    private void setIDIfMissing(JkEntity entity) {
-//        if(entity.getEntityID() == null) {
-//            entity.setEntityID(getNextSequenceValue());
-//            entity.setInsertTstamp(LocalDateTime.now());
-//        }
-//    }
 
     // return <toStringOfEntity, Set<foreignKeys(PK)>> (key or value)
     private Pair<String, Set<String>> formatValue(Object value, AnnField annField) {
@@ -587,31 +578,34 @@ class JkEntityManager {
                     return false;
                 }
 
-                JkEntity e = (JkEntity) args[0];
-                if(e.getEntityID() == null) {
-                    e.setEntityID(sequence.get());
-                    e.setInsertTstamp(LocalDateTime.now());
-                }
-
-                if(original.contains(e)) {
-                    return false;
-                } else {
-                    sequence.getAndIncrement();
-                    return method.invoke(original, args);
+                synchronized (sequence) {
+                    JkEntity e = (JkEntity) args[0];
+                    if(e.getEntityID() == null) {
+                        e.setEntityID(sequence.get());
+                        e.setInsertTstamp(LocalDateTime.now());
+                    }
+                    if(original.contains(e)) {
+                        return false;
+                    } else {
+                        sequence.getAndIncrement();
+                        return method.invoke(original, args);
+                    }
                 }
 
             } else if ("addAll".equals(method.getName())) {
                 Collection coll = (Collection)args[0];
                 Collection<JkEntity> toAdd = new ArrayList<>();
                 for(Object obj : coll) {
-                    JkEntity e = (JkEntity) obj;
-                    if(e.getEntityID() == null) {
-                        e.setEntityID(sequence.get());
-                        e.setInsertTstamp(LocalDateTime.now());
-                    }
-                    if(!original.contains(e)) {
-                        sequence.getAndIncrement();
-                        toAdd.add(e);
+                    synchronized (sequence) {
+                        JkEntity e = (JkEntity) obj;
+                        if (e.getEntityID() == null) {
+                            e.setEntityID(sequence.get());
+                            e.setInsertTstamp(LocalDateTime.now());
+                        }
+                        if (!original.contains(e)) {
+                            sequence.getAndIncrement();
+                            toAdd.add(e);
+                        }
                     }
                 }
 

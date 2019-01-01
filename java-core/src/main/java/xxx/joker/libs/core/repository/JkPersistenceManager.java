@@ -154,32 +154,4 @@ class JkPersistenceManager {
             return foreignKeyLines;
         }
     }
-//
-//    private static class EntitySequence {
-//        private Path seqPath;
-//
-//        public EntitySequence(Path dbFolder, String dbName) {
-//            this.seqPath = dbFolder.resolve(dbName + "." + SEQUENCE_EXT);
-//        }
-//
-//        public synchronized long nextValue() {
-//            try {
-//                long seqValue;
-//
-//                if (!Files.exists(seqPath)) {
-//                    seqValue = 0L;
-//                } else {
-//                    List<String> lines = Files.readAllLines(seqPath);
-//                    seqValue = JkConverter.stringToLong(lines.get(0));
-//                }
-//
-//                JkFiles.writeFile(seqPath, String.valueOf(seqValue + 1), true);
-//
-//                return seqValue;
-//
-//            } catch (IOException ex) {
-//                throw new JkRuntimeException(ex);
-//            }
-//        }
-//    }
 }
