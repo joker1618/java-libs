@@ -112,6 +112,12 @@ public class JkTests {
 
 
 	/* DATE AND TIME TESTS */
+	public static boolean isLocalDate(String source, String format) {
+		if(!isValidDateTimeFormatter(format)) {
+			return false;
+		}
+		return isLocalDate(source, DateTimeFormatter.ofPattern(format));
+	}
 	public static boolean isLocalDate(String source, DateTimeFormatter format) {
 		try {
 			format.parse(source);
@@ -120,19 +126,31 @@ public class JkTests {
 			return false;
 		}
 	}
+	public static boolean isLocalTime(String source, String format) {
+		if(!isValidDateTimeFormatter(format)) {
+			return false;
+		}
+		return isLocalTime(source, DateTimeFormatter.ofPattern(format));
+	}
 	public static boolean isLocalTime(String source, DateTimeFormatter format) {
 		try {
 			format.parse(source);
 			return true;
-		} catch(DateTimeParseException ex) {
+		} catch(Exception ex) {
 			return false;
 		}
+	}
+	public static boolean isLocalDateTime(String source, String format) {
+		if(!isValidDateTimeFormatter(format)) {
+			return false;
+		}
+		return isLocalDateTime(source, DateTimeFormatter.ofPattern(format));
 	}
 	public static boolean isLocalDateTime(String source, DateTimeFormatter format) {
 		try {
 			format.parse(source);
 			return true;
-		} catch(DateTimeParseException ex) {
+		} catch(Exception ex) {
 			return false;
 		}
 	}
@@ -165,7 +183,7 @@ public class JkTests {
 		try {
 			DateTimeFormatter.ofPattern(format);
 			return true;
-		} catch(IllegalArgumentException ex) {
+		} catch(Exception ex) {
 			return false;
 		}
 	}
