@@ -127,12 +127,12 @@ abstract class JkAbstractSheet implements JkSheet {
     }
 
     @Override
-    public Double getouble(int rowNum, int colNum) {
+    public Double getDouble(int rowNum, int colNum) {
         return JkConverter.stringToDouble(getString(rowNum, colNum));
     }
 
     @Override
-    public Double getouble(int rowNum, int colNum, NumberFormat nf) {
+    public Double getDouble(int rowNum, int colNum, NumberFormat nf) {
         try {
             return nf.parse(getString(rowNum, colNum)).doubleValue();
         } catch (ParseException e) {

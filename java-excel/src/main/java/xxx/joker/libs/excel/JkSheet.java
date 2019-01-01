@@ -29,8 +29,8 @@ public interface JkSheet {
     Integer getInt(int rowNum, int colNum, NumberFormat nf);
     Long getLong(int rowNum, int colNum);
     Long getLong(int rowNum, int colNum, NumberFormat nf);
-    Double getouble(int rowNum, int colNum);
-    Double getouble(int rowNum, int colNum, NumberFormat nf);
+    Double getDouble(int rowNum, int colNum);
+    Double getDouble(int rowNum, int colNum, NumberFormat nf);
     LocalDate getLocalDate(int rowNum, int colNum, String pattern);
     LocalDate getLocalDate(int rowNum, int colNum, DateTimeFormatter dtf);
     LocalDateTime getLocalDateTime(int rowNum, int colNum, String pattern);
