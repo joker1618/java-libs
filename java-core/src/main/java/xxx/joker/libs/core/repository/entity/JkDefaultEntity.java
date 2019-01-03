@@ -21,7 +21,7 @@ public abstract class JkDefaultEntity implements JkEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JkEntity other = (JkEntity) o;
-        return StringUtils.equals(getPrimaryKey(), other.getPrimaryKey());
+        return getPrimaryKey().equals(other.getPrimaryKey());
     }
 
     @Override

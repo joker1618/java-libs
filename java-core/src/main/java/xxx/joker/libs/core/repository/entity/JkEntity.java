@@ -16,7 +16,7 @@ public interface JkEntity extends Comparable<JkEntity> {
 
     @Override
     default int compareTo(JkEntity o) {
-        return StringUtils.compare(getPrimaryKey(), o.getPrimaryKey());
+        return getPrimaryKey().compareTo(o.getPrimaryKey());
     }
 
 

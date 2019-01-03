@@ -588,7 +588,7 @@ class JkEntityManager {
                         return false;
                     } else {
                         sequence.getAndIncrement();
-                        return method.invoke(original, args);
+                        return method.invoke(original, e);
                     }
                 }
 
