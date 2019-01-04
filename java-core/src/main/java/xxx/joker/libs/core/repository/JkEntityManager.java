@@ -125,7 +125,7 @@ class JkEntityManager {
             Map<Class<?>, Set<JkEntity>> toRet = new HashMap<>();
             for(Class<?> c : entityMap.keySet()) {
                 HandlerSet handlerSet = new HandlerSet();
-                Set<JkEntity> proxySet = (Set<JkEntity>) Proxy.newProxyInstance(Set.class.getClassLoader(), new Class[]{Set.class}, handlerSet);
+                Set<JkEntity> proxySet = (Set<JkEntity>) Proxy.newProxyInstance(TreeSet.class.getClassLoader(), new Class[]{Set.class}, handlerSet);
                 proxySet.addAll(entityMap.get(c).values());
                 toRet.put(c, proxySet);
             }
@@ -563,7 +563,7 @@ class JkEntityManager {
     }
 
     private class HandlerSet implements InvocationHandler {
-        private final Set<JkEntity> original;
+        private final TreeSet<JkEntity> original;
 
         public HandlerSet() {
             this.original = new TreeSet<>();
@@ -594,7 +594,7 @@ class JkEntityManager {
 
             } else if ("addAll".equals(method.getName())) {
                 Collection coll = (Collection)args[0];
-                Collection<JkEntity> toAdd = new ArrayList<>();
+                List<JkEntity> toAdd = new ArrayList<>();
                 for(Object obj : coll) {
                     synchronized (sequence) {
                         JkEntity e = (JkEntity) obj;

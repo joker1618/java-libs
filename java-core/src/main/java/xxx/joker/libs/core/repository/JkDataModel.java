@@ -64,11 +64,11 @@ public abstract class JkDataModel {
         if(data == null) {
             throw new JkRuntimeException("Class {} does not belong to package {}", entityClazz.getName(), pkgToScan);
         }
-        List<T> ts = new ArrayList<>((Set<T>) data);
+        Set<T> ts = new TreeSet<>((Set<T>) data);
         for(Predicate<T> filter : filters) {
             ts.removeIf(t -> !filter.test(t));
         }
-        return ts;
+        return new ArrayList<>(ts);
     }
 
     public <T extends JkEntity> T getDataObject(Class<T> entityClazz, Predicate<T> filter) {
