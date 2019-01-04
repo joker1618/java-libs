@@ -263,11 +263,23 @@ public class JkFiles {
 	}
 
 	/* READ methods */
-	public static List<String> readLines(Path pathToDel, Predicate<String>... filters) throws JkRuntimeException {
+	public static List<String> readLines(Path filePath, Predicate<String>... filters) throws JkRuntimeException {
+		return readLines(filePath, false, filters);
+	}
+	public static List<String> readLines(Path filePath, boolean removeBlankLines, Predicate<String>... filters) throws JkRuntimeException {
 	    try {
-			List<String> lines = Files.readAllLines(pathToDel);
-			Arrays.stream(filters).forEach(lines::removeIf);
-			return lines;
+			List<String> lines = Files.readAllLines(filePath);
+			if(removeBlankLines) {
+				lines.removeIf(StringUtils::isBlank);
+			}
+
+			Stream<String> stream = lines.stream();
+			for(Predicate<String> filter : filters) {
+				stream = stream.filter(filter);
+			}
+
+			return stream.collect(Collectors.toList());
+
 		} catch (IOException ex) {
             throw new JkRuntimeException(ex);
         }

@@ -64,7 +64,7 @@ public abstract class JkDataModel {
         if(data == null) {
             throw new JkRuntimeException("Class {} does not belong to package {}", entityClazz.getName(), pkgToScan);
         }
-        List<T> ts = new ArrayList<>((TreeSet<T>) data);
+        List<T> ts = new ArrayList<>((Set<T>) data);
         for(Predicate<T> filter : filters) {
             ts.removeIf(t -> !filter.test(t));
         }
@@ -76,7 +76,7 @@ public abstract class JkDataModel {
         if(data == null) {
             throw new JkRuntimeException("Class {} does not belong to package {}", entityClazz.getName(), pkgToScan);
         }
-        List<T> ts = new ArrayList<>((TreeSet<T>) data);
+        List<T> ts = new ArrayList<>((Set<T>) data);
         ts.removeIf(t -> !filter.test(t));
         return ts.size() == 1 ? ts.get(0) : null;
     }

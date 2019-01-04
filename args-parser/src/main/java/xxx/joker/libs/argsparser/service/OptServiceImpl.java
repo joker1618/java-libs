@@ -44,10 +44,6 @@ class OptServiceImpl implements IOptService {
 			OptWrapper optWrapper = new OptWrapper(field, optName);
 			optMap.put(optWrapper.getName(), optWrapper);
 		}
-
-		if(performDesignCheck) {
-			checkOptNamesUsage(optNameService);
-		}
 	}
 
 	private void checkNameAliasUniqueness(Set<String> allNameAlias, Opt annot) {
@@ -132,16 +128,6 @@ class OptServiceImpl implements IOptService {
 		if(!optNames.contains(annotName)) {
 			String optNameClass = optNameService.getOptNameClass().getSimpleName();
 			throw new DesignParserException(optClass, "option name [%s] not related with Enum<%s>", annotName, optNameClass);
-		}
-	}
-
-	private void checkOptNamesUsage(IOptNameService optNameService) {
-		// check if all Enum<? extends OptionName> are used in Class<? extends InputOption>
-		Set<String> optNames = optNameService.getOptNameMap().keySet();
-		List<String> unused = JkStreams.filter(optNames, on -> !optMap.keySet().contains(on));
-		if(!unused.isEmpty()) {
-			Class<?> optNameClass = optNameService.getOptNameClass();
-			throw new DesignParserException(optNameClass, "option names %s not used in %s", unused, optClass.getSimpleName());
 		}
 	}
 

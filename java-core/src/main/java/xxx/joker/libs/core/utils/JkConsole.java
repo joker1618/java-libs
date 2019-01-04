@@ -19,6 +19,13 @@ public class JkConsole {
 	public static void display(String mexFormat, Object... params) {
 		out.println(strf(mexFormat, params));
 	}
+	public static void display(boolean newLine, String mexFormat, Object... params) {
+		if(newLine) {
+			out.println(strf(mexFormat, params));
+		} else {
+			out.print(strf(mexFormat, params));
+		}
+	}
 
 	public static String readUserInput(String label) throws IOException {
 		return readUserInput(label, s -> true);
