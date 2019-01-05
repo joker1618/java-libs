@@ -10,14 +10,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>java-media</artifactId>
-    <version>1.0</version>
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>xxx.joker.libs</groupId>
             <artifactId>java-core</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>

@@ -34,7 +34,7 @@ public abstract class JkAbstractConfigs {
 
 	protected void loadConfigFile(Path configFile) throws IOException {
 		if(Files.exists(configFile)) {
-			loadConfigFile(new FileInputStream(configFile.toString()));
+			loadConfigFile(new FileInputStream(configFile.toFile()));
 		}
 	}
 	

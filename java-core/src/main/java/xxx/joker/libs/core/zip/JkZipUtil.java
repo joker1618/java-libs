@@ -43,7 +43,7 @@ public class JkZipUtil {
             zis.closeEntry();
 
         } catch (Exception ex) {
-            throw new JkRuntimeException(ex);
+            throw new JkRuntimeException(ex, "Error decompressing archive {}", archivePath);
         }
     }
 
@@ -55,27 +55,25 @@ public class JkZipUtil {
     }
 
     public static void zipFiles(Path archivePath, Collection<Path> filesToZip) throws JkRuntimeException {
-        Path middleOutPath = JkFiles.computeSafelyPath(archivePath);
+        try {
+            Files.createDirectories(JkFiles.getParent(archivePath));
+            Path middleOutPath = JkFiles.computeSafelyPath(archivePath);
 
-        try (FileOutputStream fos = new FileOutputStream(middleOutPath.toFile());
-             ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+            try (FileOutputStream fos = new FileOutputStream(middleOutPath.toFile());
+                 ZipOutputStream zipOut = new ZipOutputStream(fos)) {
 
-            for(Path path : filesToZip) {
-                File fileToZip = path.toFile();
-                zipFile(fileToZip, fileToZip.getName(), zipOut);
+                for (Path path : filesToZip) {
+                    File fileToZip = path.toFile();
+                    zipFile(fileToZip, fileToZip.getName(), zipOut);
+                }
             }
 
-        } catch (Exception ex) {
-            try {
-                Files.deleteIfExists(middleOutPath);
-            } catch (IOException e) {
-                throw new JkRuntimeException(e);
+            if(!JkFiles.areEquals(archivePath, middleOutPath)) {
+                JkFiles.moveFile(middleOutPath, archivePath, true);
             }
-            throw new JkRuntimeException(ex);
-        }
 
-        if(!JkFiles.areEquals(archivePath, middleOutPath)) {
-            JkFiles.moveFile(middleOutPath, archivePath, true);
+        } catch (IOException ex) {
+            throw new JkRuntimeException(ex, "Error creating ZIP archive {}", archivePath);
         }
     }
 

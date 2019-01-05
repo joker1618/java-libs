@@ -3,3 +3,4 @@ target
 *.iml
 
 args-parser/src/test/resources/file.txt
+**/test/resources/zip/out*

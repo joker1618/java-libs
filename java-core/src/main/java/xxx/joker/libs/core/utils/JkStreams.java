@@ -35,6 +35,9 @@ public class JkStreams {
 	public static <T,U> List<U> filterAndMap(Collection<T> source, Predicate<T> filter, Function<T,U> mapper) {
 		return source.stream().filter(filter).map(mapper).collect(Collectors.toList());
 	}
+	public static <T,U> List<U> filterAndMapSorted(Collection<T> source, Predicate<T> filter, Function<T,U> mapper) {
+		return source.stream().filter(filter).map(mapper).collect(Collectors.toList());
+	}
 	public static <T,U> List<U> mapAndFilter(Collection<T> source, Function<T,U> mapper, Predicate<U> filter) {
 		return source.stream().map(mapper).filter(filter).collect(Collectors.toList());
 	}
