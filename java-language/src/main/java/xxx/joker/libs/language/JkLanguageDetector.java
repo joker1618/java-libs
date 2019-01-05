@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 /**
  * Created by f.barbano on 19/01/2018.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkLanguageDetector {
 
 	private static final Map<JkLanguage, List<String>> languages;

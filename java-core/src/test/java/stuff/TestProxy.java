@@ -7,6 +7,9 @@ import java.lang.reflect.Proxy;
 import java.util.Set;
 import java.util.TreeSet;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class TestProxy {
 
     interface If {

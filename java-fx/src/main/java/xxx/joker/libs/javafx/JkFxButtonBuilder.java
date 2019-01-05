@@ -9,9 +9,15 @@ import java.util.List;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkFxButtonBuilder {
 
-    public enum JkButtonType { ADD, DELETE, UPDATE }
+    import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
+public enum JkButtonType { ADD, DELETE, UPDATE }
 
     private int width = 25;
     private int height = 25;

@@ -7,6 +7,9 @@ import java.util.List;
 /**
  * Created by f.barbano on 26/08/2017.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public interface InputCommand {
 
 	String name();

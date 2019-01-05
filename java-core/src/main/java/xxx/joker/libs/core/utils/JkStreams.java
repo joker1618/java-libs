@@ -11,6 +11,9 @@ import java.util.stream.Stream;
 /**
  * Created by f.barbano on 25/05/2018.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkStreams {
 
 	public static <T> String join(T[] source, String separator) {

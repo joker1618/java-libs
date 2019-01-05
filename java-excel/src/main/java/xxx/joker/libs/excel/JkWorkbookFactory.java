@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkWorkbookFactory {
 
     public static JkWorkbook create(Path excelPath) {

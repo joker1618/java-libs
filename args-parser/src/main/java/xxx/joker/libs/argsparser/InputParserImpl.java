@@ -24,6 +24,9 @@ import java.util.function.UnaryOperator;
 /**
  * Created by f.barbano on 27/08/2017.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class InputParserImpl implements IInputParser {
 
 

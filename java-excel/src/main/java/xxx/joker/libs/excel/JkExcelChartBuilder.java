@@ -18,6 +18,9 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkExcelChartBuilder {
 
     private final JkSheetXSSF sheet;

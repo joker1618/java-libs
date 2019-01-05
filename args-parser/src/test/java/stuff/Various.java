@@ -11,6 +11,9 @@ import java.util.List;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class Various {
 
     @Test

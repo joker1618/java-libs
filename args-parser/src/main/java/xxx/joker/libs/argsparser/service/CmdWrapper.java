@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 /**
  * Created by f.barbano on 30/08/2017.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class CmdWrapper {
 
 	private InputCommand cmd;

@@ -14,6 +14,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkWorkbookHSSF implements JkWorkbook {
 
     private HSSFWorkbook wb;

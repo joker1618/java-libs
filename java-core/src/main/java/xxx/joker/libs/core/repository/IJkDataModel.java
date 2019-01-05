@@ -5,6 +5,9 @@ import xxx.joker.libs.core.repository.property.JkModelProperty;
 
 import java.util.*;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public interface IJkDataModel {
 
     void commit();

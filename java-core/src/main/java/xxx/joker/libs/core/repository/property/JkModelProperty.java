@@ -3,6 +3,9 @@ package xxx.joker.libs.core.repository.property;
 import xxx.joker.libs.core.repository.entity.JkDefaultEntity;
 import xxx.joker.libs.core.repository.entity.JkEntityField;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkModelProperty extends JkDefaultEntity {
 
     @JkEntityField(index = 0)

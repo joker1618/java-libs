@@ -8,6 +8,9 @@ import java.util.*;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkHtmlTag {
 
     private String tagName;

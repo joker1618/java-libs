@@ -3,6 +3,9 @@ package xxx.joker.libs.core.format;
 /**
  * Created by f.barbano on 26/05/2018.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public enum JkSizeUnit {
 
 	GB("GB", 1024L*1024*1024L),

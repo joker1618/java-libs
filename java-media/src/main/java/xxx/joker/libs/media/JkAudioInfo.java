@@ -5,6 +5,9 @@ import java.nio.file.Path;
 /**
  * Created by f.barbano on 12/07/2017.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkAudioInfo {
 
 	private Path audioPath;

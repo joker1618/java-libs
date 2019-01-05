@@ -4,6 +4,9 @@ import xxx.joker.libs.core.utils.JkFiles;
 
 import java.nio.file.Path;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public enum JkExcelType {
 
     HSSF("xls"),

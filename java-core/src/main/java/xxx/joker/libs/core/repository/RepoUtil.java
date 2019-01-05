@@ -12,6 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 class RepoUtil {
 
     private static final List<Class<?>> ALLOWED_CLASSES = Arrays.asList(

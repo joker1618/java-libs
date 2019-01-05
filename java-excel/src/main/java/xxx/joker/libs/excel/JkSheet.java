@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public interface JkSheet {
 
     Sheet getSheet();

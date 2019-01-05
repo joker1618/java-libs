@@ -15,6 +15,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkZipUtil {
 
     public static void unzipArchive(Path archivePath, Path outFolder) throws JkRuntimeException {
@@ -57,7 +60,7 @@ public class JkZipUtil {
     public static void zipFiles(Path archivePath, Collection<Path> filesToZip) throws JkRuntimeException {
         try {
             Files.createDirectories(JkFiles.getParent(archivePath));
-            Path middleOutPath = JkFiles.computeSafelyPath(archivePath);
+            Path middleOutPath = JkFiles.safePath(archivePath);
 
             try (FileOutputStream fos = new FileOutputStream(middleOutPath.toFile());
                  ZipOutputStream zipOut = new ZipOutputStream(fos)) {

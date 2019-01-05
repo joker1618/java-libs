@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkExcelChartSerie {
     private String name;
     private List<Double> data;

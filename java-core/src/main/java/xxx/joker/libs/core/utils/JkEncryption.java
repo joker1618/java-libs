@@ -18,6 +18,9 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.util.Arrays;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkEncryption {
 
     private static final byte[] salt = new byte[]{(byte) 67, (byte) 118, (byte) -107, (byte) -57, (byte) 91, (byte) -41, (byte) 69, (byte) 23};

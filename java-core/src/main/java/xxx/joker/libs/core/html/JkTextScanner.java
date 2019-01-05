@@ -3,6 +3,9 @@ package xxx.joker.libs.core.html;
 /**
  * Created by f.barbano on 14/08/2017.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public interface JkTextScanner {
 
 	void startCursorAt(int offset);

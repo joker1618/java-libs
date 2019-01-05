@@ -11,6 +11,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.List;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class Vari {
 
     @Test

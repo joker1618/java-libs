@@ -6,6 +6,9 @@ import xxx.joker.libs.argsparser.exception.InputParserException;
 /**
  * Created by f.barbano on 11/03/2017.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public interface IInputParser {
 
 	<T extends InputOption> T parse(String inputLine) throws InputParserException;

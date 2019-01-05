@@ -7,6 +7,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkReflection {
 
     public static List<Field> getFieldsByAnnotation(Class<?> sourceClass, Class<? extends Annotation> annotationClass) {

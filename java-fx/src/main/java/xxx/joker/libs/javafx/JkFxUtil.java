@@ -16,6 +16,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkFxUtil {
 
 	/* TableView utilities */

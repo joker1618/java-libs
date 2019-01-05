@@ -6,6 +6,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.time.LocalDateTime;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public abstract class JkDefaultEntity implements JkEntity {
 
     protected Long entityID;

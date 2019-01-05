@@ -26,6 +26,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import static xxx.joker.libs.core.repository.JkPersistenceManager.EntityLines;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 class JkEntityManager {
 
     private static final Logger logger = LoggerFactory.getLogger(JkEntityManager.class);

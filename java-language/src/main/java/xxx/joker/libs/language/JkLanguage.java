@@ -5,6 +5,9 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Created by f.barbano on 19/01/2018.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public enum JkLanguage {
 
 	ITALIAN("ita"),

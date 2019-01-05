@@ -15,6 +15,9 @@ import java.util.List;
 /**
  * Created by f.barbano on 29/10/2017.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkWeb {
 
 	public static String downloadHtml(String webPageURL) throws JkRuntimeException {

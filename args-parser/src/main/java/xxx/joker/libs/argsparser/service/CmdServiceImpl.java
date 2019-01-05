@@ -16,6 +16,9 @@ import java.util.*;
 /**
  * Created by f.barbano on 03/09/2017.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 class CmdServiceImpl implements ICmdService {
 
 	private Class<? extends InputCommand> cmdClass;

@@ -5,6 +5,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import java.io.Closeable;
 import java.nio.file.Path;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public interface JkWorkbook extends Closeable {
 
     Workbook getWorkbook();

@@ -17,6 +17,9 @@ import java.nio.file.Path;
 /**
  * Created by f.barbano on 10/07/2017.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkMediaAnalyzer {
 
     public static JkVideoInfo analyzeVideo(Path videoPath) throws JkRuntimeException {

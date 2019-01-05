@@ -9,6 +9,9 @@ import java.util.Map;
 /**
  * Created by f.barbano on 26/05/2018.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkTests {
 
 	/* BOOLEAN TESTS */

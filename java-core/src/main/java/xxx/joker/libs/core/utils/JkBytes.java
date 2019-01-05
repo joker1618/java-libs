@@ -13,6 +13,9 @@ import java.util.List;
 /**
  * Created by f.barbano on 23/01/2018.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkBytes {
 
 	public static boolean isBitSet(byte b, int bit) {

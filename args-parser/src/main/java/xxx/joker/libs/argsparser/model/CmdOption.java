@@ -10,6 +10,9 @@ import java.util.function.UnaryOperator;
 /**
  * Created by f.barbano on 26/08/2017.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class CmdOption {
 
 	private Enum<? extends OptionName> option;

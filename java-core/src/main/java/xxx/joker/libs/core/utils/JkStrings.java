@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 /**
  * Created by f.barbano on 25/05/2018.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkStrings {
 
 	/**
@@ -43,10 +46,14 @@ public class JkStrings {
 		return toRet;
 	}
 	public static String strfs(String format, Object... params) {
-		return String.format(format, params);
+		return params.length == 0 ? format : String.format(format, params);
 	}
 	// Use logger placeholders {}
 	public static String strfl(String format, Object... params) {
+		if(params.length == 0) {
+			return format;
+		}
+
 		StringBuilder sb = new StringBuilder();
 
 		List<String> splits = JkStrings.splitFieldsList(format, "{}");

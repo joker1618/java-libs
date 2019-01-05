@@ -6,6 +6,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkHtmlScanner {
 
 //    public static void main(String[] args) throws IOException {

@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkStuff {
 
     public static List<Class<?>> findClasses(String packageName) {

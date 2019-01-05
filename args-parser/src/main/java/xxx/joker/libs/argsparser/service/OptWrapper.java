@@ -10,6 +10,9 @@ import java.util.List;
 /**
  * Created by f.barbano on 03/09/2017.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class OptWrapper {
 
 	private Field field;

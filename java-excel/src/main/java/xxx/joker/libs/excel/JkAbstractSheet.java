@@ -20,6 +20,9 @@ import java.util.List;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 abstract class JkAbstractSheet implements JkSheet {
 
     private static final DataFormatter DATA_FORMATTER = new DataFormatter(true);

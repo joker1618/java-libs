@@ -14,6 +14,9 @@ import java.util.Map;
 /**
  * Created by f.barbano on 03/09/2017.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 class OptNameServiceImpl implements IOptNameService {
 
 	private Class<? extends OptionName> optNameClass;

@@ -5,6 +5,9 @@ import xxx.joker.libs.core.utils.JkStreams;
 import java.util.Arrays;
 import java.util.List;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class HtmlChars {
 
     private static final List<HtmlChar> charList;

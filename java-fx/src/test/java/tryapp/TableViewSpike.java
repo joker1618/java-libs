@@ -16,6 +16,9 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class TableViewSpike  extends Application {
 
     private final TableView<Person> table = new TableView<>();

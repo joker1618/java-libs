@@ -16,6 +16,9 @@ import java.util.function.Predicate;
 
 import static xxx.joker.libs.core.repository.JkPersistenceManager.EntityLines;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public abstract class JkDataModel {
 
     private static final Logger logger = LoggerFactory.getLogger(JkDataModel.class);

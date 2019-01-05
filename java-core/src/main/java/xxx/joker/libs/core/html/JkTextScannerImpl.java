@@ -11,6 +11,9 @@ import java.util.List;
 /**
  * Created by f.barbano on 14/08/2017.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkTextScannerImpl implements JkTextScanner {
 
     private static final Logger logger = LoggerFactory.getLogger(JkTextScannerImpl.class);

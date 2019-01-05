@@ -24,6 +24,9 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 /**
  * Created by f.barbano on 26/05/2018.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkFiles {
 
 	private static final String NEWLINE = StringUtils.LF;
@@ -109,6 +112,7 @@ public class JkFiles {
             }
             Files.deleteIfExists(outputPath);
             appendToFile(outputPath, lines, encoding, finalNewline);
+
         } catch (IOException ex) {
             throw new JkRuntimeException(ex);
         }
@@ -153,28 +157,7 @@ public class JkFiles {
                 writeFile(tempFile, lines, true, encoding);
                 appendToFile(tempFile, Files.readAllLines(outputPath, encoding));
                 copyAttributes(outputPath, tempFile);
-                Files.delete(outputPath);
-                Files.move(tempFile, outputPath);
-            }
-
-        } catch (IOException ex) {
-            throw new JkRuntimeException(ex);
-        }
-	}
-
-	/* READ methods */
-	public static List<String> readLines(InputStream is) throws JkRuntimeException {
-	    try {
-            try (InputStreamReader isr = new InputStreamReader(is);
-                 BufferedReader reader = new BufferedReader(isr)) {
-
-                List<String> lines = new ArrayList<>();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    lines.add(line);
-                }
-
-                return lines;
+                Files.move(tempFile, outputPath, StandardCopyOption.REPLACE_EXISTING);
             }
 
         } catch (IOException ex) {
@@ -202,7 +185,7 @@ public class JkFiles {
             }
 
             Path outPath = Files.isDirectory(targetPath) ? targetPath.resolve(sourcePath.getFileName()) : targetPath;
-            if (safePath) outPath = computeSafelyPath(outPath);
+            if (safePath) outPath = safePath(outPath);
 
             if (!overwrite && Files.exists(outPath)) {
                 throw new FileAlreadyExistsException(String.format("Unable to copy [%s] to [%s]: target path already exists", sourcePath.toAbsolutePath(), outPath.toAbsolutePath()));
@@ -246,7 +229,7 @@ public class JkFiles {
                 throw new FileNotFoundException(strf("Source file [%s] not exists!", sourcePath));
             }
 
-            if (safePath) targetPath = computeSafelyPath(targetPath);
+            if (safePath) targetPath = safePath(targetPath);
 
             if (!overwrite && Files.exists(targetPath)) {
                 throw new FileAlreadyExistsException(String.format("Unable to move [%s] to [%s]: target path already exists", sourcePath.toAbsolutePath(), targetPath.toAbsolutePath()));
@@ -263,6 +246,24 @@ public class JkFiles {
 	}
 
 	/* READ methods */
+	public static List<String> readLines(InputStream is) throws JkRuntimeException {
+		try {
+			try (InputStreamReader isr = new InputStreamReader(is);
+				 BufferedReader reader = new BufferedReader(isr)) {
+
+				List<String> lines = new ArrayList<>();
+				String line;
+				while ((line = reader.readLine()) != null) {
+					lines.add(line);
+				}
+
+				return lines;
+			}
+
+		} catch (IOException ex) {
+			throw new JkRuntimeException(ex);
+		}
+	}
 	public static List<String> readLines(Path filePath, Predicate<String>... filters) throws JkRuntimeException {
 		return readLines(filePath, false, filters);
 	}
@@ -325,9 +326,6 @@ public class JkFiles {
 	}
 
 	/* FIND methods */
-	public static List<Path> findFiles(Path root, boolean recursive) {
-		return findFiles1(root, recursive, Collections.emptyList());
-	}
 	public static List<Path> findFiles(Path root, boolean recursive, Predicate<Path>... filterConds) {
 		return findFiles1(root, recursive, Arrays.asList(filterConds));
 	}
@@ -389,10 +387,10 @@ public class JkFiles {
 		return getParent(file.toPath()).toFile();
 	}
 
-	public static Path computeSafelyPath(String targetPath) {
-		return computeSafelyPath(Paths.get(targetPath));
+	public static Path safePath(String targetPath) {
+		return safePath(Paths.get(targetPath));
 	}
-	public static Path computeSafelyPath(Path targetPath) {
+	public static Path safePath(Path targetPath) {
 		Path newPath = targetPath;
 
 		if(Files.exists(targetPath)) {

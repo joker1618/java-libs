@@ -4,6 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public interface JkEntity extends Comparable<JkEntity> {
 
     String getPrimaryKey();

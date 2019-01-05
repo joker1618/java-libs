@@ -1,5 +1,8 @@
 package xxx.joker.libs.core.objects;
 
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class Pos {
     
     private int rowNum;

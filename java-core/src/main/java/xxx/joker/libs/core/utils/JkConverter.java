@@ -9,6 +9,9 @@ import java.util.*;
 /**
  * Created by f.barbano on 29/05/2017.
  */
+import xxx.joker.libs.core.ToAnalyze;
+
+@ToAnalyze
 public class JkConverter {
 
 	/* Conversions between data structures types */
