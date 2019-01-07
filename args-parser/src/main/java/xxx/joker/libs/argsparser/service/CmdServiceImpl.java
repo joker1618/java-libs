@@ -19,6 +19,7 @@ import java.util.*;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 class CmdServiceImpl implements ICmdService {
 
 	private Class<? extends InputCommand> cmdClass;

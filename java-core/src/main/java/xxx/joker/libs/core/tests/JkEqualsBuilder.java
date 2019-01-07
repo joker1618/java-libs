@@ -6,6 +6,7 @@ package xxx.joker.libs.core.tests;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkEqualsBuilder {
 
 }

@@ -9,6 +9,7 @@ import java.util.Locale;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkOutputFmt {
 
 	public static String humanSize(long bytes) {

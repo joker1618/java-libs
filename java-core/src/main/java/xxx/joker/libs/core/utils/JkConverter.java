@@ -12,6 +12,7 @@ import java.util.*;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkConverter {
 
 	/* Conversions between data structures types */

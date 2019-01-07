@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public enum JkLanguage {
 
 	ITALIAN("ita"),

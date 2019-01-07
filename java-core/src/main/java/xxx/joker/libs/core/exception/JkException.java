@@ -7,7 +7,7 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
  */
 import xxx.joker.libs.core.ToAnalyze;
 
-@ToAnalyze
+
 public class JkException extends Exception {
 
 	public JkException(String message, Object... params) {
@@ -21,4 +21,10 @@ public class JkException extends Exception {
 	public JkException(Throwable cause) {
 		super(cause);
 	}
+
+	@Override
+	public String toString() {
+		return JkThrowableUtil.toString(this);
+	}
+
 }

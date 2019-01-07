@@ -13,6 +13,7 @@ import java.util.function.UnaryOperator;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class CmdOption {
 
 	private Enum<? extends OptionName> option;

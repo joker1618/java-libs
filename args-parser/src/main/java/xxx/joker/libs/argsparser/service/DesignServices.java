@@ -17,6 +17,7 @@ import static xxx.joker.libs.core.utils.JkConsole.display;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class DesignServices {
 
 	private static final String LAST_KNOWN_SIZE_FILENAME_PREFIX = ".last_known_size";

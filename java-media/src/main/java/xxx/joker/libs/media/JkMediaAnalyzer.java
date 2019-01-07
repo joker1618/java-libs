@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkMediaAnalyzer {
 
     public static JkVideoInfo analyzeVideo(Path videoPath) throws JkRuntimeException {

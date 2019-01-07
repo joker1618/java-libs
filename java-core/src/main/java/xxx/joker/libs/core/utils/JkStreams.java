@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkStreams {
 
 	public static <T> String join(T[] source, String separator) {

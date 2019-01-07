@@ -6,6 +6,7 @@ package xxx.joker.libs.argsparser.exception;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class InputValueException extends RuntimeException {
 
 	public InputValueException(String message, Object... params) {

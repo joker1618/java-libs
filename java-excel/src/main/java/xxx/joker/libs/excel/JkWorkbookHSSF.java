@@ -17,6 +17,7 @@ import java.util.List;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkWorkbookHSSF implements JkWorkbook {
 
     private HSSFWorkbook wb;

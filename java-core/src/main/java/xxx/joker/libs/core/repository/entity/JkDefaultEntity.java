@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public abstract class JkDefaultEntity implements JkEntity {
 
     protected Long entityID;

@@ -6,6 +6,7 @@ package xxx.joker.libs.argsparser.service;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public interface ICmdService {
 
 	CmdWrapper getByEvolution(String evolution);

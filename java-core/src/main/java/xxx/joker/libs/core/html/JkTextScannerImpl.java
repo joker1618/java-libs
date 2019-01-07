@@ -14,6 +14,7 @@ import java.util.List;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkTextScannerImpl implements JkTextScanner {
 
     private static final Logger logger = LoggerFactory.getLogger(JkTextScannerImpl.class);

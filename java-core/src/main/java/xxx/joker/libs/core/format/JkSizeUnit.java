@@ -6,6 +6,7 @@ package xxx.joker.libs.core.format;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public enum JkSizeUnit {
 
 	GB("GB", 1024L*1024*1024L),

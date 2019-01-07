@@ -11,6 +11,7 @@ import java.util.jar.JarFile;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkStuff {
 
     public static List<Class<?>> findClasses(String packageName) {

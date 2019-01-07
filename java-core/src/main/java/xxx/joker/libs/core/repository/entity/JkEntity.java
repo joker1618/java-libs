@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public interface JkEntity extends Comparable<JkEntity> {
 
     String getPrimaryKey();

@@ -18,6 +18,7 @@ import java.util.List;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkWeb {
 
 	public static String downloadHtml(String webPageURL) throws JkRuntimeException {

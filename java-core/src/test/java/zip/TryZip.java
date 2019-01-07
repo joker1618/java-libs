@@ -11,6 +11,7 @@ import static xxx.joker.libs.core.utils.JkConsole.display;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class TryZip {
 
     static final Path TEST_FOLDER = Paths.get("src\\test\\resources\\zip");

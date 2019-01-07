@@ -10,6 +10,7 @@ import java.util.TreeSet;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class TestProxy {
 
     interface If {

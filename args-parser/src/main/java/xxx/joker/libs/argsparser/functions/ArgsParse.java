@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class ArgsParse {
 
 	public static UnaryOperator<String[]> normalizeBoolean() {

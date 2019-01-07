@@ -27,6 +27,7 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkFiles {
 
 	private static final String NEWLINE = StringUtils.LF;

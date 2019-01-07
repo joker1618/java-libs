@@ -16,6 +16,7 @@ import java.util.*;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 class JkPersistenceManager {
 
     private static final Logger logger = LoggerFactory.getLogger(JkPersistenceManager.class);

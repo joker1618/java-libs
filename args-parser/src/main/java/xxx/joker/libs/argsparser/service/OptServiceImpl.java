@@ -19,6 +19,7 @@ import java.util.*;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 class OptServiceImpl implements IOptService {
 
 	 private Class<? extends InputOption> optClass;

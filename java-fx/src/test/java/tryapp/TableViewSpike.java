@@ -19,6 +19,7 @@ import javafx.util.Callback;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class TableViewSpike  extends Application {
 
     private final TableView<Person> table = new TableView<>();

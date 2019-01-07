@@ -6,6 +6,7 @@ package xxx.joker.libs.argsparser.exception;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class DesignParserException extends RuntimeException {
 
 	public DesignParserException(Class<?> clazz, String message, Object... params) {

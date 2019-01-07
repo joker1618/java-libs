@@ -18,6 +18,7 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkTime implements Comparable<JkTime> {
 
 	private long totalMillis;

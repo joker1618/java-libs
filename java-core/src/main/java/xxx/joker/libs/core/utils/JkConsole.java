@@ -16,11 +16,13 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkConsole {
 
 	// Out display
 	public static void display(String mexFormat, Object... params) {
 		out.println(strf(mexFormat, params));
+		out.flush();
 	}
 	public static void display(boolean newLine, String mexFormat, Object... params) {
 		if(newLine) {

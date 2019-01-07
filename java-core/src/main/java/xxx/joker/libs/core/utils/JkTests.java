@@ -12,6 +12,7 @@ import java.util.Map;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkTests {
 
 	/* BOOLEAN TESTS */

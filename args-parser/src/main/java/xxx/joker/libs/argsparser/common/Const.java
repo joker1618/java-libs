@@ -15,6 +15,7 @@ import java.util.List;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class Const {
 
 	// If an InputCommand has more independent evolutions than MAX_EVOLUTIONS, then the evolutions will be computed

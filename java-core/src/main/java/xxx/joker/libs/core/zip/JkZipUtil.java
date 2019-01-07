@@ -18,6 +18,7 @@ import java.util.zip.ZipOutputStream;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkZipUtil {
 
     public static void unzipArchive(Path archivePath, Path outFolder) throws JkRuntimeException {

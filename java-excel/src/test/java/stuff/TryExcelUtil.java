@@ -12,6 +12,7 @@ import static xxx.joker.libs.core.utils.JkConsole.display;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class TryExcelUtil {
 
     @Test

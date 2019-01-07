@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkLanguageDetector {
 
 	private static final Map<JkLanguage, List<String>> languages;

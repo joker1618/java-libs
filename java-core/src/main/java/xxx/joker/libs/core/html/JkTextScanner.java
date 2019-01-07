@@ -6,6 +6,7 @@ package xxx.joker.libs.core.html;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public interface JkTextScanner {
 
 	void startCursorAt(int offset);

@@ -9,6 +9,7 @@ import xxx.joker.libs.argsparser.exception.InputParserException;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public interface IInputParser {
 
 	<T extends InputOption> T parse(String inputLine) throws InputParserException;

@@ -8,6 +8,7 @@ import xxx.joker.libs.argsparser.design.annotation.Cmd;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public abstract class InputOption<T extends InputCommand> {
 
 	@Cmd

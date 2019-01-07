@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkPictureInfo {
 
 	private Path imagePath;

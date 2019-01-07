@@ -17,6 +17,7 @@ import java.util.Map;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 class OptNameServiceImpl implements IOptNameService {
 
 	private Class<? extends OptionName> optNameClass;

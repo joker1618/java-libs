@@ -15,6 +15,7 @@ import java.util.Set;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 class RepoUtil {
 
     private static final List<Class<?>> ALLOWED_CLASSES = Arrays.asList(

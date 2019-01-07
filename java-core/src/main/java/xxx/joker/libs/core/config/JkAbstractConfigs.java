@@ -23,6 +23,7 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public abstract class JkAbstractConfigs {
 
 	protected Map<String, Prop> configMap;

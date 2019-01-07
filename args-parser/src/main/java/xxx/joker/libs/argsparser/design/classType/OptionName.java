@@ -6,6 +6,7 @@ package xxx.joker.libs.argsparser.design.classType;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public interface OptionName {
 
 	String optName();

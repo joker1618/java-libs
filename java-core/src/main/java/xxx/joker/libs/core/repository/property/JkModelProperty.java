@@ -6,6 +6,7 @@ import xxx.joker.libs.core.repository.entity.JkEntityField;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkModelProperty extends JkDefaultEntity {
 
     @JkEntityField(index = 0)

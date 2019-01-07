@@ -27,6 +27,7 @@ import java.util.function.UnaryOperator;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class InputParserImpl implements IInputParser {
 
 

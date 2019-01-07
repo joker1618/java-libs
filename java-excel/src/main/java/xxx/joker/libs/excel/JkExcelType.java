@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public enum JkExcelType {
 
     HSSF("xls"),

@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkWorkbookFactory {
 
     public static JkWorkbook create(Path excelPath) {

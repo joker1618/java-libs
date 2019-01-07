@@ -12,12 +12,12 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class JkFxButtonBuilder {
 
-    import xxx.joker.libs.core.ToAnalyze;
-
-@ToAnalyze
-public enum JkButtonType { ADD, DELETE, UPDATE }
+    @ToAnalyze
+    @Deprecated
+    public enum JkButtonType { ADD, DELETE, UPDATE }
 
     private int width = 25;
     private int height = 25;

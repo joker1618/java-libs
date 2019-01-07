@@ -15,6 +15,7 @@ import java.util.function.Function;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class ArgsCheck {
 
 	public static Function<Object[], String> stringNotEmpty() {

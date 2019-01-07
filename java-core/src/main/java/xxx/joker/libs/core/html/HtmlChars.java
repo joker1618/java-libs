@@ -8,6 +8,7 @@ import java.util.List;
 import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
+@Deprecated
 public class HtmlChars {
 
     private static final List<HtmlChar> charList;
