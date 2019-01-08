@@ -1,9 +1,8 @@
 package xxx.joker.libs.core.utils;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+//import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,10 +11,7 @@ import java.util.stream.Collectors;
 /**
  * Created by f.barbano on 25/05/2018.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
-@ToAnalyze
-@Deprecated
 public class JkStrings {
 
 	/**
@@ -46,10 +42,11 @@ public class JkStrings {
 
 		return toRet;
 	}
+	// Use String.format placeholders  (%s, %d, ...)
 	public static String strfs(String format, Object... params) {
 		return params.length == 0 ? format : String.format(format, params);
 	}
-	// Use logger placeholders {}
+	// Use logger placeholders  ({})
 	public static String strfl(String format, Object... params) {
 		if(params.length == 0) {
 			return format;
@@ -57,7 +54,7 @@ public class JkStrings {
 
 		StringBuilder sb = new StringBuilder();
 
-		List<String> splits = JkStrings.splitFieldsList(format, "{}");
+		List<String> splits = JkStrings.splitList(format, "{}");
 		if(!splits.isEmpty()) {
 			int splitPos = 0;
 			sb.append(splits.get(splitPos++));
@@ -72,13 +69,13 @@ public class JkStrings {
 		return sb.toString();
 	}
 
-	public static String[] splitAllFields(String source, String separatorString) {
-		return splitAllFields(source, separatorString, false);
+	public static String[] splitArr(String source, String separatorString) {
+		return splitArr(source, separatorString, false);
 	}
-	public static String[] splitAllFields(String source, String separatorString, boolean trimValues) {
-		return splitAllFields(source, separatorString, trimValues, true);
+	public static String[] splitArr(String source, String separatorString, boolean trimValues) {
+		return splitArr(source, separatorString, trimValues, true);
 	}
-	public static String[] splitAllFields(String source, String separatorString, boolean trimValues, boolean removeSeparator) {
+	public static String[] splitArr(String source, String separatorString, boolean trimValues, boolean removeSeparator) {
 		if(StringUtils.isEmpty(source)) {
 			return new String[0];
 		}
@@ -100,14 +97,27 @@ public class JkStrings {
 		return toRet;
 	}
 
-	public static List<String> splitFieldsList(String source, String separatorString) {
-		return splitFieldsList(source, separatorString, false);
+	public static List<String> splitList(String source, String separatorString) {
+		return splitList(source, separatorString, false);
 	}
-	public static List<String> splitFieldsList(String source, String separatorString, boolean trimValues) {
-		return splitFieldsList(source, separatorString, trimValues, true);
+	public static List<String> splitList(String source, String separatorString, boolean trimValues) {
+		return splitList(source, separatorString, trimValues, true);
 	}
-	public static List<String> splitFieldsList(String source, String separatorString, boolean trimValues, boolean removeSeparator) {
-		return JkConverter.toArrayList(splitAllFields(source, separatorString, trimValues, removeSeparator));
+	public static List<String> splitList(String source, String separatorString, boolean trimValues, boolean removeSeparator) {
+		return JkConvert.toArrayList(splitArr(source, separatorString, trimValues, removeSeparator));
+	}
+
+	public static String leftPadLines(String source, String padStr, int padSize) {
+		String[] lines = splitArr(source, "\n");
+		List<String> padded = leftPadLines(JkConvert.toArrayList(lines), padStr, padSize);
+		return JkStreams.join(padded, "\n");
+	}
+	public static List<String> leftPadLines(List<String> list, String padStr, int padSize) {
+		return list.stream().map(str -> StringUtils.repeat(padStr, padSize) + str).collect(Collectors.toList());
+	}
+
+	public static String safeTrim(String source) {
+		return StringUtils.isBlank(source) ? "" : source.trim();
 	}
 
 	public static boolean matchRegExp(String regex, String source) {
@@ -115,46 +125,6 @@ public class JkStrings {
 		Matcher matcher = pattern.matcher(source);
 		return matcher.matches();
 	}
-
-	public static int indexOfIgnoreCase(String source, String toFind) {
-		return source.toLowerCase().indexOf(toFind.toLowerCase());
-	}
-
-	public static String leftPadLines(String source, String padStr, int padSize) {
-		String[] lines = splitAllFields(source, "\n");
-		List<String> padded = leftPadLines(JkConverter.toArrayList(lines), padStr, padSize);
-		return JkStreams.join(padded, "\n");
-	}
-	public static List<String> leftPadLines(List<String> list, String padStr, int padSize) {
-		return list.stream().map(str -> StringUtils.repeat(padStr, padSize) + str).collect(Collectors.toList());
-	}
-
-	public static String mergeLines(String left, String right, String separator) {
-		List<String> mergedLines = mergeLines(splitFieldsList(left, StringUtils.LF), splitFieldsList(right, StringUtils.LF), separator);
-		return JkStreams.join(mergedLines, StringUtils.LF);
-	}
-	public static List<String> mergeLines(List<String> left, List<String> right, String separator) {
-		List<String> merged = new ArrayList<>();
-		for(int i = 0; i < Math.max(left.size(), right.size()); i++) {
-			String l = i < left.size() ? left.get(i) : "";
-			String r = i < right.size() ? right.get(i) : "";
-			merged.add(l + separator + r);
-		}
-		return merged;
-	}
-
-	public static String safeTrim(String source) {
-		return StringUtils.isBlank(source) ? "" : source.trim();
-	}
-
-
-    public static String unescapeHtmlSpecialChars(String htmlText) {
-        // Custom replacements before undecoding using StringUtils
-        htmlText = htmlText.replace("&#160;", "");  // Non-breaking space
-
-        htmlText = StringEscapeUtils.unescapeHtml4(htmlText);
-        return htmlText;
-    }
 
 
 	private static int countPlaceholders(String str, boolean logStyle) {
@@ -172,5 +142,34 @@ public class JkStrings {
 
 		return counter;
 	}
+
+
+//	@ToAnalyze
+//	@Deprecated
+//	public static String mergeLines(String left, String right, String separator) {
+//		List<String> mergedLines = mergeLines(splitList(left, StringUtils.LF), splitList(right, StringUtils.LF), separator);
+//		return JkStreams.join(mergedLines, StringUtils.LF);
+//	}
+//	@ToAnalyze
+//	@Deprecated
+//	public static List<String> mergeLines(List<String> left, List<String> right, String separator) {
+//		List<String> merged = new ArrayList<>();
+//		for(int i = 0; i < Math.max(left.size(), right.size()); i++) {
+//			String l = i < left.size() ? left.get(i) : "";
+//			String r = i < right.size() ? right.get(i) : "";
+//			merged.add(l + separator + r);
+//		}
+//		return merged;
+//	}
+//
+//	@ToAnalyze
+//	@Deprecated
+//	public static String unescapeHtmlSpecialChars(String htmlText) {
+//		// Custom replacements before undecoding using StringUtils
+//		htmlText = htmlText.replace("&#160;", "");  // Non-breaking space
+//
+//		htmlText = StringEscapeUtils.unescapeHtml4(htmlText);
+//		return htmlText;
+//	}
 
 }

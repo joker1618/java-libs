@@ -1,7 +1,8 @@
 package xxx.joker.libs.core.zip;
 
+import xxx.joker.libs.core.checks.JkCheck;
 import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.utils.JkFiles;
+import xxx.joker.libs.core.files.JkFiles;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -72,7 +73,7 @@ public class JkZipUtil {
                 }
             }
 
-            if(!JkFiles.areEquals(archivePath, middleOutPath)) {
+            if(!JkCheck.areEquals(archivePath, middleOutPath)) {
                 JkFiles.moveFile(middleOutPath, archivePath, true);
             }
 

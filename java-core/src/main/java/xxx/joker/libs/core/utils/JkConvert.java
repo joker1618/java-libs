@@ -2,6 +2,8 @@ package xxx.joker.libs.core.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -9,13 +11,10 @@ import java.util.*;
 /**
  * Created by f.barbano on 29/05/2017.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
-@ToAnalyze
-@Deprecated
-public class JkConverter {
+public class JkConvert {
 
-	/* Conversions between data structures types */
+	/* DATA STRUCTURES */
 	public static <T> TreeSet<T> toTreeSet(T[] source) {
 		return source == null ? null : new TreeSet<>(Arrays.asList(source));
 	}
@@ -37,136 +36,153 @@ public class JkConverter {
 		return source == null ? null : new ArrayList<>(source);
 	}
 
-	/* Conversions between numbers */
-	public static Integer stringToInteger(String str) {
+
+	/* NUMBERS */
+	public static Integer toInt(String str) {
 		try {
 			return Integer.valueOf(str.trim());
 		} catch(Exception ex) {
 			return null;
 		}
 	}
-	public static Integer stringToInteger(String str, Integer defaultValue) {
-        Integer num = stringToInteger(str);
-        return num == null ? defaultValue : num;
+	public static Integer toInt(String str, Integer _default) {
+        Integer num = toInt(str);
+        return num == null ? _default : num;
 	}
-	public static Integer[] stringToInteger(String[] source) {
+	public static Integer[] toInts(String[] source) {
 		Integer[] toRet = new Integer[source.length];
 		for(int i = 0; i < source.length; i++) {
-			Integer num = stringToInteger(source[i]);
+			Integer num = toInt(source[i]);
 			if(num == null)		return null;
 			toRet[i] = num;
 		}
 		return toRet;
 	}
 
-	public static Long stringToLong(String str) {
+	public static Long toLong(String str) {
 		try {
 			return Long.valueOf(str);
 		} catch(Exception ex) {
 			return null;
 		}
 	}
-	public static Long stringToLong(String str, Long defaultValue) {
-		try {
-			return Long.valueOf(str);
-		} catch(Exception ex) {
-			return defaultValue;
-		}
+	public static Long toLong(String str, Long _default) {
+		Long num = toLong(str);
+		return num == null ? _default : num;
 	}
-	public static Long[] stringToLong(String[] source) {
+	public static Long[] toLongs(String[] source) {
 		Long[] toRet = new Long[source.length];
 		for(int i = 0; i < source.length; i++) {
-			Long num = stringToLong(source[i]);
+			Long num = toLong(source[i]);
 			if(num == null)		return null;
 			toRet[i] = num;
 		}
 		return toRet;
 	}
 
-	public static Double stringToDouble(String str) {
+	public static Double toDouble(String str) {
 		try {
 			return Double.valueOf(str.trim());
 		} catch(Exception ex) {
 			return null;
 		}
 	}
-	public static Double stringToDouble(String str, Double defaultValue) {
-		try {
-			return Double.valueOf(str.trim());
-		} catch(Exception ex) {
-			return defaultValue;
-		}
+	public static Double toDouble(String str, Double _default) {
+		Double num = toDouble(str);
+		return num == null ? _default : num;
 	}
-	public static Double[] stringToDouble(String[] source) {
+	public static Double[] toDoubles(String[] source) {
 		Double[] toRet = new Double[source.length];
 		for(int i = 0; i < source.length; i++) {
-			Double num = stringToDouble(source[i]);
+			Double num = toDouble(source[i]);
 			if(num == null)		return null;
 			toRet[i] = num;
 		}
 		return toRet;
 	}
 
-	public static Float stringToFloat(String str) {
+	public static Float toFloat(String str) {
 		try {
 			return Float.valueOf(str.trim());
 		} catch(Exception ex) {
 			return null;
 		}
 	}
-	public static Float[] stringToFloat(String[] source) {
+	public static Float toFloat(String str, Float _default) {
+		Float num = toFloat(str);
+		return num == null ? _default : num;
+	}
+	public static Float[] toFloats(String[] source) {
 		Float[] toRet = new Float[source.length];
 		for(int i = 0; i < source.length; i++) {
-			Float num = stringToFloat(source[i]);
+			Float num = toFloat(source[i]);
 			if(num == null)		return null;
 			toRet[i] = num;
 		}
 		return toRet;
 	}
 
-	public static boolean stringToBoolean(String source, boolean defValue) {
+	public static boolean toBoolean(String source) {
+		return source == null ? false : Boolean.valueOf(source);
+	}
+	public static boolean toBoolean(String source, boolean defValue) {
 		return StringUtils.equalsAnyIgnoreCase(source, "true", "false") ? Boolean.valueOf(source) : defValue;
 	}
-	public static Boolean[] stringToBoolean(String[] source) {
-		Boolean[] toRet = new Boolean[source.length];
+	public static boolean[] toBooleans(String[] source) {
+		boolean[] toRet = new boolean[source.length];
 		for(int i = 0; i < source.length; i++) {
 			toRet[i] = Boolean.valueOf(source[i]);
 		}
 		return toRet;
 	}
-	public static Path[] stringToPath(String[] source) {
+
+
+	/* PATHS */
+	public static Path[] toPaths(String[] source) {
 		Path[] toRet = new Path[source.length];
 		for(int i = 0; i < source.length; i++) {
 			toRet[i] = Paths.get(source[i]);
 		}
 		return toRet;
 	}
-
-	// Windows <--> Cygwin  path format conversions
-	public static String cygwinPathFormat(Path windowsPath) {
-		return cygwinPathFormat(windowsPath.toString());
+	public static Path toPath(URI sourceURI) {
+		String path = sourceURI.getPath();
+		return Paths.get(path.startsWith("/") ? path.substring(1) : path);
 	}
-	public static String cygwinPathFormat(String windowsPath) {
+
+	public static String toURL(Path source) {
+		try {
+			return source.toUri().toURL().toExternalForm();
+		} catch (MalformedURLException e) {
+			return null;
+		}
+	}
+
+	// Cygwin to Windows paths convertions (and viceversa)
+	public static String winToUnixPath(Path windowsPath) {
+		return winToUnixPath(windowsPath.toString());
+	}
+	public static String winToUnixPath(String windowsPath) {
 		return changePathFormat(windowsPath, true);
 	}
-	public static String[] cygwinPathFormat(String[] windowsPaths) {
+	public static String[] winToUnixPath(String[] windowsPaths) {
 		return changePathFormat(windowsPaths, true);
 	}
 
-	public static String windowsPathFormat(Path cygwinPath) {
-		return windowsPathFormat(cygwinPath.toString());
+	public static String unixToWinPath(Path cygwinPath) {
+		return unixToWinPath(cygwinPath.toString());
 	}
-	public static String windowsPathFormat(String cygwinPath) {
+	public static String unixToWinPath(String cygwinPath) {
 		return changePathFormat(cygwinPath, false);
 	}
-	public static String[] windowsPathFormat(String[] cygwinPaths) {
+	public static String[] unixToWinPath(String[] cygwinPaths) {
 		return changePathFormat(cygwinPaths, false);
 	}
 
 	private static String[] changePathFormat(String[] paths, boolean toCygPath) {
 		String[] toRet = new String[paths.length];
 		for(int i = 0; i < toRet.length; i++) {
-			toRet[i] = toCygPath ? cygwinPathFormat(paths[i]) : windowsPathFormat(paths[i]);
+			toRet[i] = toCygPath ? winToUnixPath(paths[i]) : unixToWinPath(paths[i]);
 		}
 		return toRet;
 	}

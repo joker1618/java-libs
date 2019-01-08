@@ -6,7 +6,7 @@ import xxx.joker.libs.argsparser.design.annotation.Opt;
 import xxx.joker.libs.argsparser.design.classType.InputOption;
 import xxx.joker.libs.argsparser.design.classType.OptionName;
 import xxx.joker.libs.argsparser.exception.DesignParserException;
-import xxx.joker.libs.core.utils.JkConverter;
+import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkReflection;
 import xxx.joker.libs.core.utils.JkStreams;
 
@@ -52,7 +52,7 @@ class OptServiceImpl implements IOptService {
 
 	private void checkNameAliasUniqueness(Set<String> allNameAlias, Opt annot) {
 		String annName = annot.name();
-		List<String> annAliases = JkConverter.toArrayList(annot.aliases());
+		List<String> annAliases = JkConvert.toArrayList(annot.aliases());
 
 		// No spaces in name and aliases
 		if(StringUtils.isBlank(annName)) {
@@ -101,7 +101,7 @@ class OptServiceImpl implements IOptService {
 			);
 
 		} else {
-			List<Class<?>> annotClasses = JkConverter.toArrayList(annot.classes());
+			List<Class<?>> annotClasses = JkConvert.toArrayList(annot.classes());
 
 			// annotation classes found --> field type must be Object
 			if (field.getType() != Object.class) {

@@ -16,6 +16,7 @@ import java.util.List;
  * Created by f.barbano on 29/10/2017.
  */
 import xxx.joker.libs.core.ToAnalyze;
+import xxx.joker.libs.core.files.JkFiles;
 
 @ToAnalyze
 @Deprecated

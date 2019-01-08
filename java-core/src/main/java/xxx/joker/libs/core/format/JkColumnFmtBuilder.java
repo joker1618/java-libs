@@ -36,11 +36,11 @@ public class JkColumnFmtBuilder {
 	}
 
 	public JkColumnFmtBuilder addLines(String source) {
-		lines.addAll(JkStrings.splitFieldsList(source, StringUtils.LF));
+		lines.addAll(JkStrings.splitList(source, StringUtils.LF));
 		return this;
 	}
 	public JkColumnFmtBuilder addLines(int index, String source) {
-		lines.addAll(index, JkStrings.splitFieldsList(source, StringUtils.LF));
+		lines.addAll(index, JkStrings.splitList(source, StringUtils.LF));
 		return this;
 	}
 	public JkColumnFmtBuilder addLines(List<String> sourceLines) {
@@ -53,7 +53,7 @@ public class JkColumnFmtBuilder {
 	}
 
 	public JkColumnFmtBuilder addColumnRight(String separator, String colValues) {
-		return addColumnRight(separator, JkStrings.splitFieldsList(colValues, StringUtils.LF));
+		return addColumnRight(separator, JkStrings.splitList(colValues, StringUtils.LF));
 	}
 	public JkColumnFmtBuilder addColumnRight(String separator, List<String> colValues) {
 		if(lines.isEmpty()) {
@@ -77,8 +77,8 @@ public class JkColumnFmtBuilder {
 	}
 
 	public JkColumnFmtBuilder addColumns(String separator, String col1, String col2) {
-		List<String> colValues1 = JkStrings.splitFieldsList(col1.trim(), StringUtils.LF, true);
-		List<String> colValues2 = JkStrings.splitFieldsList(col2.trim(), StringUtils.LF, true);
+		List<String> colValues1 = JkStrings.splitList(col1.trim(), StringUtils.LF, true);
+		List<String> colValues2 = JkStrings.splitList(col2.trim(), StringUtils.LF, true);
 		return addColumns(separator, colValues1, colValues2);
 	}
 	public JkColumnFmtBuilder addColumns(String separator, List<String> colValues1, List<String> colValues2) {
@@ -122,7 +122,7 @@ public class JkColumnFmtBuilder {
 	}
 	public List<String> toLines(String separator, String columnsSeparator, boolean trimValues) {
 		// Split lines in fields
-		List<String[]> fieldLines = JkStreams.map(lines, line -> JkStrings.splitAllFields(line, separator, trimValues));
+		List<String[]> fieldLines = JkStreams.map(lines, line -> JkStrings.splitArr(line, separator, trimValues));
 
 		// Fix columns number: every row must have the same number of fields
 		fieldLines = adaptColumnsNumber(fieldLines);

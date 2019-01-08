@@ -1,7 +1,7 @@
 package stuff;
 
 import org.junit.Test;
-import xxx.joker.libs.core.utils.JkFiles;
+import xxx.joker.libs.core.files.JkFiles;
 
 import java.io.IOException;
 import java.nio.file.Files;

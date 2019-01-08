@@ -3,7 +3,7 @@ package xxx.joker.libs.core.html;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.libs.core.utils.JkConverter;
+import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 
 import java.util.List;
@@ -121,7 +121,7 @@ public class JkTextScannerImpl implements JkTextScanner {
 
     @Override
     public Integer nextIntBetween(String start, String end) {
-        return JkConverter.stringToInteger(JkStrings.safeTrim(nextValueBetween(start, end)));
+        return JkConvert.toInt(JkStrings.safeTrim(nextValueBetween(start, end)));
     }
 
     @Override

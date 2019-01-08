@@ -19,6 +19,7 @@ import java.security.MessageDigest;
 import java.util.Arrays;
 
 import xxx.joker.libs.core.ToAnalyze;
+import xxx.joker.libs.core.files.JkFiles;
 
 @ToAnalyze
 @Deprecated
@@ -29,7 +30,8 @@ public class JkEncryption {
     private JkEncryption() {
     }
 
-    public static byte[] encryptBytes(byte[] source, String password) throws JkRuntimeException {
+
+    public static byte[] encryptBytes(byte[] source, String password) {
         try {
             Cipher cipher = makeCipher(password, true);
 
@@ -43,8 +45,7 @@ public class JkEncryption {
             throw new JkRuntimeException(ex);
         }
     }
-
-    public static byte[] decryptBytes(byte[] source, String password) throws JkRuntimeException {
+    public static byte[] decryptBytes(byte[] source, String password) {
         try {
             Cipher cipher = makeCipher(password, false);
 
@@ -61,8 +62,7 @@ public class JkEncryption {
         }
     }
 
-
-    public static void encryptFile(Path inputPath, Path outputPath, String password, boolean overwrite) throws JkRuntimeException {
+    public static void encryptFile(Path inputPath, Path outputPath, String password, boolean overwrite) {
         try {
             if (!overwrite && Files.exists(outputPath)) {
                 throw new IOException("File [" + outputPath + "] already exists!");
@@ -78,14 +78,12 @@ public class JkEncryption {
             byte[] encData = encryptBytes(inputBytes, password);
 
             JkFiles.writeFile(outputPath, encData, overwrite);
-            JkFiles.copyAttributes(inputPath, outputPath);
 
         } catch (Exception ex) {
             throw new JkRuntimeException(ex);
         }
     }
-
-    public static void decryptFile(Path inputPath, Path outputPath, String password, boolean overwrite) throws JkRuntimeException {
+    public static void decryptFile(Path inputPath, Path outputPath, String password, boolean overwrite) {
         try {
             if (!overwrite && Files.exists(outputPath)) {
                 throw new IOException("File [" + outputPath + "] already exists!");
@@ -101,14 +99,13 @@ public class JkEncryption {
             byte[] decrBytes = decryptBytes(encData, password);
 
             JkFiles.writeFile(outputPath, decrBytes, overwrite);
-            JkFiles.copyAttributes(inputPath, outputPath);
 
         } catch (Exception ex) {
             throw new JkRuntimeException(ex);
         }
     }
 
-    public static String getMD5(Path inputPath) throws JkRuntimeException {
+    public static String getMD5(Path inputPath) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
 
@@ -126,16 +123,13 @@ public class JkEncryption {
             throw new JkRuntimeException(ex);
         }
     }
-
-    public static String getMD5(String s) throws JkRuntimeException {
+    public static String getMD5(String s) {
         return getMD5(s.getBytes());
     }
-
-    public static String getMD5(String s, Charset encoding) throws JkRuntimeException {
+    public static String getMD5(String s, Charset encoding) {
         return getMD5(s.getBytes(encoding));
     }
-
-    public static String getMD5(byte[] bytes) throws JkRuntimeException {
+    public static String getMD5(byte[] bytes) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(bytes);
@@ -146,7 +140,8 @@ public class JkEncryption {
         }
     }
 
-    private static Cipher makeCipher(String password, Boolean decryptMode) throws JkRuntimeException {
+
+    private static Cipher makeCipher(String password, Boolean decryptMode) {
         try {
             PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray());
             SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
@@ -166,7 +161,7 @@ public class JkEncryption {
         }
     }
 
-    private static String computeMD5(MessageDigest md) throws JkRuntimeException {
+    private static String computeMD5(MessageDigest md) {
         try {
             byte[] mdbytes = md.digest();
 

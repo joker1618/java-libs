@@ -2,7 +2,7 @@ package xxx.joker.libs.argsparser.service;
 
 import xxx.joker.libs.argsparser.design.annotation.Opt;
 import xxx.joker.libs.argsparser.design.classType.OptionName;
-import xxx.joker.libs.core.utils.JkConverter;
+import xxx.joker.libs.core.utils.JkConvert;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -28,8 +28,8 @@ public class OptWrapper {
 
 		Opt ann = field.getAnnotation(Opt.class);
 		this.name = ann.name();
-		this.aliases = JkConverter.toArrayList(ann.aliases());
-		this.classes = JkConverter.toArrayList(ann.classes());
+		this.aliases = JkConvert.toArrayList(ann.aliases());
+		this.classes = JkConvert.toArrayList(ann.classes());
 	}
 
 	public Field getField() {

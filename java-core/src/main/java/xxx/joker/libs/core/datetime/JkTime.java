@@ -1,6 +1,6 @@
 package xxx.joker.libs.core.datetime;
 
-import xxx.joker.libs.core.utils.JkConverter;
+import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 
 import java.time.*;
@@ -100,14 +100,14 @@ public class JkTime implements Comparable<JkTime> {
             long milli = 0;
             int idx = str.indexOf('.');
             if (idx != -1) {
-                milli += JkConverter.stringToInteger(str.substring(idx + 1));
+                milli += JkConvert.toInt(str.substring(idx + 1));
                 str = str.substring(0, idx);
             }
 
-            String[] split = JkStrings.splitAllFields(str, separator);
+            String[] split = JkStrings.splitArr(str, separator);
             int mult = 1000;
             for (int i = split.length - 1; i >= 0; i--) {
-                Integer num = JkConverter.stringToInteger(split[i]);
+                Integer num = JkConvert.toInt(split[i]);
                 milli += num * mult;
                 mult *= 60;
             }

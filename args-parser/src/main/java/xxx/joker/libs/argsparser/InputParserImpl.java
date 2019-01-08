@@ -9,7 +9,7 @@ import xxx.joker.libs.argsparser.exception.InputParserException;
 import xxx.joker.libs.argsparser.exception.InputValueException;
 import xxx.joker.libs.argsparser.model.CmdOption;
 import xxx.joker.libs.argsparser.service.*;
-import xxx.joker.libs.core.utils.JkConverter;
+import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkReflection;
 import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.core.utils.JkTests;
@@ -172,19 +172,19 @@ public class InputParserImpl implements IInputParser {
 
 			if(expectedClass == Boolean[].class) {
 				classCheck = JkTests::isBooleanArray;
-				classConverter = JkConverter::stringToBoolean;
+				classConverter = JkConvert::toBooleans;
 			} else if(expectedClass == Integer.class || expectedClass == Integer[].class) {
 				classCheck = JkTests::isIntegerArray;
-				classConverter = JkConverter::stringToInteger;
+				classConverter = JkConvert::toInts;
 			} else if(expectedClass == Double.class || expectedClass == Double[].class) {
 				classCheck = JkTests::isDoubleArray;
-				classConverter = JkConverter::stringToDouble;
+				classConverter = JkConvert::toDoubles;
 			} else if(expectedClass == Long.class || expectedClass == Long[].class) {
 				classCheck = JkTests::isLongArray;
-				classConverter = JkConverter::stringToLong;
+				classConverter = JkConvert::toLongs;
 			} else if(expectedClass == Path.class || expectedClass == Path[].class) {
 				classCheck = arr -> true;
-				classConverter = JkConverter::stringToPath;
+				classConverter = JkConvert::toPaths;
 			} else if(expectedClass == String.class || expectedClass == String[].class) {
 				classCheck = arr -> true;
 				classConverter = arr -> arr;

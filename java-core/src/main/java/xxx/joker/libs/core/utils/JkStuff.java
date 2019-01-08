@@ -9,6 +9,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import xxx.joker.libs.core.ToAnalyze;
+import xxx.joker.libs.core.files.JkFiles;
 
 @ToAnalyze
 @Deprecated

@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.repository.entity.JkEntity;
 import xxx.joker.libs.core.repository.entity.JkEntityField;
-import xxx.joker.libs.core.utils.JkConverter;
+import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkReflection;
 import xxx.joker.libs.core.utils.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
@@ -116,7 +116,7 @@ class JkEntityManager {
                     Map<Integer, List<ForeignKey>> fkIndexMap = JkStreams.toMap(fromPKmap.get(fromID), ForeignKey::getFromFieldIndex);
                     for (int fieldIndex : fkIndexMap.keySet()) {
                         List<ForeignKey> fklist = fkIndexMap.get(fieldIndex);
-                        List<JkEntity> elist = JkStreams.mapAndFilter(fklist, fk -> entityMap.get(fk.getTargetClazz()).get(fk.getTargetID()), Objects::nonNull);
+                        List<JkEntity> elist = JkStreams.mapFilter(fklist, fk -> entityMap.get(fk.getTargetClazz()).get(fk.getTargetID()), Objects::nonNull);
                         if(!elist.isEmpty()) {
                             AnnField annField = entityFields.get(fromClazz).get(fieldIndex);
                             Object objValue = annField.isCollection() ? listToSafeObject(elist, annField) : elist.get(0);
@@ -166,10 +166,10 @@ class JkEntityManager {
     private JkEntity parseLine(Class<?> elemClazz, String line) {
         try {
             JkEntity instance = (JkEntity) elemClazz.newInstance();
-            List<String> row = JkStrings.splitFieldsList(line, DATA_FIELD_SEP);
+            List<String> row = JkStrings.splitList(line, DATA_FIELD_SEP);
 
             String entityID = row.remove(0);
-            instance.setEntityID(JkConverter.stringToLong(entityID));
+            instance.setEntityID(JkConvert.toLong(entityID));
             String insTstamp = row.remove(0);
             instance.setInsertTstamp(LocalDateTime.parse(insTstamp, DateTimeFormatter.ISO_DATE_TIME));
 
@@ -192,7 +192,7 @@ class JkEntityManager {
 
         Class<?> fclazz = annField.getFieldType();
         if(annField.isCollection()) {
-            List<String> strElems = JkStrings.splitFieldsList(value, DATA_LIST_SEP);
+            List<String> strElems = JkStrings.splitList(value, DATA_LIST_SEP);
             Class<?> elemClazz = annField.getCollectionType();
 
             List<Object> values = new ArrayList<>();
@@ -214,7 +214,7 @@ class JkEntityManager {
 
     private Object listToSafeObject(List<?> values, AnnField annField) {
         if(annField.isSet()) {
-            return annField.isComparable() ? JkConverter.toTreeSet(values) : JkConverter.toHashSet(values);
+            return annField.isComparable() ? JkConvert.toTreeSet(values) : JkConvert.toHashSet(values);
         }
 
         return values;
@@ -230,21 +230,21 @@ class JkEntityManager {
         } else if (Arrays.asList(boolean.class, Boolean.class).contains(fclazz)) {
             o = Boolean.valueOf(value);
         } else if (Arrays.asList(int.class, Integer.class).contains(fclazz)) {
-            o = JkConverter.stringToInteger(value);
+            o = JkConvert.toInt(value);
         } else if (Arrays.asList(int.class, Integer.class).contains(fclazz)) {
-            o = JkConverter.stringToInteger(value);
+            o = JkConvert.toInt(value);
         } else if (Arrays.asList(long.class, Long.class).contains(fclazz)) {
-            o = JkConverter.stringToLong(value);
+            o = JkConvert.toLong(value);
         } else if (Arrays.asList(long.class, Long.class).contains(fclazz)) {
-            o = JkConverter.stringToLong(value);
+            o = JkConvert.toLong(value);
         } else if (Arrays.asList(double.class, Double.class).contains(fclazz)) {
-            o = JkConverter.stringToDouble(value);
+            o = JkConvert.toDouble(value);
         } else if (Arrays.asList(double.class, Double.class).contains(fclazz)) {
-            o = JkConverter.stringToDouble(value);
+            o = JkConvert.toDouble(value);
         } else if (Arrays.asList(float.class, Float.class).contains(fclazz)) {
-            o = JkConverter.stringToFloat(value);
+            o = JkConvert.toFloat(value);
         } else if (Arrays.asList(float.class, Float.class).contains(fclazz)) {
-            o = JkConverter.stringToFloat(value);
+            o = JkConvert.toFloat(value);
         } else if (fclazz == Path.class) {
             o = Paths.get(value);
         } else if (fclazz == File.class) {
@@ -345,7 +345,7 @@ class JkEntityManager {
         if(value != null) {
             if (annField.isCollection()) {
                 Class<?> elemClazz = annField.getCollectionType();
-                List<?> list = annField.isSet() ? JkConverter.toArrayList((Set<?>) value) : (List<?>) value;
+                List<?> list = annField.isSet() ? JkConvert.toArrayList((Set<?>) value) : (List<?>) value;
                 if (!list.isEmpty()) {
                     if (JkReflection.isOfType(elemClazz, JkEntity.class)) {
                         List<String> fklist = JkStreams.map(list, el -> ((JkEntity) el).getPrimaryKey());
@@ -486,12 +486,12 @@ class JkEntityManager {
 
         public ForeignKey(String repoLine) {
             try {
-                String[] arr = JkStrings.splitAllFields(repoLine, DATA_FIELD_SEP);
+                String[] arr = JkStrings.splitArr(repoLine, DATA_FIELD_SEP);
                 fromClazz = Class.forName(arr[0]);
-                fromID = JkConverter.stringToLong(arr[1]);
-                fromFieldIndex = JkConverter.stringToInteger(arr[2]);
+                fromID = JkConvert.toLong(arr[1]);
+                fromFieldIndex = JkConvert.toInt(arr[2]);
                 targetClazz = Class.forName(arr[3]);
-                targetID = JkConverter.stringToLong(arr[4]);
+                targetID = JkConvert.toLong(arr[4]);
             } catch (Exception e) {
                 throw new JkRuntimeException(e);
             }

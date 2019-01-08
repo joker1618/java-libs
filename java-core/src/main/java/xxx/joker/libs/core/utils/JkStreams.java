@@ -8,61 +8,104 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * Created by f.barbano on 25/05/2018.
- */
-import xxx.joker.libs.core.ToAnalyze;
-
-@ToAnalyze
-@Deprecated
 public class JkStreams {
 
-	public static <T> String join(T[] source, String separator) {
-		return join(Arrays.asList(source), separator);
+	public static <T,U> List<U> map(Collection<T> source, Function<T,U> mapper) {
+		return source.stream().map(mapper).collect(Collectors.toList());
 	}
-	public static <T> String join(Collection<T> source, String separator) {
-		return join(source, separator, String::valueOf);
+	public static <T,U> List<U> mapFilter(Collection<T> source, Function<T,U> mapper, Predicate<U> filter) {
+		return source.stream().map(mapper).filter(filter).collect(Collectors.toList());
 	}
-	public static <T> String join(T[] source, String separator, Function<T,String> mapFunc) {
-		return join(Arrays.asList(source), separator, mapFunc);
+	public static <T,U> List<U> mapSort(Collection<T> source, Function<T,U> mapper) {
+		return source.stream().map(mapper).sorted().collect(Collectors.toList());
 	}
-	public static <T> String join(Collection<T> source, String separator, Function<T,String> mapFunc) {
-		return source.stream().map(mapFunc).collect(Collectors.joining(separator));
+	public static <T,U> List<U> mapSort(Collection<T> source, Function<T,U> mapper, Comparator<U> sorter) {
+		return source.stream().map(mapper).sorted(sorter).collect(Collectors.toList());
+	}
+	public static <T,U> List<U> mapUniq(Collection<T> source, Function<T,U> mapper) {
+		return source.stream().map(mapper).distinct().collect(Collectors.toList());
+	}
+	public static <T,U> List<U> mapFilterSort(Collection<T> source, Function<T,U> mapper, Predicate<U> filter) {
+		return source.stream().map(mapper).filter(filter).sorted().collect(Collectors.toList());
+	}
+	public static <T,U> List<U> mapFilterSort(Collection<T> source, Function<T,U> mapper, Predicate<U> filter, Comparator<U> sorter) {
+		return source.stream().map(mapper).filter(filter).sorted(sorter).collect(Collectors.toList());
+	}
+	public static <T,U> List<U> mapFilterUniq(Collection<T> source, Function<T,U> mapper, Predicate<U> filter) {
+		return source.stream().map(mapper).filter(filter).distinct().collect(Collectors.toList());
+	}
+	public static <T,U> List<U> mapFilterSortUniq(Collection<T> source, Function<T,U> mapper, Predicate<U> filter) {
+		return source.stream().map(mapper).filter(filter).sorted().distinct().collect(Collectors.toList());
+	}
+	public static <T,U> List<U> mapFilterSortUniq(Collection<T> source, Function<T,U> mapper, Predicate<U> filter, Comparator<U> sorter) {
+		return source.stream().map(mapper).filter(filter).sorted(sorter).distinct().collect(Collectors.toList());
 	}
 
 	public static <T> List<T> filter(Collection<T> source, Predicate<T> filter) {
 		return source.stream().filter(filter).collect(Collectors.toList());
 	}
-	public static <T,U> List<U> map(Collection<T> source, Function<T,U> mapper) {
-		return source.stream().map(mapper).collect(Collectors.toList());
-	}
-	public static <T,U> List<U> filterAndMap(Collection<T> source, Predicate<T> filter, Function<T,U> mapper) {
+	public static <T,U> List<U> filterMap(Collection<T> source, Predicate<T> filter, Function<T,U> mapper) {
 		return source.stream().filter(filter).map(mapper).collect(Collectors.toList());
 	}
-	public static <T,U> List<U> filterAndMapSorted(Collection<T> source, Predicate<T> filter, Function<T,U> mapper) {
-		return source.stream().filter(filter).map(mapper).collect(Collectors.toList());
+	public static <T> List<T> filterSort(Collection<T> source, Predicate<T> filter) {
+		return source.stream().filter(filter).sorted().collect(Collectors.toList());
 	}
-	public static <T,U> List<U> mapAndFilter(Collection<T> source, Function<T,U> mapper, Predicate<U> filter) {
-		return source.stream().map(mapper).filter(filter).collect(Collectors.toList());
+	public static <T> List<T> filterSort(Collection<T> source, Predicate<T> filter, Comparator<T> sorter) {
+		return source.stream().filter(filter).sorted(sorter).collect(Collectors.toList());
+	}
+	public static <T> List<T> filterUniq(Collection<T> source, Predicate<T> filter) {
+		return source.stream().filter(filter).distinct().collect(Collectors.toList());
+	}
+	public static <T,U> List<U> filterMapSort(Collection<T> source, Predicate<T> filter, Function<T,U> mapper) {
+		return source.stream().filter(filter).map(mapper).sorted().collect(Collectors.toList());
+	}
+	public static <T,U> List<U> filterMapSort(Collection<T> source, Predicate<T> filter, Function<T,U> mapper, Comparator<U> sorter) {
+		return source.stream().filter(filter).map(mapper).sorted(sorter).collect(Collectors.toList());
+	}
+	public static <T,U> List<U> filterMapUniq(Collection<T> source, Predicate<T> filter, Function<T,U> mapper) {
+		return source.stream().filter(filter).map(mapper).distinct().collect(Collectors.toList());
+	}
+	public static <T,U> List<U> filterMapSortUniq(Collection<T> source, Predicate<T> filter, Function<T,U> mapper) {
+		return source.stream().filter(filter).map(mapper).sorted().distinct().collect(Collectors.toList());
+	}
+	public static <T,U> List<U> filterMapSortUniq(Collection<T> source, Predicate<T> filter, Function<T,U> mapper, Comparator<U> sorter) {
+		return source.stream().filter(filter).map(mapper).sorted(sorter).distinct().collect(Collectors.toList());
 	}
 
-    public static <T> List<T> distinct(Collection<T> source) {
-        return source.stream().distinct().collect(Collectors.toList());
-    }
-	public static <T> List<T> distinctSorted(Collection<T> source) {
-		return source.stream().sorted().distinct().collect(Collectors.toList());
-	}
-	public static <T> List<T> distinctSorted(Collection<T> source, Comparator<T> comparator) {
-		return source.stream().sorted(comparator).distinct().collect(Collectors.toList());
-	}
 	public static <T> List<T> sorted(Collection<T> source) {
 		return source.stream().sorted().collect(Collectors.toList());
 	}
-    public static <T> List<T> sorted(Collection<T> source, Comparator<T> comparator) {
-        return source.stream().sorted(comparator).collect(Collectors.toList());
-    }
+	public static <T> List<T> sorted(Collection<T> source, Comparator<T> sorter) {
+		return source.stream().sorted(sorter).collect(Collectors.toList());
+	}
+	public static <T> List<T> sortUniq(Collection<T> source) {
+		return source.stream().sorted().distinct().collect(Collectors.toList());
+	}
+	public static <T> List<T> sortUniq(Collection<T> source, Comparator<T> sorter) {
+		return source.stream().sorted(sorter).distinct().collect(Collectors.toList());
+	}
+	public static <T> List<T> distinct(Collection<T> source) {
+		return source.stream().distinct().collect(Collectors.toList());
+	}
+	public static <T> List<T> reverseOrder(Collection<T> source) {
+		List<T> list = sorted(source);
+		Collections.reverse(list);
+		return list;
+	}
+	public static <T> List<T> reverseOrder(Collection<T> source, Comparator<T> sorter) {
+		List<T> list = sorted(source, sorter);
+		Collections.reverse(list);
+		return list;
+	}
 
-    public static <T> List<T> duplicates(Collection<T> source) {
+	public static <T> String join(Collection<T> source, String separator) {
+		return source.stream().map(Object::toString).collect(Collectors.joining(separator));
+	}
+	public static <T> String join(Collection<T> source, String separator, Function<T,String> mapFunc) {
+		return source.stream().map(mapFunc).collect(Collectors.joining(separator));
+	}
+
+    public static <T> List<T> getDuplicates(Collection<T> source) {
         List<T> uniques = new ArrayList<>();
         List<T> dups = new ArrayList<>();
         for(T elem : source) {
@@ -110,7 +153,7 @@ public class JkStreams {
             stream.forEach(v -> {
 				K key = keyMapper.apply(v);
 				if(map.containsKey(key)) {
-					throw new JkRuntimeException("Multiple values found for key [%s]", key);
+					throw new JkRuntimeException("Multiple values found for key {}", key);
 				}
 				map.put(key, valueMapper.apply(v));
 			});
@@ -128,4 +171,14 @@ public class JkStreams {
 		});
 		return keys;
 	}
+	public static <K,V> List<V> getMapValues(Map<K,V> map, Predicate<K> keyPred) {
+		List<V> values = new ArrayList<>();
+		map.entrySet().forEach(e -> {
+			if(keyPred.test(e.getKey())) {
+				values.add(e.getValue());
+			}
+		});
+		return values;
+	}
+
 }

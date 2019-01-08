@@ -4,8 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.utils.JkConverter;
-import xxx.joker.libs.core.utils.JkFiles;
+import xxx.joker.libs.core.utils.JkConvert;
+import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.utils.JkStreams;
 
 import java.io.IOException;
@@ -52,7 +52,7 @@ class JkPersistenceManager {
 
         try {
             String line = Files.readAllLines(sequencePath).get(0);
-            return JkConverter.stringToLong(line);
+            return JkConvert.toLong(line);
         } catch(IOException ex) {
             throw new JkRuntimeException(ex);
         }

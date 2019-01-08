@@ -1,7 +1,7 @@
 package xxx.joker.libs.argsparser.model;
 
 import xxx.joker.libs.argsparser.design.classType.OptionName;
-import xxx.joker.libs.core.utils.JkConverter;
+import xxx.joker.libs.core.utils.JkConvert;
 
 import java.util.List;
 import java.util.function.Function;
@@ -50,7 +50,7 @@ public class CmdOption {
 		this.optionClass = optionClass;
 		this.transformBefore = transformBefore;
 		this.transformAfter = transformAfter;
-		this.valueCheckers = JkConverter.toArrayList(valueCheckers);
+		this.valueCheckers = JkConvert.toArrayList(valueCheckers);
 	}
 	public CmdOption(Enum<? extends OptionName> option,
 					 String defaultValue,
@@ -63,7 +63,7 @@ public class CmdOption {
 		this.optionClass = optionClass;
 		this.transformBefore = transformBefore;
 		this.transformAfter = transformAfter;
-		this.valueCheckers = JkConverter.toArrayList(valueCheckers);
+		this.valueCheckers = JkConvert.toArrayList(valueCheckers);
 	}
 
 	public Enum<? extends OptionName> getOption() {

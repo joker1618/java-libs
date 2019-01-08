@@ -74,7 +74,7 @@ public class JkHtmlTag {
         return findAllTagList(childName, attributes);
     }
     private List<JkHtmlTag> findAllTagList(String childName, String... attributes) {
-        List<Pair<String, String>> attrPairs = JkStreams.filterAndMap(Arrays.asList(attributes), s -> s.contains("="), s -> Pair.of(s.split("=")[0], s.split("=")[1]));
+        List<Pair<String, String>> attrPairs = JkStreams.filterMap(Arrays.asList(attributes), s -> s.contains("="), s -> Pair.of(s.split("=")[0], s.split("=")[1]));
 
         List<JkHtmlTag> toRet = new ArrayList<>();
 
@@ -124,7 +124,7 @@ public class JkHtmlTag {
     }
     public List<JkHtmlTag> getChildren(String tagName, String... attributes) {
         List<JkHtmlTag> chlist = getChildren(tagName);
-        List<Pair<String, String>> attrPairs = JkStreams.filterAndMap(Arrays.asList(attributes), s -> s.contains("="), s -> Pair.of(s.split("=")[0], s.split("=")[1]));
+        List<Pair<String, String>> attrPairs = JkStreams.filterMap(Arrays.asList(attributes), s -> s.contains("="), s -> Pair.of(s.split("=")[0], s.split("=")[1]));
         List<JkHtmlTag> finalList = new ArrayList<>();
         for(JkHtmlTag child : chlist) {
             boolean add = true;

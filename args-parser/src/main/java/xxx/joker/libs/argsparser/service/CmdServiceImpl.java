@@ -82,7 +82,7 @@ class CmdServiceImpl implements ICmdService {
 
 	private void checkOptionsUniqueness(CmdWrapper cmd) {
 		List<String> optNameList = JkStreams.map(cmd.getOptionList(), CmdOption::getOptionName);
-		List<String> dups = JkStreams.duplicates(optNameList);
+		List<String> dups = JkStreams.getDuplicates(optNameList);
 		if (!dups.isEmpty()) {
 			throw new DesignParserException(cmdClass, "command %s: options %s duplicated", cmd.getName(), dups);
 		}

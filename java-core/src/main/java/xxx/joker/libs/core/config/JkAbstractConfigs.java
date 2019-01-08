@@ -1,8 +1,8 @@
 package xxx.joker.libs.core.config;
 
 import org.apache.commons.lang3.StringUtils;
-import xxx.joker.libs.core.utils.JkConverter;
-import xxx.joker.libs.core.utils.JkFiles;
+import xxx.joker.libs.core.utils.JkConvert;
+import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.utils.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
 
@@ -172,7 +172,7 @@ public abstract class JkAbstractConfigs {
 	}
 	protected Integer getInt(String key, Integer _default) {
 		String value = getString(key);
-		return value == null ? _default : JkConverter.stringToInteger(value, _default);
+		return value == null ? _default : JkConvert.toInt(value, _default);
 	}
 
 	protected Long getLong(String key) {
@@ -180,7 +180,7 @@ public abstract class JkAbstractConfigs {
 	}
 	protected Long getLong(String key, Long _default) {
 		String value = getString(key);
-		return value == null ? _default : JkConverter.stringToLong(value, _default);
+		return value == null ? _default : JkConvert.toLong(value, _default);
 	}
 
 	protected Double getDouble(String key) {
@@ -188,7 +188,7 @@ public abstract class JkAbstractConfigs {
 	}
 	protected Double getDouble(String key, Double _default) {
 		String value = getString(key);
-		return value == null ? _default : JkConverter.stringToDouble(value, _default);
+		return value == null ? _default : JkConvert.toDouble(value, _default);
 	}
 
 	protected BigDecimal getBigDecimal(String key) {
@@ -197,7 +197,7 @@ public abstract class JkAbstractConfigs {
 	protected BigDecimal getBigDecimal(String key, BigDecimal _default) {
 		String value = getString(key);
 		if(value == null)	return _default;
-		Double d = JkConverter.stringToDouble(value);
+		Double d = JkConvert.toDouble(value);
 		return d == null ? _default : BigDecimal.valueOf(d);
 	}
 

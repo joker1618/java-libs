@@ -7,7 +7,7 @@ import org.apache.tika.parser.mp3.Mp3Parser;
 import org.apache.tika.parser.mp4.MP4Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.utils.JkConverter;
+import xxx.joker.libs.core.utils.JkConvert;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -36,12 +36,12 @@ public class JkMediaAnalyzer {
             jkVideoInfo.setVideoPath(videoPath);
             jkVideoInfo.setContentType(metadata.get("Content-Type"));
 
-            long dur = Math.round(JkConverter.stringToDouble(metadata.get("xmpDM:duration"))*1000d);
+            long dur = Math.round(JkConvert.toDouble(metadata.get("xmpDM:duration"))*1000d);
             jkVideoInfo.setDuration(dur);
 
-            jkVideoInfo.setWidth(JkConverter.stringToInteger(metadata.get("tiff:ImageWidth")));
-            jkVideoInfo.setHeight(JkConverter.stringToInteger(metadata.get("tiff:ImageLength")));
-            jkVideoInfo.setSamplingRate(JkConverter.stringToInteger(metadata.get("xmpDM:audioSampleRate")));
+            jkVideoInfo.setWidth(JkConvert.toInt(metadata.get("tiff:ImageWidth")));
+            jkVideoInfo.setHeight(JkConvert.toInt(metadata.get("tiff:ImageLength")));
+            jkVideoInfo.setSamplingRate(JkConvert.toInt(metadata.get("xmpDM:audioSampleRate")));
 
             return jkVideoInfo;
 
@@ -77,8 +77,8 @@ public class JkMediaAnalyzer {
             jpegParser.parse(inputstream, handler, metadata, pcontext);
 
             JkPictureInfo imageInfo = new JkPictureInfo();
-            imageInfo.setWidth(JkConverter.stringToInteger(metadata.get("tiff:ImageWidth")));
-            imageInfo.setHeight(JkConverter.stringToInteger(metadata.get("tiff:ImageLength")));
+            imageInfo.setWidth(JkConvert.toInt(metadata.get("tiff:ImageWidth")));
+            imageInfo.setHeight(JkConvert.toInt(metadata.get("tiff:ImageLength")));
 
             return imageInfo;
 
@@ -99,10 +99,10 @@ public class JkMediaAnalyzer {
 
             JkAudioInfo audioInfo = new JkAudioInfo();
             audioInfo.setAudioPath(mp3Path);
-            audioInfo.setSampleRate(JkConverter.stringToInteger(metadata.get("xmpDM:audioSampleRate"), -1));
+            audioInfo.setSampleRate(JkConvert.toInt(metadata.get("xmpDM:audioSampleRate"), -1));
             audioInfo.setContentType(metadata.get("Content-Type"));
             audioInfo.setVersionLabel(metadata.get("version"));
-            audioInfo.setDuration(JkConverter.stringToLong(metadata.get("xmpDM:duration").replaceAll("\\..*", ""), -1L));
+            audioInfo.setDuration(JkConvert.toLong(metadata.get("xmpDM:duration").replaceAll("\\..*", ""), -1L));
 
             return audioInfo;
 

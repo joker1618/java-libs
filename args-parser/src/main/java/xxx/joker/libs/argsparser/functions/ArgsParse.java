@@ -1,7 +1,7 @@
 package xxx.joker.libs.argsparser.functions;
 
 import org.apache.commons.lang3.StringUtils;
-import xxx.joker.libs.core.utils.JkConverter;
+import xxx.joker.libs.core.utils.JkConvert;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class ArgsParse {
 	}
 
 	public static UnaryOperator<String[]> windowsPathFormat() {
-		return JkConverter::windowsPathFormat;
+		return JkConvert::unixToWinPath;
 	}
 
 	public static UnaryOperator<Object[]> orderInt(boolean desc) {

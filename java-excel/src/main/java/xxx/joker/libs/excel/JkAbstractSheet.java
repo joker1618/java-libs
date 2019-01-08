@@ -6,7 +6,7 @@ import org.apache.poi.ss.util.CellReference;
 import xxx.joker.libs.core.datetime.JkTime;
 import xxx.joker.libs.core.objects.Area;
 import xxx.joker.libs.core.objects.Pos;
-import xxx.joker.libs.core.utils.JkConverter;
+import xxx.joker.libs.core.utils.JkConvert;
 
 import java.sql.Date;
 import java.text.NumberFormat;
@@ -104,7 +104,7 @@ abstract class JkAbstractSheet implements JkSheet {
 
     @Override
     public Integer getInt(int rowNum, int colNum) {
-        return JkConverter.stringToInteger(getString(rowNum, colNum));
+        return JkConvert.toInt(getString(rowNum, colNum));
     }
 
     @Override
@@ -118,7 +118,7 @@ abstract class JkAbstractSheet implements JkSheet {
 
     @Override
     public Long getLong(int rowNum, int colNum) {
-        return JkConverter.stringToLong(getString(rowNum, colNum));
+        return JkConvert.toLong(getString(rowNum, colNum));
     }
 
     @Override
@@ -132,7 +132,7 @@ abstract class JkAbstractSheet implements JkSheet {
 
     @Override
     public Double getDouble(int rowNum, int colNum) {
-        return JkConverter.stringToDouble(getString(rowNum, colNum));
+        return JkConvert.toDouble(getString(rowNum, colNum));
     }
 
     @Override
@@ -190,11 +190,11 @@ abstract class JkAbstractSheet implements JkSheet {
             } else if(value instanceof LocalDateTime) {
                 cell.setCellValue(new Date(JkTime.of((LocalDate) value).getTotalMillis()));
             } else if(value instanceof Integer) {
-                cell.setCellValue(JkConverter.stringToInteger(String.valueOf(value)));
+                cell.setCellValue(JkConvert.toInt(String.valueOf(value)));
             } else if(value instanceof Long) {
-                cell.setCellValue(JkConverter.stringToLong(String.valueOf(value)));
+                cell.setCellValue(JkConvert.toLong(String.valueOf(value)));
             } else if(value instanceof Double) {
-                cell.setCellValue(JkConverter.stringToDouble(String.valueOf(value)));
+                cell.setCellValue(JkConvert.toDouble(String.valueOf(value)));
             } else {
                 cell.setCellValue(String.valueOf(value));
             }
