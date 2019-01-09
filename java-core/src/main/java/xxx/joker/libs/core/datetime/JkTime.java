@@ -1,5 +1,6 @@
 package xxx.joker.libs.core.datetime;
 
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 
@@ -15,7 +16,6 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 /**
  * Created by f.barbano on 25/05/2018.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

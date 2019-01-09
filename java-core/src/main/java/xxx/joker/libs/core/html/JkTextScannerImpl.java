@@ -3,6 +3,7 @@ package xxx.joker.libs.core.html;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 
@@ -11,7 +12,6 @@ import java.util.List;
 /**
  * Created by f.barbano on 14/08/2017.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

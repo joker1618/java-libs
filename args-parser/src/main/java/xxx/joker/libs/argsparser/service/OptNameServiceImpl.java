@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.argsparser.design.annotation.OptName;
 import xxx.joker.libs.argsparser.design.classType.OptionName;
 import xxx.joker.libs.argsparser.exception.DesignParserException;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.utils.JkReflection;
 
 import java.lang.reflect.Field;
@@ -14,7 +15,6 @@ import java.util.Map;
 /**
  * Created by f.barbano on 03/09/2017.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

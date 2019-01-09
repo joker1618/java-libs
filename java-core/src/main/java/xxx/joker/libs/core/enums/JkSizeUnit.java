@@ -36,5 +36,8 @@ public enum JkSizeUnit {
 	public double parse(double num) {
 		return num / size;
 	}
+	public double parse(double num, JkSizeUnit scale) {
+		return num * scale.size / size;
+	}
 
 }

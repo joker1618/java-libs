@@ -3,18 +3,16 @@ package xxx.joker.libs.argsparser.service;
 import xxx.joker.libs.argsparser.design.classType.InputCommand;
 import xxx.joker.libs.argsparser.design.classType.InputOption;
 import xxx.joker.libs.argsparser.design.classType.OptionName;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.files.JkFiles;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static xxx.joker.libs.core.utils.JkConsole.display;
-
 /**
  * Created by f.barbano on 03/09/2017.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

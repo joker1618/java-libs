@@ -9,8 +9,9 @@ import xxx.joker.libs.argsparser.exception.InputParserException;
 import xxx.joker.libs.argsparser.exception.InputValueException;
 import xxx.joker.libs.argsparser.model.CmdOption;
 import xxx.joker.libs.argsparser.service.*;
-import xxx.joker.libs.core.utils.JkChecks;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.tests.JkChecks;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkReflection;
 import xxx.joker.libs.core.utils.JkStrings;
@@ -25,7 +26,6 @@ import java.util.function.UnaryOperator;
 /**
  * Created by f.barbano on 27/08/2017.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

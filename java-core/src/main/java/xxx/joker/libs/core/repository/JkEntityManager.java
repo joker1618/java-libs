@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.repository.entity.JkEntity;
 import xxx.joker.libs.core.repository.entity.JkEntityField;
@@ -25,8 +26,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static xxx.joker.libs.core.repository.JkPersistenceManager.EntityLines;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
-
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

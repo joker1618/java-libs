@@ -1,22 +1,17 @@
 package temp;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import xxx.joker.libs.core.html.JkHtmlTag;
+import xxx.joker.libs.core.ToAnalyze;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
-
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

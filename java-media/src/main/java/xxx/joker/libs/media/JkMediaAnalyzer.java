@@ -6,6 +6,7 @@ import org.apache.tika.parser.jpeg.JpegParser;
 import org.apache.tika.parser.mp3.Mp3Parser;
 import org.apache.tika.parser.mp4.MP4Parser;
 import org.apache.tika.sax.BodyContentHandler;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.utils.JkConvert;
 
@@ -17,7 +18,6 @@ import java.nio.file.Path;
 /**
  * Created by f.barbano on 10/07/2017.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

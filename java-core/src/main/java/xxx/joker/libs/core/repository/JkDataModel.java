@@ -2,12 +2,13 @@ package xxx.joker.libs.core.repository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.repository.entity.JkEntity;
 import xxx.joker.libs.core.repository.property.JkModelProperty;
 import xxx.joker.libs.core.utils.JkReflection;
-import xxx.joker.libs.core.utils.JkStreams;
 import xxx.joker.libs.core.utils.JkRuntime;
+import xxx.joker.libs.core.utils.JkStreams;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -15,8 +16,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
 import static xxx.joker.libs.core.repository.JkPersistenceManager.EntityLines;
-
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

@@ -1,11 +1,10 @@
 package xxx.joker.libs.core.repository;
 
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.repository.entity.JkEntity;
 import xxx.joker.libs.core.repository.property.JkModelProperty;
 
-import java.util.*;
-
-import xxx.joker.libs.core.ToAnalyze;
+import java.util.List;
 
 @ToAnalyze
 @Deprecated

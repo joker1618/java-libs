@@ -1,6 +1,7 @@
 package xxx.joker.libs.argsparser.functions;
 
 import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.files.JkFiles;
 
 import java.nio.file.Files;
@@ -12,7 +13,6 @@ import java.util.function.Function;
 /**
  * Created by f.barbano on 30/08/2017.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

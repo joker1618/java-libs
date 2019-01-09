@@ -2,13 +2,12 @@ package xxx.joker.libs.core.html;
 
 
 import org.apache.commons.lang3.tuple.Pair;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.utils.JkStreams;
 
 import java.util.*;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
-
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

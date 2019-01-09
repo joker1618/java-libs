@@ -1,28 +1,30 @@
 package xxx.joker.libs.core.utils;
 
+import xxx.joker.libs.core.exception.JkRuntimeException;
+import xxx.joker.libs.core.files.JkFiles;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import xxx.joker.libs.core.ToAnalyze;
-import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.files.JkFiles;
-
-import static xxx.joker.libs.core.utils.JkConsole.display;
-
 public class JkRuntime {
 
+    /**
+     * Get classes from:
+     * - classpath: if launcher path is a folder (IDE run) or is a JAR inside Maven repository folder (libraries)
+     * - launcher JAR: else
+     */
     public static List<Class<?>> findClasses(String packageName) {
         try {
             File launcherPath = JkFiles.getLauncherPath(JkReflection.class).toFile();
+            boolean isLaunchedFromMavenRepo = JkStrings.matchRegExp(".*[/\\\\]{1}.m2[/\\\\]{1}repository[/\\\\]{1}.*", launcherPath.getPath());
             List<Class<?>> classes;
-            if (launcherPath.isDirectory() || JkStrings.matchRegExp(".*[/\\\\]{1}.m2[/\\\\]{1}repository[/\\\\]{1}.*", launcherPath.getPath())) {
+            if (launcherPath.isDirectory() || isLaunchedFromMavenRepo) {
                 classes = getClassesFromClassLoader(packageName);
             } else {
                 classes = getClassesFromJar(launcherPath, packageName);
@@ -33,6 +35,7 @@ public class JkRuntime {
             throw new JkRuntimeException(ex);
         }
     }
+
     private static List<Class<?>> getClassesFromClassLoader(String packageName) throws IOException, ClassNotFoundException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         String path = packageName.replace('.', '/');
@@ -65,6 +68,7 @@ public class JkRuntime {
 
         return classes;
     }
+
     private static List<Class<?>> getClassesFromJar(File jarFile, String packageName) throws IOException, ClassNotFoundException {
         List<Class<?>> classes = new ArrayList<>();
         try(JarFile file = new JarFile(jarFile)) {

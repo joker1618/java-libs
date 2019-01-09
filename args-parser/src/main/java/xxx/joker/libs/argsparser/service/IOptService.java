@@ -1,13 +1,13 @@
 package xxx.joker.libs.argsparser.service;
 
 import xxx.joker.libs.argsparser.design.classType.InputOption;
+import xxx.joker.libs.core.ToAnalyze;
 
 import java.util.Map;
 
 /**
  * Created by f.barbano on 03/09/2017.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

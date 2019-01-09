@@ -1,11 +1,11 @@
 package xxx.joker.libs.language;
 
 import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.core.ToAnalyze;
 
 /**
  * Created by f.barbano on 19/01/2018.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

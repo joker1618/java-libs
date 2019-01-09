@@ -10,13 +10,12 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.core.ToAnalyze;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
-
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

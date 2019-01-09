@@ -7,6 +7,7 @@ import xxx.joker.libs.argsparser.design.classType.OptionName;
 import xxx.joker.libs.argsparser.exception.DesignParserException;
 import xxx.joker.libs.argsparser.model.CmdOption;
 import xxx.joker.libs.argsparser.model.CmdParam;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.utils.JkReflection;
 import xxx.joker.libs.core.utils.JkStreams;
 
@@ -16,7 +17,6 @@ import java.util.*;
 /**
  * Created by f.barbano on 03/09/2017.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

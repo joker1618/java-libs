@@ -1,5 +1,7 @@
 package xxx.joker.libs.core.repository.entity;
 
+import xxx.joker.libs.core.ToAnalyze;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -40,6 +42,8 @@ import java.lang.annotation.Target;
  *
  */
 
+@ToAnalyze
+@Deprecated
 public @interface JkEntityField {
 
     int index();

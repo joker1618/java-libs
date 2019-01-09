@@ -1,6 +1,7 @@
 package stuff;
 
 import org.junit.Test;
+import xxx.joker.libs.core.ToAnalyze;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,8 +9,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
-
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

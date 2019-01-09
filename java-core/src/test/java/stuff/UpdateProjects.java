@@ -1,6 +1,7 @@
 package stuff;
 
 import org.junit.Test;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.files.JkFiles;
 
 import java.io.IOException;
@@ -11,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
-
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

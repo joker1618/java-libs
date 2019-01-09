@@ -1,14 +1,11 @@
 package zip;
 
 import org.junit.Test;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.files.JkZip;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static xxx.joker.libs.core.utils.JkConsole.display;
-
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

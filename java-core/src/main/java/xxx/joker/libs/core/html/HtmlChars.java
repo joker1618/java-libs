@@ -1,11 +1,10 @@
 package xxx.joker.libs.core.html;
 
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.utils.JkStreams;
 
 import java.util.Arrays;
 import java.util.List;
-
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

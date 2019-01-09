@@ -1,6 +1,7 @@
 package xxx.joker.libs.language;
 
 import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.utils.JkStreams;
 
 import java.io.BufferedReader;
@@ -13,7 +14,6 @@ import java.util.stream.Collectors;
 /**
  * Created by f.barbano on 19/01/2018.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

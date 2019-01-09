@@ -1,6 +1,7 @@
 package xxx.joker.libs.argsparser.functions;
 
 import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.utils.JkConvert;
 
 import java.nio.file.Path;
@@ -14,7 +15,6 @@ import java.util.stream.Stream;
 /**
  * Created by f.barbano on 10/09/2017.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

@@ -1,12 +1,10 @@
 package xxx.joker.libs.core.repository.entity;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import xxx.joker.libs.core.ToAnalyze;
 
 import java.time.LocalDateTime;
-
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

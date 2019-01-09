@@ -1,6 +1,7 @@
 package xxx.joker.libs.core.files;
 
 import xxx.joker.libs.core.exception.JkRuntimeException;
+import xxx.joker.libs.core.utils.JkBytes;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -16,9 +17,6 @@ import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.util.Arrays;
-
-import xxx.joker.libs.core.ToAnalyze;
-import xxx.joker.libs.core.utils.JkBytes;
 
 public class JkEncryption {
 

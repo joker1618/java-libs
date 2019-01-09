@@ -1,18 +1,17 @@
 package xxx.joker.libs.core.config;
 
 import org.apache.commons.lang3.StringUtils;
-import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
 
-import java.io.*;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
@@ -20,7 +19,6 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 /**
  * Created by f.barbano on 12/10/2017.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 public abstract class JkAbstractConfigs {
 

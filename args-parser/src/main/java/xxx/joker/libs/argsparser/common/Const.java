@@ -1,6 +1,7 @@
 package xxx.joker.libs.argsparser.common;
 
 import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.format.JkColumnFmtBuilder;
 import xxx.joker.libs.core.utils.JkStrings;
 
@@ -12,7 +13,6 @@ import java.util.List;
 /**
  * Created by f.barbano on 27/08/2017.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

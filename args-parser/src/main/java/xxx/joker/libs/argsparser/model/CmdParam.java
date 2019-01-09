@@ -1,6 +1,7 @@
 package xxx.joker.libs.argsparser.model;
 
 import xxx.joker.libs.argsparser.design.classType.OptionName;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.utils.JkConvert;
 
 import java.util.List;
@@ -8,7 +9,6 @@ import java.util.List;
 /**
  * Created by f.barbano on 26/08/2017.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

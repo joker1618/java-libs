@@ -2,14 +2,13 @@ package xxx.joker.libs.javafx;
 
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.utils.JkStreams;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
-
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

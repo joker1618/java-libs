@@ -1,8 +1,8 @@
 package xxx.joker.libs.core.utils;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.exception.JkRuntimeException;
+import xxx.joker.libs.core.files.JkFiles;
 
 import java.io.*;
 import java.net.URL;
@@ -12,9 +12,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import xxx.joker.libs.core.ToAnalyze;
-import xxx.joker.libs.core.files.JkFiles;
 
 public class JkWeb {
 

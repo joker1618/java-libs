@@ -1,6 +1,7 @@
 package spikes;
 
 import org.junit.Test;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.html.JkHtmlTag;
 import xxx.joker.libs.core.html.JkTextScannerImpl;
 import xxx.joker.libs.core.utils.JkStreams;
@@ -10,8 +11,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.List;
-
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

@@ -5,6 +5,14 @@ package xxx.joker.libs.core.tests;
  */
 import xxx.joker.libs.core.ToAnalyze;
 
+/**
+ * Classes with specific test:
+ * - Path
+ * - LocalDate
+ * - LocalTime
+ * - LocalDateTime
+ */
+
 @ToAnalyze
 @Deprecated
 public class JkEqualsBuilder {

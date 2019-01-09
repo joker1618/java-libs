@@ -1,11 +1,11 @@
 package xxx.joker.libs.core.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.core.exception.JkRuntimeException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 import static java.lang.System.out;
@@ -14,7 +14,6 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 /**
  * Created by f.barbano on 26/05/2018.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 public class JkConsole {
 
@@ -31,25 +30,27 @@ public class JkConsole {
 		out.flush();
 	}
 
-	public static String readUserInput(String label) throws IOException {
+	public static String readUserInput(String label) {
 		return readUserInput(label, s -> true);
 	}
-	public static String readUserInput(String label, Predicate<String> acceptCond) throws IOException {
-		String heading = "";
-		if(!StringUtils.isEmpty(label)) {
-			heading = strf("%s ", JkStrings.safeTrim(label));
-		}
+	public static String readUserInput(String label, Predicate<String> acceptCond) {
+		try {
+			String heading = StringUtils.isEmpty(label) ? "" : label;
 
-		BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+			BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 
-		out.print(heading);
-		String userInput = console.readLine();
-		while(!acceptCond.test(userInput)) {
 			out.print(heading);
-			userInput = console.readLine();
-		}
+			String userInput = console.readLine();
+			while (!acceptCond.test(userInput)) {
+				out.print(heading);
+				userInput = console.readLine();
+			}
 
-		return userInput;
+			return userInput;
+
+		} catch(IOException ex) {
+			throw new JkRuntimeException(ex);
+		}
 	}
 
 	// todo remove

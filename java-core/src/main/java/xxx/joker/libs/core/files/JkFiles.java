@@ -2,6 +2,8 @@ package xxx.joker.libs.core.files;
 
 import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.exception.JkRuntimeException;
+import xxx.joker.libs.core.utils.JkBytes;
+import xxx.joker.libs.core.utils.JkStreams;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -20,8 +22,6 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 /**
  * Created by f.barbano on 26/05/2018.
  */
-import xxx.joker.libs.core.utils.JkBytes;
-import xxx.joker.libs.core.utils.JkStreams;
 
 public class JkFiles {
 

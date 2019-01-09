@@ -1,11 +1,12 @@
 package xxx.joker.libs.media;
 
+import xxx.joker.libs.core.ToAnalyze;
+
 import java.nio.file.Path;
 
 /**
  * Created by f.barbano on 12/07/2017.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

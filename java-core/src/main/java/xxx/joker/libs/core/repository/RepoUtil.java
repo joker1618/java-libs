@@ -1,5 +1,6 @@
 package xxx.joker.libs.core.repository;
 
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.repository.entity.JkEntity;
 import xxx.joker.libs.core.utils.JkReflection;
 
@@ -11,8 +12,6 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

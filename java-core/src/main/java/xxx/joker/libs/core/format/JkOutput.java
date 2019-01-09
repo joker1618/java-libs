@@ -1,13 +1,13 @@
 package xxx.joker.libs.core.format;
 
+import xxx.joker.libs.core.enums.JkSizeUnit;
+
 import java.text.NumberFormat;
 import java.util.Locale;
 
 /**
  * Created by f.barbano on 26/05/2018.
  */
-import xxx.joker.libs.core.ToAnalyze;
-import xxx.joker.libs.core.enums.JkSizeUnit;
 
 public class JkOutput {
 
@@ -37,6 +37,8 @@ public class JkOutput {
 		nf.setMaximumFractionDigits(numFractionDigits);
 		return nf;
 	}
+
+	// TODO review
 //	public static NumberFormat getNumberFmtIT(int numFractionDigits) {
 //		return getNumberFmtIT(numFractionDigits, numFractionDigits);
 //	}

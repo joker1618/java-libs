@@ -1,8 +1,11 @@
-package xxx.joker.libs.core.utils;
+package xxx.joker.libs.core.tests;
+
+import xxx.joker.libs.core.files.JkFiles;
 
 import java.nio.file.Path;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -124,11 +127,45 @@ public class JkChecks {
     public static <T> boolean duplicatesPresents(List<T> sourceList) {
         for(int i = 0; i < sourceList.size(); i++) {
             for(int j = i+1; j < sourceList.size(); j++) {
-                if(sourceList.get(i).equals(sourceList.get(j))) {
-                    return true;
+                T elemI = sourceList.get(i);
+                T elemJ = sourceList.get(j);
+
+                if(elemI instanceof Path) {
+                    if(elemJ instanceof Path) {
+                        if(JkFiles.areEquals((Path)elemI, (Path)elemJ)) {
+                            return true;
+                        }
+                    }
+
+                } else if(elemI instanceof LocalDate) {
+                    if(elemJ instanceof LocalDate) {
+                        if(((LocalDate)elemI).isEqual((LocalDate)elemJ)) {
+                            return true;
+                        }
+                    }
+
+                } else if(elemI instanceof LocalDateTime) {
+                    if(elemJ instanceof LocalDateTime) {
+                        if(((LocalDateTime)elemI).isEqual((LocalDateTime)elemJ)) {
+                            return true;
+                        }
+                    }
+
+                } else if(elemI instanceof LocalTime) {
+                    if(elemJ instanceof LocalTime) {
+                        if(((LocalTime)elemI).compareTo((LocalTime)elemJ) == 0) {
+                            return true;
+                        }
+                    }
+
+                } else {
+                    if(elemI.equals(elemJ)) {
+                        return true;
+                    }
                 }
             }
         }
+
         return false;
     }
     public static <T> boolean duplicatesPresents(T[] sourceArray) {

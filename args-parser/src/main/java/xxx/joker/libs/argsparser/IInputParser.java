@@ -2,11 +2,11 @@ package xxx.joker.libs.argsparser;
 
 import xxx.joker.libs.argsparser.design.classType.InputOption;
 import xxx.joker.libs.argsparser.exception.InputParserException;
+import xxx.joker.libs.core.ToAnalyze;
 
 /**
  * Created by f.barbano on 11/03/2017.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated

@@ -6,6 +6,7 @@ import xxx.joker.libs.argsparser.design.annotation.Opt;
 import xxx.joker.libs.argsparser.design.classType.InputOption;
 import xxx.joker.libs.argsparser.design.classType.OptionName;
 import xxx.joker.libs.argsparser.exception.DesignParserException;
+import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkReflection;
 import xxx.joker.libs.core.utils.JkStreams;
@@ -16,7 +17,6 @@ import java.util.*;
 /**
  * Created by f.barbano on 03/09/2017.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
 @ToAnalyze
 @Deprecated
