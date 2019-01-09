@@ -1,5 +1,6 @@
 package xxx.joker.libs.core.utils;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 
@@ -12,22 +13,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by f.barbano on 29/10/2017.
- */
 import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.files.JkFiles;
 
-@ToAnalyze
-@Deprecated
 public class JkWeb {
 
-	public static String downloadHtml(String webPageURL) throws JkRuntimeException {
+	public static String downloadHtml(String webPageURL) {
 		List<String> lines = downloadHtmlLines(webPageURL);
 		return JkStreams.join(lines, StringUtils.LF);
 	}
-
-	public static List<String> downloadHtmlLines(String webPageURL) throws JkRuntimeException {
+	public static List<String> downloadHtmlLines(String webPageURL) {
 		try {
 			URL webURL = new URL(webPageURL);
 			List<String> lines = new ArrayList<>();
@@ -49,29 +44,7 @@ public class JkWeb {
 		}
 	}
 
-	public static void downloadResource(String resourceURL, Path outputPath) throws JkRuntimeException {
-		try {
-			URL webURL = new URL(resourceURL);
-			URLConnection conn = webURL.openConnection();
-
-			Files.deleteIfExists(outputPath);
-			Files.createDirectories(JkFiles.getParent(outputPath));
-
-			byte[] arr = new byte[500 * 1024];
-			try (InputStream is = new BufferedInputStream(conn.getInputStream());
-				 OutputStream os = new BufferedOutputStream(new FileOutputStream(outputPath.toFile()))) {
-				int nread;
-				while ((nread = is.read(arr)) != -1) {
-					os.write(arr, 0, nread);
-				}
-			}
-
-		} catch(IOException ex) {
-			throw new JkRuntimeException(ex);
-		}
-	}
-
-	public static byte[] downloadResource(String resourceURL) throws JkRuntimeException {
+	public static byte[] downloadResource(String resourceURL) {
 		try {
 			URL webURL = new URL(resourceURL);
 			URLConnection conn = webURL.openConnection();
@@ -87,6 +60,27 @@ public class JkWeb {
 			}
 
 			return toRet;
+
+		} catch(IOException ex) {
+			throw new JkRuntimeException(ex);
+		}
+	}
+	public static void downloadResource(String resourceURL, Path outputPath) {
+		try {
+			URL webURL = new URL(resourceURL);
+			URLConnection conn = webURL.openConnection();
+
+			Files.deleteIfExists(outputPath);
+			Files.createDirectories(JkFiles.getParent(outputPath));
+
+			byte[] arr = new byte[500 * 1024];
+			try (InputStream is = new BufferedInputStream(conn.getInputStream());
+				 OutputStream os = new BufferedOutputStream(new FileOutputStream(outputPath.toFile()))) {
+				int nread;
+				while ((nread = is.read(arr)) != -1) {
+					os.write(arr, 0, nread);
+				}
+			}
 
 		} catch(IOException ex) {
 			throw new JkRuntimeException(ex);

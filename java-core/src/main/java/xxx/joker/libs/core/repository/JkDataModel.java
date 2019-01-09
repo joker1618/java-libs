@@ -7,7 +7,7 @@ import xxx.joker.libs.core.repository.entity.JkEntity;
 import xxx.joker.libs.core.repository.property.JkModelProperty;
 import xxx.joker.libs.core.utils.JkReflection;
 import xxx.joker.libs.core.utils.JkStreams;
-import xxx.joker.libs.core.utils.JkStuff;
+import xxx.joker.libs.core.utils.JkRuntime;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -125,7 +125,7 @@ public abstract class JkDataModel {
 
     private List<Class<?>> retrieveEntityClasses(String pkgToScan) {
         logger.info("Scanning package {}", pkgToScan);
-        List<Class<?>> classes = JkStuff.findClasses(pkgToScan);
+        List<Class<?>> classes = JkRuntime.findClasses(pkgToScan);
         classes.removeIf(c -> !JkReflection.isOfType(c, JkEntity.class));
         logger.debug("{} JkEntity class found in package {}", classes.size(), pkgToScan);
         classes.add(JkModelProperty.class);

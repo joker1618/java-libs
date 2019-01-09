@@ -22,8 +22,6 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
  */
 import xxx.joker.libs.core.ToAnalyze;
 
-@ToAnalyze
-@Deprecated
 public abstract class JkAbstractConfigs {
 
 	protected Map<String, Prop> configMap;
@@ -36,27 +34,31 @@ public abstract class JkAbstractConfigs {
 		this.configMap = Collections.synchronizedMap(new HashMap<>());
 	}
 
-	protected void loadConfigFile(Path configFile) throws IOException {
+	protected void loadConfigFile(Path configFile) {
 		if(Files.exists(configFile)) {
-			loadConfigFile(new FileInputStream(configFile.toFile()));
+			List<String> lines = JkFiles.readLines(configFile);
+			addPropertiesFromFileLines(lines);
 		}
 	}
-	
-	protected void loadConfigFile(String configFilePath) throws IOException {
+	protected void loadConfigFile(String configFilePath) {
 		loadConfigFile(Paths.get(configFilePath));
 	}
-
-	protected void loadConfigFile(InputStream is) throws IOException {
+	protected void loadConfigFile(InputStream is) {
+		List<String> lines = JkFiles.readLines(is);
+		addPropertiesFromFileLines(lines);
+	}
+	private void addPropertiesFromFileLines(List<String> lines) {
 		// read properties from file
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		String line;
-		while ((line = reader.readLine()) != null) {
-			if(StringUtils.isNotBlank(line.trim()) && !line.trim().startsWith(COMMENT_START) && line.contains(KEY_SEP)) {
-				int idxSep = line.indexOf(KEY_SEP);
-				String key = line.substring(0, idxSep).trim();
-				String value = line.substring(idxSep+1).trim();
-				configMap.put(key, new Prop(key, value, value));
-			}
+		List<String> tmp = JkStreams.map(lines, String::trim);
+		tmp.removeIf(StringUtils::isBlank);
+		tmp.removeIf(line -> line.startsWith(COMMENT_START));
+		tmp.removeIf(line -> !line.contains(KEY_SEP));
+
+		for(String line : tmp) {
+			int idxSep = line.indexOf(KEY_SEP);
+			String key = line.substring(0, idxSep).trim();
+			String value = line.substring(idxSep+1).trim();
+			configMap.put(key, new Prop(key, value, value));
 		}
 
 		// replace environment variables  ${env:var}
@@ -66,6 +68,84 @@ public abstract class JkAbstractConfigs {
 		// #var#  and  ${var}  allowed
 		evaluateVariables();
 	}
+
+	protected void persist(Path outputPath) {
+		List<String> lines = JkStreams.map(configMap.values(), p -> strf("%s=%s", p.key, p.evalutedValue));
+		JkFiles.writeFile(outputPath, lines, true);
+	}
+
+	protected String getString(String key) {
+		return getString(key, null);
+	}
+	protected String getString(String key, String _default) {
+		Prop prop = configMap.get(key);
+		return prop == null ? _default : prop.evalutedValue;
+	}
+
+	protected Integer getInt(String key) {
+		return getInt(key, null);
+	}
+	protected Integer getInt(String key, Integer _default) {
+		return JkConvert.toInt(getString(key), _default);
+	}
+
+	protected Long getLong(String key) {
+		return getLong(key, null);
+	}
+	protected Long getLong(String key, Long _default) {
+		return JkConvert.toLong(getString(key), _default);
+	}
+
+	protected Double getDouble(String key) {
+		return getDouble(key, null);
+	}
+	protected Double getDouble(String key, Double _default) {
+		return JkConvert.toDouble(getString(key), _default);
+	}
+
+	protected BigDecimal getBigDecimal(String key) {
+		return getBigDecimal(key, null);
+	}
+	protected BigDecimal getBigDecimal(String key, BigDecimal _default) {
+		String value = getString(key);
+		if(value == null)	return _default;
+		Double d = JkConvert.toDouble(value);
+		return d == null ? _default : BigDecimal.valueOf(d);
+	}
+
+	protected Path getPath(String key) {
+		return Paths.get(getString(key));
+	}
+	protected Path getPath(String key, Path _default) {
+		String value = getString(key);
+		return value == null ? _default : Paths.get(value);
+	}
+
+	protected boolean getBoolean(String key) {
+		return Boolean.valueOf(getString(key));
+	}
+	protected boolean getBoolean(String key, boolean def) {
+		String str = getString(key);
+		return StringUtils.isBlank(str) ? def : Boolean.valueOf(str);
+	}
+	
+	protected void addProperty(String key, String value) {
+		Prop prop = new Prop(key, value, value);
+		configMap.put(key, prop);
+		evaluateVariables();
+	}
+
+	protected boolean containsKey(String key) {
+		return configMap.containsKey(key);
+	}
+
+	@Override
+	public String toString() {
+		List<String> list = new ArrayList<>();
+		configMap.forEach((k,v) -> list.add(k + "=" + v.evalutedValue));
+		return list.stream().collect(Collectors.joining("\n"));
+	}
+
 
 	private void evaluateEnvironmentVariables() {
 		for(Prop prop : configMap.values()) {
@@ -81,7 +161,6 @@ public abstract class JkAbstractConfigs {
 			}
 		}
 	}
-
 	private void evaluateVariables() {
 		configMap.forEach((key,prop) -> prop.evalutedValue = prop.originalValue);
 
@@ -151,98 +230,6 @@ public abstract class JkAbstractConfigs {
 		}
 
 		return false;
-	}
-
-	protected void persist(Path outputPath) {
-		List<String> lines = JkStreams.map(configMap.values(), p -> strf("%s=%s", p.key, p.evalutedValue));
-		JkFiles.writeFile(outputPath, lines, true);
-	}
-
-
-	protected String getString(String key) {
-		return getString(key, null);
-	}
-	protected String getString(String key, String _default) {
-		Prop prop = configMap.get(key);
-		return prop == null ? _default : prop.evalutedValue;
-	}
-
-	protected Integer getInt(String key) {
-		return getInt(key, null);
-	}
-	protected Integer getInt(String key, Integer _default) {
-		String value = getString(key);
-		return value == null ? _default : JkConvert.toInt(value, _default);
-	}
-
-	protected Long getLong(String key) {
-		return getLong(key, null);
-	}
-	protected Long getLong(String key, Long _default) {
-		String value = getString(key);
-		return value == null ? _default : JkConvert.toLong(value, _default);
-	}
-
-	protected Double getDouble(String key) {
-		return getDouble(key, null);
-	}
-	protected Double getDouble(String key, Double _default) {
-		String value = getString(key);
-		return value == null ? _default : JkConvert.toDouble(value, _default);
-	}
-
-	protected BigDecimal getBigDecimal(String key) {
-		return getBigDecimal(key, null);
-	}
-	protected BigDecimal getBigDecimal(String key, BigDecimal _default) {
-		String value = getString(key);
-		if(value == null)	return _default;
-		Double d = JkConvert.toDouble(value);
-		return d == null ? _default : BigDecimal.valueOf(d);
-	}
-
-	protected Path getPath(String key) {
-		return Paths.get(getString(key));
-	}
-	protected Path getPath(String key, Path _default) {
-		String value = getString(key);
-		return value == null ? _default : Paths.get(value);
-	}
-
-	protected boolean getBoolean(String key) {
-		return Boolean.valueOf(getString(key));
-	}
-	protected boolean getBoolean(String key, boolean def) {
-		String str = getString(key);
-		return StringUtils.isBlank(str) ? def : Boolean.valueOf(str);
-	}
-	
-	protected Level getLoggerLevel(String key) {
-		return getLoggerLevel(key, null);
-	}
-	protected Level getLoggerLevel(String key, Level _default) {
-		try {
-			return Level.parse(getString(key));
-		} catch(Exception ex) {
-			return _default;
-		}
-	}
-
-	protected void addNewProperty(String key, String value) {
-		Prop prop = new Prop(key, value, value);
-		configMap.put(key, prop);
-		evaluateVariables();
-	}
-
-	protected boolean existsKey(String key) {
-		return configMap.containsKey(key);
-	}
-
-	@Override
-	public String toString() {
-		List<String> list = new ArrayList<>();
-		configMap.forEach((k,v) -> list.add(k + "=" + v.evalutedValue));
-		return list.stream().collect(Collectors.joining("\n"));
 	}
 
 	private class Var {

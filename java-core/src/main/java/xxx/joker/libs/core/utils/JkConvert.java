@@ -128,8 +128,8 @@ public class JkConvert {
 	public static boolean toBoolean(String source, boolean defValue) {
 		return StringUtils.equalsAnyIgnoreCase(source, "true", "false") ? Boolean.valueOf(source) : defValue;
 	}
-	public static boolean[] toBooleans(String[] source) {
-		boolean[] toRet = new boolean[source.length];
+	public static Boolean[] toBooleans(String[] source) {
+		Boolean[] toRet = new Boolean[source.length];
 		for(int i = 0; i < source.length; i++) {
 			toRet[i] = Boolean.valueOf(source[i]);
 		}
@@ -137,28 +137,7 @@ public class JkConvert {
 	}
 
 
-	/* PATHS */
-	public static Path[] toPaths(String[] source) {
-		Path[] toRet = new Path[source.length];
-		for(int i = 0; i < source.length; i++) {
-			toRet[i] = Paths.get(source[i]);
-		}
-		return toRet;
-	}
-	public static Path toPath(URI sourceURI) {
-		String path = sourceURI.getPath();
-		return Paths.get(path.startsWith("/") ? path.substring(1) : path);
-	}
-
-	public static String toURL(Path source) {
-		try {
-			return source.toUri().toURL().toExternalForm();
-		} catch (MalformedURLException e) {
-			return null;
-		}
-	}
-
-	// Cygwin to Windows paths convertions (and viceversa)
+	/* PATHS Unix/Windows */
 	public static String winToUnixPath(Path windowsPath) {
 		return winToUnixPath(windowsPath.toString());
 	}
@@ -234,4 +213,7 @@ public class JkConvert {
 
 		return toRet;
 	}
+
+
+
 }

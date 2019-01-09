@@ -9,14 +9,12 @@ import java.util.*;
  */
 import xxx.joker.libs.core.ToAnalyze;
 
-@ToAnalyze
-@Deprecated
 public class JkReflection {
 
 	public static List<Field> getFieldsByAnnotation(Class<?> sourceClass, Class<? extends Annotation> annotationClass) {
 		List<Field> toRet = new ArrayList<>();
 		Field[] declaredFields = sourceClass.getDeclaredFields();
-		if(!JkTests.isEmpty(declaredFields)) {
+		if(declaredFields != null) {
 			for (Field field : declaredFields) {
 				if (field.getAnnotation(annotationClass) != null) {
 					toRet.add(field);
@@ -29,7 +27,7 @@ public class JkReflection {
 	public static List<Field> getFieldsByType(Class<?> sourceClass, Class<?> fieldType) {
 		List<Field> toRet = new ArrayList<>();
 		Field[] declaredFields = sourceClass.getDeclaredFields();
-		if(!JkTests.isEmpty(declaredFields)) {
+		if(declaredFields != null) {
 			for (Field field : declaredFields) {
 				if (field.getType() == fieldType) {
 					toRet.add(field);

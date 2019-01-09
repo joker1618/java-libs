@@ -1,5 +1,4 @@
-package xxx.joker.libs.core.utils;
-
+package xxx.joker.libs.core.files;
 
 import xxx.joker.libs.core.exception.JkRuntimeException;
 
@@ -19,10 +18,8 @@ import java.security.MessageDigest;
 import java.util.Arrays;
 
 import xxx.joker.libs.core.ToAnalyze;
-import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.utils.JkBytes;
 
-@ToAnalyze
-@Deprecated
 public class JkEncryption {
 
     private static final byte[] salt = new byte[]{(byte) 67, (byte) 118, (byte) -107, (byte) -57, (byte) 91, (byte) -41, (byte) 69, (byte) 23};
@@ -30,7 +27,7 @@ public class JkEncryption {
     private JkEncryption() {
     }
 
-
+    /* FILE ENCRYPTION */
     public static byte[] encryptBytes(byte[] source, String password) {
         try {
             Cipher cipher = makeCipher(password, true);
@@ -105,6 +102,8 @@ public class JkEncryption {
         }
     }
 
+
+    /* HASHING */
     public static String getMD5(Path inputPath) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -141,14 +140,14 @@ public class JkEncryption {
     }
 
 
-    private static Cipher makeCipher(String password, Boolean decryptMode) {
+    private static Cipher makeCipher(String password, boolean decryptMode) {
         try {
             PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray());
             SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
             SecretKey key = keyFactory.generateSecret(keySpec);
             PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, 42);
             Cipher cipher = Cipher.getInstance("PBEWithMD5AndDES");
-            if (decryptMode.booleanValue()) {
+            if (decryptMode) {
                 cipher.init(1, key, pbeParamSpec);
             } else {
                 cipher.init(2, key, pbeParamSpec);

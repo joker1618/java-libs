@@ -1,8 +1,6 @@
-package xxx.joker.libs.core.zip;
+package xxx.joker.libs.core.files;
 
-import xxx.joker.libs.core.checks.JkCheck;
 import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.files.JkFiles;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,13 +14,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import xxx.joker.libs.core.ToAnalyze;
-
-@ToAnalyze
-@Deprecated
-public class JkZipUtil {
-
-    public static void unzipArchive(Path archivePath, Path outFolder) throws JkRuntimeException {
+public class JkZip {
+    
+    public static void unzipArchive(Path archivePath, Path outFolder) {
         byte[] buffer = new byte[1024];
 
         try (FileInputStream fis = new FileInputStream(archivePath.toFile());
@@ -53,13 +47,13 @@ public class JkZipUtil {
     }
 
     /**
-     * Create a ZIP archive of filesToZip and/or folders in input
+     * @param filesToZip files and folders
      */
-    public static void zipFiles(Path archivePath, Path... filesToZip) throws JkRuntimeException {
+    public static void zipFiles(Path archivePath, Path... filesToZip) {
         zipFiles(archivePath, Arrays.asList(filesToZip));
     }
 
-    public static void zipFiles(Path archivePath, Collection<Path> filesToZip) throws JkRuntimeException {
+    public static void zipFiles(Path archivePath, Collection<Path> filesToZip) {
         try {
             Files.createDirectories(JkFiles.getParent(archivePath));
             Path middleOutPath = JkFiles.safePath(archivePath);
@@ -73,7 +67,7 @@ public class JkZipUtil {
                 }
             }
 
-            if(!JkCheck.areEquals(archivePath, middleOutPath)) {
+            if(!JkFiles.areEquals(archivePath, middleOutPath)) {
                 JkFiles.moveFile(middleOutPath, archivePath, true);
             }
 

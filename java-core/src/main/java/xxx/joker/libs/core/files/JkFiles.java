@@ -1,16 +1,14 @@
 package xxx.joker.libs.core.files;
 
 import org.apache.commons.lang3.StringUtils;
-import xxx.joker.libs.core.checks.JkCheck;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
-import java.nio.file.attribute.FileTime;
-import java.nio.file.attribute.UserPrincipal;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -22,8 +20,7 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 /**
  * Created by f.barbano on 26/05/2018.
  */
-import xxx.joker.libs.core.ToAnalyze;
-import xxx.joker.libs.core.utils.JkConvert;
+import xxx.joker.libs.core.utils.JkBytes;
 import xxx.joker.libs.core.utils.JkStreams;
 
 public class JkFiles {
@@ -178,14 +175,8 @@ public class JkFiles {
 		}
 	}
 	public static List<String> readLines(Path filePath, Predicate<String>... filters) {
-		return readLines(filePath, false, filters);
-	}
-	public static List<String> readLines(Path filePath, boolean removeBlankLines, Predicate<String>... filters) {
 		try {
 			List<String> lines = Files.readAllLines(filePath);
-			if(removeBlankLines) {
-				lines.removeIf(StringUtils::isBlank);
-			}
 
 			Stream<String> stream = lines.stream();
 			for(Predicate<String> filter : filters) {
@@ -198,6 +189,47 @@ public class JkFiles {
 			throw new JkRuntimeException(ex);
 		}
 	}
+
+	public static byte[] readBytes(Path path) {
+		try {
+			int size = (int) Files.size(path);
+			return readBytes(path, 0, size);
+		} catch (IOException ex) {
+			throw new JkRuntimeException(ex);
+		}
+	}
+	public static byte[] readBytes(Path path, long start, int length) {
+		try (RandomAccessFile raf = new RandomAccessFile(path.toFile(), "r")) {
+			return readBytes(raf, start, length);
+		} catch (IOException ex) {
+			throw new JkRuntimeException(ex);
+		}
+	}
+	public static byte[] readBytes(RandomAccessFile raf, long start, int length) {
+		try {
+			byte[] toRet = new byte[length];
+			raf.seek(start);
+			int counter = raf.read(toRet);
+			if (counter == length) {
+				return toRet;
+			}
+
+			toRet = Arrays.copyOfRange(toRet, 0, counter);
+			while (counter < length) {
+				int rem = length - counter;
+				byte[] arr = new byte[rem];
+				int read = raf.read(arr);
+				toRet = JkBytes.mergeArrays(toRet, Arrays.copyOfRange(arr, 0, read));
+				counter += read;
+			}
+
+			return toRet;
+
+		} catch (IOException ex) {
+			throw new JkRuntimeException(ex);
+		}
+	}
+
 
 
 	/* FIND methods */
@@ -212,7 +244,7 @@ public class JkFiles {
 			if (Files.notExists(root)) {
 				return Collections.emptyList();
 			}
-			Stream<Path> stream = Files.find(root, maxDepth, (p, a) -> !JkCheck.areEquals(p, root));
+			Stream<Path> stream = Files.find(root, maxDepth, (p, a) -> !JkFiles.areEquals(p, root));
 			for (Predicate<Path> pred : filterConds) {
 				stream = stream.filter(pred);
 			}
@@ -424,11 +456,45 @@ public class JkFiles {
 	public static Path getLauncherPath(Class<?> clazz) {
 		try {
 			URI uri = clazz.getProtectionDomain().getCodeSource().getLocation().toURI();
-			return JkConvert.toPath(uri);
+			return toPath(uri);
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
+	/* CONVERSIONS */
+	public static Path[] toPaths(String[] source) {
+		Path[] toRet = new Path[source.length];
+		for(int i = 0; i < source.length; i++) {
+			toRet[i] = Paths.get(source[i]);
+		}
+		return toRet;
+	}
+	public static Path toPath(URI sourceURI) {
+		String path = sourceURI.getPath();
+		return Paths.get(path.startsWith("/") ? path.substring(1) : path);
+	}
+
+	public static String toURL(Path source) {
+		try {
+			return source.toUri().toURL().toExternalForm();
+		} catch (MalformedURLException e) {
+			return null;
+		}
+	}
+
+
+	/* TESTS */
+	public static boolean areEquals(Path p1, Path p2) {
+		return p1.toAbsolutePath().normalize().equals(p2.toAbsolutePath().normalize());
+	}
+	public static boolean containsPath(List<Path> source, Path toFind) {
+		for(Path p : source) {
+			if(areEquals(p, toFind)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 }

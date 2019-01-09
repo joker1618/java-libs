@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 import static java.lang.System.out;
@@ -15,11 +16,8 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
  */
 import xxx.joker.libs.core.ToAnalyze;
 
-@ToAnalyze
-@Deprecated
 public class JkConsole {
 
-	// Out display
 	public static void display(String mexFormat, Object... params) {
 		out.println(strf(mexFormat, params));
 		out.flush();
@@ -30,6 +28,7 @@ public class JkConsole {
 		} else {
 			out.print(strf(mexFormat, params));
 		}
+		out.flush();
 	}
 
 	public static String readUserInput(String label) throws IOException {
@@ -52,5 +51,11 @@ public class JkConsole {
 
 		return userInput;
 	}
+
+	// todo remove
+//	public static void main(String[] args) throws IOException {
+//		AtomicInteger counter = new AtomicInteger(0);
+//		readUserInput(">", s -> counter.getAndIncrement()==5);
+//	}
 
 }

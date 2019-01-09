@@ -1,6 +1,7 @@
 package xxx.joker.libs.core.utils;
 
 //import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -126,6 +127,13 @@ public class JkStrings {
 		return matcher.matches();
 	}
 
+	public static String unescapeHtmlSpecialChars(String htmlText) {
+		// Custom replacements before undecoding using StringUtils
+		htmlText = htmlText.replace("&#160;", "");  // Non-breaking space
+
+		htmlText = StringEscapeUtils.unescapeHtml4(htmlText);
+		return htmlText;
+	}
 
 	private static int countPlaceholders(String str, boolean logStyle) {
 		// %[argument_index$][flags][width][.precision][t]conversion
@@ -162,14 +170,6 @@ public class JkStrings {
 //		return merged;
 //	}
 //
-//	@ToAnalyze
-//	@Deprecated
-//	public static String unescapeHtmlSpecialChars(String htmlText) {
-//		// Custom replacements before undecoding using StringUtils
-//		htmlText = htmlText.replace("&#160;", "");  // Non-breaking space
-//
-//		htmlText = StringEscapeUtils.unescapeHtml4(htmlText);
-//		return htmlText;
-//	}
+
 
 }

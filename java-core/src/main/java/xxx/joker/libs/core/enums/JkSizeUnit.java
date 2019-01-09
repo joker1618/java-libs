@@ -1,12 +1,9 @@
-package xxx.joker.libs.core.format;
+package xxx.joker.libs.core.enums;
 
 /**
  * Created by f.barbano on 26/05/2018.
  */
-import xxx.joker.libs.core.ToAnalyze;
 
-@ToAnalyze
-@Deprecated
 public enum JkSizeUnit {
 
 	GB("GB", 1024L*1024*1024L),
@@ -33,16 +30,11 @@ public enum JkSizeUnit {
 	}
 
 	public double parse(long numBytes) {
-		return parse(numBytes, B);
+		return (double) numBytes / size;
 	}
-	public double parse(long amount, JkSizeUnit sizeUnit) {
-		return parse((double)amount, sizeUnit);
-	}
-	public double parse(double numBytes) {
-		return parse(numBytes, B);
-	}
-	public double parse(double amount, JkSizeUnit sizeUnit) {
-		return amount * sizeUnit.size() / size;
+
+	public double parse(double num) {
+		return num / size;
 	}
 
 }

@@ -9,10 +9,11 @@ import xxx.joker.libs.argsparser.exception.InputParserException;
 import xxx.joker.libs.argsparser.exception.InputValueException;
 import xxx.joker.libs.argsparser.model.CmdOption;
 import xxx.joker.libs.argsparser.service.*;
+import xxx.joker.libs.core.utils.JkChecks;
+import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkReflection;
 import xxx.joker.libs.core.utils.JkStrings;
-import xxx.joker.libs.core.utils.JkTests;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
@@ -171,20 +172,20 @@ public class InputParserImpl implements IInputParser {
 			Function<String[], Object[]> classConverter;
 
 			if(expectedClass == Boolean[].class) {
-				classCheck = JkTests::isBooleanArray;
+				classCheck = JkChecks::isBooleanArray;
 				classConverter = JkConvert::toBooleans;
 			} else if(expectedClass == Integer.class || expectedClass == Integer[].class) {
-				classCheck = JkTests::isIntegerArray;
+				classCheck = JkChecks::areInts;
 				classConverter = JkConvert::toInts;
 			} else if(expectedClass == Double.class || expectedClass == Double[].class) {
-				classCheck = JkTests::isDoubleArray;
+				classCheck = JkChecks::areDoubles;
 				classConverter = JkConvert::toDoubles;
 			} else if(expectedClass == Long.class || expectedClass == Long[].class) {
-				classCheck = JkTests::isLongArray;
+				classCheck = JkChecks::areLongs;
 				classConverter = JkConvert::toLongs;
 			} else if(expectedClass == Path.class || expectedClass == Path[].class) {
 				classCheck = arr -> true;
-				classConverter = JkConvert::toPaths;
+				classConverter = JkFiles::toPaths;
 			} else if(expectedClass == String.class || expectedClass == String[].class) {
 				classCheck = arr -> true;
 				classConverter = arr -> arr;
