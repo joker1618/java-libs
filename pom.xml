@@ -16,11 +16,6 @@
 
     <modules>
         <module>java-core</module>
-        <module>java-excel</module>
-        <module>java-media</module>
-        <module>java-language</module>
-        <module>java-fx</module>
-        <module>args-parser</module>
     </modules>
 
     <packaging>pom</packaging>
