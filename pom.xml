@@ -16,6 +16,7 @@
 
     <modules>
         <module>java-core</module>
+        <module>args-parser</module>
     </modules>
 
     <packaging>pom</packaging>
