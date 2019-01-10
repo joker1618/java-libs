@@ -195,13 +195,13 @@ class JkEntityManager {
             Class<?> elemClazz = annField.getCollectionType();
 
             List<Object> values = new ArrayList<>();
-            if(!JkReflection.isOfType(elemClazz, JkEntity.class)) {
+            if(!JkReflection.isInstanceOf(elemClazz, JkEntity.class)) {
                 values.addAll(JkStreams.map(strElems, elem -> fromStringSingleValue(elem, elemClazz)));
             }
 
             retVal = listToSafeObject(values, annField);
 
-        } else if(JkReflection.isOfType(fclazz, JkEntity.class)) {
+        } else if(JkReflection.isInstanceOf(fclazz, JkEntity.class)) {
             retVal = null;
 
         } else {
@@ -346,7 +346,7 @@ class JkEntityManager {
                 Class<?> elemClazz = annField.getCollectionType();
                 List<?> list = annField.isSet() ? JkConvert.toArrayList((Set<?>) value) : (List<?>) value;
                 if (!list.isEmpty()) {
-                    if (JkReflection.isOfType(elemClazz, JkEntity.class)) {
+                    if (JkReflection.isInstanceOf(elemClazz, JkEntity.class)) {
                         List<String> fklist = JkStreams.map(list, el -> ((JkEntity) el).getPrimaryKey());
                         foreignKeys.addAll(fklist);
                     } else {
@@ -355,7 +355,7 @@ class JkEntityManager {
                 }
 
             } else {
-                if (JkReflection.isOfType(fclazz, JkEntity.class)) {
+                if (JkReflection.isInstanceOf(fclazz, JkEntity.class)) {
                     foreignKeys.add(((JkEntity) value).getPrimaryKey());
                 } else {
                     strValue = toStringSingleValue(value, fclazz);
@@ -382,7 +382,7 @@ class JkEntityManager {
                 toRet = DateTimeFormatter.ISO_DATE.format((LocalDate) value);
             } else if (fclazz == LocalDateTime.class) {
                 toRet = DateTimeFormatter.ISO_DATE_TIME.format((LocalDateTime) value);
-            } else if (!JkReflection.isOfType(fclazz, JkEntity.class)) {
+            } else if (!JkReflection.isInstanceOf(fclazz, JkEntity.class)) {
                 // String case
                 toRet = String.valueOf(value).replaceAll("\t", PH_TAB).replaceAll("\n", PH_NEWLINE);
             }
@@ -425,7 +425,7 @@ class JkEntityManager {
 
         boolean isEntityImpl() {
             Class<?> fclazz = isCollection() ? getCollectionType() : getFieldType();
-            return JkReflection.isOfType(fclazz, JkEntity.class);
+            return JkReflection.isInstanceOf(fclazz, JkEntity.class);
         }
 
         Class<?> getEntityClass() {
@@ -447,7 +447,7 @@ class JkEntityManager {
 
         boolean isComparable() {
             Class<?> fclazz = isCollection() ? getCollectionType() : getFieldType();
-            return JkReflection.isOfType(fclazz, Comparable.class);
+            return JkReflection.isInstanceOf(fclazz, Comparable.class);
         }
 
         Object getValue(Object elem) throws IllegalAccessException {

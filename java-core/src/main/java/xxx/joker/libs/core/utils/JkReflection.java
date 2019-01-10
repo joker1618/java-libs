@@ -56,7 +56,7 @@ public class JkReflection {
 		return null;
 	}
 
-	public static boolean isOfType(Class<?> clazz, Class<?> expected) {
+	public static boolean isInstanceOf(Class<?> clazz, Class<?> expected) {
 		Set<Class<?>> types = new HashSet<>();
 
 		Class<?> tmp = clazz;

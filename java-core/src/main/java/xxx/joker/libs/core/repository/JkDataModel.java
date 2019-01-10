@@ -125,7 +125,7 @@ public abstract class JkDataModel {
     private List<Class<?>> retrieveEntityClasses(String pkgToScan) {
         logger.info("Scanning package {}", pkgToScan);
         List<Class<?>> classes = JkRuntime.findClasses(pkgToScan);
-        classes.removeIf(c -> !JkReflection.isOfType(c, JkEntity.class));
+        classes.removeIf(c -> !JkReflection.isInstanceOf(c, JkEntity.class));
         logger.debug("{} JkEntity class found in package {}", classes.size(), pkgToScan);
         classes.add(JkModelProperty.class);
         return classes;

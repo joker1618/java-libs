@@ -41,7 +41,7 @@ class RepoUtil {
     );
 
     public static boolean isClassAllowed(Class<?> clazz) {
-        return ALLOWED_CLASSES.contains(clazz) || JkReflection.isOfType(clazz, JkEntity.class);
+        return ALLOWED_CLASSES.contains(clazz) || JkReflection.isInstanceOf(clazz, JkEntity.class);
     }
 
 }

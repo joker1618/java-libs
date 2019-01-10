@@ -1,12 +1,15 @@
 package xxx.joker.libs.core.exception;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 /**
  * Created by f.barbano on 19/11/2017.
  */
 
-public class JkRuntimeException extends RuntimeException {
+public class JkRuntimeException extends RuntimeException implements JkThrowable {
 
 	public JkRuntimeException(String message, Object... params) {
 		super(strf(message, params));
@@ -21,8 +24,25 @@ public class JkRuntimeException extends RuntimeException {
 	}
 
 	@Override
+	public String getErrorMex() {
+		return super.getMessage();
+	}
+
+	@Override
+	public List<String> getCauses() {
+		List<String> causes = new ArrayList<>();
+		Throwable iter = getCause();
+		while (iter != null) {
+			causes.add(iter.getMessage());
+			iter = iter.getCause();
+		}
+		return causes;
+	}
+
+	@Override
 	public String toString() {
 		return JkThrowableUtil.toString(this);
 	}
+
 
 }

@@ -1,8 +1,12 @@
 package xxx.joker.libs.core.format;
 
+import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.core.enums.JkAlign;
 import xxx.joker.libs.core.enums.JkSizeUnit;
+import xxx.joker.libs.core.utils.JkStrings;
 
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -10,6 +14,38 @@ import java.util.Locale;
  */
 
 public class JkOutput {
+
+	public static String columnsView(String lines, String fieldSep, int colsDistance) {
+		return columnsView(lines, fieldSep, colsDistance, false);
+	}
+	public static String columnsView(String lines, String fieldSep, int colsDistance, boolean hasHeader) {
+		String colsFiller = StringUtils.repeat(' ', colsDistance);
+		return columnsView(lines, fieldSep, colsFiller, hasHeader);
+	}
+	public static String columnsView(String lines, String fieldSep, String colsFiller) {
+		return columnsView(lines, fieldSep, colsFiller, false);
+	}
+	public static String columnsView(String lines, String fieldSep, String colsFiller, boolean hasHeader) {
+		return columnsView(JkStrings.splitList(lines, StringUtils.LF), fieldSep, colsFiller, hasHeader);
+	}
+	public static String columnsView(List<String> lines, String fieldSep, int colsDistance) {
+		return columnsView(lines, fieldSep, colsDistance, false);
+	}
+	public static String columnsView(List<String> lines, String fieldSep, int colsDistance, boolean hasHeader) {
+		String colsFiller = StringUtils.repeat(' ', colsDistance);
+		return columnsView(lines, fieldSep, colsFiller, hasHeader);
+	}
+	public static String columnsView(List<String> lines, String fieldSep, String colsFiller) {
+		return columnsView(lines, fieldSep, colsFiller, false);
+	}
+	public static String columnsView(List<String> lines, String fieldSep, String colsFiller, boolean hasHeader) {
+		JkViewBuilder viewBuilder = new JkViewBuilder(lines);
+		if(hasHeader) {
+			viewBuilder.setHeaderAlign(JkAlign.CENTER);
+		}
+		viewBuilder.setDataAlign(JkAlign.LEFT);
+		return viewBuilder.toString(fieldSep, colsFiller, false);
+	}
 
 	public static String humanSize(double bytes) {
 		if (bytes >= JkSizeUnit.GB.size()) {

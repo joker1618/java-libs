@@ -6,13 +6,26 @@ import xxx.joker.libs.core.files.JkFiles;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import static xxx.joker.libs.core.utils.JkStrings.strf;
+
 public class JkRuntime {
+
+    public static final String ENV_PROP_TEMP_FOLDER = "joker.apps.temp.folder";
+    public static final Path FALLBACK_TEMP_FOLDER = Paths.get(System.getProperty("user.home")).resolve(".tempApps");
+
+
+    public static Path getTempFolder() {
+        String val = System.getProperty("joker.apps.temp.folder");
+        return val == null ? FALLBACK_TEMP_FOLDER : Paths.get(val);
+    }
 
     /**
      * Get classes from:

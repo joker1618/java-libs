@@ -1,4 +1,4 @@
-package xxx.joker.libs.oldargsparser.design.annotation;
+package xxx.joker.libs.argsparser.design.annotations;
 
 import xxx.joker.libs.core.ToAnalyze;
 
@@ -13,18 +13,15 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
-
-@ToAnalyze
-@Deprecated
-public @interface Opt {
+public @interface JkArg {
 
 	String name();
 	String[] aliases() default {};
 
 	/**
-	 * Class list that the variable can assume in different commands
-	 * If not specified, the field must have a type contained in Configs.SUPPORTED_CLASSES
-	 * If specified, must be multiple and the field type must be Object
+	 * All classes that the variable can assume in different commands
+	 * If not specified, the field must belong to a type contained in Configs.SUPPORTED_CLASSES
+	 * If specified, must be multiple (at least 2 values) and the field type must be Object
 	 */
 	Class<?>[] classes() default {};
 

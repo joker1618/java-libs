@@ -2,7 +2,7 @@ package xxx.joker.libs.oldargsparser.common;
 
 import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.ToAnalyze;
-import xxx.joker.libs.core.format.JkColumnFmtBuilder;
+import xxx.joker.libs.core.format.JkViewBuilder;
 import xxx.joker.libs.core.utils.JkStrings;
 
 import java.nio.file.Path;
@@ -47,7 +47,7 @@ public class Const {
 			lines.add(line);
 		}
 
-		String str = new JkColumnFmtBuilder(lines).toString("|", 3);
+		String str = new JkViewBuilder(lines).toString("|", 3);
 		str = JkStrings.leftPadLines(str, " ", 4);
 
 		return str;
