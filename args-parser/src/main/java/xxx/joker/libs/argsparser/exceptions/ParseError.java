@@ -12,10 +12,6 @@ public class ParseError extends JkRuntimeException {
         super(message, params);
     }
 
-//    public ParseError(Throwable cause, String message, Object... params) {
-//        super(cause, message, params);
-//    }
-
     public ParseError(CmdWrapper cw, ArgWrapper aw, String mex, Object... params) {
         super(strf("Command {}, arg {}: ", cw.getCmdName(), aw.getArgType()) + strf(mex, params));
     }
