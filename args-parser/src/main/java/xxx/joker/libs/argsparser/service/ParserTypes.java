@@ -1,6 +1,8 @@
 package xxx.joker.libs.argsparser.service;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xxx.joker.libs.argsparser.design.annotations.JkArgType;
 import xxx.joker.libs.argsparser.design.classTypes.JkArgsTypes;
 import xxx.joker.libs.argsparser.exceptions.DesignError;
@@ -14,6 +16,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 class ParserTypes {
+
+    private static final Logger logger = LoggerFactory.getLogger(ParserTypes.class);
 
     private Class<? extends JkArgsTypes> argsNamesClass;
     private Map<String, JkArgsTypes> argsNamesMap;
@@ -42,7 +46,7 @@ class ParserTypes {
         for(Field field : fields) {
             // check if field is an Enum
             if(checkDesign && !field.isEnumConstant()) {
-                throw new DesignError(argsNamesClass, "field %s is not an enum", field.getName());
+                throw new DesignError(argsNamesClass, "field {} is not an enum", field.getName());
             }
 
             Enum<?> enumOptName = JkReflection.getEnumByName(argsNamesClass, field.getName());
@@ -50,14 +54,14 @@ class ParserTypes {
 
             if(checkDesign) {
                 if(StringUtils.isBlank(argName.getArgName())) {
-                    throw new DesignError(argsNamesClass, "argName [%s] is blank", argName);
+                    throw new DesignError(argsNamesClass, "argName [{}] is blank", argName);
                 }
                 if(argName.getArgName().contains(" ")) {
-                    throw new DesignError(argsNamesClass, "argName [%s] contains spaces", argName);
+                    throw new DesignError(argsNamesClass, "argName [{}] contains spaces", argName);
                 }
                 // check if option argName is duplicated
                 if(argsNamesMap.containsKey(argName.getArgName())) {
-                    throw new DesignError(argsNamesClass, "argName [%s] duplicated", argName);
+                    throw new DesignError(argsNamesClass, "argName [{}] duplicated", argName);
                 }
             }
 

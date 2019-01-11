@@ -13,6 +13,8 @@ import xxx.joker.libs.core.files.JkFiles;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.List;
 
 public class DesignServiceImpl implements DesignService {
 
@@ -22,6 +24,7 @@ public class DesignServiceImpl implements DesignService {
     private ParserTypes parserTypes;
     private ParserCmds parserCmds;
     private Path launcherJarPath;
+
 
     public DesignServiceImpl(Class<? extends JkAbstractArgs> argsClass,
                              Class<? extends JkArgsTypes> argsNamesClass,
@@ -33,7 +36,7 @@ public class DesignServiceImpl implements DesignService {
         logger.debug("Launcher path: {}", launcherJarPath);
 
         boolean checkDesign = doDesignCheck(cmdsClass);
-        logger.debug("Check design: {}", checkDesign);
+        logger.debug("Check design: {} (ignore case: {})", checkDesign, ignoreCaseArgs);
 
         parserTypes = new ParserTypes(argsNamesClass, checkDesign);
         parserArgs = new ParserArgs(argsClass, parserTypes, checkDesign, ignoreCaseArgs);
@@ -45,6 +48,15 @@ public class DesignServiceImpl implements DesignService {
         }
     }
 
+    @Override
+    public ArgWrapper getArgByNameAlias(String nameOrAlias) {
+        return parserArgs.getArgWrapper(nameOrAlias);
+    }
+
+    @Override
+    public CmdWrapper retrieveCommand(Collection<ArgWrapper> inputArgs) {
+        return parserCmds.retrieveCommand(inputArgs);
+    }
 
     private boolean doDesignCheck(Class<?> cmdClass) {
         if(!Files.isRegularFile(launcherJarPath)) {
@@ -75,4 +87,6 @@ public class DesignServiceImpl implements DesignService {
         String sizeFileName = String.format("%s_%s.md5", launcherJarPath.getFileName().toString(), cmdClass.getName());
         return Configs.TEMP_FOLDER.resolve(sizeFileName);
     }
+
+
 }

@@ -2,12 +2,15 @@ package xxx.joker.libs.core.datetime;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.List;
 
 public class JkTimes {
 
     public static final DateTimeFormatter DTF_AOD = DateTimeFormatter.ofPattern("yyyyMMdd");
 
+
+    /* CHECKS */
     public static boolean isAOD(String source) {
         try {
             DTF_AOD.parse(source);
@@ -16,7 +19,7 @@ public class JkTimes {
             return false;
         }
     }
-    public static boolean areAod(List<String> source) {
+    public static boolean areAODs(List<String> source) {
         for(String elem : source) {
             if(!isAOD(elem)) {
                 return false;
@@ -47,6 +50,9 @@ public class JkTimes {
         }
         return true;
     }
+    public static boolean areLocalDates(String[] sarr, DateTimeFormatter formatter) {
+        return areLocalDates(Arrays.asList(sarr), formatter);
+    }
 
     public static boolean isLocalTime(String source, String format) {
         return isLocalTime(source, DateTimeFormatter.ofPattern(format));
@@ -70,6 +76,9 @@ public class JkTimes {
         }
         return true;
     }
+    public static boolean areLocalTimes(String[] sarr, DateTimeFormatter formatter) {
+        return areLocalTimes(Arrays.asList(sarr), formatter);
+    }
 
     public static boolean isLocalDateTime(String source, String format) {
         return isLocalDateTime(source, DateTimeFormatter.ofPattern(format));
@@ -92,6 +101,9 @@ public class JkTimes {
             }
         }
         return true;
+    }
+    public static boolean areLocalDateTimes(String[] sarr, DateTimeFormatter formatter) {
+        return areLocalDateTimes(Arrays.asList(sarr), formatter);
     }
 
     public static boolean isValidDateTimeFormatter(String format) {

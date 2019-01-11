@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.format.JkOutput;
 import xxx.joker.libs.core.format.JkViewBuilder;
+import xxx.joker.libs.core.utils.JkEnvProps;
 import xxx.joker.libs.core.utils.JkRuntime;
 import xxx.joker.libs.core.utils.JkStrings;
 
@@ -25,10 +26,14 @@ public class Configs {
 
 	public static final Logger logger = LoggerFactory.getLogger(Configs.class);
 
-	public static final Path TEMP_FOLDER = JkRuntime.getTempFolder().resolve("args_parser");
+	public static final Path TEMP_FOLDER = JkEnvProps.getTempFolder().resolve("args_parser");
+
+	// If an InputCommand has more independent evolutions than MAX_EVOLUTIONS, then the evolutions will be computed
+	// considering only required independent parameters
+	public static final int MAX_EVOLUTIONS = 1_000_000;
 
 	public static final List<Class<?>> SUPPORTED_CLASSES = Arrays.asList(
-		boolean.class,			boolean[].class,
+		boolean.class,
 		Integer.class,			int[].class,
 		Long.class,				long[].class,
 		Double.class,        	double[].class,

@@ -1,14 +1,13 @@
 package xxx.joker.libs.argsparser.service;
 
 import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.argsparser.common.Configs;
 import xxx.joker.libs.argsparser.design.annotations.JkCmdElem;
 import xxx.joker.libs.argsparser.design.classTypes.JkArgsTypes;
 import xxx.joker.libs.argsparser.design.classTypes.JkCommands;
 import xxx.joker.libs.argsparser.design.descriptors.COption;
 import xxx.joker.libs.argsparser.design.descriptors.CParam;
 import xxx.joker.libs.argsparser.exceptions.DesignError;
-import xxx.joker.libs.core.utils.JkConvert;
-import xxx.joker.libs.core.utils.JkCreator;
 import xxx.joker.libs.core.utils.JkReflection;
 import xxx.joker.libs.core.utils.JkStreams;
 
@@ -16,21 +15,42 @@ import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.Temporal;
 import java.util.*;
 
 class ParserCmds {
 
     private Class<? extends JkCommands> cmdsClass;
-    private Map<String, CmdWrapper> cmdsMap;
+    private List<CmdWrapper> cwList;
+    private ParserTypes parserTypes;
 
     public ParserCmds(Class<? extends JkCommands> cmdsClass, ParserTypes parserTypes, ParserArgs parserArgs, boolean checkDesign) throws DesignError {
         this.cmdsClass = cmdsClass;
-        this.cmdsMap = new TreeMap<>();
-        init(checkDesign, parserTypes, parserArgs);
+        this.cwList = new ArrayList<>();
+        this.parserTypes = parserTypes;
+        init(checkDesign, parserArgs);
     }
 
-    private void init(boolean checkDesign, ParserTypes parserTypes, ParserArgs parserArgs) {
+    public CmdWrapper retrieveCommand(Collection<ArgWrapper> argsWrappers) {
+        int numTypes = parserTypes.getAllTypes().size();
+        char[] chars = StringUtils.repeat('0', numTypes).toCharArray();
+        argsWrappers.forEach(aw -> chars[aw.getArgType().ordinal()] = '1');
+        String inputEvol = new String(chars);
+
+        for(CmdWrapper cw : cwList) {
+            if(cw.countIndependentEvolutions() > Configs.MAX_EVOLUTIONS) {
+                if(containsEvolutionRequired(cw, inputEvol)) {
+                    return cw;
+                }
+            } else if(cw.getEvolutions().contains(inputEvol)) {
+                return cw;
+            }
+        }
+
+        return null;
+    }
+
+
+    private void init(boolean checkDesign, ParserArgs parserArgs) {
         List<Field> fields = JkReflection.getFieldsByAnnotation(cmdsClass, JkCmdElem.class);
         if (checkDesign && fields.isEmpty()) {
             throw new DesignError(cmdsClass, "no fields annotated with @JkCmdElem");
@@ -54,10 +74,12 @@ class ParserCmds {
 
             setAndCheckOptionClass(cmd, parserArgs, checkDesign);
 
-            cmdsMap.put(cmd.getCmdName(), cmd);
+            cmd.setEvolutions(computeCmdEvolutions(cmd));
+
+            cwList.add(cmd);
         }
 
-        computeCmdEvolutions(cmdsMap.values(), parserTypes.getAllTypes().size());
+        checkCommandsDuplicates();
     }
 
     private void checkParamListSize(CmdWrapper cmd) {
@@ -113,7 +135,7 @@ class ParserCmds {
     private void checkDefaults(CmdWrapper cmd) {
         List<CParam> withDefault = JkStreams.filter(cmd.getParams(), param -> param.getDefault() != null);
         for(CParam cp : withDefault) {
-            Enum<? extends JkArgsTypes> def = cp.getDependOn();
+            Enum<? extends JkArgsTypes> def = cp.getDefault();
             // Default must belong to the CParam or not exists at all in cmd options
             boolean isOK = !JkStreams.filter(cp.getOptions(), co -> co.getArgType() == def).isEmpty();
             isOK |= JkStreams.filter(cmd.getOptions(), co -> co.getArgType() == def).isEmpty();
@@ -133,7 +155,7 @@ class ParserCmds {
 
             Class<?> optType = aw.getField().getType();
 
-            if(co.getOptionClass() == null) {
+            if(co.getArgClass() == null) {
                 // class not specified: option must have empty 'classes' (so field type class != Object.class)
                 // option class will be option field type
                 if(checkDesign && optType == Object.class) {
@@ -146,8 +168,8 @@ class ParserCmds {
                 if(optType != Object.class) {
                     throw new DesignError(cmdsClass, "command {}, arg {}: class cannot be selected for a {} field", cmdName, aw.getArgType(), optType);
                 }
-                if(!aw.getClasses().contains(co.getOptionClass())) {
-                    String selected = co.getOptionClass().getSimpleName();
+                if(!aw.getClasses().contains(co.getArgClass())) {
+                    String selected = co.getArgClass().getSimpleName();
                     List<String> allowed = JkStreams.map(aw.getClasses(), Class::getSimpleName);
                     throw new DesignError(cmdsClass, "command {}, arg {}: selected class [{}], allowed classes {}", cmdName, aw.getArgType(), selected, allowed);
                 }
@@ -155,7 +177,7 @@ class ParserCmds {
 
             if(checkDesign) {
                 List<Class<?>> chronoClasses = Arrays.asList(LocalDate.class, LocalTime.class, LocalDateTime.class);
-                if(chronoClasses.contains(co.getOptionClass())) {
+                if(chronoClasses.contains(co.getArgClass())) {
                     if (co.getDateTimeFormatter() == null) {
                         throw new DesignError(cmdsClass, "command {}, arg {}: DateTimeFormatter not specified", cmdName, aw.getArgType());
                     }
@@ -166,88 +188,106 @@ class ParserCmds {
         }
     }
 
-    private void computeCmdEvolutions(Collection<CmdWrapper> cmdWrappers, int numArgsTypes) {
-        ParamEvolutor paramEvolutor = new ParamEvolutor(numArgsTypes);
-
-        // Compute all evolutions for each command
-        Map<String, Set<String>> evolMap = new TreeMap<>();
-        for(CmdWrapper cw : cmdWrappers) {
-            evolMap.put(cw.getCmdName(), paramEvolutor.computeEvolutions(cw.getParams()));
-        }
-
-        // Check evolutions uniqueness
-        List<String> keys = JkConvert.toArrayList(evolMap.keySet());
-        for(int i = 0; i < keys.size() - 1; i++) {
-            for(int j = i + 1; j < keys.size(); j++) {
-                Set<String> setI = evolMap.get(keys.get(i));
-                Set<String> setJ = evolMap.get(keys.get(j));
-                boolean dup = !JkStreams.filter(setI, setJ::contains).isEmpty();
-                if(dup) {
-                    throw new DesignError(cmdsClass, "duplicated commands: {}, {}", keys.get(i), keys.get(j));
+    private void checkCommandsDuplicates() {
+        for(int i = 0; i < cwList.size() - 1; i++) {
+            List<String> evolsI = cwList.get(i).getEvolutions();
+            for( int j = i+1; j < cwList.size(); j++) {
+                List<String> evolsJ = cwList.get(j).getEvolutions();
+                List<String> dups = JkStreams.filter(evolsI, evolsJ::contains);
+                if(!dups.isEmpty()) {
+                    throw new DesignError(cmdsClass, "duplicated commands: {}, {}", cwList.get(i).getCmdName(), cwList.get(j).getCmdName());
                 }
             }
-        }
-
-        // Set evolutions to wrappers
-        for(CmdWrapper cw : cmdWrappers) {
-            cw.setEvolutions(evolMap.get(cw.getCmdName()));
         }
     }
 
-    private static class ParamEvolutor {
-        int numTypes;
+    private List<String> computeCmdEvolutions(CmdWrapper cmd) {
+        boolean onlyRequired = cmd.countIndependentEvolutions() > Configs.MAX_EVOLUTIONS;
+        List<CParam> params = onlyRequired ? JkStreams.filter(cmd.getParams(), CParam::isRequired) : cmd.getParams();
 
-        ParamEvolutor(int numArgsTypes) {
-            numTypes = numArgsTypes;
+        List<char[]> evolutions = new ArrayList<>();
+        int numOptions = parserTypes.getAllTypes().size();
+        char[] noParamEvol = new char[numOptions];
+        for(int i = 0; i < noParamEvol.length; i++)		noParamEvol[i] = '0';
+        evolutions.add(noParamEvol);
+
+        Set<Enum<?>> usedOptions = new HashSet<>();
+
+        // Analyze first all params without option dependency
+        List<CParam> noDeps = JkStreams.filter(params, cpar -> cpar.getDependOn() == null);
+        for(CParam cp : noDeps) {
+            List<char[]> tot = new ArrayList<>();
+            for (COption co : cp.getOptions()) {
+                evolutions.forEach(arr -> tot.add(setUpChar(arr, co)));
+                usedOptions.add(co.getArgType());
+            }
+
+            // if param is optional, previous evolutions must be holds
+            if (!cp.isRequired()) {
+                tot.addAll(evolutions);
+            }
+
+            evolutions = tot;
         }
 
-        Set<String> computeEvolutions(List<CParam> params) {
-            if(params.isEmpty()) {
-                return JkCreator.newTreeSet(StringUtils.repeat('0', numTypes));
+        if(!onlyRequired) {
+            // Now analyze params with option dependency
+            List<CParam> withDeps = JkStreams.filter(params, cpar -> cpar.getDependOn() != null);
+            while (!withDeps.isEmpty()) {
+                // a param can depends on another param that in turn has an option dependency
+                // to avoid problem in computing evolution, a param is analyzed only if his dependency is already analyzed
+                int idx = -1;
+                for (int i = 0; i < withDeps.size() && idx == -1; i++) {
+                    if (usedOptions.contains(withDeps.get(i).getDependOn())) {
+                        idx = i;
+                    }
+                }
+
+                if (idx == -1) {
+                    throw new DesignError(cmdsClass, "command {}: wrong option dependencies ({} not found)", cmd.getCmdName(), JkStreams.map(withDeps, CParam::getDependOn));
+                }
+
+                CParam removed = withDeps.remove(idx);
+                int depIdx = removed.getDependOn().ordinal();
+                List<char[]> sourceEvols = JkStreams.filter(evolutions, arr -> arr[depIdx] == '1');
+                List<char[]> tot = new ArrayList<>();
+                for (COption co : removed.getOptions()) {
+                    sourceEvols.forEach(arr -> tot.add(setUpChar(arr, co)));
+                    usedOptions.add(co.getArgType());
+                }
+
+                if (!removed.isRequired()) {
+                    tot.addAll(sourceEvols);
+                }
+
+                evolutions.removeIf(arr -> arr[depIdx] == '1');
+                evolutions.addAll(tot);
             }
-
-            int[] counters = new int[params.size()];
-            int[] maxArr = new int[params.size()];
-
-            List<Integer> maxs = JkStreams.map(params, par -> par.getOptions().size());
-            for(int i = 0; i < maxs.size(); i++) {
-                maxArr[i] = maxs.get(i);
-            }
-
-            List<char[]> evols = new ArrayList<>();
-            boolean go = true;
-            while(go) {
-                evols.add(createEvol(counters, params));
-                go = incr(counters, maxArr);
-            }
-
-            return new TreeSet<>(JkStreams.map(evols, String::new));
         }
 
-        char[] createEvol(int[] counters, List<CParam> params) {
-            char[] evol = StringUtils.repeat('0', numTypes).toCharArray();
-            for(int i = 0; i < params.size(); i++) {
-                COption co = params.get(i).getOptions().get(counters[i]);
-                evol[co.getArgType().ordinal()] = '1';
-            }
-            return evol;
-        }
+        return JkStreams.map(evolutions, String::new);
+    }
 
-        boolean incr(int[] counters, int[] maxs) {
-            int cnum = counters.length - 1;
-            while(cnum >= 0) {
-                int cval = counters[cnum];
-                int cmax = maxs[cnum];
-                if(cval == cmax - 1) {
-                    counters[cnum] = 0;
-                    cnum--;
-                } else {
-                    counters[cnum] = cval + 1;
-                    break;
+    private char[] setUpChar(char[] arr, COption co) {
+        int index = co.getArgType().ordinal();
+        char[] evol = Arrays.copyOf(arr, arr.length);
+        evol[index] = '1';
+        return evol;
+    }
+
+    private boolean containsEvolutionRequired(CmdWrapper cw, String evolution) {
+        for(String str : cw.getEvolutions()) {
+            boolean valid = true;
+            for(int i = 0; valid && i < str.length(); i++) {
+                char charStr = str.charAt(i);
+                char charEv = evolution.charAt(i);
+                if(charStr == '1' && charEv == '0') {
+                    valid = false;
                 }
             }
-            return cnum >= 0;
+            if(valid) return true;
         }
+        return false;
     }
 
 }

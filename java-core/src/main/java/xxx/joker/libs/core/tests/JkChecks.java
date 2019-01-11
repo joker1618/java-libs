@@ -1,6 +1,7 @@
 package xxx.joker.libs.core.tests;
 
 import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.utils.JkStreams;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -171,6 +172,14 @@ public class JkChecks {
     public static <T> boolean duplicatesPresents(T[] sourceArray) {
         return duplicatesPresents(Arrays.asList(sourceArray));
     }
+
+    public static boolean containsIgnoreCase(List<String> sourceList, String toFind) {
+        return !JkStreams.filter(sourceList, toFind::equalsIgnoreCase).isEmpty();
+    }
+    public static boolean containsIgnoreCase(String[] sourceArray, String toFind) {
+        return containsIgnoreCase(Arrays.asList(sourceArray), toFind);
+    }
+
 
 
 }

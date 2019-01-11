@@ -54,13 +54,23 @@ public class JkStrings {
 		}
 
 		StringBuilder sb = new StringBuilder();
+		boolean simpleClazzName = JkEnvProps.isShowClassSimpleName();
 
 		List<String> splits = JkStrings.splitList(format, "{}");
 		if(!splits.isEmpty()) {
 			int splitPos = 0;
 			sb.append(splits.get(splitPos++));
 			for(int i = 0; splitPos < splits.size() && i < params.length; i++) {
-				sb.append(params[i] == null ? "_null" : params[i].toString()).append(splits.get(splitPos++));
+				Object obj = params[i];
+				String strValue;
+				if(obj == null)	{
+					strValue = "_null";
+				} else if(simpleClazzName && obj instanceof Class<?>)	{
+					strValue = ((Class)obj).getSimpleName();
+				} else {
+					strValue = obj.toString();
+				}
+				sb.append(strValue).append(splits.get(splitPos++));
 			}
 			for(; splitPos < splits.size(); ) {
 				sb.append("{}").append(splits.get(splitPos++));

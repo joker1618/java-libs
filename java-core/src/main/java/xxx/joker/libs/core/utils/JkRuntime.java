@@ -18,15 +18,6 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class JkRuntime {
 
-    public static final String ENV_PROP_TEMP_FOLDER = "joker.apps.temp.folder";
-    public static final Path FALLBACK_TEMP_FOLDER = Paths.get(System.getProperty("user.home")).resolve(".tempApps");
-
-
-    public static Path getTempFolder() {
-        String val = System.getProperty("joker.apps.temp.folder");
-        return val == null ? FALLBACK_TEMP_FOLDER : Paths.get(JkConvert.unixToWinPath(val));
-    }
-
     /**
      * Get classes from:
      * - classpath: if launcher path is a folder (IDE run) or is a JAR inside Maven repository folder (libraries)
