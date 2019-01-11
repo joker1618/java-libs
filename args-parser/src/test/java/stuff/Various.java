@@ -5,6 +5,7 @@ import xxx.joker.libs.argsparser.common.Configs;
 import xxx.joker.libs.core.ToAnalyze;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
@@ -14,11 +15,6 @@ public class Various {
 
     boolean[] fieldBool;
     Boolean[] fieldBoolean;
-
-    @Test
-    public void testVari1() throws NoSuchFieldException {
-        display(Configs.toStringSupportedClasses());
-    }
 
     @Test
     public void testVari2() throws NoSuchFieldException {

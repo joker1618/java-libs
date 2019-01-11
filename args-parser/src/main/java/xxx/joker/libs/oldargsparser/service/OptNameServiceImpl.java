@@ -21,7 +21,7 @@ import java.util.Map;
 class OptNameServiceImpl implements IOptNameService {
 
 	private Class<? extends OptionName> optNameClass;
-	// key: option name, value: enum
+	// key: option argName, value: enum
 	private Map<String, OptionName> optNameMap;
 
 
@@ -43,17 +43,17 @@ class OptNameServiceImpl implements IOptNameService {
 			OptionName optName = (OptionName) enumOptName;
 
 			if(performDesignCheck) {
-				// check if option name is empty
+				// check if option argName is empty
 				if(StringUtils.isBlank(optName.optName())) {
-					throw new DesignParserException(optNameClass, "option name [%s] is blank", optName.optName());
+					throw new DesignParserException(optNameClass, "option argName [%s] is blank", optName.optName());
 				}
-				// check if option name contains spaces
+				// check if option argName contains spaces
 				if(optName.optName().contains(" ")) {
-					throw new DesignParserException(optNameClass, "option name [%s] contains spaces", optName.optName());
+					throw new DesignParserException(optNameClass, "option argName [%s] contains spaces", optName.optName());
 				}
-				// check if option name is duplicated
+				// check if option argName is duplicated
 				if(optNameMap.containsKey(optName.optName())) {
-					throw new DesignParserException(optNameClass, "option name [%s] duplicated", optName.optName());
+					throw new DesignParserException(optNameClass, "option argName [%s] duplicated", optName.optName());
 				}
 			}
 

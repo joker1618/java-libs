@@ -41,8 +41,13 @@ public class JkStreams {
 		return source.stream().map(mapper).filter(filter).sorted(sorter).distinct().collect(Collectors.toList());
 	}
 
-	public static <T> List<T> filter(Collection<T> source, Predicate<T> filter) {
-		return source.stream().filter(filter).collect(Collectors.toList());
+	@SafeVarargs
+	public static <T> List<T> filter(Collection<T> source, Predicate<T>... filters) {
+		Stream<T> stream = source.stream();
+		for(Predicate<T> filter : filters) {
+			stream = stream.filter(filter);
+		}
+		return stream.collect(Collectors.toList());
 	}
 	public static <T,U> List<U> filterMap(Collection<T> source, Predicate<T> filter, Function<T,U> mapper) {
 		return source.stream().filter(filter).map(mapper).collect(Collectors.toList());
@@ -111,6 +116,16 @@ public class JkStreams {
         for(T elem : source) {
             if(!uniques.contains(elem))     uniques.add(elem);
             else                            dups.add(elem);
+        }
+        return sorted(dups);
+    }
+    public static <T> List<T> getDuplicates(Collection<T> source, Comparator<T> comparator) {
+        List<T> uniques = new ArrayList<>();
+        List<T> dups = new ArrayList<>();
+        for(T elem : source) {
+			boolean found = filter(uniques, u -> comparator.compare(u, elem) == 0).isEmpty();
+			if(!found)	uniques.add(elem);
+            else        dups.add(elem);
         }
         return sorted(dups);
     }

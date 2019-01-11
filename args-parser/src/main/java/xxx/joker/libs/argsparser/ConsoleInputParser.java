@@ -1,7 +1,7 @@
 package xxx.joker.libs.argsparser;
 
 import xxx.joker.libs.argsparser.design.classTypes.JkAbstractArgs;
-import xxx.joker.libs.argsparser.design.classTypes.JkArgsNames;
+import xxx.joker.libs.argsparser.design.classTypes.JkArgsTypes;
 import xxx.joker.libs.argsparser.design.classTypes.JkCommands;
 import xxx.joker.libs.argsparser.exceptions.DesignError;
 import xxx.joker.libs.argsparser.exceptions.ParseError;
@@ -19,11 +19,12 @@ public class ConsoleInputParser implements InputParser {
     private DesignService designService;
 
     public ConsoleInputParser(Class<? extends JkAbstractArgs> argsClass,
-                              Class<? extends JkArgsNames> argsNamesClass,
-                              Class<? extends JkCommands> cmdsClass)
+                              Class<? extends JkArgsTypes> argsNamesClass,
+                              Class<? extends JkCommands> cmdsClass,
+                              boolean ignoreCaseArgs)
                               throws DesignError {
 
-        designService = new DesignServiceImpl(argsClass, argsNamesClass, cmdsClass);
+        designService = new DesignServiceImpl(argsClass, argsNamesClass, cmdsClass, ignoreCaseArgs);
     }
 
 

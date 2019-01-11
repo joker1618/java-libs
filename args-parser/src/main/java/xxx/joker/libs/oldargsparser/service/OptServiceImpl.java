@@ -23,7 +23,7 @@ import java.util.*;
 class OptServiceImpl implements IOptService {
 
 	 private Class<? extends InputOption> optClass;
-	 // key: option name
+	 // key: option argName
 	 private Map<String, OptWrapper> optMap;
 
 
@@ -54,12 +54,12 @@ class OptServiceImpl implements IOptService {
 		String annName = annot.name();
 		List<String> annAliases = JkConvert.toArrayList(annot.aliases());
 
-		// No spaces in name and aliases
+		// No spaces in argName and aliases
 		if(StringUtils.isBlank(annName)) {
-			throw new DesignParserException(optClass, "option name \"%s\" is blank", annName);
+			throw new DesignParserException(optClass, "option argName \"%s\" is blank", annName);
 		}
 		if(annName.contains(" ")) {
-			throw new DesignParserException(optClass, "option name \"%s\" contains spaces", annName);
+			throw new DesignParserException(optClass, "option argName \"%s\" contains spaces", annName);
 		}
 		annAliases.forEach(alias -> {
 			if(StringUtils.isBlank(alias)) {
@@ -70,9 +70,9 @@ class OptServiceImpl implements IOptService {
 			}
 		});
 
-		// name and aliases must be unique
+		// argName and aliases must be unique
 		if (!allNameAlias.add(annName)) {
-			throw new DesignParserException(optClass, "option name \"%s\" duplicated", annName);
+			throw new DesignParserException(optClass, "option argName \"%s\" duplicated", annName);
 		} else {
 			annAliases.forEach(alias -> {
 				if (!allNameAlias.add(alias)) {
@@ -126,12 +126,12 @@ class OptServiceImpl implements IOptService {
 	}
 
 	private void checkRelatedOptName(IOptNameService optNameService, Opt annot) {
-		// check if exists an Enum<? extends OptionName> with the same option name
+		// check if exists an Enum<? extends OptionName> with the same option argName
 		Set<String> optNames = optNameService.getOptNameMap().keySet();
 		String annotName = annot.name();
 		if(!optNames.contains(annotName)) {
 			String optNameClass = optNameService.getOptNameClass().getSimpleName();
-			throw new DesignParserException(optClass, "option name [%s] not related with Enum<%s>", annotName, optNameClass);
+			throw new DesignParserException(optClass, "option argName [%s] not related with Enum<%s>", annotName, optNameClass);
 		}
 	}
 

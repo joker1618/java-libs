@@ -16,4 +16,6 @@ public abstract class JkAbstractArgs<T extends JkCommands> {
 		return selectedCommand;
 	}
 
+	public abstract boolean isArgsIgnoreCase();
+	
 }

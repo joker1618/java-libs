@@ -6,12 +6,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 
-/**
- * Created by f.barbano on 26/05/2018.
- */
-
-@ToAnalyze // until all methods are analyzed
-@Deprecated
 public class JkReflection {
 
 	public static List<Field> getFieldsByAnnotation(Class<?> sourceClass, Class<? extends Annotation> annotationClass) {

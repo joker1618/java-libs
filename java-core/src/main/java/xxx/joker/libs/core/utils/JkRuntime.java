@@ -24,7 +24,7 @@ public class JkRuntime {
 
     public static Path getTempFolder() {
         String val = System.getProperty("joker.apps.temp.folder");
-        return val == null ? FALLBACK_TEMP_FOLDER : Paths.get(val);
+        return val == null ? FALLBACK_TEMP_FOLDER : Paths.get(JkConvert.unixToWinPath(val));
     }
 
     /**

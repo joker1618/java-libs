@@ -1,6 +1,8 @@
 package xxx.joker.libs.argsparser.common;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.format.JkOutput;
 import xxx.joker.libs.core.format.JkViewBuilder;
@@ -20,6 +22,8 @@ import java.util.List;
  */
 
 public class Configs {
+
+	public static final Logger logger = LoggerFactory.getLogger(Configs.class);
 
 	public static final Path TEMP_FOLDER = JkRuntime.getTempFolder().resolve("args_parser");
 
@@ -50,5 +54,9 @@ public class Configs {
 		vb.insertPrefix(StringUtils.repeat(' ', 4));
 
 		return vb.toString("|", 3);
+	}
+
+	static {
+		logger.info("ArgsParser config: temp folder is {}", TEMP_FOLDER.toAbsolutePath().normalize());
 	}
 }

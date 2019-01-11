@@ -15,13 +15,13 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 public @interface JkArg {
 
-	String name();
+	String argName();
 	String[] aliases() default {};
 
 	/**
 	 * All classes that the variable can assume in different commands
 	 * If not specified, the field must belong to a type contained in Configs.SUPPORTED_CLASSES
-	 * If specified, must be multiple (at least 2 values) and the field type must be Object
+	 * If specified, the field type must be Object
 	 */
 	Class<?>[] classes() default {};
 
