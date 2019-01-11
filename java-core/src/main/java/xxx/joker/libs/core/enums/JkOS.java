@@ -1,6 +1,6 @@
 package xxx.joker.libs.core.enums;
 
-public enum JkSOType {
+public enum JkOS {
 
     WINDOWS,
     UNIX,
