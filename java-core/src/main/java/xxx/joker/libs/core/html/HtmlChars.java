@@ -6,8 +6,6 @@ import xxx.joker.libs.core.utils.JkStreams;
 import java.util.Arrays;
 import java.util.List;
 
-@ToAnalyze
-@Deprecated
 public class HtmlChars {
 
     private static final List<HtmlChar> charList;

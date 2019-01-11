@@ -1,24 +1,17 @@
 package xxx.joker.libs.core.html;
 
-/**
- * Created by f.barbano on 14/08/2017.
- */
-import xxx.joker.libs.core.ToAnalyze;
-
-@ToAnalyze
-@Deprecated
 public interface JkTextScanner {
 
-	void startCursorAt(int offset);
-	boolean startCursorAt(String... toFind);
-	boolean startCursorAfter(String... toFind);
-	boolean startCursorAtBackward(String... toFind);
-	boolean startCursorAfterBackward(String... toFind);
+	void startAt(int offset);
+	boolean startAt(String... toFind);
+	boolean startAfter(String... toFind);
+	boolean startAtBackward(String... toFind);
+	boolean startAfterBackward(String... toFind);
 
-	boolean endCursorAt(String... toFind);
-	boolean endCursorAfter(String... toFind);
-	boolean endCursorAtBackward(String... toFind);
-	boolean endCursorAfterBackward(String... toFind);
+	boolean endAt(String... toFind);
+	boolean endAfter(String... toFind);
+	boolean endAtBackward(String... toFind);
+	boolean endAfterBackward(String... toFind);
 
 	void reset();
 

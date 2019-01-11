@@ -7,14 +7,7 @@ import xxx.joker.libs.core.ToAnalyze;
 import java.util.ArrayList;
 import java.util.List;
 
-@ToAnalyze
-@Deprecated
 public class JkHtmlScanner {
-
-//    public static void main(String[] args) throws IOException {
-//        String html = JkStreams.join(Files.readAllLines(Paths.get("C:\\Users\\f.barbano\\Desktop\\aaa.txt")), "");
-//        parseHtml(html);
-//    }
 
     private JkHtmlScanner() {}
 
@@ -88,10 +81,10 @@ public class JkHtmlScanner {
         // Check if is a tag closure
         if(strTag.startsWith("</")) {
             String tagName = strTag.replaceAll("^</", "").replaceAll(">$", "").trim();
-            return Pair.of(new JkHtmlTag(tagName), false);
+            return Pair.of(new JkHtmlTagImpl(tagName), false);
         }
 
-        JkHtmlTag tag = new JkHtmlTag();
+        JkHtmlTagImpl tag = new JkHtmlTagImpl();
         tag.setAutoClosed(strTag.endsWith("/>"));
 
         String tempStr = strTag.replaceAll("^<", "").replaceAll(">$", "").replaceAll("/$", "").trim();
@@ -144,8 +137,8 @@ public class JkHtmlScanner {
     }
 
     private static String fixHtml(String html) {
-        html = html.replaceAll("<!--((.|\\s)*?)-->", ""); // remove html comments
-        html = html.replaceAll("<!((.|\\s)*?)>", ""); // remove DOCTYPE
+        html = html.replaceAll("<!--((.|\\s)*?)-->", "");   // remove html comments
+        html = html.replaceAll("<!((.|\\s)*?)>", "");       // remove DOCTYPE
         return html;
     }
 

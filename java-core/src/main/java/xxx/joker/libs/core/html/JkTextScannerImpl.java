@@ -9,12 +9,6 @@ import xxx.joker.libs.core.utils.JkStrings;
 
 import java.util.List;
 
-/**
- * Created by f.barbano on 14/08/2017.
- */
-
-@ToAnalyze
-@Deprecated
 public class JkTextScannerImpl implements JkTextScanner {
 
     private static final Logger logger = LoggerFactory.getLogger(JkTextScannerImpl.class);
@@ -29,7 +23,7 @@ public class JkTextScannerImpl implements JkTextScanner {
 	}
 
     @Override
-    public void startCursorAt(int offset) {
+    public void startAt(int offset) {
 	    if(offset > 0) {
 	        int end = Math.min(offset, buffer.length());
             buffer.delete(0, end);
@@ -37,42 +31,42 @@ public class JkTextScannerImpl implements JkTextScanner {
     }
 
     @Override
-	public boolean startCursorAt(String... toFind) {
+	public boolean startAt(String... toFind) {
 		return setCursorMulti(true, false, true, toFind);
 	}
 
 	@Override
-	public boolean startCursorAfter(String... toFind) {
+	public boolean startAfter(String... toFind) {
         return setCursorMulti(true, true, true, toFind);
 	}
 
 	@Override
-	public boolean startCursorAtBackward(String... toFind) {
+	public boolean startAtBackward(String... toFind) {
 		return setCursorMulti(true, false, false, toFind);
 	}
 
 	@Override
-	public boolean startCursorAfterBackward(String... toFind) {
+	public boolean startAfterBackward(String... toFind) {
 		return setCursorMulti(true, true, false, toFind);
 	}
 
     @Override
-	public boolean endCursorAt(String... toFind) {
+	public boolean endAt(String... toFind) {
 		return setCursorMulti(false, false, true, toFind);
 	}
 
 	@Override
-	public boolean endCursorAfter(String... toFind) {
+	public boolean endAfter(String... toFind) {
 		return setCursorMulti(false, true, true, toFind);
 	}
 
 	@Override
-	public boolean endCursorAtBackward(String... toFind) {
+	public boolean endAtBackward(String... toFind) {
 		return setCursorMulti(false, false, false, toFind);
 	}
 
 	@Override
-	public boolean endCursorAfterBackward(String... toFind) {
+	public boolean endAfterBackward(String... toFind) {
 		return setCursorMulti(false, true, false, toFind);
 	}
 
