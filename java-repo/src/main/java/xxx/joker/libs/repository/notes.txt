@@ -1,0 +1,5 @@
+REPOSITORY NOTES
+
+# Persistence
+    - 2 files for each JkEntity: 1 for data, 1 for foreign keys
+    - 1 file for properties

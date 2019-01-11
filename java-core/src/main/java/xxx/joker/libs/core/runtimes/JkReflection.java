@@ -1,10 +1,27 @@
-package xxx.joker.libs.core.utils;
+package xxx.joker.libs.core.runtimes;
+
+import xxx.joker.libs.core.exception.JkRuntimeException;
+import xxx.joker.libs.core.utils.JkStreams;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 
 public class JkReflection {
+
+	public static <T> void setFieldValue(T instance, Field field, Object value) {
+		try {
+			if(field.isAccessible()) {
+				field.set(instance, value);
+			} else {
+				field.setAccessible(true);
+				field.set(instance, value);
+				field.setAccessible(false);
+			}
+		} catch (Exception e) {
+			throw new JkRuntimeException("Class {}: error setting field ({}) value ({})", instance.getClass(), field.getName(), value);
+		}
+	}
 
 	public static List<Field> getFieldsByAnnotation(Class<?> sourceClass, Class<? extends Annotation> annotationClass) {
 		List<Field> toRet = new ArrayList<>();
@@ -18,7 +35,6 @@ public class JkReflection {
 		}
 		return toRet;
 	}
-
 	public static List<Field> getFieldsByType(Class<?> sourceClass, Class<?> fieldType) {
 		List<Field> toRet = new ArrayList<>();
 		Field[] declaredFields = sourceClass.getDeclaredFields();
@@ -37,7 +53,6 @@ public class JkReflection {
 		List<Field> fields = JkStreams.filter(declaredFields, f -> f.getName().equals(fieldName));
 		return fields.isEmpty() ? null : fields.get(0);
 	}
-
 	public static Enum getEnumByName(Class<?> enumClass, String enumName) {
 		Enum[] enumConstants = (Enum[]) enumClass.getEnumConstants();
 		for(Enum elem : enumConstants) {

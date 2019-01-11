@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.format.JkViewBuilder;
-import xxx.joker.libs.core.utils.JkEnvironment;
+import xxx.joker.libs.core.runtimes.JkEnvironment;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -30,9 +30,9 @@ public class Configs {
 
 	public static final List<Class<?>> SUPPORTED_CLASSES = Arrays.asList(
 		boolean.class,
-		Integer.class,			int[].class,
-		Long.class,				long[].class,
-		Double.class,        	double[].class,
+		Integer.class,			Integer[].class,
+		Long.class,				Long[].class,
+		Double.class,        	Double[].class,
 		Path.class,				Path[].class,
 		LocalDate.class,   		LocalDate[].class,
 		LocalTime.class,   		LocalTime[].class,

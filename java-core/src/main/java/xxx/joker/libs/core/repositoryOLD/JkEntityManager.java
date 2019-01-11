@@ -1,4 +1,4 @@
-package xxx.joker.libs.core.repository;
+package xxx.joker.libs.core.repositoryOLD;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -6,10 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.repository.entity.JkEntity;
-import xxx.joker.libs.core.repository.entity.JkEntityField;
+import xxx.joker.libs.core.repositoryOLD.entity.JkEntity;
+import xxx.joker.libs.core.repositoryOLD.entity.JkEntityField;
 import xxx.joker.libs.core.utils.JkConvert;
-import xxx.joker.libs.core.utils.JkReflection;
+import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.utils.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
 
@@ -24,7 +24,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static xxx.joker.libs.core.repository.JkPersistenceManager.EntityLines;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 @ToAnalyze
@@ -96,16 +95,16 @@ class JkEntityManager {
         return parsedEntities;
     }
 
-    public Map<Class<?>, Set<JkEntity>> parseData(Map<Class<?>, EntityLines> dataMap) {
+    public Map<Class<?>, Set<JkEntity>> parseData(Map<Class<?>, JkPersistenceManager.EntityLines> dataMap) {
         Map<Class<?>, Map<Long, JkEntity>> entityMap = new HashMap<>();
 
-        // Parse entities
+        // Parse design
         for(Class<?> clazz : dataMap.keySet()) {
             List<JkEntity> elist = JkStreams.map(dataMap.get(clazz).getEntityLines(), l -> parseLine(clazz, l));
             entityMap.put(clazz, JkStreams.toMapSingle(elist, JkEntity::getEntityID));
         }
 
-        // Resolve dependencies and fill entities objects
+        // Resolve dependencies and fill design objects
         try {
             for (Class<?> fromClazz : dataMap.keySet()) {
                 List<ForeignKey> fkOfClass = JkStreams.map(dataMap.get(fromClazz).getForeignKeyLines(), ForeignKey::new);
@@ -262,14 +261,14 @@ class JkEntityManager {
         return o;
     }
 
-    public Map<Class<?>, EntityLines> formatEntities(Map<Class<?>, Set<JkEntity>> dataMap) {
+    public Map<Class<?>, JkPersistenceManager.EntityLines> formatEntities(Map<Class<?>, Set<JkEntity>> dataMap) {
         try {
-            Map<Class<?>, EntityLines> toRet = new HashMap<>();
+            Map<Class<?>, JkPersistenceManager.EntityLines> toRet = new HashMap<>();
             List<ForeignKey> allDeps = new ArrayList<>();
             Map<Class<?>, Map<String, Long>> mapPkId = new HashMap<>();
 
             for (Class<?> clazz : dataMap.keySet()) {
-                toRet.put(clazz, new EntityLines(clazz));
+                toRet.put(clazz, new JkPersistenceManager.EntityLines(clazz));
                 mapPkId.put(clazz, new HashMap<>());
                 for (JkEntity elem : dataMap.get(clazz)) {
                     mapPkId.get(clazz).put(elem.getPrimaryKey(), elem.getEntityID());

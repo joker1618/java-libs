@@ -12,7 +12,9 @@ import xxx.joker.libs.argsparser.service.CmdWrapper;
 import xxx.joker.libs.argsparser.service.DesignService;
 import xxx.joker.libs.argsparser.service.DesignServiceImpl;
 import xxx.joker.libs.core.datetime.JkTimes;
+import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.tests.JkChecks;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStreams;
@@ -145,13 +147,13 @@ public class ConsoleInputParser implements InputParser {
             Function<String[], Object[]> classConverter;
             DateTimeFormatter dtf = co.getDateTimeFormatter();
 
-            if(argClass == Integer.class || argClass == int[].class) {
+            if(argClass == Integer.class || argClass == Integer[].class) {
                 classCheck = JkChecks::areInts;
                 classConverter = JkConvert::toInts;
-            } else if(argClass == Double.class || argClass == double[].class) {
+            } else if(argClass == Double.class || argClass == Double[].class) {
                 classCheck = JkChecks::areDoubles;
                 classConverter = JkConvert::toDoubles;
-            } else if(argClass == Long.class || argClass == long[].class) {
+            } else if(argClass == Long.class || argClass == Long[].class) {
                 classCheck = JkChecks::areLongs;
                 classConverter = JkConvert::toLongs;
             } else if(argClass == Path.class || argClass == Path[].class) {
@@ -180,7 +182,12 @@ public class ConsoleInputParser implements InputParser {
             }
         }
 
-        setFieldValue(ai, aw.getField(), fieldValue);
+        // Set value to instance field
+        try {
+            JkReflection.setFieldValue(ai, aw.getField(), fieldValue);
+        } catch (JkRuntimeException e) {
+            throw new ParseError(cw, aw, "field {}: error setting value ({})", aw.getField().getName(), fieldValue);
+        }
     }
 
     private Object parseInputValues(COption co, List<String> values, Predicate<String[]> classCheck, Function<String[], Object[]> classConverter) {
@@ -230,20 +237,6 @@ public class ConsoleInputParser implements InputParser {
         });
 
         return co.getArgClass().isArray() ? objArr : objArr[0];
-    }
-
-    private void setFieldValue(JkAbstractArgs ai, Field field, Object value) {
-        try {
-            if(field.isAccessible()) {
-                field.set(ai, value);
-            } else {
-                field.setAccessible(true);
-                field.set(ai, value);
-                field.setAccessible(false);
-            }
-        } catch (Exception e) {
-            throw new ParseError("Error while set value ({}) for field ({})", value, field.getName());
-        }
     }
 
     private Map<ArgWrapper, List<String>> inputArgsToMap(String[] inputArgs) {

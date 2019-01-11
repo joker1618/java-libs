@@ -1,21 +1,19 @@
-package xxx.joker.libs.core.repository;
+package xxx.joker.libs.core.repositoryOLD;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.repository.entity.JkEntity;
-import xxx.joker.libs.core.repository.property.JkModelProperty;
-import xxx.joker.libs.core.utils.JkReflection;
-import xxx.joker.libs.core.utils.JkRuntime;
+import xxx.joker.libs.core.repositoryOLD.entity.JkEntity;
+import xxx.joker.libs.core.repositoryOLD.property.JkModelProperty;
+import xxx.joker.libs.core.runtimes.JkReflection;
+import xxx.joker.libs.core.runtimes.JkRuntime;
 import xxx.joker.libs.core.utils.JkStreams;
 
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
-
-import static xxx.joker.libs.core.repository.JkPersistenceManager.EntityLines;
 
 @ToAnalyze
 @Deprecated
@@ -40,12 +38,12 @@ public abstract class JkDataModel {
     }
 
     private Map<Class<?>, Set<JkEntity>> readModelData() {
-        Map<Class<?>, EntityLines> elinesMap = persistenceManager.readData();
+        Map<Class<?>, JkPersistenceManager.EntityLines> elinesMap = persistenceManager.readData();
         return entityManager.parseData(elinesMap);
     }
 
     public void commit() {
-        Map<Class<?>, EntityLines> map = entityManager.formatEntities(dataMap);
+        Map<Class<?>, JkPersistenceManager.EntityLines> map = entityManager.formatEntities(dataMap);
         persistenceManager.saveData(map, sequence.get());
         logger.info("Committed model data");
     }

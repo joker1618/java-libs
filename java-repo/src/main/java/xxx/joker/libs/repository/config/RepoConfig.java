@@ -1,8 +1,9 @@
-package xxx.joker.libs.core.repository;
+package xxx.joker.libs.repository.config;
 
-import xxx.joker.libs.core.ToAnalyze;
-import xxx.joker.libs.core.repository.entity.JkEntity;
-import xxx.joker.libs.core.utils.JkReflection;
+import org.apache.commons.lang3.tuple.Pair;
+import xxx.joker.libs.repository.design.JkEntity;
+import xxx.joker.libs.repository.design.JkEntityFieldCustom;
+import xxx.joker.libs.core.runtimes.JkReflection;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -11,13 +12,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-@ToAnalyze
-@Deprecated
-class RepoUtil {
+public class RepoConfig {
 
-    private static final List<Class<?>> ALLOWED_CLASSES = Arrays.asList(
+    private static final List<Class<?>> ALLOWED_JAVA_CLASSES = Arrays.asList(
             boolean.class,
             int.class,
             long.class,
@@ -36,13 +36,16 @@ class RepoUtil {
             LocalDateTime.class,  LocalDateTime[].class,
             String.class,         String[].class,
 
+            Pair.class,
+
             List.class,
-            Set.class
+            Set.class,
+            Map.class
     );
 
-    public static boolean isClassAllowed(Class<?> clazz) {
-        return ALLOWED_CLASSES.contains(clazz) || JkReflection.isInstanceOf(clazz, JkEntity.class);
+    public static boolean isFieldClassAllowed(Class<?> fieldClazz) {
+        return ALLOWED_JAVA_CLASSES.contains(fieldClazz)
+                || JkReflection.isInstanceOf(fieldClazz, JkEntity.class)
+                || JkReflection.isInstanceOf(fieldClazz, JkEntityFieldCustom.class);
     }
-
 }
-
