@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.format.JkViewBuilder;
-import xxx.joker.libs.core.utils.JkEnvProps;
+import xxx.joker.libs.core.utils.JkEnvironment;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -22,7 +22,7 @@ public class Configs {
 
 	public static final Logger logger = LoggerFactory.getLogger(Configs.class);
 
-	public static final Path TEMP_FOLDER = JkEnvProps.getTempFolder().resolve("args_parser");
+	public static final Path TEMP_FOLDER = JkEnvironment.getAppTempFolder().resolve("args_parser");
 
 	// If an InputCommand has more independent evolutions than MAX_EVOLUTIONS, then the evolutions will be computed
 	// considering only required independent parameters

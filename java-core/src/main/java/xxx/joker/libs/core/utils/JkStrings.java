@@ -54,7 +54,7 @@ public class JkStrings {
 		}
 
 		StringBuilder sb = new StringBuilder();
-		boolean simpleClazzName = JkEnvProps.isShowClassSimpleName();
+		boolean simpleClazzName = JkEnvironment.isShowClassSimpleName();
 
 		List<String> splits = JkStrings.splitList(format, "{}");
 		if(!splits.isEmpty()) {

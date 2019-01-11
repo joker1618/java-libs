@@ -1,7 +1,6 @@
 package temp;
 
 import org.junit.Test;
-import xxx.joker.libs.core.ToAnalyze;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,8 +12,6 @@ import java.util.regex.Pattern;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
-@ToAnalyze
-@Deprecated
 public class Vari {
 
     @Test

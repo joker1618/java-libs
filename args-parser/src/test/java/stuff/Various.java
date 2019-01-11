@@ -1,11 +1,9 @@
 package stuff;
 
 import org.junit.Test;
-import xxx.joker.libs.argsparser.common.Configs;
 import xxx.joker.libs.core.ToAnalyze;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 

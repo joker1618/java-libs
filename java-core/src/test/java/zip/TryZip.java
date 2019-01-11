@@ -1,14 +1,11 @@
 package zip;
 
 import org.junit.Test;
-import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.files.JkZip;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@ToAnalyze
-@Deprecated
 public class TryZip {
 
     static final Path TEST_FOLDER = Paths.get("src\\test\\resources\\zip");
