@@ -13,7 +13,6 @@ public class JkStreams {
 	public static <T,U> List<U> map(Collection<T> source, Function<T,U> mapper) {
 		return source.stream().map(mapper).collect(Collectors.toList());
 	}
-	@SafeVarargs
 	public static <T,U> List<U> mapFilter(Collection<T> source, Function<T,U> mapper, Predicate<U>... filters) {
 		Stream<U> stream = source.stream().map(mapper);
 		for(Predicate<U> filter : filters) {
@@ -46,7 +45,6 @@ public class JkStreams {
 		return source.stream().map(mapper).filter(filter).sorted(sorter).distinct().collect(Collectors.toList());
 	}
 
-	@SafeVarargs
 	public static <T> List<T> filter(Collection<T> source, Predicate<T>... filters) {
 		Stream<T> stream = source.stream();
 		for(Predicate<T> filter : filters) {
@@ -115,14 +113,21 @@ public class JkStreams {
 		return source.stream().map(mapFunc).collect(Collectors.joining(separator));
 	}
 
-	@SafeVarargs
-	public static <T> T findElem(Collection<T> source, Predicate<T>... filters) {
+	public static <T> T findExactMatch(Collection<T> source, Predicate<T>... filters) {
 		Stream<T> stream = source.stream();
 		for(Predicate<T> filter : filters) {
 			stream = stream.filter(filter);
 		}
 		List<T> list = stream.collect(Collectors.toList());
 		return list.size() == 1 ? list.get(0) : null;
+	}
+	public static <T> T findFirstMatch(Collection<T> source, Predicate<T>... filters) {
+		Stream<T> stream = source.stream();
+		for(Predicate<T> filter : filters) {
+			stream = stream.filter(filter);
+		}
+		List<T> list = stream.collect(Collectors.toList());
+		return !list.isEmpty() ? list.get(0) : null;
 	}
 
 	public static <V,K> Map<K,List<V>> toMap(Collection<V> source, Function<V,K> keyMapper) {

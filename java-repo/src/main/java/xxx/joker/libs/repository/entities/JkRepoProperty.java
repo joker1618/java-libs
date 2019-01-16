@@ -5,9 +5,9 @@ import xxx.joker.libs.repository.design.JkRepoEntity;
 
 public class JkRepoProperty extends JkRepoEntity {
 
-    @JkEntityField
+    @JkEntityField(idx = 0)
     private String key;
-    @JkEntityField
+    @JkEntityField(idx = 1)
     private String value;
 
     public JkRepoProperty() {

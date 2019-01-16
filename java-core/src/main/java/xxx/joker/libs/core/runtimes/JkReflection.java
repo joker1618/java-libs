@@ -9,6 +9,14 @@ import java.util.*;
 
 public class JkReflection {
 
+	public static <T> T createInstanceSafe(Class<T> clazz) {
+		try {
+			return clazz.newInstance();
+		} catch (Exception e) {
+			throw new JkRuntimeException(e);
+		}
+	}
+
 	public static <T> void setFieldValue(T instance, Field field, Object value) {
 		try {
 			if(field.isAccessible()) {

@@ -6,21 +6,31 @@ import xxx.joker.libs.repository.design.JkEntity;
 import xxx.joker.libs.repository.entities.JkRepoProperty;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.runtimes.JkRuntime;
+import xxx.joker.libs.repository.managers.RepoManager;
 
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 public abstract class JkDataRepoFile implements JkDataRepo {
 
     private static final Logger logger = LoggerFactory.getLogger(JkDataRepoFile.class);
 
+    private RepoManager repoManager;
     private Map<Class<?>, Set<JkEntity>> dataMap;
 
     protected JkDataRepoFile(Path dbFolder, String dbName, String pkgToScan) {
-        logger.info("Creating new repository: dbName={}, dbFolder={}, pkgToScan={}", dbName, dbFolder, pkgToScan);
+        logger.info("Creating repository: dbName={}, dbFolder={}, pkgToScan={}", dbName, dbFolder, pkgToScan);
+        List<Class<?>> eclasses = findPackageEntities(pkgToScan);
+        this.repoManager = new RepoManager(dbFolder, dbName, eclasses);
     }
+
+    public <T extends JkEntity> Set<T> getDataSet(Class<T> entityClazz) {
+        return repoManager.getDataSet(entityClazz);
+    }
+
 
 
     private List<Class<?>> findPackageEntities(String pkgToScan) {

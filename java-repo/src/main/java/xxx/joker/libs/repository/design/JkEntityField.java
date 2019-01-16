@@ -24,37 +24,31 @@ import java.lang.annotation.Target;
  * 	LocalDateTime.class
  * 	String.class
  *
- * 	Pair.class
- *
  * 	? extends JkEntityFieldCustom
  * 	? extends JkEntity
  *
  * ALLOWED COLLECTION TYPES:
  * 	- List
  * 	- Set
- * 	- Map
  *
  * PARAMETERS:
- * - collectionClass: must be specified for 'List' and 'Set' fields
- * - keyClass: must be specified for 'Map' fields only
- * - valueClass: must be specified for 'Map' fields only
+ * - collectionType: must be specified for 'List' and 'Set' fields only
+ * 		a) List can be of any type allowed
+ * 		b) Set can be of any Comparable type allowed
  *
  *
  * DETAILS:
  * - String  -->  null not permitted: used ""
  * - List    -->  null not permitted: used 'emptyList'
  * - Set     -->  null not permitted: used 'emptySet'
- * - Map     -->  null not permitted: used 'emptyMap'
  *
  */
 
 public @interface JkEntityField {
 
-    // Must be specified only for List and Set
-	Class<?> collectionClass() default Object.class;
+	int idx();
 
-    // Must be specified only for Map and Pair
-	Class<?> keyClass() default Object.class;
-	Class<?> valueClass() default Object.class;
+    // Must be specified  for List and Set only
+	Class<?> collectionType() default Object.class;
 
 }

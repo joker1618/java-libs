@@ -18,29 +18,23 @@ import java.util.Set;
 public class RepoConfig {
 
     private static final List<Class<?>> ALLOWED_JAVA_CLASSES = Arrays.asList(
-            boolean.class,
-            int.class,
-            long.class,
-            float.class,
-            double.class,
+            Boolean.class,		boolean.class,
+            Integer.class,		int.class,
+            Long.class,			long.class,
+            Float.class,		float.class,
+            Double.class,		double.class,
 
-            Boolean.class,        Boolean[].class,
-            Integer.class,        Integer[].class,
-            Long.class,           Long[].class,
-            Float.class,          Float[].class,
-            Double.class,         Double[].class,
-            File.class,           File[].class,
-            Path.class,           Path[].class,
-            LocalTime.class,      LocalTime[].class,
-            LocalDate.class,      LocalDate[].class,
-            LocalDateTime.class,  LocalDateTime[].class,
-            String.class,         String[].class,
+            LocalTime.class,
+            LocalDate.class,
+            LocalDateTime.class,
 
-            Pair.class,
+            String.class,
+            File.class,
+            Path.class
 
-            List.class,
-            Set.class,
-            Map.class
+//            List.class,
+//            Set.class,
+//            Map.class
     );
 
     public static boolean isFieldClassAllowed(Class<?> fieldClazz) {
