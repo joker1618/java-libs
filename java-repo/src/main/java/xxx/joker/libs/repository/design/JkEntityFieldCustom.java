@@ -1,6 +1,9 @@
 package xxx.joker.libs.repository.design;
 
-public interface JkEntityFieldCustom extends Comparable<JkEntityFieldCustom> {
+/**
+ * The implementation class cannot contains JkEntity fields
+ */
+public interface JkEntityFieldCustom<T extends JkEntityFieldCustom> extends Comparable<T> {
 
     String formatField();
 

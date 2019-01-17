@@ -67,7 +67,7 @@ class DesignService {
         });
 
         // Parse FK and set entities deps
-        List<ForeignKey> fkList = JkStreams.map(repoLines.getDepsLines(), this::parseForeignKey);
+        List<ForeignKey> fkList = JkStreams.map(repoLines.getFkLines(), this::parseForeignKey);
         Map<Long, List<ForeignKey>> idFromFKs = JkStreams.toMap(fkList, ForeignKey::getFromID);
         for (long idFrom : idFromFKs.keySet()) {
             JkEntity efrom = idMap.get(idFrom);
@@ -114,22 +114,13 @@ class DesignService {
                 .map(this::formatForeignKey)
                 .collect(Collectors.toList());
 
-        repoLines.getDepsLines().addAll(fkLines);
+        repoLines.getFkLines().addAll(fkLines);
 
         return repoLines;
     }
 
     public List<Class<?>> getEntityClasses() {
         return JkConvert.toArrayList(designMap.keySet());
-    }
-
-    public Map<Class<?>, List<DesignField>> getEntityFields() {
-        Map<Class<?>, List<DesignField>> entityFields = new HashMap<>();
-        for (Class<?> key : designMap.keySet()) {
-            List<DesignField> edfields = JkStreams.mapFilter(designMap.get(key).entrySet(), Map.Entry::getValue, DesignField::isFlatJkEntity);
-            entityFields.put(key, edfields);
-        }
-        return entityFields;
     }
 
     private TreeMap<Class<?>, TreeMap<Integer, DesignField>> parseEntityClasses(Collection<Class<?>> classes) {
@@ -170,7 +161,6 @@ class DesignService {
                     if (dfield.isSet() && !dfield.isFlatFieldComparable()) {
                         throw new RepoDesignError("field {}: set must have comparable elements", fieldName);
                     }
-
                 } else {
                     if (collType != Object.class) {
                         throw new RepoDesignError("field {}: collection type not allowed", fieldName);

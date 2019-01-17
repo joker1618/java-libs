@@ -2,8 +2,6 @@ package xxx.joker.libs.core.objects;
 
 import xxx.joker.libs.core.ToAnalyze;
 
-@ToAnalyze
-@Deprecated
 public class Area {
 
     int x;

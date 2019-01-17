@@ -10,8 +10,6 @@ import java.time.format.DateTimeFormatter;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
-@ToAnalyze
-@Deprecated
 public class TryExcelUtil {
 
     @Test

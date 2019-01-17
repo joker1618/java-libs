@@ -19,7 +19,6 @@ public abstract class JkDataRepoFile implements JkDataRepo {
     private static final Logger logger = LoggerFactory.getLogger(JkDataRepoFile.class);
 
     private RepoManager repoManager;
-//    private Map<Class<?>, Set<JkEntity>> dataMap;
 
     protected JkDataRepoFile(Path dbFolder, String dbName, String pkgToScan) {
         logger.info("Creating repository: dbName={}, dbFolder={}, pkgToScan={}", dbName, dbFolder, pkgToScan);
@@ -34,7 +33,8 @@ public abstract class JkDataRepoFile implements JkDataRepo {
 
     @Override
     public void commit() {
-
+        logger.info("Commit data sets");
+        repoManager.commitDataSets();
     }
 
 

@@ -1,10 +1,7 @@
 package xxx.joker.libs.excel;
 
 import org.apache.poi.xssf.usermodel.XSSFSheet;
-import xxx.joker.libs.core.ToAnalyze;
 
-@ToAnalyze
-@Deprecated
 public class JkSheetXSSF extends JkAbstractSheet {
 
     private final XSSFSheet sheet;

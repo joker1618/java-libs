@@ -158,10 +158,6 @@ class RepoDataHandler {
     }
 
 
-    public AtomicLong getDbSequence() {
-        return dbSequence;
-    }
-
     public void setDbSequence(long dbSequence) {
         this.dbSequence.set(dbSequence);
     }
@@ -184,5 +180,12 @@ class RepoDataHandler {
 
     public void setForeignKeys(Map<Long, List<ForeignKey>> foreignKeys) {
         this.foreignKeys = foreignKeys;
+    }
+
+    public ReentrantReadWriteLock.WriteLock getWriteLock() {
+        return dbLock.writeLock();
+    }
+    public long getSequenceValue() {
+        return dbSequence.get();
     }
 }

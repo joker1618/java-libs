@@ -1,13 +1,9 @@
 package xxx.joker.libs.excel;
 
-import xxx.joker.libs.core.ToAnalyze;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@ToAnalyze
-@Deprecated
 public class JkExcelChartSerie {
     private String name;
     private List<Double> data;

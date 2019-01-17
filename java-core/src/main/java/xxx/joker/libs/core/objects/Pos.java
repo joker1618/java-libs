@@ -1,9 +1,5 @@
 package xxx.joker.libs.core.objects;
 
-import xxx.joker.libs.core.ToAnalyze;
-
-@ToAnalyze
-@Deprecated
 public class Pos {
     
     private int rowNum;

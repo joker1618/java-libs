@@ -3,7 +3,6 @@ package xxx.joker.libs.excel;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellReference;
-import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.objects.Area;
 import xxx.joker.libs.core.objects.Pos;
 
@@ -13,8 +12,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@ToAnalyze
-@Deprecated
 public interface JkSheet {
 
     Sheet getSheet();
@@ -25,7 +22,7 @@ public interface JkSheet {
 
     Pos findCellPos(String cellValue, boolean caseSensitive, boolean searchByColumn);
 
-    boolean isValueEmpty(int rowNum, int colNum);
+    boolean isCellEmpty(int rowNum, int colNum);
 
     String getString(int rowNum, int colNum);
     Integer getInt(int rowNum, int colNum);

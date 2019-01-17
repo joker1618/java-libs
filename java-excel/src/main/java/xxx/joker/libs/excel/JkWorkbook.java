@@ -1,13 +1,10 @@
 package xxx.joker.libs.excel;
 
 import org.apache.poi.ss.usermodel.Workbook;
-import xxx.joker.libs.core.ToAnalyze;
 
 import java.io.Closeable;
 import java.nio.file.Path;
 
-@ToAnalyze
-@Deprecated
 public interface JkWorkbook extends Closeable {
 
     Workbook getWorkbook();

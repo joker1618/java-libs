@@ -5,17 +5,17 @@ import java.util.*;
 class RepoLines {
 
     private TreeMap<Class<?>, List<String>> entityLines;
-    private List<String> depsLines;
+    private List<String> fkLines;
 
     public RepoLines() {
         this.entityLines = new TreeMap<>(Comparator.comparing(Class::getName));
-        this.depsLines = new ArrayList<>();
+        this.fkLines = new ArrayList<>();
     }
 
     public TreeMap<Class<?>, List<String>> getEntityLines() {
         return entityLines;
     }
-    public List<String> getDepsLines() {
-        return depsLines;
+    public List<String> getFkLines() {
+        return fkLines;
     }
 }

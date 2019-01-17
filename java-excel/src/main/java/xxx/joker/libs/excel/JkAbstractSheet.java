@@ -3,7 +3,6 @@ package xxx.joker.libs.excel;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
-import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.datetime.JkTime;
 import xxx.joker.libs.core.objects.Area;
 import xxx.joker.libs.core.objects.Pos;
@@ -21,8 +20,6 @@ import java.util.List;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
-@ToAnalyze
-@Deprecated
 abstract class JkAbstractSheet implements JkSheet {
 
     private static final DataFormatter DATA_FORMATTER = new DataFormatter(true);
@@ -82,7 +79,7 @@ abstract class JkAbstractSheet implements JkSheet {
     }
 
     @Override
-    public boolean isValueEmpty(int rowNum, int colNum) {
+    public boolean isCellEmpty(int rowNum, int colNum) {
         return StringUtils.isBlank(getString(rowNum, colNum));
     }
 

@@ -51,13 +51,12 @@ public class SimpleTypes extends JkRepoEntity {
         this.keyword = keyword;
     }
 
-    public void setOthers(LocalTime lt, LocalDate ld, LocalDateTime ldt, File file, Path path, String string) {
+    public void setOthers(LocalTime lt, LocalDate ld, LocalDateTime ldt, File file, Path path) {
         this.lt = lt;
         this.ld = ld;
         this.ldt = ldt;
         this.file = file;
         this.path = path;
-        this.keyword = string;
     }
 
     public void setNums(boolean bool, Boolean boolWrapper, int intNum, Integer intNumWrapper, long longNum, Long longNumWrapper, float floatNum, Float floatNumWrapper, double doubeNum, Double doubeNumWrapper) {
