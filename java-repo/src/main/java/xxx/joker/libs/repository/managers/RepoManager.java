@@ -41,6 +41,11 @@ public class RepoManager {
         return repoHandler.getDataSet(entityClazz);
     }
 
+    public void commitDataSets() {
+
+    }
+
+
     private RepoDataHandler readRepoData(List<Class<?>> classes) {
         // Read entity data
         RepoLines repoLines = new RepoLines();

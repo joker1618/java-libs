@@ -58,7 +58,7 @@ public class CmdWrapper {
 	}
 
 	public COption getOption(JkArgsTypes argType) {
-		return JkStreams.findElem(getOptions(), cp -> cp.getArgType() == argType);
+		return JkStreams.findExactMatch(getOptions(), cp -> cp.getArgType() == argType);
 	}
 
 	public List<String> getEvolutions() {
