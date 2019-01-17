@@ -3,6 +3,7 @@ package xxx.joker.libs.core.utils;
 import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.lambdas.JkStreams;
 
 import java.io.*;
 import java.net.URL;

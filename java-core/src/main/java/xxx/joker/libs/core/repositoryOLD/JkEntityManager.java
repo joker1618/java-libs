@@ -6,11 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.exception.JkRuntimeException;
+import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.repositoryOLD.entity.JkEntity;
 import xxx.joker.libs.core.repositoryOLD.entity.JkEntityField;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.runtimes.JkReflection;
-import xxx.joker.libs.core.utils.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
 
 import java.io.File;
@@ -225,22 +225,12 @@ class JkEntityManager {
             o = fclazz == String.class ? "" : null;
         } else if (Arrays.asList(boolean.class, Boolean.class).contains(fclazz)) {
             o = Boolean.valueOf(value);
-        } else if (Arrays.asList(boolean.class, Boolean.class).contains(fclazz)) {
-            o = Boolean.valueOf(value);
-        } else if (Arrays.asList(int.class, Integer.class).contains(fclazz)) {
-            o = JkConvert.toInt(value);
         } else if (Arrays.asList(int.class, Integer.class).contains(fclazz)) {
             o = JkConvert.toInt(value);
         } else if (Arrays.asList(long.class, Long.class).contains(fclazz)) {
             o = JkConvert.toLong(value);
-        } else if (Arrays.asList(long.class, Long.class).contains(fclazz)) {
-            o = JkConvert.toLong(value);
         } else if (Arrays.asList(double.class, Double.class).contains(fclazz)) {
             o = JkConvert.toDouble(value);
-        } else if (Arrays.asList(double.class, Double.class).contains(fclazz)) {
-            o = JkConvert.toDouble(value);
-        } else if (Arrays.asList(float.class, Float.class).contains(fclazz)) {
-            o = JkConvert.toFloat(value);
         } else if (Arrays.asList(float.class, Float.class).contains(fclazz)) {
             o = JkConvert.toFloat(value);
         } else if (fclazz == Path.class) {

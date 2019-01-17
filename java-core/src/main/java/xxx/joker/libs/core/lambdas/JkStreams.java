@@ -1,4 +1,4 @@
-package xxx.joker.libs.core.utils;
+package xxx.joker.libs.core.lambdas;
 
 import xxx.joker.libs.core.exception.JkRuntimeException;
 

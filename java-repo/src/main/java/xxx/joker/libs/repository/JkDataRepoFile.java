@@ -19,7 +19,7 @@ public abstract class JkDataRepoFile implements JkDataRepo {
     private static final Logger logger = LoggerFactory.getLogger(JkDataRepoFile.class);
 
     private RepoManager repoManager;
-    private Map<Class<?>, Set<JkEntity>> dataMap;
+//    private Map<Class<?>, Set<JkEntity>> dataMap;
 
     protected JkDataRepoFile(Path dbFolder, String dbName, String pkgToScan) {
         logger.info("Creating repository: dbName={}, dbFolder={}, pkgToScan={}", dbName, dbFolder, pkgToScan);
@@ -27,10 +27,15 @@ public abstract class JkDataRepoFile implements JkDataRepo {
         this.repoManager = new RepoManager(dbFolder, dbName, eclasses);
     }
 
+    @Override
     public <T extends JkEntity> Set<T> getDataSet(Class<T> entityClazz) {
         return repoManager.getDataSet(entityClazz);
     }
 
+    @Override
+    public void commit() {
+
+    }
 
 
     private List<Class<?>> findPackageEntities(String pkgToScan) {

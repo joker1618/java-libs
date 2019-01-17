@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 class ForeignKey {
 
@@ -16,15 +17,13 @@ class ForeignKey {
     private int fromFieldIdx;
     private long depID;
 
+    public ForeignKey() {
+
+    }
     public ForeignKey(long fromID, int fromFieldIdx, long depID) {
         this.fromID = fromID;
         this.fromFieldIdx = fromFieldIdx;
         this.depID = depID;
-    }
-    public ForeignKey(String[] line) {
-        this.fromID = JkConvert.toLong(line[0]);
-        this.fromFieldIdx = JkConvert.toInt(line[1]);
-        this.depID = JkConvert.toLong(line[2]);
     }
 
     public long getFromID() {
@@ -46,4 +45,18 @@ class ForeignKey {
         this.depID = depID;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ForeignKey that = (ForeignKey) o;
+        return getFromID() == that.getFromID() &&
+                getFromFieldIdx() == that.getFromFieldIdx() &&
+                getDepID() == that.getDepID();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getFromID(), getFromFieldIdx(), getDepID());
+    }
 }

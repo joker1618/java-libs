@@ -1,7 +1,7 @@
 package xxx.joker.libs.core.tests;
 
 import xxx.joker.libs.core.files.JkFiles;
-import xxx.joker.libs.core.utils.JkStreams;
+import xxx.joker.libs.core.lambdas.JkStreams;
 
 import java.nio.file.Path;
 import java.time.LocalDate;

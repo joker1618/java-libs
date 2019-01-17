@@ -2,7 +2,7 @@ package xxx.joker.libs.core.format;
 
 import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.enums.JkAlign;
-import xxx.joker.libs.core.utils.JkStreams;
+import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
 
 import java.util.*;

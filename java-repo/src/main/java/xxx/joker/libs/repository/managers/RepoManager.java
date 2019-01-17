@@ -30,18 +30,21 @@ public class RepoManager {
         this.dbFolder = dbFolder;
         this.dbName = dbName;
         this.designService = new DesignService(classes);
-        this.repoHandler = new RepoDataHandler(loadSequenceValue(), loadRepoData(), designService.getEntityFields());
-        designService.setRepoDataHandler(repoHandler);
+        this.repoHandler = readRepoData(designService.getEntityClasses());
+        repoHandler.setDbSequence(loadSequenceValue());
     }
 
+    public TreeMap<Class<?>, Set<JkEntity>> getDataSets() {
+        return repoHandler.getDataSets();
+    }
     public <T extends JkEntity> Set<T> getDataSet(Class<T> entityClazz) {
         return repoHandler.getDataSet(entityClazz);
     }
 
-    private TreeMap<Class<?>, Set<JkEntity>> loadRepoData() {
+    private RepoDataHandler readRepoData(List<Class<?>> classes) {
         // Read entity data
         RepoLines repoLines = new RepoLines();
-        for (Class<?> eclazz : designService.getEntityClasses()) {
+        for (Class<?> eclazz : classes) {
             Path repoPath = createRepoPath(eclazz);
             List<String> lines = new ArrayList<>();
             if (Files.exists(repoPath)) {
@@ -55,7 +58,6 @@ public class RepoManager {
             repoLines.getDepsLines().addAll(JkFiles.readLinesNotBlank(depsPath));
         }
 
-        // Parse all repo data
         return designService.parseLines(repoLines);
     }
     private long loadSequenceValue() {

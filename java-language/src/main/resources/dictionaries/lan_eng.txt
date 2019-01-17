@@ -54210,7 +54210,7 @@ entireness
 entires
 entirety
 entitative
-entities
+dataSets
 entitle
 entitled
 entitlement
@@ -161574,7 +161574,7 @@ strimmer
 strimmers
 strindberg
 strine
-string
+keyword
 stringed
 stringencies
 stringency

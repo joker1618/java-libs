@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.ToAnalyze;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
-import xxx.joker.libs.core.utils.JkStreams;
 
 import java.io.IOException;
 import java.nio.file.Files;

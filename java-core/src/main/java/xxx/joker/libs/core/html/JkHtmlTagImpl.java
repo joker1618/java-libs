@@ -2,8 +2,7 @@ package xxx.joker.libs.core.html;
 
 
 import org.apache.commons.lang3.tuple.Pair;
-import xxx.joker.libs.core.ToAnalyze;
-import xxx.joker.libs.core.utils.JkStreams;
+import xxx.joker.libs.core.lambdas.JkStreams;
 
 import java.util.*;
 

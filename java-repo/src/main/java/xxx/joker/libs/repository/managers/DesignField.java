@@ -41,26 +41,9 @@ class DesignField implements Comparable<DesignField> {
         return JkReflection.isInstanceOf(getFlatFieldType(), JkEntity.class);
     }
 
-    // fixme
-//    Class<?> getParentClass() {
-//        return field.getDeclaringClass();
-//    }
-
     Class<?> getCollectionType() {
         return annot.collectionType();
     }
-
-
-    // fixme
-//    boolean isEntityImpl() {
-//        Class<?> fclazz = isCollection() ? getCollectionType() : getFieldType();
-//        return JkReflection.isInstanceOf(fclazz, JkEntity.class);
-//    }
-//
-//    Class<?> getEntityClass() {
-//        Class<?> fclazz = isCollection() ? getCollectionType() : getFieldType();
-//        return !isEntityImpl() ? null : fclazz;
-//    }
 
     boolean isList() {
         return getFieldType() == List.class;
@@ -121,6 +104,6 @@ class DesignField implements Comparable<DesignField> {
 
     @Override
     public int compareTo(DesignField o) {
-        return getFieldName().compareTo(o.getFieldName());
+        return getIdx() - o.getIdx();
     }
 }

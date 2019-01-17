@@ -37,40 +37,19 @@ public class HandlerSet implements InvocationHandler {
 
         if ("add".equals(method.getName())) {
             JkEntity e = (JkEntity) args[0];
-            return addEntity(e);
+            return repoHandler.addEntity(e);
 
         } else if ("addAll".equals(method.getName())) {
             Collection coll = (Collection) args[0];
             boolean res = false;
             for (Object obj : coll) {
                 JkEntity e = (JkEntity) obj;
-                res &= addEntity(e);
+                res &= repoHandler.addEntity(e);
             }
             return res;
         }
 
         return method.invoke(sourceSet, args);
-    }
-
-    private boolean addEntity(JkEntity e) {
-        Lock writeLock = repoHandler.getWriteLock();
-        try {
-            writeLock.lock();
-            if (e.getEntityID() == null) {
-                e.setEntityID(repoHandler.getSequenceValue());
-                e.setInsertTstamp(LocalDateTime.now());
-            }
-
-            boolean added = sourceSet.add(e);
-            if (added) {
-                repoHandler.incrementSequence();
-            }
-
-            return added;
-
-        } finally {
-            writeLock.unlock();
-        }
     }
 
 }

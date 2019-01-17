@@ -1,7 +1,7 @@
 package xxx.joker.libs.core.runtimes;
 
 import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.utils.JkStreams;
+import xxx.joker.libs.core.lambdas.JkStreams;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
