@@ -34,7 +34,7 @@ public abstract class JkDataRepoFile implements JkDataRepo {
         repoManager.commitDataSets();
     }
 
-    protected TreeMap<Class<?>, Set<JkEntity>> getDataSets() {
+    protected Map<Class<?>, Set<JkEntity>> getDataSets() {
         return repoManager.getDataSets();
     }
 

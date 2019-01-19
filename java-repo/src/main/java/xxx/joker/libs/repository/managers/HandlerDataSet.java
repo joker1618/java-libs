@@ -42,16 +42,19 @@ public class HandlerDataSet implements InvocationHandler {
 
         String methodName = method.getName();
 
-        if (StringUtils.equalsAny(methodName, "addAll", "add")) {
+        if ("add".equals(methodName)) {
             logger.trace("invoked {}", methodName);
-            Collection coll;
-            if("add".equals(method.getName())) {
-                coll = Collections.singletonList(args[0]);
-            } else {
-                coll = (Collection) args[0];
+            if(canBeAdd(args[0])) {
+                return method.invoke(dataSet, args);
             }
-            List toAdd = new ArrayList();
-            coll.forEach(c -> { if(canBeAdd(c)) toAdd.add(c); });
+            return false;
+        }
+
+        if ("addAll".equals(methodName)) {
+            logger.trace("invoked {}", methodName);
+            Collection coll = (Collection) args[0];
+            Collection<JkEntity> toAdd = new ArrayList();
+            coll.forEach(c -> { if(canBeAdd(c)) toAdd.add((JkEntity)c); });
             return toAdd.isEmpty() ? false : method.invoke(dataSet, toAdd);
         }
 

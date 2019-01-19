@@ -19,7 +19,7 @@ import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class Test1 extends JkDataRepoFile implements JkDataRepo {
 
-    protected Test1() {
+    public Test1() {
         super(TestModel.DB_FOLDER, "test1", "trymodel.entities1");
     }
 
@@ -35,14 +35,16 @@ public class Test1 extends JkDataRepoFile implements JkDataRepo {
 
         dataSet.add(st);
         dataSet.add(st);
-        dataSet.forEach(ds -> display("\n\n1\n{}", ds));
+        display("\n1");
+        dataSet.forEach(ds -> display("{}", ds));
 
         SimpleTypes st2 = new SimpleTypes("secondo");
         st2.setNums(false, false, 1, 11, 2L, 22L, 3f, 33f, 4d, 44d);
         st2.setOthers(LocalTime.NOON, LocalDate.now(), LocalDateTime.now(), new File("pfile.txt"), Paths.get("ppath.csv"));
 
         dataSet.add(st2);
-        dataSet.forEach(ds -> display("\n\n2\n{}", ds));
+        display("\n2");
+        dataSet.forEach(ds -> display("{}", ds));
 
         SimpleTypes st3 = new SimpleTypes("terzo");
         st3.setNums(false, false, 1, 11, 2L, 22L, 3f, 33f, 4d, 44d);
@@ -52,15 +54,17 @@ public class Test1 extends JkDataRepoFile implements JkDataRepo {
 
         dataSet.add(st3);
         dataSet.add(st4);
-        dataSet.forEach(ds -> display("\n\n3\n{}", ds));
+        display("\n3");
+        dataSet.forEach(ds -> display("{}", ds));
 
         test1.commit();
-
     }
 
     @Test
     public void testRepo1_B() {
-
+        Test1 test1 = new Test1();
+        Set<SimpleTypes> dataSet = test1.getDataSet(SimpleTypes.class);
+        dataSet.forEach(ds -> display("{}", ds));
     }
 
 

@@ -33,7 +33,7 @@ public class RepoManager {
         this.repoHandler = readRepoData(classes);
     }
 
-    public TreeMap<Class<?>, Set<JkEntity>> getDataSets() {
+    public Map<Class<?>, Set<JkEntity>> getDataSets() {
         return repoHandler.getDataSets();
     }
     public <T extends JkEntity> Set<T> getDataSet(Class<T> entityClazz) {
@@ -66,7 +66,7 @@ public class RepoManager {
         }
 
         RepoDataHandler repoHandler = new RepoDataHandler();
-        TreeMap<Class<?>, Set<JkEntity>> dataSets = designService.parseLines(repoLines, repoHandler);
+        Map<Class<?>, Set<JkEntity>> dataSets = designService.parseLines(repoLines, repoHandler);
         long seqVal = loadSequenceValue();
         repoHandler.initHandler(seqVal, dataSets, designService.getDesignMap());
 

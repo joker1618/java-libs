@@ -17,7 +17,7 @@ class RepoDataHandler {
 
 
     private AtomicLong dbSequence;
-    private TreeMap<Class<?>, Set<JkEntity>> dataSets;
+    private Map<Class<?>, Set<JkEntity>> dataSets;
     private Map<Class<?>, List<DesignField>> designEntities;
     private Map<Long, JkEntity> dataByID;
     private Map<Long, List<ForeignKey>> foreignKeys;
@@ -28,7 +28,7 @@ class RepoDataHandler {
     }
 
     protected void initHandler(long sequenceValue,
-                               TreeMap<Class<?>, Set<JkEntity>> dataSets,
+                               Map<Class<?>, Set<JkEntity>> dataSets,
                                Map<Class<?>, TreeMap<Integer, DesignField>> allDesignMap) {
 
         if(initialized)     throw new JkRuntimeException("Repo data handler already initialized");
@@ -38,7 +38,7 @@ class RepoDataHandler {
         this.dbSequence = new AtomicLong(sequenceValue);
         this.dataSets = dataSets;
 
-        this.designEntities = new TreeMap<>();
+        this.designEntities = new HashMap<>();
         allDesignMap.forEach((c,tm) -> designEntities.put(c, JkConvert.toArrayList(tm.values())));
         this.designEntities.forEach((c,l) -> l.removeIf(df -> !df.isFlatJkEntity()));
 
@@ -53,7 +53,7 @@ class RepoDataHandler {
         initialized = true;
     }
 
-    public TreeMap<Class<?>, Set<JkEntity>> getDataSets() {
+    public Map<Class<?>, Set<JkEntity>> getDataSets() {
         return dataSets;
     }
 

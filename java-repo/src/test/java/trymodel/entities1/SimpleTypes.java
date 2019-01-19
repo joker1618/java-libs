@@ -47,6 +47,9 @@ public class SimpleTypes extends JkRepoEntity {
 
     private String unconsidered;
 
+    public SimpleTypes() {
+
+    }
     public SimpleTypes(String keyword) {
         this.keyword = keyword;
     }

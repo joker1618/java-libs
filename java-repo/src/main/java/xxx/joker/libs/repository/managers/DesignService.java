@@ -38,17 +38,18 @@ class DesignService {
     private static final String SEP_FIELD = "##FLD##";
     private static final String SEP_LIST = "##LST##";
 
-    private static final String PH_TAB = "##TAB##";
-    private static final String PH_NEWLINE = "##NLF##";
+    private static final String PH_TAB = "@@TAB@@";
+    private static final String PH_NEWLINE = "@@LF@@";
+    private static final String PH_NULL = "@@NULL@@";
 
 
-    private TreeMap<Class<?>, TreeMap<Integer, DesignField>> designMap;
+    private Map<Class<?>, TreeMap<Integer, DesignField>> designMap;
 
     public DesignService(Collection<Class<?>> classes) {
         this.designMap = parseEntityClasses(classes);
     }
 
-    public TreeMap<Class<?>, Set<JkEntity>> parseLines(RepoLines repoLines, final RepoDataHandler repoHandler) {
+    public Map<Class<?>, Set<JkEntity>> parseLines(RepoLines repoLines, final RepoDataHandler repoHandler) {
         Map<Long, JkEntity> idMap = new HashMap<>();
         Map<Class<?>, List<JkEntity>> dataMap = new HashMap<>();
 
@@ -57,7 +58,7 @@ class DesignService {
             List<JkEntity> elist = JkStreams.map(lines, l -> parseEntityLine(c, l));
             dataMap.put(c, elist);
             List<JkEntity> dups = JkStreams.filter(elist, e -> idMap.containsKey(e.getEntityID()));
-            if (dups.isEmpty()) {
+            if (!dups.isEmpty()) {
                 logger.warn("Something went wrong: class={}, ID dups={}", c.getSimpleName(), dups);
             }
             Map<Long, JkEntity> clazzIdMap = JkStreams.toMapSingle(elist, JkEntity::getEntityID);
@@ -83,7 +84,7 @@ class DesignService {
         }
 
         // Create dataSets using java Proxy
-        TreeMap<Class<?>, Set<JkEntity>> dataSets = new TreeMap<>();
+        Map<Class<?>, Set<JkEntity>> dataSets = new HashMap<>();
         for (Class<?> c : dataMap.keySet()) {
             Set<JkEntity> proxySet = HandlerDataSet.createProxySet(repoHandler, dataMap.get(c));
             dataSets.put(c, proxySet);
@@ -116,13 +117,13 @@ class DesignService {
         return designMap;
     }
 
-    private TreeMap<Class<?>, TreeMap<Integer, DesignField>> parseEntityClasses(Collection<Class<?>> classes) {
+    private Map<Class<?>, TreeMap<Integer, DesignField>> parseEntityClasses(Collection<Class<?>> classes) {
         List<String> dups = JkStreams.getDuplicates(JkStreams.map(classes, Class::getSimpleName));
-        if (dups != null) {
+        if (!dups.isEmpty()) {
             throw new RepoDesignError("all entity classes must have different class name. Duplicates: {}", dups);
         }
 
-        TreeMap<Class<?>, TreeMap<Integer, DesignField>> toRet = new TreeMap<>();
+        Map<Class<?>, TreeMap<Integer, DesignField>> toRet = new HashMap<>();
 
         for (Class<?> clazz : classes) {
             List<Field> fields = JkReflection.getFieldsByAnnotation(clazz, JkEntityField.class);
@@ -178,9 +179,9 @@ class DesignService {
         List<String> row = JkStrings.splitList(repoLine, SEP_FIELD);
 
         String entityID = row.remove(0);
-        instance.setEntityID(JkConvert.toLong(entityID));
+        instance.setEntityID((Long) parseSingleValue(entityID, Long.class));
         String insTstamp = row.remove(0);
-        instance.setInsertTstamp(LocalDateTime.parse(insTstamp, DateTimeFormatter.ISO_DATE_TIME));
+        instance.setInsertTstamp((LocalDateTime) parseSingleValue(insTstamp, LocalDateTime.class));
 
         for (Map.Entry<Integer, DesignField> entry : designMap.get(elemClazz).entrySet()) {
             if (!entry.getValue().isFlatJkEntity()) {
@@ -196,14 +197,18 @@ class DesignService {
     private Object parseValue(String value, DesignField dfield) {
         Object retVal = null;
 
-        if (!dfield.isFlatJkEntity()) {
+        if (!dfield.isFlatJkEntity() && value != null) {
             // Parse repoLine to correct Object
             if (dfield.isCollection()) {
                 Class<?> elemClazz = dfield.getCollectionType();
                 List<String> strElems = JkStrings.splitList(value, SEP_LIST);
                 List<Object> values = new ArrayList<>();
                 values.addAll(JkStreams.map(strElems, elem -> parseSingleValue(elem, elemClazz)));
-                retVal = dfield.isSet() ? JkConvert.toTreeSet(values) : values;
+                if(dfield.isSet()) {
+                    retVal = dfield.isFlatFieldComparable() ? JkConvert.toTreeSet(values) : JkConvert.toHashSet(values);
+                } else {
+                    retVal = values;
+                }
 
             } else {
                 retVal = parseSingleValue(value, dfield.getFieldType());
@@ -215,8 +220,8 @@ class DesignService {
     private Object parseSingleValue(String value, Class<?> fclazz) {
         Object o;
 
-        if (StringUtils.isEmpty(value)) {
-            o = fclazz == String.class ? "" : null;
+        if (value.equals(PH_NULL)) {
+            o = null;
         } else if (Arrays.asList(boolean.class, Boolean.class).contains(fclazz)) {
             o = Boolean.valueOf(value);
         } else if (Arrays.asList(int.class, Integer.class).contains(fclazz)) {
@@ -272,7 +277,12 @@ class DesignService {
             }
         }
 
-        return JkStreams.join(Arrays.asList(row), SEP_FIELD);
+        List<String> finalRow = new ArrayList<>();
+        finalRow.add(formatSingleValue(entity.getEntityID(), Long.class));
+        finalRow.add(formatSingleValue(entity.getInsertTstamp(), LocalDateTime.class));
+        finalRow.addAll(Arrays.asList(row));
+
+        return JkStreams.join(finalRow, SEP_FIELD);
     }
     private String formatValue(Object value, DesignField dfield) {
         Class<?> flatFieldType = dfield.getFlatFieldType();
@@ -280,17 +290,16 @@ class DesignService {
             throw new JkRuntimeException("Error unexpected");
         }
 
-        String strValue = "";
-
+        String strValue;
         if(value != null) {
             if (dfield.isCollection()) {
                 List<?> list = dfield.isSet() ? JkConvert.toArrayList((Set<?>) value) : (List<?>) value;
-                if (!list.isEmpty()) {
-                    strValue = JkStreams.join(list, SEP_LIST, e -> formatSingleValue(e, flatFieldType));
-                }
+                strValue = JkStreams.join(list, SEP_LIST, e -> formatSingleValue(e, flatFieldType));
             } else {
                 strValue = formatSingleValue(value, flatFieldType);
             }
+        } else {
+            strValue = PH_NULL;
         }
 
         return strValue;
@@ -299,7 +308,7 @@ class DesignService {
         String toRet;
 
         if (value == null) {
-            toRet = "";
+            toRet = PH_NULL;
         } else if (Arrays.asList(boolean.class, Boolean.class).contains(fclazz)) {
             toRet = ((Boolean) value) ? "true" : "false";
         } else if (Arrays.asList(File.class, Path.class).contains(fclazz)) {
