@@ -37,23 +37,24 @@ public class COption {
 		this.checksAfter = new ArrayList<>();
 	}
 
+	public static COption of(Enum<? extends JkArgsTypes> argType) {
+		return new COption(argType);
+	}
 	public static COption ofDate(Enum<? extends JkArgsTypes> argType, String dateFormat) {
-		return new COption(argType).setOptionClass(LocalDate.class).setDateTimeFormatter(dateFormat);
+		return new COption(argType).setDateTimeFormatter(dateFormat);
 	}
 	public static COption ofTime(Enum<? extends JkArgsTypes> argType, String timeFormat) {
-		return new COption(argType).setOptionClass(LocalTime.class).setDateTimeFormatter(timeFormat);
+		return new COption(argType).setDateTimeFormatter(timeFormat);
 	}
 	public static COption ofDateTime(Enum<? extends JkArgsTypes> argType, String dateTimeFormat) {
-		return new COption(argType).setOptionClass(LocalDateTime.class).setDateTimeFormatter(dateTimeFormat);
+		return new COption(argType).setDateTimeFormatter(dateTimeFormat);
 	}
 
 	public static COption ofPathWindows(Enum<? extends JkArgsTypes> argType) {
-		return new COption(argType).setOptionClass(Path.class)
-				.setTransformBefore(JkConvert::unixToWinPath);
+		return new COption(argType).setTransformBefore(JkConvert::unixToWinPath);
 	}
 	public static COption ofPathsWindows(Enum<? extends JkArgsTypes> argType) {
-		return new COption(argType).setOptionClass(Path[].class)
-				.setTransformBefore(JkConvert::unixToWinPath);
+		return new COption(argType).setTransformBefore(JkConvert::unixToWinPath);
 	}
 
 	public String getArgName() {

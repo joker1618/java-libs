@@ -1,11 +1,20 @@
 package xxx.joker.libs.repository.managers;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.repository.design.JkEntity;
+
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.*;
 
 public class HandlerList implements InvocationHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(HandlerList.class);
 
     private final RepoDataHandler repoHandler;
     private final ArrayList<Object> sourceList;
@@ -26,25 +35,24 @@ public class HandlerList implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) {
-        // todo impl
-        synchronized (sourceList) {
-            if ("add".equals(method.getName())) {
+    public Object invoke(Object proxy, Method method, Object[] args)
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
+        String methodName = method.getName();
 
-            } else if ("addAll".equals(method.getName())) {
+        if (StringUtils.equalsAny(methodName, "add", "set")) {
+            logger.trace("invoked {}", methodName);
+            int argIndex = "set".equals(method.getName()) ? 1 : 0;
+            JkEntity e = (JkEntity) args[argIndex];
+            repoHandler.addEntity(e);
 
-            } else if ("remove".equals(method.getName())) {
-
-            } else if ("removeIf".equals(method.getName())) {
-
-            } else if ("removeAll".equals(method.getName())) {
-
-            } else if ("clear".equals(method.getName())) {
-
-            }
+        } else if ("addAll".equals(method.getName())) {
+            logger.trace("invoked {} ({})", methodName, Arrays.toString(args));
+            Collection coll = (Collection) args[args.length-1];
+            List<JkEntity> elist = JkStreams.map(coll, ce -> (JkEntity)ce);
+            elist.forEach(repoHandler::addEntity);
         }
 
-        return null;
+        return method.invoke(sourceList, args);
     }
 }

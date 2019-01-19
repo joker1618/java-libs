@@ -1,5 +1,8 @@
 package xxx.joker.libs.repository.managers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.design.JkEntity;
@@ -7,185 +10,163 @@ import xxx.joker.libs.repository.design.JkEntity;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 
 class RepoDataHandler {
 
-    private final ReentrantReadWriteLock dbLock;
+    private static final Logger logger = LoggerFactory.getLogger(RepoDataHandler.class);
+
 
     private AtomicLong dbSequence;
     private TreeMap<Class<?>, Set<JkEntity>> dataSets;
-    private Map<Class<?>, TreeMap<Integer, DesignField>> designFields;
-    private Map<Long, List<ForeignKey>> foreignKeys;
+    private Map<Class<?>, List<DesignField>> designEntities;
     private Map<Long, JkEntity> dataByID;
+    private Map<Long, List<ForeignKey>> foreignKeys;
+    private boolean initialized;
 
     public RepoDataHandler() {
-        this.dbLock = new ReentrantReadWriteLock();
+        this.initialized = false;
     }
 
-    public RepoDataHandler(TreeMap<Class<?>, Set<JkEntity>> dataSets,
-                           Map<Class<?>, TreeMap<Integer, DesignField>> designFields,
-                           Map<Long, List<ForeignKey>> foreignKeys) {
+    protected void initHandler(long sequenceValue,
+                               TreeMap<Class<?>, Set<JkEntity>> dataSets,
+                               Map<Class<?>, TreeMap<Integer, DesignField>> allDesignMap) {
 
-        this.dbLock = new ReentrantReadWriteLock();
-        this.dbSequence = new AtomicLong(0L);
-        this.designFields = designFields;
+        if(initialized)     throw new JkRuntimeException("Repo data handler already initialized");
+
+        logger.debug("initialize repo data handler");
+
+        this.dbSequence = new AtomicLong(sequenceValue);
         this.dataSets = dataSets;
-        this.foreignKeys = foreignKeys;
-        this.dataByID = JkStreams.toMapSingle(getAllEntities(), JkEntity::getEntityID);
-    }
 
-    public void updateIndexes() {
-        dataByID = JkStreams.toMapSingle(getAllEntities(), JkEntity::getEntityID);
+        this.designEntities = new TreeMap<>();
+        allDesignMap.forEach((c,tm) -> designEntities.put(c, JkConvert.toArrayList(tm.values())));
+        this.designEntities.forEach((c,l) -> l.removeIf(df -> !df.isFlatJkEntity()));
+
+        this.dataByID = new TreeMap<>();
+        dataSets.values().stream().flatMap(Set::stream).forEach(e -> dataByID.put(e.getEntityID(), e));
+
+        this.foreignKeys = new TreeMap<>();
+        for(JkEntity e : dataByID.values()) {
+            foreignKeys.putIfAbsent(e.getEntityID(), findForeignKeys(e));
+        }
+
+        initialized = true;
     }
 
     public TreeMap<Class<?>, Set<JkEntity>> getDataSets() {
-        try {
-            dbLock.readLock().lock();
-            return dataSets;
-        } finally {
-            dbLock.readLock().unlock();
-        }
+        return dataSets;
     }
 
 
     public <T extends JkEntity> Set<T> getDataSet(Class<?> entityClazz) {
-        try {
-            dbLock.readLock().lock();
-            return (Set<T>) dataSets.get(entityClazz);
-        } finally {
-            dbLock.readLock().unlock();
+        return dataSets.containsKey(entityClazz) ? (Set<T>) dataSets.get(entityClazz) : null;
+    }
+
+    public <T extends JkEntity> boolean setIdAndCheckIfExists(T entity) {
+        if(entity.isRegistered())    return true;
+
+        entity.setEntityID(dbSequence.get());
+        entity.setInsertTstamp(LocalDateTime.now());
+
+        if(dataSets.get(entity.getClass()).contains(entity)) {
+            entity.setEntityID(null);
+            return true;
         }
+
+        dataByID.put(entity.getEntityID(), entity);
+        foreignKeys.put(entity.getEntityID(), new ArrayList<>());
+        dbSequence.incrementAndGet();
+        return false;
+    }
+
+    public <T extends JkEntity> void addDependencies(T entity) {
+        List<JkEntity> children = findChildEntities(entity);
+        for(JkEntity child : children) {
+            dataSets.get(entity.getClass()).add(child);
+        }
+
+        List<ForeignKey> fklist = foreignKeys.get(entity.getEntityID());
+        fklist.clear();
+        fklist.addAll(findForeignKeys(entity));
     }
 
     public <T extends JkEntity> boolean addEntity(T entity) {
-        try {
-            dbLock.writeLock().lock();
-            return addEntityRecursive(entity);
-        } finally {
-            dbLock.writeLock().unlock();
-        }
-    }
-
-    public <T extends JkEntity> boolean removeEntity(T entity) {
-        try {
-            dbLock.writeLock().lock();
-
-            boolean removed = dataSets.get(entity.getClass()).remove(entity);
-            if(removed) {
-                Long entityID = entity.getEntityID();
-
-                // Remove entity from other entities dependencies
-                List<Long> refIDs = JkStreams.filterMap(foreignKeys.entrySet(), en -> en.getValue().contains(entityID), Map.Entry::getKey);
-                for(Long refID : refIDs) {
-                    JkEntity edep = dataByID.get(refID);
-                    List<DesignField> dfields = JkStreams.filter(designFields.get(edep.getClass()).values(), DesignField::isFlatJkEntity);
-                    for(DesignField df : dfields) {
-                        if(df.isCollection()) {
-                            ((Collection<JkEntity>)df.getValue(edep)).removeIf(et -> et.getEntityID() == entityID);
-                        } else {
-                            df.setValue(edep, null);
-                        }
-                    }
-                }
-
-                // Update indexes
-                dataByID.remove(entityID);
-                foreignKeys.remove(entityID);
-                foreignKeys.values().forEach(set -> set.remove(entityID));
-            }
-
-            return removed;
-
-        } finally {
-            dbLock.writeLock().unlock();
-        }
+        return dataSets.get(entity.getClass()).add(entity);
     }
 
 
-    private <T extends JkEntity> boolean addEntityRecursive(T entity) {
-        boolean added = false;
+
+    public <T extends JkEntity> void removeFromDependencies(T entity) {
+        if(!entity.isRegistered())   return;
+
         Long entityID = entity.getEntityID();
 
-        if (entityID == null) {
-            entity.setEntityID(dbSequence.get());
-            entity.setInsertTstamp(LocalDateTime.now());
+        dataByID.remove(entityID);
+        foreignKeys.remove(entityID);
 
-            added = dataSets.get(entity.getClass()).add(entity);
-            if (added) {
-                dbSequence.getAndIncrement();
-                dataByID.put(entityID, entity);
-                foreignKeys.put(entityID, new ArrayList<>());
+        List<Long> refIDs = JkStreams.filterMap(foreignKeys.entrySet(), en -> en.getValue().contains(entityID), Map.Entry::getKey);
+        for(Long refID : refIDs) {
+            JkEntity edep = dataByID.get(refID);
+            List<DesignField> dfields = designEntities.get(edep.getClass());
+            for(DesignField df : dfields) {
+                if(df.isCollection()) {
+                    Collection<JkEntity> coll = (Collection<JkEntity>) df.getValue(edep);
+                    coll.removeIf(et -> et.getEntityID() == entityID);
+                } else {
+                    JkEntity e = (JkEntity) df.getValue(edep);
+                    if(e.getEntityID() == entityID) {
+                        df.setValue(edep, null);
+                    }
+                }
             }
         }
-
-
-        TreeMap<DesignField, List<JkEntity>> echilds = findChildEntities(entity);
-
-        // Add all dependencies, so that the ID will be set for all the new ones
-        echilds.values().forEach(el -> el.forEach(this::addEntityRecursive));
-
-        // Add foreign keys
-        echilds.forEach((k,v) -> v.forEach(ev ->
-                foreignKeys.get(entityID).add(new ForeignKey(entityID, k.getIdx(), ev.getEntityID()))
-        ));
-
-        return added;
     }
-    private <T extends JkEntity> TreeMap<DesignField, List<JkEntity>> findChildEntities(T entity) {
-        TreeMap<DesignField, List<JkEntity>> toRet = new TreeMap<>();
 
-        List<DesignField> dfields = JkStreams.filter(designFields.get(entity.getClass()).values(), DesignField::isFlatJkEntity);
+
+    private <T extends JkEntity> List<JkEntity> findChildEntities(T entity) {
+        List<JkEntity> toRet = new ArrayList<>();
+
+        List<DesignField> dfields = designEntities.get(entity.getClass());
         for(DesignField df : dfields) {
-            toRet.putIfAbsent(df, new ArrayList<>());
             Object value = df.getValue(entity);
-            List<JkEntity> deps = new ArrayList<>();
             if(df.isCollection()) {
-                deps.addAll((Collection<JkEntity>) value);
+                toRet.addAll((Collection<JkEntity>) value);
             } else {
-                deps.add((JkEntity) value);
+                toRet.add((JkEntity) value);
             }
-            toRet.get(df).addAll(deps);
         }
 
         return toRet;
-    }
-
-    private TreeSet<JkEntity> getAllEntities() {
-        List<JkEntity> collect = dataSets.values().stream().flatMap(Set::stream).collect(Collectors.toList());
-        return JkConvert.toTreeSet(collect);
-    }
-
-
-    public void setDbSequence(long dbSequence) {
-        this.dbSequence.set(dbSequence);
-    }
-
-    public void setDataSets(TreeMap<Class<?>, Set<JkEntity>> dataSets) {
-        this.dataSets = dataSets;
-    }
-
-    public Map<Class<?>, TreeMap<Integer, DesignField>> getDesignFields() {
-        return designFields;
-    }
-
-    public void setDesignFields(Map<Class<?>, TreeMap<Integer, DesignField>> designFields) {
-        this.designFields = designFields;
     }
 
     public Map<Long, List<ForeignKey>> getForeignKeys() {
         return foreignKeys;
     }
 
-    public void setForeignKeys(Map<Long, List<ForeignKey>> foreignKeys) {
-        this.foreignKeys = foreignKeys;
+    private <T extends JkEntity> List<ForeignKey> findForeignKeys(T entity) {
+        List<ForeignKey> toRet = new ArrayList<>();
+        Long entityID = entity.getEntityID();
+        List<DesignField> dfields = designEntities.get(entity.getClass());
+
+        for(DesignField df : dfields) {
+            if(df.isCollection()) {
+                Collection<JkEntity> coll = (Collection<JkEntity>) df.getValue(entity);
+                List<ForeignKey> fkList = JkStreams.map(coll, c -> new ForeignKey(entityID, df.getIdx(), c.getEntityID()));
+                toRet.addAll(fkList);
+            } else {
+                Long depID = ((JkEntity) df.getValue(entity)).getEntityID();
+                ForeignKey fk = new ForeignKey(entityID, df.getIdx(), depID);
+                toRet.add(fk);
+            }
+        }
+
+        return toRet;
     }
 
-    public ReentrantReadWriteLock.WriteLock getWriteLock() {
-        return dbLock.writeLock();
-    }
-    public long getSequenceValue() {
+    protected long getDbSequenceValue() {
         return dbSequence.get();
+    }
+    protected void incrementDbSequence() {
+        dbSequence.incrementAndGet();
     }
 }

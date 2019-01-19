@@ -184,17 +184,17 @@ public class JkStreams {
 			if(!uniques.contains(elem))     uniques.add(elem);
 			else                            dups.add(elem);
 		}
-		return sorted(dups);
+		return dups;
 	}
 	public static <T> List<T> getDuplicates(Collection<T> source, Comparator<T> comparator) {
 		List<T> uniques = new ArrayList<>();
 		List<T> dups = new ArrayList<>();
 		for(T elem : source) {
-			boolean found = filter(uniques, u -> comparator.compare(u, elem) == 0).isEmpty();
+			boolean found = !filter(uniques, u -> comparator.compare(u, elem) == 0).isEmpty();
 			if(!found)	uniques.add(elem);
 			else        dups.add(elem);
 		}
-		return sorted(dups);
+		return dups;
 	}
 
 	public static <K,V> List<K> getMapKeys(Map<K,V> map, Predicate<V> valuePred) {

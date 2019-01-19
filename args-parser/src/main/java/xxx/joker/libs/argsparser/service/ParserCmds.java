@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
+import static xxx.joker.libs.core.utils.JkConsole.display;
+
 class ParserCmds {
 
     private Class<? extends JkCommands> cmdsClass;
@@ -152,6 +154,9 @@ class ParserCmds {
         for(int i = 0; i < options.size(); i++) {
             COption co = options.get(i);
             ArgWrapper aw = parserArgs.getArgWrapper(co.getArgName());
+            if(aw == null) {
+                throw new DesignError("Arg name '{}' does not exists in Args class", co.getArgName());
+            }
 
             Class<?> optType = aw.getField().getType();
 

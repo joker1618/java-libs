@@ -34,7 +34,7 @@ public abstract class JkRepoEntity implements JkEntity {
     }
 
     @Override
-    public final void setEntityID(long entityID) {
+    public final void setEntityID(Long entityID) {
         this.entityID = entityID;
     }
 
@@ -51,5 +51,10 @@ public abstract class JkRepoEntity implements JkEntity {
     @Override
     public int compareTo(JkEntity o) {
         return getPrimaryKey().compareTo(o.getPrimaryKey());
+    }
+
+    @Override
+    public boolean isRegistered() {
+        return entityID != null;
     }
 }

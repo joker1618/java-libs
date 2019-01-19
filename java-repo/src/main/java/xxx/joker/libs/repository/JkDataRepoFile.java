@@ -9,10 +9,7 @@ import xxx.joker.libs.core.runtimes.JkRuntime;
 import xxx.joker.libs.repository.managers.RepoManager;
 
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public abstract class JkDataRepoFile implements JkDataRepo {
 
@@ -37,6 +34,9 @@ public abstract class JkDataRepoFile implements JkDataRepo {
         repoManager.commitDataSets();
     }
 
+    protected TreeMap<Class<?>, Set<JkEntity>> getDataSets() {
+        return repoManager.getDataSets();
+    }
 
     private List<Class<?>> findPackageEntities(String pkgToScan) {
         logger.debug("Scanning package {}", pkgToScan);

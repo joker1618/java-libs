@@ -43,16 +43,14 @@ class DesignService {
 
 
     private TreeMap<Class<?>, TreeMap<Integer, DesignField>> designMap;
-    private RepoDataHandler repoHandler;
 
     public DesignService(Collection<Class<?>> classes) {
         this.designMap = parseEntityClasses(classes);
     }
 
-    public RepoDataHandler parseLines(RepoLines repoLines) {
+    public TreeMap<Class<?>, Set<JkEntity>> parseLines(RepoLines repoLines, final RepoDataHandler repoHandler) {
         Map<Long, JkEntity> idMap = new HashMap<>();
         Map<Class<?>, List<JkEntity>> dataMap = new HashMap<>();
-        this.repoHandler = new RepoDataHandler();
 
         // Parse entities lines, no deps
         repoLines.getEntityLines().forEach((c, lines) -> {
@@ -85,21 +83,16 @@ class DesignService {
         }
 
         // Create dataSets using java Proxy
-        TreeMap<Class<?>, Set<JkEntity>> datasets = new TreeMap<>();
+        TreeMap<Class<?>, Set<JkEntity>> dataSets = new TreeMap<>();
         for (Class<?> c : dataMap.keySet()) {
             Set<JkEntity> proxySet = HandlerDataSet.createProxySet(repoHandler, dataMap.get(c));
-            datasets.put(c, proxySet);
+            dataSets.put(c, proxySet);
         }
 
-        repoHandler.setDataSets(datasets);
-        repoHandler.setForeignKeys(idFromFKs);
-        repoHandler.setDesignFields(designMap);
-        repoHandler.updateIndexes();
-
-        return repoHandler;
+        return dataSets;
     }
 
-    public RepoLines formatEntities() {
+    public RepoLines formatEntities(RepoDataHandler repoHandler) {
         RepoLines repoLines = new RepoLines();
 
         // Entities
@@ -119,8 +112,8 @@ class DesignService {
         return repoLines;
     }
 
-    public List<Class<?>> getEntityClasses() {
-        return JkConvert.toArrayList(designMap.keySet());
+    public Map<Class<?>, TreeMap<Integer, DesignField>> getDesignMap() {
+        return designMap;
     }
 
     private TreeMap<Class<?>, TreeMap<Integer, DesignField>> parseEntityClasses(Collection<Class<?>> classes) {

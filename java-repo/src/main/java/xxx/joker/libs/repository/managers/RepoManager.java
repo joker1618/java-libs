@@ -30,8 +30,7 @@ public class RepoManager {
         this.dbFolder = dbFolder;
         this.dbName = dbName;
         this.designService = new DesignService(classes);
-        this.repoHandler = readRepoData(designService.getEntityClasses());
-        this.repoHandler.setDbSequence(loadSequenceValue());
+        this.repoHandler = readRepoData(classes);
     }
 
     public TreeMap<Class<?>, Set<JkEntity>> getDataSets() {
@@ -42,19 +41,14 @@ public class RepoManager {
     }
 
     public void commitDataSets() {
-        RepoLines repoLines = designService.formatEntities();
-        try {
-            repoHandler.getWriteLock().lock();
-            repoLines.getEntityLines().forEach((c, l) -> JkFiles.writeFile(createRepoPath(c), l, true));
-            JkFiles.writeFile(createDepsPath(), repoLines.getFkLines(), true);
-            JkFiles.writeFile(createSequencePath(), repoHandler.getSequenceValue() + "", true);
-        } finally {
-            repoHandler.getWriteLock().unlock();
-        }
+        RepoLines repoLines = designService.formatEntities(repoHandler);
+        repoLines.getEntityLines().forEach((c, l) -> JkFiles.writeFile(createRepoPath(c), l, true));
+        JkFiles.writeFile(createDepsPath(), repoLines.getFkLines(), true);
+        JkFiles.writeFile(createSequencePath(), repoHandler.getDbSequenceValue() + "", true);
     }
 
 
-    private RepoDataHandler readRepoData(List<Class<?>> classes) {
+    private RepoDataHandler readRepoData(Collection<Class<?>> classes) {
         // Read entity data
         RepoLines repoLines = new RepoLines();
         for (Class<?> eclazz : classes) {
@@ -71,7 +65,12 @@ public class RepoManager {
             repoLines.getFkLines().addAll(JkFiles.readLinesNotBlank(depsPath));
         }
 
-        return designService.parseLines(repoLines);
+        RepoDataHandler repoHandler = new RepoDataHandler();
+        TreeMap<Class<?>, Set<JkEntity>> dataSets = designService.parseLines(repoLines, repoHandler);
+        long seqVal = loadSequenceValue();
+        repoHandler.initHandler(seqVal, dataSets, designService.getDesignMap());
+
+        return repoHandler;
     }
     private long loadSequenceValue() {
         Path pseq = createSequencePath();
