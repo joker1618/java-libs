@@ -197,7 +197,10 @@ class DesignService {
     private Object parseValue(String value, DesignField dfield) {
         Object retVal = null;
 
-        if (!dfield.isFlatJkEntity() && value != null) {
+        if(PH_NULL.equals(value)) {
+            retVal = null;
+            
+        } else if (!dfield.isFlatJkEntity() && value != null) {
             // Parse repoLine to correct Object
             if (dfield.isCollection()) {
                 Class<?> elemClazz = dfield.getCollectionType();

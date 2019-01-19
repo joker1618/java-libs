@@ -33,4 +33,12 @@ public class CustomEntity implements JkEntityFieldCustom<CustomEntity> {
         }
         return res;
     }
+
+    public Pair<String, String> getPair() {
+        return pair;
+    }
+
+    public void setPair(Pair<String, String> pair) {
+        this.pair = pair;
+    }
 }

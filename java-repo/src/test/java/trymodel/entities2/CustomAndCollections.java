@@ -24,6 +24,7 @@ public class CustomAndCollections extends JkRepoEntity {
     @JkEntityField(idx = 4, collectionType = CustomEntity.class)
     private List<CustomEntity> ceList;
 
+    public CustomAndCollections(){}
     public CustomAndCollections(String keyword, CustomEntity customEntity, List<Integer> listInt, Set<Path> setPath, List<CustomEntity> ceList) {
         this.keyword = keyword;
         this.customEntity = customEntity;

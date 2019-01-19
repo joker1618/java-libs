@@ -1,7 +1,11 @@
 package trymodel;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import trymodel.entities1.SimpleTypes;
+import trymodel.entities2.CustomAndCollections;
+import trymodel.entities2.CustomEntity;
+import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.JkDataRepo;
 import xxx.joker.libs.repository.JkDataRepoFile;
 
@@ -11,59 +15,48 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.TreeMap;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
-public class Test1 extends JkDataRepoFile implements JkDataRepo {
+public class Test2 extends JkDataRepoFile implements JkDataRepo {
 
-    public Test1() {
-        super(TestModel.DB_FOLDER, "test1", "trymodel.entities1");
+    public Test2() {
+        super(TestModel.DB_FOLDER, "test2", "trymodel.entities2");
     }
 
     @Test
-    public void testRepo1_A() {
-        Test1 test1 = new Test1();
+    public void testRepo2_A() {
+        Test2 test2 = new Test2();
 
-        Set<SimpleTypes> dataSet = test1.getDataSet(SimpleTypes.class);
+        CustomEntity ce1 = new CustomEntity();
+        ce1.setPair(Pair.of("chiave", "val"));
+        CustomEntity ce2 = new CustomEntity();
+        ce2.setPair(Pair.of("we", "we"));
 
-        SimpleTypes st = new SimpleTypes("simtyp");
-        st.setNums(true, false, 1, 11, 2L, 22L, 3f, 33f, 4d, 44d);
-        st.setOthers(LocalTime.NOON, LocalDate.now(), LocalDateTime.now(), new File("pfile.txt"), Paths.get("ppath.csv"));
+        List<Integer> intlist = Arrays.asList(1, 3, 5);
+        Set<Path> pathset = JkConvert.toHashSet(Arrays.asList(Paths.get("path1"), Paths.get("path2")));
+        List<CustomEntity> celist = Arrays.asList(ce1, ce2);
 
-        dataSet.add(st);
-        dataSet.add(st);
-        display("\n1");
+        CustomAndCollections cac1 = new CustomAndCollections("fede", ce1, intlist, pathset, celist);
+        CustomAndCollections cac2 = new CustomAndCollections();
+        cac2.setKeyword("pippo");
+
+        Set<CustomAndCollections> dataSet = test2.getDataSet(CustomAndCollections.class);
+
+        dataSet.addAll(Arrays.asList(cac1, cac2));
         dataSet.forEach(ds -> display("{}", ds));
 
-        SimpleTypes st2 = new SimpleTypes("secondo");
-        st2.setNums(false, false, 1, 11, 2L, 22L, 3f, 33f, 4d, 44d);
-        st2.setOthers(LocalTime.NOON, LocalDate.now(), LocalDateTime.now(), new File("pfile.txt"), Paths.get("ppath.csv"));
-
-        dataSet.add(st2);
-        display("\n2");
-        dataSet.forEach(ds -> display("{}", ds));
-
-        SimpleTypes st3 = new SimpleTypes("terzo");
-        st3.setNums(false, false, 1, 11, 2L, 22L, 3f, 33f, 4d, 44d);
-        st3.setOthers(LocalTime.NOON, LocalDate.now(), LocalDateTime.now(), new File("pfile.txt"), Paths.get("ppath.csv"));
-
-        SimpleTypes st4 = new SimpleTypes("nullo");
-
-        dataSet.add(st3);
-        dataSet.add(st4);
-        display("\n3");
-        dataSet.forEach(ds -> display("{}", ds));
-
-        test1.commit();
+        test2.commit();
     }
 
     @Test
     public void testRepo1_B() {
-        Test1 test1 = new Test1();
-        Set<SimpleTypes> dataSet = test1.getDataSet(SimpleTypes.class);
+        Test2 test2 = new Test2();
+        Set<CustomAndCollections> dataSet = test2.getDataSet(CustomAndCollections.class);
         dataSet.forEach(ds -> display("{}", ds));
     }
 
