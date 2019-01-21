@@ -28,7 +28,6 @@ public abstract class JkRepoEntity implements JkEntity {
     @Override
     public String toString() {
         return strf("{} [ID={}, PK={}]", getClass().getSimpleName(), entityID, getPrimaryKey());
-//        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }
 
     @Override
