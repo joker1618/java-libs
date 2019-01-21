@@ -5,6 +5,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.time.LocalDateTime;
 
+import static xxx.joker.libs.core.utils.JkStrings.strf;
+
 public abstract class JkRepoEntity implements JkEntity {
 
     protected Long entityID;
@@ -25,7 +27,8 @@ public abstract class JkRepoEntity implements JkEntity {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+        return strf("{} [ID={}, PK={}]", getClass().getSimpleName(), entityID, getPrimaryKey());
+//        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }
 
     @Override

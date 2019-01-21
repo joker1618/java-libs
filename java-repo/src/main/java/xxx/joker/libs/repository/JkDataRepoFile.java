@@ -30,8 +30,8 @@ public abstract class JkDataRepoFile implements JkDataRepo {
 
     @Override
     public void commit() {
-        logger.info("Commit data sets");
         repoManager.commitDataSets();
+        logger.info("Repo committed");
     }
 
     protected Map<Class<?>, Set<JkEntity>> getDataSets() {

@@ -1,0 +1,53 @@
+package trymodel.entities3;
+
+import xxx.joker.libs.repository.design.JkEntityField;
+import xxx.joker.libs.repository.design.JkRepoEntity;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Set;
+
+public class Book extends JkRepoEntity {
+
+    @JkEntityField(idx = 0)
+    private String title;
+    @JkEntityField(idx = 1, collectionType = Book.class)
+    private List<Book> others;
+    @JkEntityField(idx = 2, collectionType = Categ.class)
+    private Set<Categ> categs;
+
+
+    @Override
+    public String getPrimaryKey() {
+        return title;
+    }
+
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public List<Book> getOthers() {
+        return others;
+    }
+
+    public void setOthers(List<Book> others) {
+        this.others = others;
+    }
+
+    public Set<Categ> getCategs() {
+        return categs;
+    }
+
+    public void setCategs(Set<Categ> categs) {
+        this.categs = categs;
+    }
+}

@@ -66,4 +66,9 @@ public class FileAttach implements JkEntityFieldCustom<FileAttach> {
     public void setFilePath(Path filePath) {
         this.filePath = filePath;
     }
+
+    @Override
+    public String toString() {
+        return formatField();
+    }
 }

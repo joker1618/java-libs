@@ -1,9 +1,8 @@
 package xxx.joker.libs.repository.managers;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.utils.JkConvert;
@@ -49,7 +48,7 @@ class DesignService {
         this.designMap = parseEntityClasses(classes);
     }
 
-    public Map<Class<?>, Set<JkEntity>> parseLines(RepoLines repoLines, final RepoDataHandler repoHandler) {
+    public void parseLines(RepoLines repoLines, RepoDataHandler repoHandler) {
         Map<Long, JkEntity> idMap = new HashMap<>();
         Map<Class<?>, List<JkEntity>> dataMap = new HashMap<>();
 
@@ -68,47 +67,27 @@ class DesignService {
         // Parse FK and set entities deps
         List<ForeignKey> fkList = JkStreams.map(repoLines.getFkLines(), this::parseForeignKey);
         Map<Long, List<ForeignKey>> idFromFKs = JkStreams.toMap(fkList, ForeignKey::getFromID);
-        for (long idFrom : idFromFKs.keySet()) {
-            JkEntity efrom = idMap.get(idFrom);
-            Map<Integer, List<ForeignKey>> idxFields = JkStreams.toMap(idFromFKs.get(idFrom), ForeignKey::getFromFieldIdx);
-            for (int idxFrom : idxFields.keySet()) {
-                List<JkEntity> deps = JkStreams.map(idxFields.get(idxFrom), fk -> idMap.get(fk.getDepID()));
-                DesignField dfield = designMap.get(efrom.getClass()).get(idxFrom);
-                if (dfield.isCollection()) {
-                    Object o = dfield.isSet() ? HandlerSet.createProxySet(repoHandler, deps) : HandlerList.createProxyList(repoHandler, deps);
-                    dfield.setValue(efrom, o);
-                } else if (!deps.isEmpty()) {
-                    dfield.setValue(efrom, deps.get(0));
-                }
-            }
-        }
 
-        // Create dataSets using java Proxy
-        Map<Class<?>, Set<JkEntity>> dataSets = new HashMap<>();
-        for (Class<?> c : dataMap.keySet()) {
-            Set<JkEntity> proxySet = HandlerDataSet.createProxySet(repoHandler, dataMap.get(c));
-            dataSets.put(c, proxySet);
-        }
-
-        return dataSets;
+        repoHandler.initHandler(dataMap, idMap, idFromFKs, designMap);
     }
 
     public RepoLines formatEntities(RepoDataHandler repoHandler) {
         RepoLines repoLines = new RepoLines();
 
-        // Entities
-        for(Class<?> clazz : repoHandler.getDataSets().keySet()) {
-            List<String> elines = JkStreams.map(repoHandler.getDataSet(clazz), this::formatEntityInstance);
-            repoLines.getEntityLines().put(clazz, elines);
+        TreeMap<Class<?>, List<String>> repoMapLines = repoLines.getEntityLines();
+        List<String> fkLines = repoLines.getFkLines();
+
+        Map<Long, Pair<JkEntity, List<ForeignKey>>> dataMap = repoHandler.getDataAndForeignKeys();
+        for(long id : dataMap.keySet()) {
+            JkEntity e = dataMap.get(id).getKey();
+            String line = formatEntityInstance(e);
+            repoMapLines.putIfAbsent(e.getClass(), new ArrayList<>());
+            repoMapLines.get(e.getClass()).add(line);
+            List<String> fks = JkStreams.map(dataMap.get(id).getValue(), this::formatForeignKey);
+            fkLines.addAll(fks);
         }
 
-        // Foreign keys
-        List<String> fkLines = repoHandler.getForeignKeys().values().stream()
-                .flatMap(List::stream)
-                .map(this::formatForeignKey)
-                .collect(Collectors.toList());
-
-        repoLines.getFkLines().addAll(fkLines);
+        designMap.keySet().forEach(c -> repoMapLines.putIfAbsent(c, new ArrayList<>()));
 
         return repoLines;
     }
@@ -173,7 +152,7 @@ class DesignService {
         return toRet;
     }
 
-    // Skip field of type JkEntity, and list/set of JkEntity
+    // Skip field of flat type = JkEntity
     private JkEntity parseEntityLine(Class<?> elemClazz, String repoLine) {
         JkEntity instance = (JkEntity) JkReflection.createInstanceSafe(elemClazz);
         List<String> row = JkStrings.splitList(repoLine, SEP_FIELD);
@@ -184,10 +163,11 @@ class DesignService {
         instance.setInsertTstamp((LocalDateTime) parseSingleValue(insTstamp, LocalDateTime.class));
 
         for (Map.Entry<Integer, DesignField> entry : designMap.get(elemClazz).entrySet()) {
-            if (!entry.getValue().isFlatJkEntity()) {
+            DesignField dfield = entry.getValue();
+            if (!dfield.isFlatJkEntity()) {
                 if (entry.getKey() < row.size()) {
-                    Object o = parseValue(row.get(entry.getKey()), entry.getValue());
-                    entry.getValue().setValue(instance, o);
+                    Object o = parseValue(row.get(entry.getKey()), dfield);
+                    dfield.setValue(instance, o);
                 }
             }
         }
@@ -195,27 +175,21 @@ class DesignService {
         return instance;
     }
     private Object parseValue(String value, DesignField dfield) {
-        Object retVal = null;
+        Object retVal;
 
-        if(PH_NULL.equals(value)) {
-            retVal = null;
-            
-        } else if (!dfield.isFlatJkEntity() && value != null) {
-            // Parse repoLine to correct Object
-            if (dfield.isCollection()) {
-                Class<?> elemClazz = dfield.getCollectionType();
-                List<String> strElems = JkStrings.splitList(value, SEP_LIST);
-                List<Object> values = new ArrayList<>();
-                values.addAll(JkStreams.map(strElems, elem -> parseSingleValue(elem, elemClazz)));
-                if(dfield.isSet()) {
-                    retVal = dfield.isFlatFieldComparable() ? JkConvert.toTreeSet(values) : JkConvert.toHashSet(values);
-                } else {
-                    retVal = values;
-                }
-
+        if (dfield.isCollection()) {
+            List<Object> values = new ArrayList<>();
+            List<String> strElems = JkStrings.splitList(value, SEP_LIST);
+            Class<?> elemClazz = dfield.getCollectionType();
+            values.addAll(JkStreams.map(strElems, elem -> parseSingleValue(elem, elemClazz)));
+            if(dfield.isSet()) {
+                retVal = dfield.isFlatFieldComparable() ? JkConvert.toTreeSet(values) : JkConvert.toHashSet(values);
             } else {
-                retVal = parseSingleValue(value, dfield.getFieldType());
+                retVal = values;
             }
+
+        } else {
+            retVal = parseSingleValue(value, dfield.getFieldType());
         }
 
         return retVal;
@@ -281,33 +255,26 @@ class DesignService {
         }
 
         List<String> finalRow = new ArrayList<>();
-        finalRow.add(formatSingleValue(entity.getEntityID(), Long.class));
-        finalRow.add(formatSingleValue(entity.getInsertTstamp(), LocalDateTime.class));
+        finalRow.add(formatSimpleValue(entity.getEntityID(), Long.class));
+        finalRow.add(formatSimpleValue(entity.getInsertTstamp(), LocalDateTime.class));
         finalRow.addAll(Arrays.asList(row));
 
         return JkStreams.join(finalRow, SEP_FIELD);
     }
     private String formatValue(Object value, DesignField dfield) {
         Class<?> flatFieldType = dfield.getFlatFieldType();
-        if(JkReflection.isInstanceOf(flatFieldType, JkEntity.class)) {
-            throw new JkRuntimeException("Error unexpected");
-        }
 
         String strValue;
-        if(value != null) {
-            if (dfield.isCollection()) {
-                List<?> list = dfield.isSet() ? JkConvert.toArrayList((Set<?>) value) : (List<?>) value;
-                strValue = JkStreams.join(list, SEP_LIST, e -> formatSingleValue(e, flatFieldType));
-            } else {
-                strValue = formatSingleValue(value, flatFieldType);
-            }
+        if (dfield.isCollection()) {
+            List<?> list = dfield.isSet() ? JkConvert.toArrayList((Set<?>) value) : (List<?>) value;
+            strValue = JkStreams.join(list, SEP_LIST, e -> formatSimpleValue(e, flatFieldType));
         } else {
-            strValue = PH_NULL;
+            strValue = formatSimpleValue(value, flatFieldType);
         }
 
         return strValue;
     }
-    private String formatSingleValue(Object value, Class<?> fclazz) {
+    private String formatSimpleValue(Object value, Class<?> fclazz) {
         String toRet;
 
         if (value == null) {

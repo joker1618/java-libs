@@ -44,7 +44,7 @@ public class RepoManager {
         RepoLines repoLines = designService.formatEntities(repoHandler);
         repoLines.getEntityLines().forEach((c, l) -> JkFiles.writeFile(createRepoPath(c), l, true));
         JkFiles.writeFile(createDepsPath(), repoLines.getFkLines(), true);
-        JkFiles.writeFile(createSequencePath(), repoHandler.getDbSequenceValue() + "", true);
+        JkFiles.writeFile(createSequencePath(), repoHandler.getRepoSequenceValue() + "", true);
     }
 
 
@@ -65,10 +65,8 @@ public class RepoManager {
             repoLines.getFkLines().addAll(JkFiles.readLinesNotBlank(depsPath));
         }
 
-        RepoDataHandler repoHandler = new RepoDataHandler();
-        Map<Class<?>, Set<JkEntity>> dataSets = designService.parseLines(repoLines, repoHandler);
-        long seqVal = loadSequenceValue();
-        repoHandler.initHandler(seqVal, dataSets, designService.getDesignMap());
+        RepoDataHandler repoHandler = new RepoDataHandler(loadSequenceValue());
+        designService.parseLines(repoLines, repoHandler);
 
         return repoHandler;
     }

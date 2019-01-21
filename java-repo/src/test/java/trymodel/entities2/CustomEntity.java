@@ -41,4 +41,9 @@ public class CustomEntity implements JkEntityFieldCustom<CustomEntity> {
     public void setPair(Pair<String, String> pair) {
         this.pair = pair;
     }
+
+    @Override
+    public String toString() {
+        return formatField();
+    }
 }
