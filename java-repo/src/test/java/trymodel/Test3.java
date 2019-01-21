@@ -41,8 +41,8 @@ public class Test3 extends JkDataRepoFile implements JkDataRepo {
         b2.setTitle("zoo");
         Book b3 = new Book();
         b3.setTitle("full book");
-//        Book b4 = new Book();
-//        b4.setTitle("insomnia");
+        Book b4 = new Book();
+        b4.setTitle("insomnia");
 
         Categ cat1 = new Categ("cat1");
         Categ cat2 = new Categ("cat2");
@@ -53,12 +53,14 @@ public class Test3 extends JkDataRepoFile implements JkDataRepo {
 
         b2.setCategs(JkConvert.toHashSet(Arrays.asList(cat1, cat2)));
         b2.setOthers(Collections.emptyList());
+        b2.setBook(b4);
         bookSet.add(b2);
 
         b1.getCategs().add(cat3);
         b1.getCategs().add(cat1);
         b1.getOthers().add(b2);
         b1.getOthers().add(b3);
+        b1.setBook(b4);
 
         printRepo(categSet, bookSet);
 
@@ -93,7 +95,8 @@ public class Test3 extends JkDataRepoFile implements JkDataRepo {
         Set<Categ> categSet = test3.getDataSet(Categ.class);
         Set<Book> bookSet = test3.getDataSet(Book.class);
         categSet.clear();
-        printRepo(categSet, bookSet, "Cleared categories");
+        bookSet.removeIf(b -> b.getTitle().startsWith("insomnia"));
+        printRepo(categSet, bookSet);
         test3.commit();
     }
 

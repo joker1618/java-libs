@@ -19,6 +19,8 @@ public class Book extends JkRepoEntity {
     private List<Book> others;
     @JkEntityField(idx = 2, collectionType = Categ.class)
     private Set<Categ> categs;
+    @JkEntityField(idx = 3)
+    private Book book;
 
 
     @Override
@@ -49,5 +51,13 @@ public class Book extends JkRepoEntity {
 
     public void setCategs(Set<Categ> categs) {
         this.categs = categs;
+    }
+
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
     }
 }

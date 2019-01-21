@@ -221,7 +221,7 @@ class RepoHandler {
                 }
                 setEntityFieldColl(e, dfield, eDeps);
 
-            } else if(!fkField.isEmpty()) {
+            } else if(fkField != null) {
                 JkEntity edep = dataByID.get(fkField.get(0).getDepID());
                 dfield.setValue(e, edep);
             }
@@ -271,7 +271,7 @@ class RepoHandler {
             if(dfield.isCollection()) {
                 Collection<JkEntity> coll = (Collection<JkEntity>) value;
                 fkList.addAll(JkStreams.map(coll, v -> new ForeignKey(e.getEntityID(), dfield.getIdx(), v.getEntityID())));
-            } else {
+            } else if(value != null) {
                 JkEntity eVal = (JkEntity) value;
                 fkList.add(new ForeignKey(e.getEntityID(), dfield.getIdx(), eVal.getEntityID()));
             }
@@ -286,7 +286,7 @@ class RepoHandler {
             if(dfield.isCollection()) {
                 Collection<JkEntity> coll = (Collection<JkEntity>) value;
                 toRet.addAll(coll);
-            } else {
+            } else if(value != null) {
                 JkEntity eVal = (JkEntity) value;
                 toRet.add(eVal);
             }
