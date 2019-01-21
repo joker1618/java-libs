@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.design.JkEntity;
+import xxx.joker.libs.repository.exceptions.RepoDesignError;
 
 import java.lang.reflect.*;
 import java.time.LocalDateTime;
@@ -18,9 +19,9 @@ import java.util.function.Predicate;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
-class RepoDataHandler {
+class RepoHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(RepoDataHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(RepoHandler.class);
 
     private final ReentrantReadWriteLock repoLock;
     private final AtomicLong repoSequence;
@@ -31,7 +32,7 @@ class RepoDataHandler {
     private Map<Long, List<ForeignKey>> foreignKeys;
     private Map<Class<?>, TreeMap<Integer, DesignField>> designMap;
 
-    protected RepoDataHandler(long repoSequenceValue) {
+    protected RepoHandler(long repoSequenceValue) {
         this.repoLock = new ReentrantReadWriteLock(true);
         this.repoSequence = new AtomicLong(repoSequenceValue);
     }
@@ -44,7 +45,7 @@ class RepoDataHandler {
         try {
             repoLock.writeLock().lock();
 
-//            if (dataMap != null) throw new RepoDesignError("Repo data handler already initialized");
+            if (dataMap != null) throw new RepoDesignError("Repo data handler already initialized");
 
             logger.debug("initialize repo data handler");
 

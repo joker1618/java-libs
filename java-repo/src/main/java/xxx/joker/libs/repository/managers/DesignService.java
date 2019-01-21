@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
@@ -48,7 +47,7 @@ class DesignService {
         this.designMap = parseEntityClasses(classes);
     }
 
-    public void parseLines(RepoLines repoLines, RepoDataHandler repoHandler) {
+    public void parseLines(RepoLines repoLines, RepoHandler repoHandler) {
         Map<Long, JkEntity> idMap = new HashMap<>();
         Map<Class<?>, List<JkEntity>> dataMap = new HashMap<>();
 
@@ -71,7 +70,7 @@ class DesignService {
         repoHandler.initHandler(dataMap, idMap, idFromFKs, designMap);
     }
 
-    public RepoLines formatEntities(RepoDataHandler repoHandler) {
+    public RepoLines formatEntities(RepoHandler repoHandler) {
         RepoLines repoLines = new RepoLines();
 
         TreeMap<Class<?>, List<String>> repoMapLines = repoLines.getEntityLines();

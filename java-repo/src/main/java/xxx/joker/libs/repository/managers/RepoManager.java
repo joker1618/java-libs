@@ -22,7 +22,7 @@ public class RepoManager {
 
     private final Path dbFolder;
     private final String dbName;
-    private final RepoDataHandler repoHandler;
+    private final RepoHandler repoHandler;
     private final DesignService designService;
 
 
@@ -48,7 +48,7 @@ public class RepoManager {
     }
 
 
-    private RepoDataHandler readRepoData(Collection<Class<?>> classes) {
+    private RepoHandler readRepoData(Collection<Class<?>> classes) {
         // Read entity data
         RepoLines repoLines = new RepoLines();
         for (Class<?> eclazz : classes) {
@@ -65,7 +65,7 @@ public class RepoManager {
             repoLines.getFkLines().addAll(JkFiles.readLinesNotBlank(depsPath));
         }
 
-        RepoDataHandler repoHandler = new RepoDataHandler(loadSequenceValue());
+        RepoHandler repoHandler = new RepoHandler(loadSequenceValue());
         designService.parseLines(repoLines, repoHandler);
 
         return repoHandler;
