@@ -1,20 +1,22 @@
 package xxx.joker.libs.core.tests;
 
-/**
- * Created by f.barbano on 26/05/2018.
- */
 import xxx.joker.libs.core.ToAnalyze;
 
 /**
- * Classes with specific test:
+ * Classes tested:
+ * - boolean, Boolean
+ * - int, long, double, W...
+ * - File
  * - Path
  * - LocalDate
  * - LocalTime
  * - LocalDateTime
+ * - []
+ * - all others classes will be tested using equals()
  */
-
 @ToAnalyze
 @Deprecated
+
 public class JkEqualsBuilder {
 
 }

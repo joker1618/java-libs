@@ -2,8 +2,9 @@ package xxx.joker.libs.repository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.repository.design.JkEntity;
-import xxx.joker.libs.repository.entities.JkRepoProperty;
+import xxx.joker.libs.repository.entities.JkRepoProp;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.runtimes.JkRuntime;
 import xxx.joker.libs.repository.managers.RepoManager;
@@ -16,11 +17,13 @@ public abstract class JkDataRepoFile implements JkDataRepo {
     private static final Logger logger = LoggerFactory.getLogger(JkDataRepoFile.class);
 
     private RepoManager repoManager;
+    private Map<String, JkRepoProp> properties;
 
     protected JkDataRepoFile(Path dbFolder, String dbName, String pkgToScan) {
         logger.info("Creating repository: dbName={}, dbFolder={}, pkgToScan={}", dbName, dbFolder, pkgToScan);
         List<Class<?>> eclasses = findPackageEntities(pkgToScan);
         this.repoManager = new RepoManager(dbFolder, dbName, eclasses);
+        this.properties = JkStreams.toMapSingle(getDataSet(JkRepoProp.class), JkRepoProp::getKey);
     }
 
     @Override
@@ -34,6 +37,27 @@ public abstract class JkDataRepoFile implements JkDataRepo {
         logger.info("Repo committed");
     }
 
+    @Override
+    public String getProperty(String propKey) {
+        return getProperty(propKey, null);
+    }
+
+    @Override
+    public String getProperty(String propKey, String _default) {
+        String val = properties.get(propKey).getValue();
+        return val == null ? _default : val;
+    }
+
+    @Override
+    public void setProperty(String propKey, String propValue) {
+        if(!properties.containsKey(propKey)) {
+            JkRepoProp prop = new JkRepoProp(propKey, propValue);
+            properties.put(propKey, prop);
+            getDataSet(JkRepoProp.class).add(prop);
+        }
+        properties.get(propKey).setValue(propValue);
+    }
+
     protected Map<Class<?>, Set<JkEntity>> getDataSets() {
         return repoManager.getDataSets();
     }
@@ -42,7 +66,7 @@ public abstract class JkDataRepoFile implements JkDataRepo {
         logger.debug("Scanning package {}", pkgToScan);
         List<Class<?>> classes = JkRuntime.findClasses(pkgToScan);
         classes.removeIf(c -> !JkReflection.isInstanceOf(c, JkEntity.class));
-        classes.add(JkRepoProperty.class);
+        classes.add(JkRepoProp.class);
         if(logger.isDebugEnabled()) {
             classes.forEach(c -> logger.debug("Found entity: {}", c.getSimpleName()));
         }

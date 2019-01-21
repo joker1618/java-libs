@@ -3,16 +3,16 @@ package xxx.joker.libs.repository.entities;
 import xxx.joker.libs.repository.design.JkEntityField;
 import xxx.joker.libs.repository.design.JkRepoEntity;
 
-public class JkRepoProperty extends JkRepoEntity {
+public class JkRepoProp  extends JkRepoEntity {
 
     @JkEntityField(idx = 0)
     private String key;
     @JkEntityField(idx = 1)
     private String value;
 
-    public JkRepoProperty() {
+    public JkRepoProp() {
     }
-    public JkRepoProperty(String key, String value) {
+    public JkRepoProp(String key, String value) {
         this.key = key;
         this.value = value;
     }

@@ -73,25 +73,5 @@ public class JkOutput {
 		nf.setMaximumFractionDigits(numFractionDigits);
 		return nf;
 	}
-
-	// TODO review
-//	public static NumberFormat getNumberFmtIT(int numFractionDigits) {
-//		return getNumberFmtIT(numFractionDigits, numFractionDigits);
-//	}
-//	public static NumberFormat getNumberFmtIT(int minFractionDigits, int maxFractionDigits) {
-//		return getNumberFormat(Locale.ITALIAN, minFractionDigits, maxFractionDigits);
-//	}
-//	public static NumberFormat getNumberFmtEN(int numFractionDigits) {
-//		return getNumberFmtEN(numFractionDigits, numFractionDigits);
-//	}
-//	public static NumberFormat getNumberFmtEN(int minFractionDigits, int maxFractionDigits) {
-//		return getNumberFormat(Locale.ENGLISH, minFractionDigits, maxFractionDigits);
-//	}
-//	private static NumberFormat getNumberFormat(Locale locale, int minFractionDigits, int maxFractionDigits) {
-//		NumberFormat nf = NumberFormat.getNumberInstance(locale);
-//		nf.setMinimumFractionDigits(minFractionDigits);
-//		nf.setMaximumFractionDigits(maxFractionDigits);
-//		return nf;
-//	}
 	
 }
