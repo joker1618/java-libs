@@ -12,8 +12,15 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class JkException extends Exception implements JkThrowable {
 
+	private boolean simpleClassName;
+
 	public JkException(String message, Object... params) {
 		super(strf(message, params));
+	}
+
+	public JkException(boolean simpleClassName, String message, Object... params) {
+		super(strf(message, params));
+		this.simpleClassName = simpleClassName;
 	}
 
 	public JkException(Throwable cause, String message, Object... params) {
@@ -42,7 +49,7 @@ public class JkException extends Exception implements JkThrowable {
 
 	@Override
 	public String toString() {
-		return JkThrowableUtil.toString(this);
+		return JkThrowableUtil.toString(this, simpleClassName);
 	}
 
 

@@ -117,8 +117,8 @@ public class COption {
 	public List<Function<String[], String>> getChecksBefore() {
 		return checksBefore;
 	}
-	public COption addChecksBefore(Function<String, String>... checksBefore) {
-		for(Function<String, String> func : checksBefore) {
+	public COption addChecksBefore(UnaryOperator<String>... checksBefore) {
+		for(UnaryOperator<String> func : checksBefore) {
 			Function<String[], String> funcAll = arr -> {
 				for(int i = 0; i < arr.length; i++) {
 					String mex = func.apply(arr[i]);

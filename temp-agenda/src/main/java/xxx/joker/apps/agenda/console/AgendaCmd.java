@@ -5,12 +5,19 @@ import xxx.joker.libs.argsparser.design.classTypes.JkCommands;
 import xxx.joker.libs.argsparser.design.descriptors.COption;
 import xxx.joker.libs.argsparser.design.descriptors.CParam;
 import xxx.joker.libs.argsparser.design.functions.ValueCheck;
+import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.utils.JkConvert;
+import xxx.joker.libs.core.utils.JkStrings;
 
 import static xxx.joker.apps.agenda.console.AgendaArgType.*;
+import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 public enum AgendaCmd implements JkCommands {
 
@@ -23,7 +30,7 @@ public enum AgendaCmd implements JkCommands {
             new CParam(false, COption.ofTime(TIME, "HHmm")),
             new CParam(false, COption.of(TAGS)),
             new CParam(false, COption.of(NOTES)),
-            new CParam(false, COption.of(ATTACHES))
+            new CParam(false, COption.of(ATTACHES).addChecksBefore(checkAttachments()))
     ),
 
 
@@ -53,5 +60,15 @@ public enum AgendaCmd implements JkCommands {
     @Override
     public List<CParam> params() {
         return params;
+    }
+
+    private static UnaryOperator<String> checkAttachments() {
+        return obj -> {
+            Path path = Paths.get(JkStrings.splitArr(obj, "?")[0]);
+            if(!Files.exists(path)) {
+                return strf("Attach file '{}' does not exists", path);
+            }
+            return null;
+        };
     }
 }

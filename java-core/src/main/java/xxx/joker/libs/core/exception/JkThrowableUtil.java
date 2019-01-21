@@ -4,23 +4,23 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 abstract class JkThrowableUtil {
 
-    public static String toString(Throwable t) {
+    public static String toString(Throwable t, boolean simpleClassName) {
         StringBuilder sb = new StringBuilder();
-        sb.append(toStringMainException(t, ""));
+        sb.append(toStringMainException(t, "", simpleClassName));
         Throwable actualThrowable = t.getCause();
         while(actualThrowable != null) {
-            sb.append(toStringMainException(actualThrowable, "Caused by: "));
+            sb.append(toStringMainException(actualThrowable, "Caused by: ", simpleClassName));
             actualThrowable = actualThrowable.getCause();
         }
 
         return sb.toString();
     }
 
-    private static String toStringMainException(Throwable t, String mexPrefix) {
+    private static String toStringMainException(Throwable t, String mexPrefix, boolean simpleClassName) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(mexPrefix);
-        sb.append(strf("{}: {}", t.getClass().getName(), t.getMessage()));
+        sb.append(strf("{}: {}", simpleClassName ? t.getClass().getSimpleName() : t.getClass().getName(), t.getMessage()));
         sb.append("\n");
 
         for(StackTraceElement elem : t.getStackTrace()) {
