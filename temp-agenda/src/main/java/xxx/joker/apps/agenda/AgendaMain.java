@@ -37,7 +37,7 @@ public class AgendaMain {
 
         switch (iargs.getSelectedCommand()) {
             case CMD_ADD_EVENT_INTERACTIVE:
-                break
+                break;
             case CMD_ADD_EVENT_CONSOLE:
                 break;
             case CMD_SHOW_EVENTS:
