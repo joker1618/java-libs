@@ -49,6 +49,7 @@ public class RepoManager {
 
 
     private RepoHandler readRepoData(Collection<Class<?>> classes) {
+
         // Read entity data
         RepoLines repoLines = new RepoLines();
         for (Class<?> eclazz : classes) {
