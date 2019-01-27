@@ -1,16 +1,16 @@
 package xxx.joker.libs.core.datetime;
 
-import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.time.temporal.ChronoUnit.HOURS;
-import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class JkTimes {
 
@@ -30,6 +30,33 @@ public class JkTimes {
         return JkDuration.of(elapsed).toStringElapsed(showMilli, minUnit);
     }
 
+    /* PARSER */
+    public static LocalDate toDate(String str, String pattern) {
+        try {
+            return LocalDate.parse(str, DateTimeFormatter.ofPattern(pattern));
+        } catch (DateTimeParseException ex) {
+            return null;
+        }
+    }
+    public static LocalTime toTime(String str, String pattern) {
+        try {
+            return LocalTime.parse(str, DateTimeFormatter.ofPattern(pattern));
+        } catch (DateTimeParseException ex) {
+            return null;
+        }
+    }
+    public static LocalDateTime toDateTime(String str, String pattern) {
+        try {
+            return LocalDateTime.parse(str, DateTimeFormatter.ofPattern(pattern));
+        } catch (DateTimeParseException ex) {
+            return null;
+        }
+    }
+
+    /* FORMAT */
+    public static String format(TemporalAccessor ldt, String pattern) {
+        return DateTimeFormatter.ofPattern(pattern).format(ldt);
+    }
 
     /* CHECKS */
     public static boolean isAOD(String source) {
@@ -49,10 +76,10 @@ public class JkTimes {
         return true;
     }
 
-    public static boolean isLocalDate(String source, String format) {
-        return isLocalDate(source, DateTimeFormatter.ofPattern(format));
+    public static boolean isDate(String source, String format) {
+        return isDate(source, DateTimeFormatter.ofPattern(format));
     }
-    public static boolean isLocalDate(String source, DateTimeFormatter formatter) {
+    public static boolean isDate(String source, DateTimeFormatter formatter) {
         try {
             formatter.parse(source);
             return true;
@@ -60,25 +87,25 @@ public class JkTimes {
             return false;
         }
     }
-    public static boolean areLocalDates(List<String> source, String format) {
-        return areLocalDates(source, DateTimeFormatter.ofPattern(format));
+    public static boolean areDates(List<String> source, String format) {
+        return areDates(source, DateTimeFormatter.ofPattern(format));
     }
-    public static boolean areLocalDates(List<String> source, DateTimeFormatter formatter) {
+    public static boolean areDates(List<String> source, DateTimeFormatter formatter) {
         for(String elem : source) {
-            if(!isLocalDate(elem, formatter)) {
+            if(!isDate(elem, formatter)) {
                 return false;
             }
         }
         return true;
     }
-    public static boolean areLocalDates(String[] sarr, DateTimeFormatter formatter) {
-        return areLocalDates(Arrays.asList(sarr), formatter);
+    public static boolean areDates(String[] sarr, DateTimeFormatter formatter) {
+        return areDates(Arrays.asList(sarr), formatter);
     }
 
-    public static boolean isLocalTime(String source, String format) {
-        return isLocalTime(source, DateTimeFormatter.ofPattern(format));
+    public static boolean isTime(String source, String format) {
+        return isTime(source, DateTimeFormatter.ofPattern(format));
     }
-    public static boolean isLocalTime(String source, DateTimeFormatter formatter) {
+    public static boolean isTime(String source, DateTimeFormatter formatter) {
         try {
             formatter.parse(source);
             return true;
@@ -86,25 +113,25 @@ public class JkTimes {
             return false;
         }
     }
-    public static boolean areLocalTimes(List<String> source, String format) {
-        return areLocalTimes(source, DateTimeFormatter.ofPattern(format));
+    public static boolean areTimes(List<String> source, String format) {
+        return areTimes(source, DateTimeFormatter.ofPattern(format));
     }
-    public static boolean areLocalTimes(List<String> source, DateTimeFormatter formatter) {
+    public static boolean areTimes(List<String> source, DateTimeFormatter formatter) {
         for(String elem : source) {
-            if(!isLocalTime(elem, formatter)) {
+            if(!isTime(elem, formatter)) {
                 return false;
             }
         }
         return true;
     }
-    public static boolean areLocalTimes(String[] sarr, DateTimeFormatter formatter) {
-        return areLocalTimes(Arrays.asList(sarr), formatter);
+    public static boolean areTimes(String[] sarr, DateTimeFormatter formatter) {
+        return areTimes(Arrays.asList(sarr), formatter);
     }
 
-    public static boolean isLocalDateTime(String source, String format) {
-        return isLocalDateTime(source, DateTimeFormatter.ofPattern(format));
+    public static boolean isDateTime(String source, String format) {
+        return isDateTime(source, DateTimeFormatter.ofPattern(format));
     }
-    public static boolean isLocalDateTime(String source, DateTimeFormatter formatter) {
+    public static boolean isDateTime(String source, DateTimeFormatter formatter) {
         try {
             formatter.parse(source);
             return true;
@@ -112,19 +139,19 @@ public class JkTimes {
             return false;
         }
     }
-    public static boolean areLocalDateTimes(List<String> source, String format) {
-        return areLocalDateTimes(source, DateTimeFormatter.ofPattern(format));
+    public static boolean areDateTimes(List<String> source, String format) {
+        return areDateTimes(source, DateTimeFormatter.ofPattern(format));
     }
-    public static boolean areLocalDateTimes(List<String> source, DateTimeFormatter formatter) {
+    public static boolean areDateTimes(List<String> source, DateTimeFormatter formatter) {
         for(String elem : source) {
-            if(!isLocalDateTime(elem, formatter)) {
+            if(!isDateTime(elem, formatter)) {
                 return false;
             }
         }
         return true;
     }
-    public static boolean areLocalDateTimes(String[] sarr, DateTimeFormatter formatter) {
-        return areLocalDateTimes(Arrays.asList(sarr), formatter);
+    public static boolean areDateTimes(String[] sarr, DateTimeFormatter formatter) {
+        return areDateTimes(Arrays.asList(sarr), formatter);
     }
 
     public static boolean isValidDateTimeFormatter(String format) {

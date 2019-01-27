@@ -5,3 +5,4 @@ target
 args-parser/src/test/resources/file.txt
 **/test/resources/zip/out*
 java-repo/src/test/resources/db
+temp-agenda/agl.sh

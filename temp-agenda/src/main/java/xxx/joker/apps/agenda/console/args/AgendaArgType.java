@@ -18,6 +18,8 @@ public enum AgendaArgType implements JkArgsTypes {
     @JkArgType
     SHOW("show"),
     @JkArgType
+    DELETE("del"),
+    @JkArgType
     EVENT("event"),
     @JkArgType
     DATE("date"),

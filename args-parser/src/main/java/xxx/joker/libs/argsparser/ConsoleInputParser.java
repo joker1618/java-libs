@@ -18,7 +18,6 @@ import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.tests.JkTests;
 import xxx.joker.libs.core.utils.JkConvert;
-import xxx.joker.libs.core.utils.JkStrings;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -48,7 +47,7 @@ public class ConsoleInputParser implements InputParser {
 
     @Override
     public <T extends JkAbstractArgs> T parse(String inputLine) throws ParseError {
-        String[] args = splitArgsLine(inputLine);
+        String[] args = InputParser.splitArgsLine(inputLine);
         return parse(args);
     }
 
@@ -77,45 +76,6 @@ public class ConsoleInputParser implements InputParser {
         return argsInstance;
     }
 
-
-    // Parse and split line into String[], like shell do
-    public static String[] splitArgsLine(String lineArgs) {
-        String str = JkStrings.safeTrim(lineArgs);
-        if(str.isEmpty())   return new String[0];
-
-        List<String> argList = new ArrayList<>();
-
-        while(!str.isEmpty()) {
-            if(str.charAt(0) == '"' || str.charAt(0) == '\'') {
-                int idx = -1;
-                int skip = 1;
-                while(idx == -1) {
-                    int indexFound = str.substring(skip).indexOf(str.charAt(0));
-                    if(indexFound == -1) {
-                        return null;
-                    }
-
-                    if(indexFound == 0 || str.charAt(skip+indexFound-1) != '\\') {
-                        idx = skip + indexFound;
-                    } else {
-                        skip += indexFound + 1;
-                    }
-                }
-                argList.add(str.substring(1, idx).replace("\\\"", "\"").replace("\\'", "'"));
-                str = str.substring(idx+1).trim();
-
-            } else {
-                int idx = str.indexOf(' ');
-                if(idx == -1) {
-                    idx = str.length();
-                }
-                argList.add(str.substring(0, idx));
-                str = str.substring(idx).trim();
-            }
-        }
-
-        return argList.toArray(new String[0]);
-    }
 
     private <T extends JkAbstractArgs> T createArgsInstance() {
         try {
@@ -162,13 +122,13 @@ public class ConsoleInputParser implements InputParser {
                 classCheck = arr -> true;
                 classConverter = JkFiles::toPaths;
             } else if(argClass == LocalDate.class || argClass == LocalDate[].class) {
-                classCheck = sarr -> JkTimes.areLocalDates(sarr, dtf);
+                classCheck = sarr -> JkTimes.areDates(sarr, dtf);
                 classConverter = sarr -> JkStreams.map(Arrays.asList(sarr), s -> LocalDate.parse(s, dtf)).toArray();
             } else if(argClass == LocalTime.class || argClass == LocalTime[].class) {
-                classCheck = sarr -> JkTimes.areLocalTimes(sarr, dtf);
+                classCheck = sarr -> JkTimes.areTimes(sarr, dtf);
                 classConverter = sarr -> JkStreams.map(Arrays.asList(sarr), s -> LocalTime.parse(s, dtf)).toArray();
             } else if(argClass == LocalDateTime.class || argClass == LocalDateTime[].class) {
-                classCheck = sarr -> JkTimes.areLocalDateTimes(sarr, dtf);
+                classCheck = sarr -> JkTimes.areDateTimes(sarr, dtf);
                 classConverter = sarr -> JkStreams.map(Arrays.asList(sarr), s -> LocalDateTime.parse(s, dtf)).toArray();
             } else if(argClass == String.class || argClass == String[].class) {
                 classCheck = arr -> true;

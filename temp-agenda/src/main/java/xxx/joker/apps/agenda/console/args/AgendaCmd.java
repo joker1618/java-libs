@@ -24,7 +24,7 @@ public enum AgendaCmd implements JkCommands {
             new CParam(COption.of(ADD)),
             new CParam(COption.of(EVENT)),
             new CParam(COption.ofDate(DATE, "yyyyMMdd")),
-            new CParam(COption.of(TITLE)),
+            new CParam(COption.of(TITLE).addChecksBefore(StringCheck.isNotBlank())),
             new CParam(false, COption.ofTime(TIME, "HHmm")),
             new CParam(false, COption.of(TAGS).addChecksBefore(StringCheck.isNotBlank())),
             new CParam(false, COption.of(NOTES)),
@@ -44,6 +44,13 @@ public enum AgendaCmd implements JkCommands {
             new CParam(COption.of(SHOW)),
             new CParam(COption.of(EVENT)),
             new CParam(false, COption.of(ID))
+    ),
+
+    @JkCmdElem
+    CMD_DELETE_EVENTS(
+            new CParam(COption.of(DELETE)),
+            new CParam(COption.of(EVENT)),
+            new CParam(COption.of(ID))
     ),
 
 
