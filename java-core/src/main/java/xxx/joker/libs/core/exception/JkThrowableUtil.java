@@ -13,7 +13,11 @@ abstract class JkThrowableUtil {
             actualThrowable = actualThrowable.getCause();
         }
 
-        return sb.toString();
+        return sb.toString().trim();
+    }
+
+    public static String toStringShort(Throwable t, boolean simpleClassName) {
+        return strf("{}: {}", simpleClassName ? t.getClass().getSimpleName() : t.getClass().getName(), t.getMessage());
     }
 
     private static String toStringMainException(Throwable t, String mexPrefix, boolean simpleClassName) {

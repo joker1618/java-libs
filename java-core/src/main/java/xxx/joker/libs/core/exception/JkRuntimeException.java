@@ -51,5 +51,8 @@ public class JkRuntimeException extends RuntimeException implements JkThrowable 
 		return JkThrowableUtil.toString(this, simpleClassName);
 	}
 
-
+	@Override
+	public String toStringShort() {
+		return JkThrowableUtil.toStringShort(this, simpleClassName);
+	}
 }

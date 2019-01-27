@@ -8,4 +8,5 @@ public interface JkThrowable {
 
     List<String> getCauses();
 
+    String toStringShort();
 }

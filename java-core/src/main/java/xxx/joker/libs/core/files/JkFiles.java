@@ -497,6 +497,13 @@ public class JkFiles {
 	public static boolean areEquals(Path p1, Path p2) {
 		return p1.toAbsolutePath().normalize().equals(p2.toAbsolutePath().normalize());
 	}
+
+	public static int compare(Path p1, Path p2) {
+		String s1 = p1.toAbsolutePath().normalize().toString();
+		String s2 = p2.toAbsolutePath().normalize().toString();
+		return StringUtils.compareIgnoreCase(s1, s2);
+	}
+
 	public static boolean containsPath(List<Path> source, Path toFind) {
 		for(Path p : source) {
 			if(areEquals(p, toFind)) {

@@ -48,6 +48,11 @@ public class JkException extends Exception implements JkThrowable {
 	}
 
 	@Override
+	public String toStringShort() {
+		return JkThrowableUtil.toStringShort(this, simpleClassName);
+	}
+
+	@Override
 	public String toString() {
 		return JkThrowableUtil.toString(this, simpleClassName);
 	}

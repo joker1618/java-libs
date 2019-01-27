@@ -1,4 +1,4 @@
-package xxx.joker.apps.agenda.console;
+package xxx.joker.apps.agenda.console.args;
 
 import xxx.joker.libs.argsparser.design.annotations.JkArg;
 import xxx.joker.libs.argsparser.design.classTypes.JkAbstractArgs;
@@ -6,7 +6,6 @@ import xxx.joker.libs.argsparser.design.classTypes.JkAbstractArgs;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 public class AgendaArgs extends JkAbstractArgs<AgendaCmd> {
 
@@ -22,7 +21,7 @@ public class AgendaArgs extends JkAbstractArgs<AgendaCmd> {
     private LocalTime time;
     @JkArg(argName = "title", aliases = {"-tit"})
     private String title;
-    @JkArg(argName = "tags", aliases = {"-t"})
+    @JkArg(argName = "tags", aliases = {"-t", "-tags"})
     private String[] tags;
     @JkArg(argName = "notes", aliases = {"-n"})
     private String notes;

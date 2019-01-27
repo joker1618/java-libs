@@ -1,13 +1,34 @@
 package xxx.joker.libs.core.datetime;
 
+import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
+
+import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class JkTimes {
 
     public static final DateTimeFormatter DTF_AOD = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+    /* OUTPUTS */
+    public static String toStringElapsed(long elapsed) {
+        return toStringElapsed(elapsed, false, SECONDS);
+    }
+    public static String toStringElapsed(long elapsed, ChronoUnit minUnit) {
+        return toStringElapsed(elapsed, false, minUnit);
+    }
+    public static String toStringElapsed(long elapsed, boolean showMilli) {
+        return toStringElapsed(elapsed, showMilli, SECONDS);
+    }
+    public static String toStringElapsed(long elapsed, boolean showMilli, ChronoUnit minUnit) {
+        return JkDuration.of(elapsed).toStringElapsed(showMilli, minUnit);
+    }
 
 
     /* CHECKS */

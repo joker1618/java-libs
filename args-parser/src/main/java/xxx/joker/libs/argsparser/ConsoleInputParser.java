@@ -16,7 +16,7 @@ import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
-import xxx.joker.libs.core.tests.JkChecks;
+import xxx.joker.libs.core.tests.JkTests;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 
@@ -59,6 +59,9 @@ public class ConsoleInputParser implements InputParser {
 
         /* 1. Find input command */
         CmdWrapper selCmd = designService.retrieveCommand(argsMap.keySet());
+        if(selCmd == null) {
+            throw new ParseError("No command found for input: {}", Arrays.toString(inputArgs));
+        }
 
         /* 2. Create new instance of args class */
         T argsInstance = createArgsInstance();
@@ -76,7 +79,7 @@ public class ConsoleInputParser implements InputParser {
 
 
     // Parse and split line into String[], like shell do
-    private String[] splitArgsLine(String lineArgs) {
+    public static String[] splitArgsLine(String lineArgs) {
         String str = JkStrings.safeTrim(lineArgs);
         if(str.isEmpty())   return new String[0];
 
@@ -147,13 +150,13 @@ public class ConsoleInputParser implements InputParser {
             DateTimeFormatter dtf = co.getDateTimeFormatter();
 
             if(argClass == Integer.class || argClass == Integer[].class) {
-                classCheck = JkChecks::areInts;
+                classCheck = JkTests::areInts;
                 classConverter = JkConvert::toInts;
             } else if(argClass == Double.class || argClass == Double[].class) {
-                classCheck = JkChecks::areDoubles;
+                classCheck = JkTests::areDoubles;
                 classConverter = JkConvert::toDoubles;
             } else if(argClass == Long.class || argClass == Long[].class) {
-                classCheck = JkChecks::areLongs;
+                classCheck = JkTests::areLongs;
                 classConverter = JkConvert::toLongs;
             } else if(argClass == Path.class || argClass == Path[].class) {
                 classCheck = arr -> true;

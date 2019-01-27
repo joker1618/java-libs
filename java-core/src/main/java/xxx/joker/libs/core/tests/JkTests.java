@@ -10,7 +10,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 
-public class JkChecks {
+public class JkTests {
 
     /* NUMBERS */
     public static boolean isBoolean(String source) {

@@ -1,22 +1,20 @@
-package xxx.joker.apps.agenda.console;
+package xxx.joker.apps.agenda.console.args;
 
 import xxx.joker.libs.argsparser.design.annotations.JkCmdElem;
 import xxx.joker.libs.argsparser.design.classTypes.JkCommands;
 import xxx.joker.libs.argsparser.design.descriptors.COption;
 import xxx.joker.libs.argsparser.design.descriptors.CParam;
+import xxx.joker.libs.argsparser.design.functions.StringCheck;
 import xxx.joker.libs.argsparser.design.functions.ValueCheck;
-import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.utils.JkConvert;
-import xxx.joker.libs.core.utils.JkStrings;
 
-import static xxx.joker.apps.agenda.console.AgendaArgType.*;
+import static xxx.joker.apps.agenda.console.args.AgendaArgType.*;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 public enum AgendaCmd implements JkCommands {
@@ -28,7 +26,7 @@ public enum AgendaCmd implements JkCommands {
             new CParam(COption.ofDate(DATE, "yyyyMMdd")),
             new CParam(COption.of(TITLE)),
             new CParam(false, COption.ofTime(TIME, "HHmm")),
-            new CParam(false, COption.of(TAGS)),
+            new CParam(false, COption.of(TAGS).addChecksBefore(StringCheck.isNotBlank())),
             new CParam(false, COption.of(NOTES)),
             new CParam(false, COption.of(ATTACHES).addChecksBefore(checkAttachments()))
     ),
@@ -64,9 +62,14 @@ public enum AgendaCmd implements JkCommands {
 
     private static UnaryOperator<String> checkAttachments() {
         return obj -> {
-            Path path = Paths.get(JkStrings.splitArr(obj, "?")[0]);
+            int idx = obj.indexOf('?');
+            String strPath = idx == -1 ? obj : obj.substring(0, idx);
+            Path path = Paths.get(strPath);
             if(!Files.exists(path)) {
                 return strf("Attach file '{}' does not exists", path);
+            }
+            if(idx != -1 && idx == obj.length()) {
+                return strf("Empty description for attach: {}", path);
             }
             return null;
         };

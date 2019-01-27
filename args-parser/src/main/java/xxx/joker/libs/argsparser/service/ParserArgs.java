@@ -7,7 +7,7 @@ import xxx.joker.libs.argsparser.design.classTypes.JkAbstractArgs;
 import xxx.joker.libs.argsparser.design.classTypes.JkArgsTypes;
 import xxx.joker.libs.argsparser.exceptions.DesignError;
 import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.tests.JkChecks;
+import xxx.joker.libs.core.tests.JkTests;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.runtimes.JkReflection;
 
@@ -31,7 +31,7 @@ class ParserArgs {
     }
 
     public ArgWrapper getArgWrapper(String nameAlias) {
-        List<ArgWrapper> filter = JkStreams.filter(argList, aw -> aw.getArgName().equalsIgnoreCase(nameAlias) || JkChecks.containsIgnoreCase(aw.getAliases(), nameAlias));
+        List<ArgWrapper> filter = JkStreams.filter(argList, aw -> aw.getArgName().equalsIgnoreCase(nameAlias) || JkTests.containsIgnoreCase(aw.getAliases(), nameAlias));
         return filter.isEmpty() ? null : filter.get(0);
     }
 

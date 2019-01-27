@@ -11,39 +11,39 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 public class FileAttach implements JkEntityFieldCustom<FileAttach> {
 
     private String descr;
-    private Path filePath;
+    private Path path;
 
     public FileAttach() {
 
     }
 
-    public FileAttach(Path filePath) {
-        this(filePath, "");
+    public FileAttach(Path path) {
+        this(path, "");
     }
 
-    public FileAttach(Path filePath, String descr) {
+    public FileAttach(Path path, String descr) {
         this.descr = descr;
-        this.filePath = filePath;
+        this.path = path;
     }
 
     @Override
     public String formatField() {
-        return strf("{}:{}", filePath, descr);
+        return strf("{}:{}", path, descr);
     }
 
     @Override
     public void setFromString(String str) {
         if(StringUtils.isNotEmpty(str)) {
             int idx = str.indexOf(':');
-            filePath = Paths.get(str.substring(0, idx));
+            path = Paths.get(str.substring(0, idx));
             descr = str.substring(idx + 1);
         }
     }
 
     @Override
     public int compareTo(FileAttach o) {
-        String ap = filePath.toAbsolutePath().normalize().toString();
-        String bp = o.filePath.toAbsolutePath().normalize().toString();
+        String ap = path.toAbsolutePath().normalize().toString();
+        String bp = o.path.toAbsolutePath().normalize().toString();
         int res = ap.compareTo(bp);
         if(res == 0)   {
             res = descr.compareTo(o.descr);
@@ -59,12 +59,12 @@ public class FileAttach implements JkEntityFieldCustom<FileAttach> {
         this.descr = descr;
     }
 
-    public Path getFilePath() {
-        return filePath;
+    public Path getPath() {
+        return path;
     }
 
-    public void setFilePath(Path filePath) {
-        this.filePath = filePath;
+    public void setPath(Path path) {
+        this.path = path;
     }
 
     @Override

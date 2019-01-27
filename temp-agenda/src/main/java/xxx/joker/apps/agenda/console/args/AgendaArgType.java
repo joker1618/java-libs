@@ -1,4 +1,4 @@
-package xxx.joker.apps.agenda.console;
+package xxx.joker.apps.agenda.console.args;
 
 import xxx.joker.libs.argsparser.design.annotations.JkArg;
 import xxx.joker.libs.argsparser.design.annotations.JkArgType;
