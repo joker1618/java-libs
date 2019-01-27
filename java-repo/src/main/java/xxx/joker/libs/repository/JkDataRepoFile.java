@@ -16,8 +16,8 @@ public abstract class JkDataRepoFile implements JkDataRepo {
 
     private static final Logger logger = LoggerFactory.getLogger(JkDataRepoFile.class);
 
-    private RepoManager repoManager;
-    private Map<String, JkRepoProp> properties;
+    private final RepoManager repoManager;
+    private final Map<String, JkRepoProp> properties;
 
     protected JkDataRepoFile(Path dbFolder, String dbName, String pkgToScan) {
         logger.info("Creating repository: dbName={}, dbFolder={}, pkgToScan={}", dbName, dbFolder, pkgToScan);
@@ -44,19 +44,32 @@ public abstract class JkDataRepoFile implements JkDataRepo {
 
     @Override
     public String getProperty(String propKey, String _default) {
-        String val = properties.get(propKey).getValue();
-        return val == null ? _default : val;
+        synchronized (properties) {
+            String val = properties.get(propKey).getValue();
+            return val == null ? _default : val;
+        }
     }
 
     @Override
     public void setProperty(String propKey, String propValue) {
-        if(!properties.containsKey(propKey)) {
-            JkRepoProp prop = new JkRepoProp(propKey, propValue);
-            properties.put(propKey, prop);
-            getDataSet(JkRepoProp.class).add(prop);
+        synchronized (properties) {
+            if (!properties.containsKey(propKey)) {
+                JkRepoProp prop = new JkRepoProp(propKey, propValue);
+                properties.put(propKey, prop);
+                getDataSet(JkRepoProp.class).add(prop);
+            }
+            properties.get(propKey).setValue(propValue);
         }
-        properties.get(propKey).setValue(propValue);
     }
+
+    @Override
+    public String removeProperty(String propKey) {
+        synchronized (properties) {
+            JkRepoProp prop = properties.remove(propKey);
+            return prop == null ? null : prop.getValue();
+        }
+    }
+
 
     protected Map<Class<?>, Set<JkEntity>> getDataSets() {
         return repoManager.getDataSets();

@@ -13,5 +13,6 @@ public interface JkDataRepo {
     String getProperty(String propKey);
     String getProperty(String propKey, String _default);
     void setProperty(String propKey, String propValue);
+    String removeProperty(String propKey);
 
 }
