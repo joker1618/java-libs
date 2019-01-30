@@ -117,7 +117,8 @@ public class COption {
 	public List<Function<String[], String>> getChecksBefore() {
 		return checksBefore;
 	}
-	public COption addChecksBefore(UnaryOperator<String>... checksBefore) {
+	@SafeVarargs
+	public final COption addChecksBefore(UnaryOperator<String>... checksBefore) {
 		for(UnaryOperator<String> func : checksBefore) {
 			Function<String[], String> funcAll = arr -> {
 				for(int i = 0; i < arr.length; i++) {
@@ -132,6 +133,7 @@ public class COption {
 		}
 		return this;
 	}
+	@SafeVarargs
 	public final COption addChecksBeforeAll(Function<String[], String>... checksBefore) {
 		this.checksBefore = JkConvert.toArrayList(checksBefore);
 		return this;
@@ -140,7 +142,8 @@ public class COption {
 	public List<Function<String[], String>> getChecksMiddle() {
 		return checksMiddle;
 	}
-	public COption addChecksMiddle(Function<String, String>... checksMiddle) {
+	@SafeVarargs
+	public final COption addChecksMiddle(Function<String, String>... checksMiddle) {
 		for(Function<String, String> func : checksMiddle) {
 			Function<String[], String> funcAll = arr -> {
 				for(int i = 0; i < arr.length; i++) {
@@ -155,6 +158,7 @@ public class COption {
 		}
 		return this;
 	}
+	@SafeVarargs
 	public final COption addChecksMiddleAll(Function<String[], String>... checksMiddle) {
 		this.checksMiddle = JkConvert.toArrayList(checksMiddle);
 		return this;
@@ -163,7 +167,8 @@ public class COption {
 	public List<Function<Object[], String>> getChecksAfter() {
 		return checksAfter;
 	}
-	public COption addChecksAfter(Function<Object, String>... checksAfter) {
+	@SafeVarargs
+	public final COption addChecksAfter(Function<Object, String>... checksAfter) {
 		for(Function<Object, String> func : checksAfter) {
 			Function<Object[], String> funcAll = arr -> {
 				for(int i = 0; i < arr.length; i++) {
@@ -178,6 +183,7 @@ public class COption {
 		}
 		return this;
 	}
+	@SafeVarargs
 	public final COption addChecksAfterAll(Function<Object[], String>... checksAfter) {
 		this.checksAfter = JkConvert.toArrayList(checksAfter);
 		return this;

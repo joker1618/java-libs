@@ -113,6 +113,7 @@ public class JkStreams {
 		return source.stream().map(mapFunc).collect(Collectors.joining(separator));
 	}
 
+	@SafeVarargs
 	public static <T> T findExactMatch(Collection<T> source, Predicate<T>... filters) {
 		Stream<T> stream = source.stream();
 		for(Predicate<T> filter : filters) {
@@ -121,6 +122,7 @@ public class JkStreams {
 		List<T> list = stream.collect(Collectors.toList());
 		return list.size() == 1 ? list.get(0) : null;
 	}
+	@SafeVarargs
 	public static <T> T findFirstMatch(Collection<T> source, Predicate<T>... filters) {
 		Stream<T> stream = source.stream();
 		for(Predicate<T> filter : filters) {

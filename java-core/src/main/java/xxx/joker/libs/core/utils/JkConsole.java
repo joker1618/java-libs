@@ -31,9 +31,12 @@ public class JkConsole {
 	}
 
 	public static String readUserInput(String label) {
-		return readUserInput(label, s -> true);
+		return readUserInput(label, true, s -> true);
 	}
 	public static String readUserInput(String label, Predicate<String> acceptCond) {
+		return readUserInput(label, false, acceptCond);
+	}
+	public static String readUserInput(String label, boolean allowBlank, Predicate<String> acceptCond) {
 		try {
 			String heading = StringUtils.isEmpty(label) ? "" : label;
 
@@ -41,7 +44,7 @@ public class JkConsole {
 
 			out.print(heading);
 			String userInput = console.readLine();
-			while (!acceptCond.test(userInput)) {
+			while (!(allowBlank && StringUtils.isBlank(userInput)) && !acceptCond.test(userInput)) {
 				out.print(heading);
 				userInput = console.readLine();
 			}
@@ -52,11 +55,5 @@ public class JkConsole {
 			throw new JkRuntimeException(ex);
 		}
 	}
-
-	// todo remove
-//	public static void main(String[] args) throws IOException {
-//		AtomicInteger counter = new AtomicInteger(0);
-//		readUserInput(">", s -> counter.getAndIncrement()==5);
-//	}
 
 }

@@ -35,6 +35,14 @@ public class ConsoleInputParser implements InputParser {
 
     public ConsoleInputParser(Class<? extends JkAbstractArgs> argsClass,
                               Class<? extends JkArgsTypes> argsNamesClass,
+                              Class<? extends JkCommands> cmdsClass)
+                              throws DesignError {
+
+        this.argsClass = argsClass;
+        this.designService = new DesignServiceImpl(argsClass, argsNamesClass, cmdsClass, false);
+    }
+    public ConsoleInputParser(Class<? extends JkAbstractArgs> argsClass,
+                              Class<? extends JkArgsTypes> argsNamesClass,
                               Class<? extends JkCommands> cmdsClass,
                               boolean ignoreCaseArgs)
                               throws DesignError {

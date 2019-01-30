@@ -43,6 +43,7 @@ public class JkReflection {
 		}
 		return toRet;
 	}
+
 	public static List<Field> getFieldsByType(Class<?> sourceClass, Class<?> fieldType) {
 		List<Field> toRet = new ArrayList<>();
 		Field[] declaredFields = sourceClass.getDeclaredFields();
