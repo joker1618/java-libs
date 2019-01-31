@@ -33,6 +33,10 @@ public class RepoManager {
         this.repoHandler = readRepoData(classes);
     }
 
+    public <T extends JkEntity> T getEntity(long entityID) {
+        return repoHandler.getEntity(entityID);
+    }
+
     public Map<Class<?>, Set<JkEntity>> getDataSets() {
         return repoHandler.getDataSets();
     }

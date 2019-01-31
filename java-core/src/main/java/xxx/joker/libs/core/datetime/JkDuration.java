@@ -1,5 +1,9 @@
 package xxx.joker.libs.core.datetime;
 
+import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.core.utils.JkConvert;
+import xxx.joker.libs.core.utils.JkStrings;
+
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
@@ -43,9 +47,20 @@ public class JkDuration {
     public static JkDuration of(javafx.util.Duration duration) {
         return of(duration.toMillis());
     }
+    public static JkDuration of(String elapsed) {
+        if(StringUtils.isBlank(elapsed))    return null;
+        String[] splitMs = JkStrings.splitArr(elapsed, ".");
+        String[] splitTm = JkStrings.splitArr(splitMs[0], ":");
+        long ms = 0L;
+        if(splitMs.length == 2)     ms += JkConvert.toLong(splitMs[1]);
+        for(int i = splitTm.length - 1, mult = 1000; i >= 0; i--, mult *= 60) {
+            ms += JkConvert.toLong(splitTm[i]) * mult;
+        }
+        return of(ms);
+    }
 
     public String toStringElapsed() {
-        return toStringElapsed(false, SECONDS);
+        return toStringElapsed(true, SECONDS);
     }
     public String toStringElapsed(boolean showMilli) {
         return toStringElapsed(showMilli, SECONDS);

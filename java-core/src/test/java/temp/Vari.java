@@ -1,6 +1,7 @@
 package temp;
 
 import org.junit.Test;
+import xxx.joker.libs.core.datetime.JkDuration;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,20 +36,11 @@ public class Vari {
     @Test
     public void prova() throws IOException, ParseException {
 
-        Path p1 = Paths.get("").toAbsolutePath();
-        Path p2 = p1.resolve("dir/file.txt");
-        Path p3 = Paths.get("").toAbsolutePath().getParent().resolve("ciccio");
+        String elapsed = "1:0.234";
+        display("%-10s -> %s", elapsed, JkDuration.of(elapsed).toStringElapsed(false));
 
-        display("p1:\t{}", p1);
-        display("p2:\t{}", p2);
-        display("p1Rp2:\t{}", p1.relativize(p2));
-        display("p2Rp1:\t{}", p2.relativize(p1));
-
-        display("\np3:\t{}", p3);
-        display("p1Rp3:\t{}", p1.relativize(p3));
-        display("p3Rp1:\t{}", p3.relativize(p1));
-
-        display("final:\t{}", p3.resolve(p1.relativize(p2)));
+        elapsed = "1:21:50";
+        display("%-10s -> %s", elapsed, JkDuration.of(elapsed).toStringElapsed(true));
 
 
     }
