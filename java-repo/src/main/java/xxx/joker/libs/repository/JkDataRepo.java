@@ -6,6 +6,7 @@ import java.util.Set;
 
 public interface JkDataRepo {
 
+    <T extends JkEntity> T getEntity(long entityID);
     <T extends JkEntity> Set<T> getDataSet(Class<T> entityClazz);
 
     void commit();

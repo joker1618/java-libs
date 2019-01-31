@@ -54,6 +54,8 @@ class RepoHandler {
             this.dataByID.keySet().forEach(id -> this.foreignKeys.putIfAbsent(id, new ArrayList<>()));
             this.designMap = designMap;
 
+            purgeMissingFk();
+
             this.dataMap = new HashMap<>();
             this.proxySets = new HashMap<>();
             initDataSets(dataLists);
@@ -63,6 +65,23 @@ class RepoHandler {
 
         } finally {
             repoLock.writeLock().unlock();
+        }
+    }
+
+    private void purgeMissingFk() {
+        List<Long> missingIDs = JkStreams.filter(foreignKeys.keySet(), fk -> !dataByID.containsKey(fk));
+        // Delete missing from
+        missingIDs.forEach(foreignKeys::remove);
+        // Delete missing deps
+        foreignKeys.values().forEach(fklist -> fklist.removeIf(fk -> !dataByID.containsKey(fk.getDepID())));
+    }
+
+    protected <T extends JkEntity> T getEntity(long entityID) {
+        try {
+            repoLock.readLock().lock();
+            return (T) dataByID.get(entityID);
+        } finally {
+            repoLock.readLock().unlock();
         }
     }
 

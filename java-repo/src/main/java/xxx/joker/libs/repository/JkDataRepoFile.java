@@ -27,6 +27,11 @@ public abstract class JkDataRepoFile implements JkDataRepo {
     }
 
     @Override
+    public <T extends JkEntity> T getEntity(long entityID) {
+        return repoManager.getEntity(entityID);
+    }
+
+    @Override
     public <T extends JkEntity> Set<T> getDataSet(Class<T> entityClazz) {
         return repoManager.getDataSet(entityClazz);
     }
