@@ -68,6 +68,9 @@ public class JkViewBuilder {
 		return this;
 	}
 
+	public JkViewBuilder insertPrefix(String prefix, int numRepeat) {
+		return insertPrefix(StringUtils.repeat(prefix, numRepeat));
+	}
 	public JkViewBuilder insertPrefix(String prefix) {
 		lines = JkStreams.map(lines, l -> strf("%s%s", prefix, l));
 		return this;
