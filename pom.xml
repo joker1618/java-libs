@@ -23,7 +23,6 @@
         <module>args-parser</module>
         <module>java-repo</module>
         <module>java-excel</module>
-        <module>temp-agenda</module>
     </modules>
 
     <packaging>pom</packaging>
