@@ -84,7 +84,7 @@ public class DesignServiceImpl implements DesignService {
     }
     private Path getHashFilePath(Class<?> cmdClass) {
         String sizeFileName = String.format("%s_%s.md5", launcherJarPath.getFileName().toString(), cmdClass.getName());
-        return Configs.TEMP_FOLDER.resolve(sizeFileName);
+        return Configs.APPS_FOLDER.resolve(sizeFileName);
     }
 
 

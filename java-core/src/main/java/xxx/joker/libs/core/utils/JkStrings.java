@@ -56,7 +56,6 @@ public class JkStrings {
 		}
 
 		StringBuilder sb = new StringBuilder();
-		boolean simpleClazzName = JkEnvironment.isShowClassSimpleName();
 
 		List<String> splits = JkStrings.splitList(format, "{}");
 		if(!splits.isEmpty()) {
@@ -67,8 +66,6 @@ public class JkStrings {
 				String strValue;
 				if(obj == null)	{
 					strValue = "_null";
-				} else if(simpleClazzName && obj instanceof Class<?>)	{
-					strValue = ((Class)obj).getSimpleName();
 				} else {
 					strValue = obj.toString();
 				}
