@@ -40,12 +40,12 @@ public class JkTextScannerImpl implements JkTextScanner {
 	}
 
 	@Override
-	public boolean startAtBackward(String... toFind) {
+	public boolean startAtLast(String... toFind) {
 		return setCursorMulti(true, false, false, toFind);
 	}
 
 	@Override
-	public boolean startAfterBackward(String... toFind) {
+	public boolean startAfterLast(String... toFind) {
 		return setCursorMulti(true, true, false, toFind);
 	}
 
@@ -60,12 +60,12 @@ public class JkTextScannerImpl implements JkTextScanner {
 	}
 
 	@Override
-	public boolean endAtBackward(String... toFind) {
+	public boolean endAtLast(String... toFind) {
 		return setCursorMulti(false, false, false, toFind);
 	}
 
 	@Override
-	public boolean endAfterBackward(String... toFind) {
+	public boolean endAfterLast(String... toFind) {
 		return setCursorMulti(false, true, false, toFind);
 	}
 

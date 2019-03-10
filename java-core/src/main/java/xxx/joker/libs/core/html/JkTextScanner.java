@@ -5,13 +5,13 @@ public interface JkTextScanner {
 	void startAt(int offset);
 	boolean startAt(String... toFind);
 	boolean startAfter(String... toFind);
-	boolean startAtBackward(String... toFind);
-	boolean startAfterBackward(String... toFind);
+	boolean startAtLast(String... toFind);
+	boolean startAfterLast(String... toFind);
 
 	boolean endAt(String... toFind);
 	boolean endAfter(String... toFind);
-	boolean endAtBackward(String... toFind);
-	boolean endAfterBackward(String... toFind);
+	boolean endAtLast(String... toFind);
+	boolean endAfterLast(String... toFind);
 
 	void reset();
 
@@ -29,7 +29,5 @@ public interface JkTextScanner {
 	boolean contains(String str);
 
 	JkHtmlTag nextHtmlTag(String tagName);
-
-	String toString();
 
 }
