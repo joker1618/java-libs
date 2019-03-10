@@ -5,12 +5,13 @@ import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.repository.design.JkEntity;
 import xxx.joker.libs.repository.design.JkEntityField;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Set;
 
-class DesignField implements Comparable<DesignField> {
+class DesignField implements Comparable<DesignField>, Serializable {
 
     private int annotIdx;
     private Field field;

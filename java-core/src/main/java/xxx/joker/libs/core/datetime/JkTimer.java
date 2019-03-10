@@ -13,42 +13,28 @@ public class JkTimer {
     private long endTm;
 
     public JkTimer() {
-        this(false);
-    }
-    public JkTimer(boolean autoStart) {
-        this.startTm = autoStart ? nowMillis() : -1;
+        this.startTm = nowMillis();
         this.marksTm = new ArrayList<>();
-        this.endTm = -1L;
-    }
-    
-    public void start() {
-        if(startTm == -1L) {
-            startTm = nowMillis();
-        }
     }
     
     public void reset() {
         startTm = nowMillis();
         marksTm.clear();
-        endTm = -1L;
     }
     
-    public void mark() {
-        this.marksTm.add(nowMillis());
-    }
-
-    public void stop() {
-        this.endTm = nowMillis();
+    public long mark() {
+        long now = nowMillis();
+        long from = marksTm.isEmpty() ? startTm : marksTm.get(marksTm.size()-1);
+        this.marksTm.add(now);
+        return now - from;
     }
 
     public long elapsed() {
-        return elapsed(false);
-    }
-    public long elapsed(boolean stopTimer) {
-        if(startTm == -1)   return -1L;
-        if(stopTimer)   endTm = nowMillis();
-        long stop = endTm == -1 ? nowMillis() : endTm;
+        long stop = marksTm.isEmpty() ? nowMillis() : marksTm.get(marksTm.size()-1);
         return stop - startTm;
+    }
+    public long totalElapsed() {
+        return nowMillis() - startTm;
     }
 
     

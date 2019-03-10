@@ -2,6 +2,8 @@ package xxx.joker.libs.repository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.datetime.JkDates;
+import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.runtimes.JkRuntime;
@@ -22,10 +24,12 @@ public abstract class JkDataRepoFile implements JkDataRepo {
     private final Map<String, JkRepoProp> properties;
 
     protected JkDataRepoFile(Path dbFolder, String dbName, String pkgToScan) {
+        JkTimer timer = new JkTimer();
         logger.info("Creating repository: dbName={}, dbFolder={}, pkgToScan={}", dbName, dbFolder, pkgToScan);
         List<Class<?>> eclasses = findPackageEntities(pkgToScan);
         this.repoManager = new RepoManager(dbFolder, dbName, eclasses);
         this.properties = JkStreams.toMapSingle(getDataSet(JkRepoProp.class), JkRepoProp::getKey);
+        logger.debug("Repository created in {}", JkDates.toStringElapsed(timer.elapsed(), true));
     }
 
     @Override
@@ -40,8 +44,9 @@ public abstract class JkDataRepoFile implements JkDataRepo {
 
     @Override
     public void commit() {
+        JkTimer timer = new JkTimer();
         repoManager.commitDataSets();
-        logger.info("Repo committed");
+        logger.info("Repo committed in {}", JkDates.toStringElapsed(timer.elapsed(), true));
     }
 
     @Override
@@ -83,12 +88,11 @@ public abstract class JkDataRepoFile implements JkDataRepo {
     }
 
     private List<Class<?>> findPackageEntities(String pkgToScan) {
-        logger.debug("Scanning package {}", pkgToScan);
         List<Class<?>> classes = JkRuntime.findClasses(pkgToScan);
         classes.removeIf(c -> !JkReflection.isInstanceOf(c, JkEntity.class));
         classes.add(JkRepoProp.class);
         if(logger.isDebugEnabled()) {
-            classes.forEach(c -> logger.debug("Found entity: {}", c.getSimpleName()));
+            classes.forEach(c -> logger.debug("Found entity: {}", c.getName()));
         }
         return classes;
     }

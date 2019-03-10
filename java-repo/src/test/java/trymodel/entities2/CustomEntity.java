@@ -17,7 +17,7 @@ public class CustomEntity implements JkEntityFieldCustom<CustomEntity> {
     }
 
     @Override
-    public void setFromString(String str) {
+    public void parseString(String str) {
         String[] arr = JkStrings.splitArr(str, ":->");
         pair = Pair.of(arr[0], arr[1]);
     }

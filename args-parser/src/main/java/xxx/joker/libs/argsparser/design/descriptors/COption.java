@@ -2,13 +2,9 @@ package xxx.joker.libs.argsparser.design.descriptors;
 
 import xxx.joker.libs.argsparser.design.classTypes.JkArgsTypes;
 import xxx.joker.libs.argsparser.exceptions.DesignError;
-import xxx.joker.libs.core.datetime.JkTimes;
+import xxx.joker.libs.core.datetime.JkDates;
 import xxx.joker.libs.core.utils.JkConvert;
 
-import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -193,7 +189,7 @@ public class COption {
 		return dateTimeFormatter;
 	}
 	public COption setDateTimeFormatter(String dateTimeFormat) {
-		if(!JkTimes.isValidDateTimeFormatter(dateTimeFormat)) {
+		if(!JkDates.isValidDateTimeFormatter(dateTimeFormat)) {
 			throw new DesignError(COption.class, "arg {}, wrong datetime format [{}]", argType, dateTimeFormat);
 		}
 		this.dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat);

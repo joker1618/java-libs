@@ -7,6 +7,6 @@ public interface JkEntityFieldCustom<T extends JkEntityFieldCustom> extends Comp
 
     String formatField();
 
-    void setFromString(String str);
+    void parseString(String str);
 
 }

@@ -206,7 +206,7 @@ class DesignService {
             o = LocalDateTime.parse(value, DTF_DATETIME);
         } else if (JkReflection.isInstanceOf(fclazz, JkEntityFieldCustom.class)) {
             o = JkReflection.createInstanceSafe(fclazz);
-            ((JkEntityFieldCustom) o).setFromString(value);
+            ((JkEntityFieldCustom) o).parseString(value);
         } else if (fclazz == String.class) {
             o = value.replaceAll(PH_TAB, "\t").replaceAll(PH_NEWLINE, "\n");
         } else {

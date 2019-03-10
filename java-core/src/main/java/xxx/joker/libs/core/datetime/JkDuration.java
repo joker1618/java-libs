@@ -58,6 +58,9 @@ public class JkDuration {
         }
         return of(ms);
     }
+    public static JkDuration fromToNow(long startMillis) {
+        return of(System.currentTimeMillis() - startMillis);
+    }
 
     public String toStringElapsed() {
         return toStringElapsed(true, SECONDS);

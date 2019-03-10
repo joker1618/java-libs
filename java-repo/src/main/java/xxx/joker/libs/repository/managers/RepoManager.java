@@ -2,6 +2,8 @@ package xxx.joker.libs.repository.managers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.datetime.JkDates;
+import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.design.JkEntity;
@@ -29,8 +31,11 @@ public class RepoManager {
     public RepoManager(Path dbFolder, String dbName, Collection<Class<?>> classes) {
         this.dbFolder = dbFolder;
         this.dbName = dbName;
+        JkTimer timer = new JkTimer();
         this.designService = new DesignService(classes);
+        logger.debug("Entity classes parsed in {}", JkDates.toStringElapsed(timer.mark(), true));
         this.repoHandler = readRepoData(classes);
+        logger.debug("Repo data loaded in {}", JkDates.toStringElapsed(timer.mark(), true));
     }
 
     public <T extends JkEntity> T getEntity(long entityID) {

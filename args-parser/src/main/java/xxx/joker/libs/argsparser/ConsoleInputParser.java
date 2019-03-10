@@ -11,7 +11,7 @@ import xxx.joker.libs.argsparser.service.ArgWrapper;
 import xxx.joker.libs.argsparser.service.CmdWrapper;
 import xxx.joker.libs.argsparser.service.DesignService;
 import xxx.joker.libs.argsparser.service.DesignServiceImpl;
-import xxx.joker.libs.core.datetime.JkTimes;
+import xxx.joker.libs.core.datetime.JkDates;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
@@ -130,13 +130,13 @@ public class ConsoleInputParser implements InputParser {
                 classCheck = arr -> true;
                 classConverter = JkFiles::toPaths;
             } else if(argClass == LocalDate.class || argClass == LocalDate[].class) {
-                classCheck = sarr -> JkTimes.areDates(sarr, dtf);
+                classCheck = sarr -> JkDates.areDates(sarr, dtf);
                 classConverter = sarr -> JkStreams.map(Arrays.asList(sarr), s -> LocalDate.parse(s, dtf)).toArray();
             } else if(argClass == LocalTime.class || argClass == LocalTime[].class) {
-                classCheck = sarr -> JkTimes.areTimes(sarr, dtf);
+                classCheck = sarr -> JkDates.areTimes(sarr, dtf);
                 classConverter = sarr -> JkStreams.map(Arrays.asList(sarr), s -> LocalTime.parse(s, dtf)).toArray();
             } else if(argClass == LocalDateTime.class || argClass == LocalDateTime[].class) {
-                classCheck = sarr -> JkTimes.areDateTimes(sarr, dtf);
+                classCheck = sarr -> JkDates.areDateTimes(sarr, dtf);
                 classConverter = sarr -> JkStreams.map(Arrays.asList(sarr), s -> LocalDateTime.parse(s, dtf)).toArray();
             } else if(argClass == String.class || argClass == String[].class) {
                 classCheck = arr -> true;
