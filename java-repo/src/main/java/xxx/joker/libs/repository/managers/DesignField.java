@@ -1,32 +1,33 @@
 package xxx.joker.libs.repository.managers;
 
-import org.apache.commons.lang3.tuple.Pair;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.repository.design.JkEntity;
 import xxx.joker.libs.repository.design.JkEntityField;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 class DesignField implements Comparable<DesignField> {
 
-    private JkEntityField annot;
+    private int annotIdx;
     private Field field;
+    private Class<?> collType;
 
     public DesignField(Field field) {
-        this.annot = field.getAnnotation(JkEntityField.class);
+        JkEntityField annot = field.getAnnotation(JkEntityField.class);
+        this.annotIdx = annot.idx();
         this.field = field;
+        if(isCollection()) {
+            ParameterizedType ct = (ParameterizedType) field.getGenericType();
+            collType = (Class<?>) ct.getActualTypeArguments()[0];
+        }
     }
 
-    public int getIdx() {
-        return annot.idx();
-    }
-
-    public Field getField() {
-        return field;
+    public int getAnnotIdx() {
+        return annotIdx;
     }
 
     Class<?> getFieldType() {
@@ -42,7 +43,7 @@ class DesignField implements Comparable<DesignField> {
     }
 
     Class<?> getCollectionType() {
-        return annot.collectionType();
+        return collType;
     }
 
     boolean isList() {
@@ -104,6 +105,6 @@ class DesignField implements Comparable<DesignField> {
 
     @Override
     public int compareTo(DesignField o) {
-        return getIdx() - o.getIdx();
+        return getAnnotIdx() - o.getAnnotIdx();
     }
 }

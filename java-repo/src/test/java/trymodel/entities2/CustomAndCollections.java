@@ -3,11 +3,7 @@ package trymodel.entities2;
 import xxx.joker.libs.repository.design.JkEntityField;
 import xxx.joker.libs.repository.design.JkRepoEntity;
 
-import java.io.File;
 import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
@@ -17,11 +13,11 @@ public class CustomAndCollections extends JkRepoEntity {
     private String keyword;
     @JkEntityField(idx = 1)
     private CustomEntity customEntity;
-    @JkEntityField(idx = 2, collectionType = Integer.class)
+    @JkEntityField(idx = 2)
     private List<Integer> listInt;
-    @JkEntityField(idx = 3, collectionType = Path.class)
+    @JkEntityField(idx = 3)
     private Set<Path> setPath;
-    @JkEntityField(idx = 4, collectionType = CustomEntity.class)
+    @JkEntityField(idx = 4)
     private List<CustomEntity> ceList;
 
     public CustomAndCollections(){}

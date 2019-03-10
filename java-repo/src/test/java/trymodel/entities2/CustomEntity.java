@@ -2,11 +2,8 @@ package trymodel.entities2;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.repository.design.JkEntityFieldCustom;
-
-import java.util.Comparator;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 

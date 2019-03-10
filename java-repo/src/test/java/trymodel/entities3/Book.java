@@ -3,11 +3,6 @@ package trymodel.entities3;
 import xxx.joker.libs.repository.design.JkEntityField;
 import xxx.joker.libs.repository.design.JkRepoEntity;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
@@ -15,9 +10,9 @@ public class Book extends JkRepoEntity {
 
     @JkEntityField(idx = 0)
     private String title;
-    @JkEntityField(idx = 1, collectionType = Book.class)
+    @JkEntityField(idx = 1)
     private List<Book> others;
-    @JkEntityField(idx = 2, collectionType = Categ.class)
+    @JkEntityField(idx = 2)
     private Set<Categ> categs;
     @JkEntityField(idx = 3)
     private Book book;

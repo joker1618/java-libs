@@ -1,9 +1,6 @@
 package trymodel;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
-import trymodel.entities2.CustomAndCollections;
-import trymodel.entities2.CustomEntity;
 import trymodel.entities3.Book;
 import trymodel.entities3.Categ;
 import xxx.joker.libs.core.files.JkFiles;
@@ -11,11 +8,8 @@ import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.JkDataRepo;
 import xxx.joker.libs.repository.JkDataRepoFile;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;

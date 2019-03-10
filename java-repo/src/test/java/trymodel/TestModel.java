@@ -2,16 +2,11 @@ package trymodel;
 
 import org.junit.Test;
 import xxx.joker.libs.core.files.JkFiles;
-import xxx.joker.libs.core.lambdas.JkStreams;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class TestModel {
 

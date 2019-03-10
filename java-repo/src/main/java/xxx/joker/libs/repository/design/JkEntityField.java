@@ -31,12 +31,6 @@ import java.lang.annotation.Target;
  * 	- List
  * 	- Set
  *
- * PARAMETERS:
- * - collectionType: must be specified for 'List' and 'Set' fields only
- * 		a) List can be of any type allowed
- * 		b) Set can be of any Comparable type allowed
- *
- *
  * DETAILS:
  * - String  -->  null not permitted: used ""
  * - List    -->  null not permitted: used 'emptyList'
@@ -47,8 +41,5 @@ import java.lang.annotation.Target;
 public @interface JkEntityField {
 
 	int idx();
-
-    // Must be specified  for List and Set only
-	Class<?> collectionType() default Object.class;
 
 }

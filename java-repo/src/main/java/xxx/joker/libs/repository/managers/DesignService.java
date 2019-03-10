@@ -91,10 +91,6 @@ class DesignService {
         return repoLines;
     }
 
-    public Map<Class<?>, TreeMap<Integer, DesignField>> getDesignMap() {
-        return designMap;
-    }
-
     private Map<Class<?>, TreeMap<Integer, DesignField>> parseEntityClasses(Collection<Class<?>> classes) {
         List<String> dups = JkStreams.getDuplicates(JkStreams.map(classes, Class::getSimpleName));
         if (!dups.isEmpty()) {
@@ -113,30 +109,20 @@ class DesignService {
 
             List<DesignField> dfields = JkStreams.map(fields, DesignField::new);
 
-            List<DesignField> negIdxs = JkStreams.filter(dfields, df -> df.getIdx() < 0);
+            List<DesignField> negIdxs = JkStreams.filter(dfields, df -> df.getAnnotIdx() < 0);
             if (!negIdxs.isEmpty()) {
                 throw new RepoDesignError("class {}: negative 'idx' {}", clazz, negIdxs);
             }
-            List<Integer> idxDups = JkStreams.getDuplicates(JkStreams.map(dfields, DesignField::getIdx));
+            List<Integer> idxDups = JkStreams.getDuplicates(JkStreams.map(dfields, DesignField::getAnnotIdx));
             if (!idxDups.isEmpty()) {
                 throw new RepoDesignError("class {}: duplicated 'idx' {}", clazz, idxDups);
             }
 
             for (DesignField dfield : dfields) {
                 String fieldName = dfield.getFieldName();
-                Class<?> collType = dfield.getCollectionType();
 
-                if (dfield.isCollection()) {
-                    if (collType == Object.class) {
-                        throw new RepoDesignError("field {}: collectionType not specified", fieldName);
-                    }
-                    if (dfield.isSet() && !dfield.isFlatFieldComparable()) {
-                        throw new RepoDesignError("field {}: set must have comparable elements", fieldName);
-                    }
-                } else {
-                    if (collType != Object.class) {
-                        throw new RepoDesignError("field {}: collection type not allowed", fieldName);
-                    }
+                if (dfield.isSet() && !dfield.isFlatFieldComparable()) {
+                    throw new RepoDesignError("field {}: set must have comparable elements", fieldName);
                 }
 
                 Class<?> toCheck = dfield.getFlatFieldType();
@@ -144,7 +130,7 @@ class DesignService {
                     throw new RepoDesignError("field {}: class type {} not allowed", fieldName, toCheck);
                 }
 
-                toRet.get(clazz).put(dfield.getIdx(), dfield);
+                toRet.get(clazz).put(dfield.getAnnotIdx(), dfield);
             }
         }
 

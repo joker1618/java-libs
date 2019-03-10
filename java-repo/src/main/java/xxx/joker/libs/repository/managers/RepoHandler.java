@@ -9,15 +9,16 @@ import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.design.JkEntity;
 import xxx.joker.libs.repository.exceptions.RepoDesignError;
 
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
-
-import static xxx.joker.libs.core.utils.JkConsole.display;
 
 class RepoHandler {
 
@@ -232,7 +233,7 @@ class RepoHandler {
         List<DesignField> depDFields = JkStreams.filter(designMap.get(e.getClass()).values(), DesignField::isFlatJkEntity);
         Map<Integer, List<ForeignKey>> depFKs = JkStreams.toMap(foreignKeys.get(e.getEntityID()), ForeignKey::getFromFieldIdx);
         for(DesignField dfield : depDFields) {
-            List<ForeignKey> fkField = depFKs.get(dfield.getIdx());
+            List<ForeignKey> fkField = depFKs.get(dfield.getAnnotIdx());
             if(dfield.isCollection()) {
                 List<JkEntity> eDeps = new ArrayList<>();
                 if(fkField != null) {
@@ -249,10 +250,10 @@ class RepoHandler {
 
     private void setEntityFieldColl(JkEntity e, DesignField dfield, Collection<JkEntity> eDeps) {
         if(dfield.isList()) {
-            HandlerList handler = new HandlerList(e.getEntityID(), dfield.getIdx(), eDeps);
+            HandlerList handler = new HandlerList(e.getEntityID(), dfield.getAnnotIdx(), eDeps);
             dfield.setValue(e, handler.createProxyList());
         } else {
-            HandlerSet handler = new HandlerSet(e.getEntityID(), dfield.getIdx(), eDeps);
+            HandlerSet handler = new HandlerSet(e.getEntityID(), dfield.getAnnotIdx(), eDeps);
             dfield.setValue(e, handler.createProxySet());
         }
     }
@@ -289,10 +290,10 @@ class RepoHandler {
             Object value = dfield.getValue(e);
             if(dfield.isCollection()) {
                 Collection<JkEntity> coll = (Collection<JkEntity>) value;
-                fkList.addAll(JkStreams.map(coll, v -> new ForeignKey(e.getEntityID(), dfield.getIdx(), v.getEntityID())));
+                fkList.addAll(JkStreams.map(coll, v -> new ForeignKey(e.getEntityID(), dfield.getAnnotIdx(), v.getEntityID())));
             } else if(value != null) {
                 JkEntity eVal = (JkEntity) value;
-                fkList.add(new ForeignKey(e.getEntityID(), dfield.getIdx(), eVal.getEntityID()));
+                fkList.add(new ForeignKey(e.getEntityID(), dfield.getAnnotIdx(), eVal.getEntityID()));
             }
         }
         return fkList;
