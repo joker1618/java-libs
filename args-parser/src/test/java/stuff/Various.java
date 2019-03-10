@@ -1,7 +1,6 @@
 package stuff;
 
 import org.junit.Test;
-import xxx.joker.libs.core.ToAnalyze;
 
 import java.lang.reflect.Field;
 

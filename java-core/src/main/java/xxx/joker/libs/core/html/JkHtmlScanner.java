@@ -2,7 +2,6 @@ package xxx.joker.libs.core.html;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import xxx.joker.libs.core.ToAnalyze;
 
 import java.util.ArrayList;
 import java.util.List;

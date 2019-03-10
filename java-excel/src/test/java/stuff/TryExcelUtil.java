@@ -1,7 +1,6 @@
 package stuff;
 
 import org.junit.Test;
-import xxx.joker.libs.core.ToAnalyze;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -3,7 +3,7 @@ package xxx.joker.libs.excel;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
-import xxx.joker.libs.core.datetime.JkTime;
+import xxx.joker.libs.core.datetime.JkDateTime;
 import xxx.joker.libs.core.objects.Area;
 import xxx.joker.libs.core.objects.Pos;
 import xxx.joker.libs.core.utils.JkConvert;
@@ -184,7 +184,7 @@ abstract class JkAbstractSheet implements JkSheet {
             if(value instanceof LocalDate) {
                 cell.setCellValue(Date.valueOf((LocalDate) value));
             } else if(value instanceof LocalDateTime) {
-                cell.setCellValue(new Date(JkTime.of((LocalDate) value).getTotalMillis()));
+                cell.setCellValue(new Date(JkDateTime.of((LocalDate) value).getTotalMillis()));
             } else if(value instanceof Integer) {
                 cell.setCellValue(JkConvert.toInt(String.valueOf(value)));
             } else if(value instanceof Long) {

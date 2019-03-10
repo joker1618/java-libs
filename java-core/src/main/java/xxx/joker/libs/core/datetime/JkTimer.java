@@ -6,7 +6,6 @@ import java.util.List;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static java.time.temporal.ChronoUnit.MINUTES;
 
-// todo impl
 public class JkTimer {
 
     private long startTm;

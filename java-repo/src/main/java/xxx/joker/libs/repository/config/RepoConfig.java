@@ -31,10 +31,6 @@ public class RepoConfig {
             String.class,
             File.class,
             Path.class
-
-//            List.class,
-//            Set.class,
-//            Map.class
     );
 
     public static boolean isFieldClassAllowed(Class<?> fieldClazz) {
