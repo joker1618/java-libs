@@ -194,6 +194,7 @@ class JkHtmlTagImpl implements JkHtmlTag {
         this.autoClosed = autoClosed;
     }
 
+
     @Override
     public String toString() {
         return strf("%s%s", tagName, children.isEmpty() ? "" : "  ("+children.size()+")");

@@ -91,9 +91,11 @@ public class JkHtmlScanner {
         StringBuilder sb = new StringBuilder(tempStr.trim());
         int idx = sb.indexOf(" ");
         if(idx == -1) {
+            // tag name only
             tag.setTagName(sb.toString());
 
         } else {
+            // tag name + attributes
             tag.setTagName(sb.substring(0, idx));
 
             sb.delete(0, idx+1);

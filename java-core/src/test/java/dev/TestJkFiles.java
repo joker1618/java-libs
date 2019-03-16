@@ -50,7 +50,7 @@ public class TestJkFiles {
     public void copySingleFile2() {
         Path inputPath = Paths.get("C:\\Users\\f.barbano\\Desktop\\from");
         Path outputPath = Paths.get("C:\\Users\\f.barbano\\Desktop\\to");
-        JkTimer timer = new JkTimer(true);
+        JkTimer timer = new JkTimer();
         JkFiles.copyFile(inputPath, outputPath, true);
         display("Copy completed in {}", JkDates.toStringElapsed(timer.elapsed(), true));
     }
