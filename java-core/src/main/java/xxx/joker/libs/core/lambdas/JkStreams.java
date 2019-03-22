@@ -45,6 +45,7 @@ public class JkStreams {
 		return source.stream().map(mapper).filter(filter).sorted(sorter).distinct().collect(Collectors.toList());
 	}
 
+	@SafeVarargs
 	public static <T> List<T> filter(Collection<T> source, Predicate<T>... filters) {
 		Stream<T> stream = source.stream();
 		for(Predicate<T> filter : filters) {

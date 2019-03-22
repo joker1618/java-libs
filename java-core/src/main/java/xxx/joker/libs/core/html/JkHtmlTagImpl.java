@@ -16,6 +16,7 @@ class JkHtmlTagImpl implements JkHtmlTag {
     private List<String> textTagLines;
     private List<String> allTextInsideLines;
     private boolean autoClosed;
+    private String origHtml;
 
     protected JkHtmlTagImpl() {
         this.attributeMap = new HashMap<>();
@@ -179,6 +180,16 @@ class JkHtmlTagImpl implements JkHtmlTag {
     }
 
     @Override
+    public String getHtml() {
+        return origHtml.contains("&") ? HtmlChars.escapeHtmlChars(origHtml) : origHtml;
+    }
+    @Override
+    public String getTextInside() {
+        String html = origHtml.contains("&") ? HtmlChars.escapeHtmlChars(origHtml) : origHtml;
+        return html.replaceAll("^<(.*?)>", "").replaceAll("</(.*?)>$", "");
+    }
+
+    @Override
     public boolean isAutoClosed() {
         return autoClosed;
     }
@@ -192,6 +203,9 @@ class JkHtmlTagImpl implements JkHtmlTag {
 
     protected void setAutoClosed(boolean autoClosed) {
         this.autoClosed = autoClosed;
+    }
+    protected void setHtml(String origHtml) {
+        this.origHtml = origHtml;
     }
 
 

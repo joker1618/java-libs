@@ -2,20 +2,39 @@ package xxx.joker.libs.core.html;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class JkHtmlScanner {
 
+    private static final Logger logger = LoggerFactory.getLogger(JkHtmlScanner.class);
+
     private JkHtmlScanner() {}
+
+    public static JkHtmlTag parseTag(String html, String tagName) {
+        String finalHtml = fixHtml(html);
+        int idx = StringUtils.indexOfIgnoreCase(finalHtml, "<" + tagName);
+        if(idx == -1)   return null;
+        List<JkHtmlTag> res = parseHtml(finalHtml.substring(idx), true);
+        return res.isEmpty() ? null : res.get(0);
+    }
 
     public static List<JkHtmlTag> parseHtml(String html) {
         String finalHtml = fixHtml(html);
-        StringBuilder sb = new StringBuilder(finalHtml);
+        return parseHtml(finalHtml, false);
+    }
+
+    private static List<JkHtmlTag> parseHtml(String html, boolean onlyFirstTag) {
+        StringBuilder sb = new StringBuilder(html);
 
         List<JkHtmlTag> rootTags = new ArrayList<>();
-        List<JkHtmlTag> openedList = new ArrayList<>();
+        Stack<JkHtmlTagImpl> openedTags = new Stack<>();
+        Stack<Integer> openedStarts = new Stack<>();
+        int seek = 0;
         int ltIndex;
 
         while((ltIndex = sb.indexOf("<")) != -1) {
@@ -23,60 +42,52 @@ public class JkHtmlScanner {
             if(gtIndex == -1)   break;
 
             String strTag = sb.substring(ltIndex, gtIndex + 1);
-            Pair<JkHtmlTag, Boolean> pair = parseTagString(strTag);
-            JkHtmlTag tag = pair.getKey();
+            Pair<JkHtmlTagImpl, Boolean> pair = parseTagString(strTag);
+            JkHtmlTagImpl tag = pair.getKey();
+            boolean isClosure = !pair.getValue();
 
-            if(pair.getValue()) {
-                if (!openedList.isEmpty()) {
-                    JkHtmlTag parent = openedList.get(openedList.size() - 1);
+            if(!isClosure) {
+                if (!openedTags.empty()) {
+                    JkHtmlTagImpl parent = openedTags.peek();
                     parent.getChildren().add(tag);
-                    String trim = sb.substring(0, ltIndex).trim();
-                    if(!trim.isEmpty()) {
-                        parent.getTextTagLines().add(trim);
-                        parent.getAllTextInsideLines().add(trim);
-                    }
-                    if("br".equalsIgnoreCase(tag.getTagName())) {
-                        parent.getTextTagLines().add(StringUtils.LF);
-                        parent.getAllTextInsideLines().add(StringUtils.LF);
-                    }
-
                 } else {
                     rootTags.add(tag);
                 }
-                if (!tag.isAutoClosed())    openedList.add(tag);
 
-            } else if(openedList.isEmpty()) {
+                if (!tag.isAutoClosed()) {
+                    openedTags.push(tag);
+                    openedStarts.push(seek + ltIndex);
+                } else {
+                    tag.setHtml(strTag);
+                }
+
+            } else if(openedTags.empty()) {
                 break;
 
             } else {
-                JkHtmlTag parentTag = openedList.get(openedList.size()-1);
-                if(!parentTag.getTagName().equals(tag.getTagName())) {
+                JkHtmlTagImpl popTag = openedTags.pop();
+                if(!popTag.getTagName().equals(tag.getTagName())) {
                     break;
                 }
 
-                String trim = sb.substring(0, ltIndex).trim();
-                if(!trim.isEmpty()) {
-                    parentTag.getTextTagLines().add(trim);
-                    parentTag.getAllTextInsideLines().add(trim);
-                }
+                String subs = html.substring(openedStarts.pop(), seek + gtIndex + 1);
+                popTag.setHtml(subs);
 
-                openedList.remove(openedList.size()-1);
-
-                if(!openedList.isEmpty()) {
-                    JkHtmlTag lastTag = openedList.get(openedList.size()-1);
-                    lastTag.getAllTextInsideLines().addAll(parentTag.getAllTextInsideLines());
+                if(openedTags.empty() && onlyFirstTag) {
+                    break;
                 }
             }
 
-            sb.delete(0, gtIndex+1);
+            sb.delete(0, gtIndex + 1);
+            seek += gtIndex + 1;
         }
 
         return rootTags;
     }
 
-    // return <tag; true if is a tag description, false if is a tag closure>
+    // return <tag; true if is a tag open, false if is a tag closure>
     // strTag = <...>
-    private static Pair<JkHtmlTag, Boolean> parseTagString(String strTag) {
+    private static Pair<JkHtmlTagImpl, Boolean> parseTagString(String strTag) {
         // Check if is a tag closure
         if(strTag.startsWith("</")) {
             String tagName = strTag.replaceAll("^</", "").replaceAll(">$", "").trim();

@@ -26,9 +26,9 @@ public class HtmlChars {
                 new HtmlChar("&sol;", '/', "&#47;"),
                 new HtmlChar("&colon;", ':', "&#58;"),
                 new HtmlChar("&semi;", ';', "&#59;"),
-//                new HtmlChar("&lt;", '<', "&#60;"),
+                new HtmlChar("&lt;", '<', "&#60;"),
                 new HtmlChar("&equals;", '=', "&#61;"),
-//                new HtmlChar("&gt;", '>', "&#62;"),
+                new HtmlChar("&gt;", '>', "&#62;"),
                 new HtmlChar("&quest;", '?', "&#63;"),
                 new HtmlChar("&commat;", '@', "&#64;"),
                 new HtmlChar("&lsqb;", '[', "&#91;"),
@@ -271,7 +271,7 @@ public class HtmlChars {
         return JkStreams.map(source, HtmlChars::escapeHtmlChars);
     }
 
-    public static class HtmlChar {
+    private static class HtmlChar {
         private String andCode;
         private String hashtagCode;
         private char character;

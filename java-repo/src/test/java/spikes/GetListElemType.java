@@ -5,13 +5,19 @@ import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class GetListElemType {
 
     List<String> stringList = new ArrayList<String>();
     List<Integer> integerList = new ArrayList<Integer>();
+    Map<Integer, Path> mappa = new HashMap<>();
 
     @Test
     public void getElemType() throws Exception {
@@ -31,6 +37,13 @@ public class GetListElemType {
         System.out.println("name: "+integerListClass.getName());
         System.out.println("simple name: "+integerListClass.getSimpleName());
         System.out.println("canonical name: "+integerListClass.getCanonicalName());
+        System.out.println();
+
+        Field mapfielf = GetListElemType.class.getDeclaredField("mappa");
+        ParameterizedType mappapt = (ParameterizedType) mapfielf.getGenericType();
+        Class<?> mlc1 = (Class<?>) mappapt.getActualTypeArguments()[0];
+        Class<?> mlc2 = (Class<?>) mappapt.getActualTypeArguments()[1];
+        System.out.println(strf("Map<{}, {}>", mlc1.getSimpleName(), mlc2.getSimpleName()));
 
     }
 }

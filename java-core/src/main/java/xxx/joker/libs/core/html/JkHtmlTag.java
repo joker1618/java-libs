@@ -29,6 +29,9 @@ public interface JkHtmlTag {
 
     boolean isAutoClosed();
 
+    String getHtml();
+    String getTextInside();
+
 
 
 }
