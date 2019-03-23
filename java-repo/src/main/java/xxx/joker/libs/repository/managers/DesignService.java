@@ -184,15 +184,15 @@ class DesignService {
 
         if (value.equals(PH_NULL)) {
             o = null;
-        } else if (Arrays.asList(boolean.class, Boolean.class).contains(fclazz)) {
+        } else if (anyMatch(fclazz, boolean.class, Boolean.class)) {
             o = Boolean.valueOf(value);
-        } else if (Arrays.asList(int.class, Integer.class).contains(fclazz)) {
+        } else if (anyMatch(fclazz, int.class, Integer.class)) {
             o = JkConvert.toInt(value);
-        } else if (Arrays.asList(long.class, Long.class).contains(fclazz)) {
+        } else if (anyMatch(fclazz, long.class, Long.class)) {
             o = JkConvert.toLong(value);
-        } else if (Arrays.asList(float.class, Float.class).contains(fclazz)) {
+        } else if (anyMatch(fclazz, float.class, Float.class)) {
             o = JkConvert.toFloat(value);
-        } else if (Arrays.asList(double.class, Double.class).contains(fclazz)) {
+        } else if (anyMatch(fclazz, double.class, Double.class)) {
             o = JkConvert.toDouble(value);
         } else if (fclazz == Path.class) {
             o = Paths.get(value);
@@ -264,9 +264,9 @@ class DesignService {
 
         if (value == null) {
             toRet = PH_NULL;
-        } else if (Arrays.asList(boolean.class, Boolean.class).contains(fclazz)) {
+        } else if (anyMatch(fclazz, boolean.class, Boolean.class)) {
             toRet = ((Boolean) value) ? "true" : "false";
-        } else if (Arrays.asList(File.class, Path.class).contains(fclazz)) {
+        } else if (anyMatch(fclazz, File.class, Path.class)) {
             toRet = value.toString();
         } else if (fclazz == LocalTime.class) {
             toRet = DateTimeFormatter.ISO_TIME.format((LocalTime) value);
@@ -274,7 +274,7 @@ class DesignService {
             toRet = DateTimeFormatter.ISO_DATE.format((LocalDate) value);
         } else if (fclazz == LocalDateTime.class) {
             toRet = DateTimeFormatter.ISO_DATE_TIME.format((LocalDateTime) value);
-        } else if (Arrays.asList(int.class, Integer.class, long.class, Long.class, float.class, Float.class, double.class, Double.class).contains(fclazz)) {
+        } else if (anyMatch(fclazz, int.class, Integer.class, long.class, Long.class, float.class, Float.class, double.class, Double.class)) {
             toRet = String.valueOf(value);
         } else if (fclazz == String.class) {
             toRet = String.valueOf(value).replaceAll("\t", PH_TAB).replaceAll("\n", PH_NEWLINE);
@@ -288,6 +288,13 @@ class DesignService {
     }
     private String formatForeignKey(ForeignKey fk) {
         return strf("{}{}{}{}{}", fk.getFromID(), SEP_FIELD, fk.getFromFieldIdx(), SEP_FIELD, fk.getDepID());
+    }
+    
+    private boolean anyMatch(Class<?> toFind, Class<?>... elems) {
+        for(Class<?> c : elems) {
+            if(c == toFind) return true;
+        }
+        return false;
     }
 
 }

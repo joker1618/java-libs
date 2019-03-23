@@ -11,13 +11,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class GetListElemType {
 
-    List<String> stringList = new ArrayList<String>();
-    List<Integer> integerList = new ArrayList<Integer>();
-    Map<Integer, Path> mappa = new HashMap<>();
+    int[] iarr;
+    List<String> stringList;
+    List<Integer> integerList;
+    Map<Integer, Path> mappa;
 
     @Test
     public void getElemType() throws Exception {
@@ -44,6 +46,10 @@ public class GetListElemType {
         Class<?> mlc1 = (Class<?>) mappapt.getActualTypeArguments()[0];
         Class<?> mlc2 = (Class<?>) mappapt.getActualTypeArguments()[1];
         System.out.println(strf("Map<{}, {}>", mlc1.getSimpleName(), mlc2.getSimpleName()));
+
+        Field fiarr = TryReflection.class.getDeclaredField("iarr");
+        display("{}", fiarr.getType().getName());
+        display("{}", fiarr.getType().getComponentType());
 
     }
 }
