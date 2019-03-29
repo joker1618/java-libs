@@ -13,21 +13,34 @@ public class JkRuntimeException extends RuntimeException implements JkThrowable 
 
 	private boolean simpleClassName;
 
+	public JkRuntimeException(String message) {
+		this("{}", message);
+	}
 	public JkRuntimeException(String message, Object... params) {
 		super(strf(message, params));
 	}
 
-	public JkRuntimeException(boolean simpleClassName, String message, Object... params) {
-		super(strf(message, params));
-		this.simpleClassName = simpleClassName;
+	public JkRuntimeException(Throwable cause, String message) {
+		this(cause, "{}", message);
 	}
-
 	public JkRuntimeException(Throwable cause, String message, Object... params) {
 		super(strf(message, params), cause);
 	}
 
+	public JkRuntimeException(boolean simpleClassName, Throwable cause, String message) {
+		this(simpleClassName, cause, "{}", message);
+	}
+	public JkRuntimeException(boolean simpleClassName, Throwable cause, String message, Object... params) {
+		super(strf(message, params), cause);
+		this.simpleClassName = simpleClassName;
+	}
+
 	public JkRuntimeException(Throwable cause) {
 		super(cause);
+	}
+	public JkRuntimeException(boolean simpleClassName, Throwable cause) {
+		super(cause);
+		this.simpleClassName = simpleClassName;
 	}
 
 	@Override

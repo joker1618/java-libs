@@ -63,13 +63,13 @@ public class JkDuration {
     }
 
     public String toStringElapsed() {
-        return toStringElapsed(true, SECONDS);
+        return toStringElapsed(true);
     }
     public String toStringElapsed(boolean showMilli) {
         return toStringElapsed(showMilli, SECONDS);
     }
     public String toStringElapsed(ChronoUnit minUnit) {
-        return toStringElapsed(false, minUnit);
+        return toStringElapsed(true, minUnit);
     }
     public String toStringElapsed(boolean showMilli, ChronoUnit minUnit) {
         StringBuilder sb = new StringBuilder();
@@ -90,6 +90,19 @@ public class JkDuration {
         }
 
         return sb.toString();
+    }
+
+    public static String toStringElapsed(long milli) {
+        return JkDuration.of(milli).toStringElapsed();
+    }
+    public static String toStringElapsed(long milli, boolean showMilli) {
+        return JkDuration.of(milli).toStringElapsed(showMilli);
+    }
+    public static String toStringElapsed(long milli, ChronoUnit minUnit) {
+        return JkDuration.of(milli).toStringElapsed(minUnit);
+    }
+    public static String toStringElapsed(long milli, boolean showMilli, ChronoUnit minUnit) {
+        return JkDuration.of(milli).toStringElapsed(showMilli, minUnit);
     }
 
     public long getTotalMillis() {

@@ -174,12 +174,15 @@ public class JkFiles {
 			throw new JkRuntimeException(ex);
 		}
 	}
+	@SafeVarargs
 	public static List<String> readLines(Path filePath, Predicate<String>... filters) {
 		return readLines(filePath, false, false, filters);
 	}
+	@SafeVarargs
 	public static List<String> readLinesNotBlank(Path filePath, Predicate<String>... filters) {
 		return readLines(filePath, true, false, filters);
 	}
+	@SafeVarargs
 	public static List<String> readLines(Path filePath, boolean removeBlankLines, boolean trimLines, Predicate<String>... filters) {
 		try {
 			List<String> lines = Files.readAllLines(filePath);
@@ -242,9 +245,11 @@ public class JkFiles {
 
 
 	/* FIND methods */
+	@SafeVarargs
 	public static List<Path> findFiles(Path root, int maxDepth, Predicate<Path>... filterConds) {
 		return findFiles1(root, maxDepth, Arrays.asList(filterConds));
 	}
+	@SafeVarargs
 	public static List<Path> findFiles(Path root, boolean recursive, Predicate<Path>... filterConds) {
 		return findFiles1(root, recursive ? Integer.MAX_VALUE : 1, Arrays.asList(filterConds));
 	}

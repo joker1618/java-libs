@@ -13,6 +13,7 @@ public class JkStreams {
 	public static <T,U> List<U> map(Collection<T> source, Function<T,U> mapper) {
 		return source.stream().map(mapper).collect(Collectors.toList());
 	}
+	@SafeVarargs
 	public static <T,U> List<U> mapFilter(Collection<T> source, Function<T,U> mapper, Predicate<U>... filters) {
 		Stream<U> stream = source.stream().map(mapper);
 		for(Predicate<U> filter : filters) {
@@ -136,7 +137,8 @@ public class JkStreams {
 	public static <V,K> Map<K,List<V>> toMap(Collection<V> source, Function<V,K> keyMapper) {
 		return toMap(source, keyMapper, v -> v);
 	}
-    public static <V,K,T> Map<K,List<T>> toMap(Collection<V> source, Function<V,K> keyMapper, Function<V,T> valueMapper, Predicate<V>... filters) {
+	@SafeVarargs
+	public static <V,K,T> Map<K,List<T>> toMap(Collection<V> source, Function<V,K> keyMapper, Function<V,T> valueMapper, Predicate<V>... filters) {
         Map<K,List<T>> map = new HashMap<>();
 
         if(source != null && !source.isEmpty()) {
@@ -160,6 +162,7 @@ public class JkStreams {
 	public static <V,K> Map<K,V> toMapSingle(Collection<V> source, Function<V,K> keyMapper) {
 		return toMapSingle(source, keyMapper, v -> v);
 	}
+	@SafeVarargs
 	public static <V,K,T> Map<K,T> toMapSingle(Collection<V> source, Function<V,K> keyMapper, Function<V,T> valueMapper, Predicate<V>... filters) {
 		Map<K,T> map = new HashMap<>();
 
@@ -219,4 +222,8 @@ public class JkStreams {
 		return values;
 	}
 
+	public static <T> T getLastElem(Collection<T> coll) {
+		List<T> sorted = sorted(coll);
+		return sorted.isEmpty() ? null : sorted.get(sorted.size() - 1);
+	}
 }

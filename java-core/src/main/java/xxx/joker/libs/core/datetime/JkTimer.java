@@ -1,43 +1,59 @@
 package xxx.joker.libs.core.datetime;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.time.temporal.ChronoUnit.HOURS;
-import static java.time.temporal.ChronoUnit.MINUTES;
 
 public class JkTimer {
 
     private long startTm;
-    private List<Long> marksTm;
+    private List<Pair<String, Long>> marks;
     private long endTm;
 
     public JkTimer() {
         this.startTm = nowMillis();
-        this.marksTm = new ArrayList<>();
+        this.marks = new ArrayList<>();
+        this.endTm = -1L;
     }
     
     public void reset() {
         startTm = nowMillis();
-        marksTm.clear();
+        marks.clear();
+        endTm = -1L;
     }
     
-    public long mark() {
-        long now = nowMillis();
-        long from = marksTm.isEmpty() ? startTm : marksTm.get(marksTm.size()-1);
-        this.marksTm.add(now);
-        return now - from;
+    public void mark(String label) {
+        marks.add(Pair.of(label, nowMillis()));
     }
 
     public long elapsed() {
-        long stop = marksTm.isEmpty() ? nowMillis() : marksTm.get(marksTm.size()-1);
+        long stop = endTm == -1 ? nowMillis() : endTm;
         return stop - startTm;
     }
-    public long totalElapsed() {
-        return nowMillis() - startTm;
+
+    public void stop() {
+        if(endTm == -1) {
+            endTm = nowMillis();
+        }
     }
 
-    
+    public String toStringElapsed() {
+        return JkDuration.toStringElapsed(elapsed());
+    }
+
+    public long getStartTm() {
+        return startTm;
+    }
+
+    public long getEndTm() {
+        return endTm;
+    }
+
+    public List<Pair<String, Long>> getMarks() {
+        return marks;
+    }
+
     private long nowMillis() {
         return System.currentTimeMillis();
     }

@@ -1,6 +1,7 @@
 package dev;
 
 import org.junit.Test;
+import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.datetime.JkDates;
 import xxx.joker.libs.core.files.JkFiles;
@@ -52,7 +53,7 @@ public class TestJkFiles {
         Path outputPath = Paths.get("C:\\Users\\f.barbano\\Desktop\\to");
         JkTimer timer = new JkTimer();
         JkFiles.copyFile(inputPath, outputPath, true);
-        display("Copy completed in {}", JkDates.toStringElapsed(timer.elapsed(), true));
+        display("Copy completed in {}", JkDuration.toStringElapsed(timer.elapsed()));
     }
 
     @Test

@@ -16,20 +16,6 @@ public class JkDates {
 
     public static final DateTimeFormatter DTF_AOD = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-    /* OUTPUTS */
-    public static String toStringElapsed(long elapsed) {
-        return toStringElapsed(elapsed, false, SECONDS);
-    }
-    public static String toStringElapsed(long elapsed, ChronoUnit minUnit) {
-        return toStringElapsed(elapsed, false, minUnit);
-    }
-    public static String toStringElapsed(long elapsed, boolean showMilli) {
-        return toStringElapsed(elapsed, showMilli, SECONDS);
-    }
-    public static String toStringElapsed(long elapsed, boolean showMilli, ChronoUnit minUnit) {
-        return JkDuration.of(elapsed).toStringElapsed(showMilli, minUnit);
-    }
-
     /* PARSER */
     public static LocalDate toDate(String str, String pattern) {
         try {

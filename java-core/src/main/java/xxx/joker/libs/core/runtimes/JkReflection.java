@@ -5,6 +5,8 @@ import xxx.joker.libs.core.lambdas.JkStreams;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class JkReflection {
@@ -17,7 +19,7 @@ public class JkReflection {
 		}
 	}
 
-	public static <T> void setFieldValue(T instance, Field field, Object value) {
+	public static void setFieldValue(Object instance, Field field, Object value) {
 		try {
 			if(field.isAccessible()) {
 				field.set(instance, value);
@@ -30,6 +32,24 @@ public class JkReflection {
 			throw new JkRuntimeException("Class {}: error setting field ({}) value ({})", instance.getClass(), field.getName(), value);
 		}
 	}
+
+	public static Object getFieldValue(Object instance, Field field) {
+		try {
+			Object obj;
+			if (field.isAccessible()) {
+				obj = field.get(instance);
+			} else {
+				field.setAccessible(true);
+				obj = field.get(instance);
+				field.setAccessible(false);
+			}
+			return obj;
+
+		} catch (Exception ex) {
+			throw new JkRuntimeException("Class {}: error getting field value from ({})", instance.getClass().getName(), field.getName());
+		}
+	}
+
 
 	public static List<Field> getFieldsByAnnotation(Class<?> sourceClass, Class<? extends Annotation> annotationClass) {
 		List<Field> toRet = new ArrayList<>();
@@ -72,7 +92,17 @@ public class JkReflection {
 		return null;
 	}
 
-	public static boolean isInstanceOf(Class<?> clazz, Class<?> expected) {
+	public static boolean isInstanceOf(Class<?> clazz, Class<?>... expected) {
+		List<Class<?>> types = findAllClassTypes(clazz);
+		for(Class<?> cexp : expected) {
+			if(types.contains(cexp)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static List<Class<?>> findAllClassTypes(Class<?> clazz) {
 		Set<Class<?>> types = new HashSet<>();
 
 		Class<?> tmp = clazz;
@@ -82,7 +112,7 @@ public class JkReflection {
 			tmp = tmp.getSuperclass();
 		}
 
-		return types.contains(expected);
+		return new ArrayList<>(types);
 	}
 
 	private static Set<Class<?>> findAllInterfaces(Class<?> clazz) {
@@ -92,6 +122,24 @@ public class JkReflection {
 			interfaces.addAll(findAllInterfaces(interf));
 		}
 		return interfaces;
+	}
+
+	public static Class<?>[] getParametrizedTypes(Class<?> clazz, String fieldName) {
+		try {
+			Field field = clazz.getDeclaredField(fieldName);
+			return getParametrizedTypes(field);
+		} catch (NoSuchFieldException e) {
+			return new Class<?>[0];
+		}
+	}
+	public static Class<?>[] getParametrizedTypes(Field field) {
+		Class<?> genType = (Class<?>) field.getGenericType();
+		if(!isInstanceOf(genType, ParameterizedType.class)) {
+			return new Class<?>[0];
+		}
+
+		Type[] types = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
+		return JkStreams.map(Arrays.asList(types), t -> (Class<?>) t).toArray(new Class<?>[0]);
 	}
 
 }
