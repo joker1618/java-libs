@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.regex.Pattern;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
@@ -19,8 +20,27 @@ public class Misc {
 
     @Test
     public void tt() {
-        Path p1 = Paths.get("pippo").toAbsolutePath();
-        Path p2 = p1.resolve("../pippo");
-        display("A =   {}\nB =   {}\nres = {}", p1, p2, p1.compareTo(p2));
-    }
+        String dbName = "db";
+
+        String s = "db#pippo#jkrepo.er";
+        display("{}: {}", s, Pattern.matches("^"+dbName+"#(.*?)#jkrepo\\.[^\\.]+$", s));
+
+        s = "db##jkrepo.er";
+        display("{}: {}", s, Pattern.matches("^"+dbName+"#(.*?)#jkrepo\\.[^\\.]+$", s));
+
+        s = "db#pippo#jkrepo.";
+        display("{}: {}", s, Pattern.matches("^"+dbName+"#(.*?)#jkrepo\\.[^\\.]+$", s));
+
+        s = "db#pippo#jkrepoooo";
+        display("{}: {}", s, Pattern.matches("^"+dbName+"#(.*?)#jkrepo\\.[^\\.]+$", s));
+
+        s = "db#pippo#jkrepo.e.e";
+        display("{}: {}", s, s.matches("^"+dbName+"#(.*?)#jkrepo\\.[^\\.]+$"));
+
+        s = "db#pippo #jkrepo.e#";
+        display("{}: {}", s, Pattern.matches("^"+dbName+"#[^#]*#jkrepo\\.[^.]+$", s));// correct
+
+        s = "db#pippo #jkrepo.e#";
+        display("{}: {}", s, Pattern.matches("^"+dbName+"#[^#]*#jkrepo\\.[^.#]+$", s));// correct
+     }
 }

@@ -5,8 +5,7 @@ import trymodel.entities3.Book;
 import trymodel.entities3.Categ;
 import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.utils.JkConvert;
-import xxx.joker.libs.repository.JkDataRepo;
-import xxx.joker.libs.repository.JkDataRepoFile;
+import xxx.joker.libs.repository.JkRepoFile;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,7 +13,7 @@ import java.util.Set;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
-public class Test3 extends JkDataRepoFile implements JkDataRepo {
+public class Test3 extends JkRepoFile {
 
     public Test3() {
         super(TestModel.DB_FOLDER, "test3", "trymodel.entities3");
@@ -22,7 +21,7 @@ public class Test3 extends JkDataRepoFile implements JkDataRepo {
 
     @Test
     public void testRepo3_A() {
-        JkFiles.remove(TestModel.DB_FOLDER);
+        JkFiles.delete(TestModel.DB_FOLDER);
 
         Test3 test3 = new Test3();
 

@@ -24,17 +24,19 @@ import java.lang.annotation.Target;
  * 	LocalDateTime.class
  * 	String.class
  *
- * 	? extends JkEntityFieldCustom
+ * 	? extends JkRepoFieldCustom
  * 	? extends JkEntity
  *
  * ALLOWED COLLECTION TYPES:
  * 	- List
  * 	- Set
+ * 	- Map
  *
  * DETAILS:
  * - String  -->  null not permitted: used ""
  * - List    -->  null not permitted: used 'emptyList'
  * - Set     -->  null not permitted: used 'emptySet'
+ * - Map     -->  null not permitted: used 'emptyMap'
  *
  */
 

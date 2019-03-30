@@ -2,8 +2,7 @@ package trymodel;
 
 import org.junit.Test;
 import trymodel.entities1.SimpleTypes;
-import xxx.joker.libs.repository.JkDataRepo;
-import xxx.joker.libs.repository.JkDataRepoFile;
+import xxx.joker.libs.repository.JkRepoFile;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -14,7 +13,7 @@ import java.util.Set;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
-public class Test1 extends JkDataRepoFile implements JkDataRepo {
+public class Test1 extends JkRepoFile {
 
     public Test1() {
         super(TestModel.DB_FOLDER, "test1", "trymodel.entities1");

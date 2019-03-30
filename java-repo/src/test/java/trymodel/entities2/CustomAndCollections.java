@@ -12,16 +12,16 @@ public class CustomAndCollections extends JkRepoEntity {
     @JkEntityField(idx = 0)
     private String keyword;
     @JkEntityField(idx = 1)
-    private CustomEntity customEntity;
+    private CustomEntityJk customEntity;
     @JkEntityField(idx = 2)
     private List<Integer> listInt;
     @JkEntityField(idx = 3)
     private Set<Path> setPath;
     @JkEntityField(idx = 4)
-    private List<CustomEntity> ceList;
+    private List<CustomEntityJk> ceList;
 
     public CustomAndCollections(){}
-    public CustomAndCollections(String keyword, CustomEntity customEntity, List<Integer> listInt, Set<Path> setPath, List<CustomEntity> ceList) {
+    public CustomAndCollections(String keyword, CustomEntityJk customEntity, List<Integer> listInt, Set<Path> setPath, List<CustomEntityJk> ceList) {
         this.keyword = keyword;
         this.customEntity = customEntity;
         this.listInt = listInt;
@@ -37,11 +37,11 @@ public class CustomAndCollections extends JkRepoEntity {
         this.keyword = keyword;
     }
 
-    public CustomEntity getCustomEntity() {
+    public CustomEntityJk getCustomEntity() {
         return customEntity;
     }
 
-    public void setCustomEntity(CustomEntity customEntity) {
+    public void setCustomEntity(CustomEntityJk customEntity) {
         this.customEntity = customEntity;
     }
 
@@ -61,11 +61,11 @@ public class CustomAndCollections extends JkRepoEntity {
         this.setPath = setPath;
     }
 
-    public List<CustomEntity> getCeList() {
+    public List<CustomEntityJk> getCeList() {
         return ceList;
     }
 
-    public void setCeList(List<CustomEntity> ceList) {
+    public void setCeList(List<CustomEntityJk> ceList) {
         this.ceList = ceList;
     }
 

@@ -2,20 +2,19 @@ package spikes;
 
 
 import org.junit.Test;
+import xxx.joker.libs.core.lambdas.JkStreams;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class GetListElemType {
 
+    String str;
     int[] iarr;
     List<String> stringList;
     List<Integer> integerList;
@@ -23,9 +22,14 @@ public class GetListElemType {
 
     @Test
     public void getElemType() throws Exception {
+        ParameterizedType strGen = (ParameterizedType) GetListElemType.class.getDeclaredField("str").getGenericType();
+        List<? extends Class<?>> cl = JkStreams.map(Arrays.asList(strGen.getActualTypeArguments()), t -> (Class<?>) t);
+        display("str  {}\n", cl);
         Field stringListField = GetListElemType.class.getDeclaredField("stringList");
         ParameterizedType stringListType = (ParameterizedType) stringListField.getGenericType();
-        Class<?> stringListClass = (Class<?>) stringListType.getActualTypeArguments()[0];
+        Class<?>[] arr = JkStreams.map(Arrays.asList(stringListType.getActualTypeArguments()), t -> (Class<?>) t).toArray(new Class<?>[0]);
+        Class<?> stringListClass = arr[0];
+//        Class<?> stringListClass = (Class<?>) stringListType.getActualTypeArguments()[0];
         System.out.println("toString: "+stringListClass); // class java.lang.String.
         System.out.println("name: "+stringListClass.getName()); // class java.lang.String.
         System.out.println("simple name: "+stringListClass.getSimpleName()); // class java.lang.String.

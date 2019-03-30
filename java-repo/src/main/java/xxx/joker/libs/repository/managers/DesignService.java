@@ -7,10 +7,10 @@ import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
-import xxx.joker.libs.repository.config.RepoConfig;
+import xxx.joker.libs.repository.config.JkRepoConfig;
 import xxx.joker.libs.repository.design.JkEntity;
 import xxx.joker.libs.repository.design.JkEntityField;
-import xxx.joker.libs.repository.design.JkEntityFieldCustom;
+import xxx.joker.libs.repository.design.JkRepoFieldCustom;
 import xxx.joker.libs.repository.exceptions.RepoDesignError;
 
 import java.io.File;
@@ -126,7 +126,7 @@ class DesignService {
                 }
 
                 Class<?> toCheck = dfield.getFlatFieldType();
-                if (!RepoConfig.isFieldClassAllowed(toCheck)) {
+                if (!JkRepoConfig.isFieldClassAllowed(toCheck)) {
                     throw new RepoDesignError("field {}: class type {} not allowed", fieldName, toCheck);
                 }
 
@@ -204,9 +204,9 @@ class DesignService {
             o = LocalDate.parse(value, DTF_DATE);
         } else if (fclazz == LocalDateTime.class) {
             o = LocalDateTime.parse(value, DTF_DATETIME);
-        } else if (JkReflection.isInstanceOf(fclazz, JkEntityFieldCustom.class)) {
+        } else if (JkReflection.isInstanceOf(fclazz, JkRepoFieldCustom.class)) {
             o = JkReflection.createInstanceSafe(fclazz);
-            ((JkEntityFieldCustom) o).parseString(value);
+            ((JkRepoFieldCustom) o).parseString(value);
         } else if (fclazz == String.class) {
             o = value.replaceAll(PH_TAB, "\t").replaceAll(PH_NEWLINE, "\n");
         } else {
@@ -278,8 +278,8 @@ class DesignService {
             toRet = String.valueOf(value);
         } else if (fclazz == String.class) {
             toRet = String.valueOf(value).replaceAll("\t", PH_TAB).replaceAll("\n", PH_NEWLINE);
-        } else if (JkReflection.isInstanceOf(fclazz, JkEntityFieldCustom.class)) {
-            toRet = ((JkEntityFieldCustom)value).formatField();
+        } else if (JkReflection.isInstanceOf(fclazz, JkRepoFieldCustom.class)) {
+            toRet = ((JkRepoFieldCustom)value).formatField();
         } else {
             throw new RepoDesignError("Object formatting not implemented for: class = {}, value = {}", fclazz, value);
         }

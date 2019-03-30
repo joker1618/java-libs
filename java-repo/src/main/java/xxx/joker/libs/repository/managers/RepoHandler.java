@@ -317,7 +317,7 @@ class RepoHandler {
     private class HandlerDataSet implements InvocationHandler {
         private final Logger logger = LoggerFactory.getLogger(HandlerDataSet.class);
 
-        private final List<String> writeMethodNames = Arrays.asList("add", "addAll", "remove", "removeIf", "removeAll", "clear");
+        private final List<String> writeMethodNames = Arrays.asList("add", "addAll", "delete", "removeIf", "removeAll", "clear");
         private final TreeSet<JkEntity> dataSet;
 
         private HandlerDataSet(Collection<JkEntity> data) {
@@ -353,7 +353,7 @@ class RepoHandler {
                     return res;
                 }
 
-                if ("remove".equals(methodName)) {
+                if ("delete".equals(methodName)) {
                     JkEntity e = (JkEntity) args[0];
                     return removeEntity(e);
                 }
