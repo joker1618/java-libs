@@ -149,8 +149,8 @@ public class JkHtmlScanner {
     }
 
     private static String fixHtml(String html) {
-        html = html.replaceAll("<!--((.|\\s)*?)-->", "");   // remove html comments
-        html = html.replaceAll("<!((.|\\s)*?)>", "");       // remove DOCTYPE
+        html = html.replaceAll("<!--((.|\\s)*?)-->", "");   // delete html comments
+        html = html.replaceAll("<!((.|\\s)*?)>", "");       // delete DOCTYPE
         return html;
     }
 

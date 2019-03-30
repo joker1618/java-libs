@@ -79,6 +79,9 @@ public class JkFiles {
 	}
 
 	// Write
+	public static void writeFile(Path outputPath, String content) {
+		writeFile(outputPath, content, true);
+	}
 	public static void writeFile(Path outputPath, String content, boolean overwrite) {
 		writeFile(outputPath, content, overwrite, null);
 	}
@@ -89,6 +92,9 @@ public class JkFiles {
 		writeFile(outputPath, Arrays.asList(content), overwrite, encoding, finalNewLine);
 	}
 
+	public static void writeFile(Path outputPath, List<String> lines) {
+		writeFile(outputPath, lines, true);
+	}
 	public static void writeFile(Path outputPath, List<String> lines, boolean overwrite) {
 		writeFile(outputPath, lines, overwrite, null);
 	}
@@ -271,7 +277,7 @@ public class JkFiles {
 
 
 	/* REMOVE methods */
-	public static boolean remove(Path fileToDel) {
+	public static boolean delete(Path fileToDel) {
 		if(!Files.exists(fileToDel)) {
 			return false;
 		}
@@ -331,7 +337,7 @@ public class JkFiles {
 				}
 			}
 
-			remove(targetPath);
+			delete(targetPath);
 
 			if(Files.isRegularFile(sourcePath)) {
 				Files.createDirectories(getParent(targetPath));
@@ -388,7 +394,7 @@ public class JkFiles {
 				}
 			}
 
-			remove(targetPath);
+			delete(targetPath);
 			Files.createDirectories(getParent(targetPath));
 			Files.move(sourcePath, targetPath);
 

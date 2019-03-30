@@ -3,7 +3,6 @@ package dev;
 import org.junit.Test;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.datetime.JkTimer;
-import xxx.joker.libs.core.datetime.JkDates;
 import xxx.joker.libs.core.files.JkFiles;
 
 import java.nio.file.Path;
@@ -21,16 +20,16 @@ public class TestJkFiles {
 
     @Test
     public void testRemoveFile() {
-        Path root = Paths.get("C:\\Users\\f.barbano\\Desktop\\moveTest\\remove\\back.jpg");
+        Path root = Paths.get("C:\\Users\\f.barbano\\Desktop\\moveTest\\delete\\back.jpg");
 //        Path root = Paths.get("C:\\Users\\f.barbano\\Desktop\\BubbleChart.jpeg");
-        JkFiles.remove(root);
+        JkFiles.delete(root);
     }
 
     @Test
     public void testRemoveFolder() {
-        Path root = Paths.get("C:\\Users\\f.barbano\\Desktop\\moveTest\\remove");
+        Path root = Paths.get("C:\\Users\\f.barbano\\Desktop\\moveTest\\delete");
 //        Path root = Paths.get("C:\\Users\\f.barbano\\Desktop\\BubbleChart.jpeg");
-        JkFiles.remove(root);
+        JkFiles.delete(root);
     }
 
     @Test
