@@ -60,7 +60,7 @@ class X_RepoDAO {
         return toRet;
     }
 
-        
+
     public void saveRepoData(List<X_RepoEntityDTO> dtoList) {
         // Get all existing repo files
         List<Path> dbFiles = JkFiles.findFiles(dbFolder, false, this::isRepoEntityFile);
