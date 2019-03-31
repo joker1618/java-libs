@@ -108,17 +108,17 @@ public class JkTextScannerImpl implements JkTextScanner {
 	}
 
 	@Override
-	public String nextValueBetween(String start, String end) {
+	public String nextStringBetween(String start, String end) {
 		return StringUtils.substringBetween(buffer.toString(), start, end);
 	}
 
     @Override
     public Integer nextIntBetween(String start, String end) {
-        return JkConvert.toInt(JkStrings.safeTrim(nextValueBetween(start, end)));
+        return JkConvert.toInt(JkStrings.safeTrim(nextStringBetween(start, end)));
     }
 
     @Override
-	public String nextValueUntil(String end) {
+	public String nextStringUntil(String end) {
 		int idx = StringUtils.isEmpty(end) ? -1 : buffer.indexOf(end);
 		return idx == -1 ? buffer.toString() : buffer.substring(0, idx);
 	}
@@ -135,12 +135,12 @@ public class JkTextScannerImpl implements JkTextScanner {
 
     @Override
     public JkTextScanner subScannerUntil(String end) {
-        return new JkTextScannerImpl(nextValueUntil(end));
+        return new JkTextScannerImpl(nextStringUntil(end));
     }
 
     @Override
     public JkTextScanner subScannerBetween(String start, String end) {
-        String val = nextValueBetween(start, end);
+        String val = nextStringBetween(start, end);
         return val == null ? null : new JkTextScannerImpl(val);
     }
 

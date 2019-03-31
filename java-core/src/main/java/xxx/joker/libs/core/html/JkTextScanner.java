@@ -16,9 +16,9 @@ public interface JkTextScanner {
 	void reset();
 
 	String nextAttrValue(String attrName);
-	String nextValueBetween(String start, String end);
+	String nextStringBetween(String start, String end);
 	Integer nextIntBetween(String start, String end);
-	String nextValueUntil(String end);
+	String nextStringUntil(String end);
 	String nextString(int start, int offset);
 	String nextString(int offset);
 
