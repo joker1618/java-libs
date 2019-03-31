@@ -1,4 +1,4 @@
-package xxx.joker.libs.repository.design2;
+package xxx.joker.libs.repository.design;
 
 public interface RepoFieldCustom {
 

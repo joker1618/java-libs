@@ -1,16 +1,16 @@
-package xxx.joker.libs.repository.znew;
+package xxx.joker.libs.repository.engine;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
-class X_RepoFK {
+class RepoFK {
 
     private long fromID;
     private String fieldName;
     private long depID;
 
-    X_RepoFK(long fromID, String fieldName, long depID) {
+    RepoFK(long fromID, String fieldName, long depID) {
         this.fromID = fromID;
         this.fieldName = fieldName;
         this.depID = depID;
@@ -30,7 +30,7 @@ class X_RepoFK {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        X_RepoFK that = (X_RepoFK) o;
+        RepoFK that = (RepoFK) o;
         return getFromID() == that.getFromID() &&
                 StringUtils.equals(getFieldName(), that.getFieldName()) &&
                 getDepID() == that.getDepID();

@@ -1,4 +1,4 @@
-package xxx.joker.libs.repository.design2;
+package xxx.joker.libs.repository.design;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

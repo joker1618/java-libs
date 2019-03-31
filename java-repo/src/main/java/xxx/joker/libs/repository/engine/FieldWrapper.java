@@ -1,4 +1,4 @@
-package xxx.joker.libs.repository.znew;
+package xxx.joker.libs.repository.engine;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,9 +6,9 @@ import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
-import xxx.joker.libs.repository.design2.AllowNullString;
-import xxx.joker.libs.repository.design2.RepoEntity;
-import xxx.joker.libs.repository.design2.RepoFieldCustom;
+import xxx.joker.libs.repository.design.AllowNullString;
+import xxx.joker.libs.repository.design.RepoEntity;
+import xxx.joker.libs.repository.design.RepoFieldCustom;
 import xxx.joker.libs.repository.exceptions.RepoError;
 
 import java.io.File;
@@ -21,12 +21,12 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static xxx.joker.libs.repository.znew.X_RepoConst.Separator.*;
+import static xxx.joker.libs.repository.engine.RepoConst.Separator.*;
 
 
-class ClazzField {
+class FieldWrapper {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ClazzField.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FieldWrapper.class);
 
     private static final DateTimeFormatter DTF_TIME = DateTimeFormatter.ISO_LOCAL_TIME;
     private static final DateTimeFormatter DTF_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
@@ -39,7 +39,7 @@ class ClazzField {
     private Class<?> elemType;
     private Set<Class<?>> directives;
 
-    ClazzField(Field field) {
+    FieldWrapper(Field field) {
         this.field = field;
         this.directives = new HashSet<>();
         init();
@@ -159,7 +159,7 @@ class ClazzField {
         }
 
         boolean isString = isOfType(fclazz, String.class);
-        return X_RepoConst.escapeString(toRet, isString);
+        return RepoConst.escapeString(toRet, isString);
     }
 
     public boolean typeOf(Class<?>... classes) {
@@ -197,7 +197,7 @@ class ClazzField {
         Object o;
 
         boolean isString = isOfType(fclazz, String.class);
-        String unesc = X_RepoConst.unescapeString(value, isString);
+        String unesc = RepoConst.unescapeString(value, isString);
 
         if (unesc == null) {
             o = isString && !isAllowNullString() ? "" : null;
@@ -244,7 +244,7 @@ class ClazzField {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ClazzField that = (ClazzField) o;
+        FieldWrapper that = (FieldWrapper) o;
         return Objects.equals(field, that.field);
     }
 

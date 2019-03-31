@@ -1,28 +1,25 @@
-package xxx.joker.libs.repository.znew;
+package xxx.joker.libs.repository.engine;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.libs.core.datetime.JkDuration;
-import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.files.JkZip;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
-import xxx.joker.libs.repository.design2.RepoEntity;
+import xxx.joker.libs.repository.design.RepoEntity;
 
-import javax.management.AttributeList;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
-import static xxx.joker.libs.repository.znew.X_RepoConst.Separator.*;
+import static xxx.joker.libs.repository.engine.RepoConst.Separator.*;
 
-class X_RepoDAO {
+class RepoDAO {
 
-    private static final Logger LOG = LoggerFactory.getLogger(X_RepoDAO.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RepoDAO.class);
 
     private static final String EXT_DATA_FILE = "data";
     private static final String EXT_DEPS_FILE = "fkeys";
@@ -32,19 +29,19 @@ class X_RepoDAO {
 
     private Path dbFolder;
     private String dbName;
-    private List<X_RepoClazz> repoClazzes;
+    private List<RepoClazz> repoClazzes;
 
-    X_RepoDAO(Path dbFolder, String dbName, List<X_RepoClazz> repoClazzes) {
+    RepoDAO(Path dbFolder, String dbName, List<RepoClazz> repoClazzes) {
         this.dbFolder = dbFolder;
         this.dbName = dbName;
         this.repoClazzes = repoClazzes;
     }
 
-    public List<X_RepoEntityDTO> readRepoData() {
-        List<X_RepoEntityDTO> toRet = new ArrayList<>();
+    public List<RepoDTO> readRepoData() {
+        List<RepoDTO> toRet = new ArrayList<>();
 
-        for(X_RepoClazz rc : repoClazzes) {
-            X_RepoEntityDTO dto = new X_RepoEntityDTO(rc.getEClazz());
+        for(RepoClazz rc : repoClazzes) {
+            RepoDTO dto = new RepoDTO(rc.getEClazz());
             toRet.add(dto);
 
             // 1. Read file .descr
@@ -60,7 +57,7 @@ class X_RepoDAO {
         return toRet;
     }
 
-    public void saveRepoData(List<X_RepoEntityDTO> dtoList) {
+    public void saveRepoData(List<RepoDTO> dtoList) {
         // Get all existing repo files
         List<Path> dbFiles = JkFiles.findFiles(dbFolder, false, this::isRepoEntityFile);
 
@@ -75,9 +72,9 @@ class X_RepoDAO {
         dbFiles.forEach(JkFiles::delete);
 
         // Persist repo data
-        for(X_RepoEntityDTO dto : dtoList) {
+        for(RepoDTO dto : dtoList) {
             if(!dto.getEntities().isEmpty()) {
-                X_RepoClazz rc = X_RepoClazz.wrap(dto.getEClazz());
+                RepoClazz rc = RepoClazz.wrap(dto.getEClazz());
                 TreeMap<String, Integer> descrMap = new TreeMap<>();
                 List<String> dataLines = new ArrayList<>();
                 for (RepoEntity edto : dto.getEntities()) {
@@ -94,7 +91,7 @@ class X_RepoDAO {
                 JkFiles.writeFile(filePathData(rc), dataLines);
 
                 List<String> fkLines = new ArrayList<>();
-                for (X_RepoFK fk : dto.getForeignKeys()) {
+                for (RepoFK fk : dto.getForeignKeys()) {
                     Integer findex = descrMap.get(fk.getFieldName());
                     fkLines.add(strf("{}{}{}{}{}", fk.getFromID(), SEP_FIELD, findex, SEP_FIELD, fk.getDepID()));
                 }
@@ -113,7 +110,7 @@ class X_RepoDAO {
         oldBackupFiles.forEach(JkFiles::delete);
     }
 
-    private Map<Integer, String> loadDescr(X_RepoClazz repoClazz) {
+    private Map<Integer, String> loadDescr(RepoClazz repoClazz) {
         Path fpath = filePathDescr(repoClazz);
         if(!Files.exists(fpath))    return null;
 
@@ -124,7 +121,7 @@ class X_RepoDAO {
                 l -> l.split(SEP_DESCR)[1]
         );
     }
-    private List<RepoEntity> loadData(X_RepoClazz repoClazz, Map<Integer, String> descrMap) {
+    private List<RepoEntity> loadData(RepoClazz repoClazz, Map<Integer, String> descrMap) {
         Path fpath = filePathData(repoClazz);
         if(!Files.exists(fpath))    return Collections.emptyList();
 
@@ -144,19 +141,19 @@ class X_RepoDAO {
         }
         return toRet;
     }
-    private List<X_RepoFK> loadForeignKeys(X_RepoClazz repoClazz, Map<Integer, String> descrMap) {
+    private List<RepoFK> loadForeignKeys(RepoClazz repoClazz, Map<Integer, String> descrMap) {
         Path fpath = filePathForeignKeys(repoClazz);
         if(!Files.exists(fpath))    return Collections.emptyList();
 
         List<String> lines = JkFiles.readLinesNotBlank(fpath);
-        List<X_RepoFK> toRet = new ArrayList<>();
+        List<RepoFK> toRet = new ArrayList<>();
         for(String l : lines) {
             String[] split = JkStrings.splitArr(l, SEP_FIELD);
             long fromID = Long.valueOf(split[0]);
             int fieldNum = Integer.parseInt(split[1]);
             long depID = Long.valueOf(split[2]);
             String fname = descrMap.get(fieldNum);
-            toRet.add(new X_RepoFK(fromID, fname, depID));
+            toRet.add(new RepoFK(fromID, fname, depID));
         }
         return toRet;
     }
@@ -164,16 +161,16 @@ class X_RepoDAO {
     private Path filePathRepoLock() {
         return dbFolder.resolve(dbName+".jkrepo.lock");
     }
-    private Path filePathDescr(X_RepoClazz repoClazz) {
+    private Path filePathDescr(RepoClazz repoClazz) {
         return filePathRepoEntity(repoClazz, EXT_CLASS_DESCR_FILE);
     }
-    private Path filePathData(X_RepoClazz repoClazz) {
+    private Path filePathData(RepoClazz repoClazz) {
         return filePathRepoEntity(repoClazz, EXT_DATA_FILE);
     }
-    private Path filePathForeignKeys(X_RepoClazz repoClazz) {
+    private Path filePathForeignKeys(RepoClazz repoClazz) {
         return filePathRepoEntity(repoClazz, EXT_DEPS_FILE);
     }
-    private Path filePathRepoEntity(X_RepoClazz repoClazz, String extension) {
+    private Path filePathRepoEntity(RepoClazz repoClazz, String extension) {
         String fname = strf("{}#{}#jkrepo.{}", dbName, repoClazz.getEClazz().getName(), extension);
         return dbFolder.resolve(fname);
     }

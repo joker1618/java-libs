@@ -1,10 +1,9 @@
-package xxx.joker.libs.repository.znew;
+package xxx.joker.libs.repository.engine;
 
 import org.apache.commons.lang3.tuple.Pair;
-import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
-import xxx.joker.libs.repository.design2.RepoEntity;
-import xxx.joker.libs.repository.design2.RepoField;
+import xxx.joker.libs.repository.design.RepoEntity;
+import xxx.joker.libs.repository.design.RepoField;
 import xxx.joker.libs.repository.exceptions.RepoError;
 
 import java.lang.reflect.Field;
@@ -13,19 +12,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class X_RepoClazz {
+class RepoClazz {
 
-    private static final Map<Class<?>, X_RepoClazz> CACHE = new HashMap<>();
-    private static final ClazzField CF_ENTITY_ID;
+    private static final Map<Class<?>, RepoClazz> CACHE = new HashMap<>();
+    private static final FieldWrapper CF_ENTITY_ID;
     static {
-        Field f = JkReflection.getFieldByName(RepoEntity.class, X_RepoConst.FIELD_NAME_REPO_ENTITY_ID);
-        CF_ENTITY_ID = new ClazzField(f);
+        Field f = JkReflection.getFieldByName(RepoEntity.class, RepoConst.FIELD_NAME_REPO_ENTITY_ID);
+        CF_ENTITY_ID = new FieldWrapper(f);
     }
 
     private final Class<?> eClazz;
-    private Map<String, ClazzField> fieldsByName;
+    private Map<String, FieldWrapper> fieldsByName;
 
-    private X_RepoClazz(Class<?> eClazz) {
+    private RepoClazz(Class<?> eClazz) {
         this.eClazz = eClazz;
         this.fieldsByName = new HashMap<>();
         checkRepoClazz();
@@ -35,10 +34,10 @@ public class X_RepoClazz {
         CF_ENTITY_ID.setValue(e, eID);
     }
 
-    public static synchronized X_RepoClazz wrap(Class<?> clazz) {
-        X_RepoClazz repoClazz = CACHE.get(clazz);
+    public static synchronized RepoClazz wrap(Class<?> clazz) {
+        RepoClazz repoClazz = CACHE.get(clazz);
         if(repoClazz == null) {
-            repoClazz = new X_RepoClazz(clazz);
+            repoClazz = new RepoClazz(clazz);
             CACHE.put(clazz, repoClazz);
         }
         return repoClazz;
@@ -47,7 +46,7 @@ public class X_RepoClazz {
     public RepoEntity parseEntity(Map<String, String> strValues) {
         RepoEntity instance = (RepoEntity) JkReflection.createInstanceSafe(eClazz);
         for(String mapFName : strValues.keySet()) {
-            ClazzField cf = fieldsByName.get(mapFName);
+            FieldWrapper cf = fieldsByName.get(mapFName);
             if(cf != null) {
                 cf.parseAndSetValue(instance, strValues.get(mapFName));
             }
@@ -59,7 +58,7 @@ public class X_RepoClazz {
         List<Pair<String,String>> toRet = new ArrayList<>();
         fieldsByName.forEach((fname,cf) -> {
             Pair<String, String> pair = Pair.of(fname, cf.formatValue(e));
-            if(X_RepoConst.FIELD_NAME_REPO_ENTITY_ID.equals(fname)) {
+            if(RepoConst.FIELD_NAME_REPO_ENTITY_ID.equals(fname)) {
                 toRet.add(0, pair);
             } else {
                 toRet.add(pair);
@@ -68,11 +67,11 @@ public class X_RepoClazz {
         return toRet;
     }
 
-    public List<ClazzField> getEntityFields() {
+    public List<FieldWrapper> getEntityFields() {
         return new ArrayList<>(fieldsByName.values());
     }
 
-    public ClazzField getEntityField(String fieldName) {
+    public FieldWrapper getEntityField(String fieldName) {
         return fieldsByName.get(fieldName);
     }
 
@@ -86,11 +85,11 @@ public class X_RepoClazz {
         if(fields.isEmpty()) {
             throw new RepoError("No fields annotated with '@{}' found in class {}", RepoField.class.getSimpleName(), eClazz.getSimpleName());
         }
-        fields.forEach(f -> fieldsByName.put(f.getName(), new ClazzField(f)));
+        fields.forEach(f -> fieldsByName.put(f.getName(), new FieldWrapper(f)));
 
         // Check field class type
         fieldsByName.forEach((k,v) -> {
-            if(!X_RepoConst.isValidType(v)) {
+            if(!RepoConst.isValidType(v)) {
                 throw new RepoError("Invalid field type {}::{}", eClazz.getSimpleName(), k);
             }
         });

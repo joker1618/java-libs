@@ -1,7 +1,7 @@
-package xxx.joker.libs.repository.znew;
+package xxx.joker.libs.repository.engine;
 
-import xxx.joker.libs.repository.design2.RepoEntity;
-import xxx.joker.libs.repository.design2.RepoFieldCustom;
+import xxx.joker.libs.repository.design.RepoEntity;
+import xxx.joker.libs.repository.design.RepoFieldCustom;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -11,9 +11,9 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import static xxx.joker.libs.repository.znew.X_RepoConst.Separator.*;
+import static xxx.joker.libs.repository.engine.RepoConst.Separator.*;
 
-public class X_RepoConst {
+class RepoConst {
 
     public static final String FIELD_NAME_REPO_ENTITY_ID = "entityID";
 
@@ -54,7 +54,7 @@ public class X_RepoConst {
         return res;
     }
 
-    public static boolean isValidType(ClazzField field) {
+    public static boolean isValidType(FieldWrapper field) {
         boolean res = ALLOWED_FIELDS.contains(field.getFieldType());
         if(!res) {
             Class<?> sc = field.getFieldType().getSuperclass();

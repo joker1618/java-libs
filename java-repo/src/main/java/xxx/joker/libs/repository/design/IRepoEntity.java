@@ -1,8 +1,6 @@
-package xxx.joker.libs.repository.design2;
+package xxx.joker.libs.repository.design;
 
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.time.LocalDateTime;
 
 interface IRepoEntity<T> extends Comparable<T> {
 

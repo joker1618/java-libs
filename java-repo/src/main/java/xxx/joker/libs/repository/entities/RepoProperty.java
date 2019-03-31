@@ -1,7 +1,7 @@
-package xxx.joker.libs.repository.entities2;
+package xxx.joker.libs.repository.entities;
 
-import xxx.joker.libs.repository.design2.RepoEntity;
-import xxx.joker.libs.repository.design2.RepoField;
+import xxx.joker.libs.repository.design.RepoEntity;
+import xxx.joker.libs.repository.design.RepoField;
 
 public class RepoProperty extends RepoEntity {
 

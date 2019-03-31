@@ -1,19 +1,18 @@
-package xxx.joker.libs.repository.znew;
+package xxx.joker.libs.repository.engine;
 
-import xxx.joker.libs.repository.design2.RepoEntity;
+import xxx.joker.libs.repository.design.RepoEntity;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-class X_RepoEntityDTO {
+class RepoDTO {
 
     private Class<?> eClazz;
     private List<RepoEntity> entities;
-    private List<X_RepoFK> foreignKeys;
+    private List<RepoFK> foreignKeys;
 
-    public X_RepoEntityDTO(Class<?> eClazz) {
+    public RepoDTO(Class<?> eClazz) {
         this.eClazz = eClazz;
         this.entities = new ArrayList<>();
         this.foreignKeys = new ArrayList<>();
@@ -31,11 +30,11 @@ class X_RepoEntityDTO {
         this.entities = new ArrayList<>(entities);
     }
 
-    public List<X_RepoFK> getForeignKeys() {
+    public List<RepoFK> getForeignKeys() {
         return foreignKeys;
     }
 
-    public void setForeignKeys(List<X_RepoFK> foreignKeys) {
+    public void setForeignKeys(List<RepoFK> foreignKeys) {
         this.foreignKeys = foreignKeys;
     }
 }
