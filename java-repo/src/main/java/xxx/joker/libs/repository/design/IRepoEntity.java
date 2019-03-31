@@ -11,4 +11,5 @@ interface IRepoEntity<T> extends Comparable<T> {
     String strShort();
     String strFull();
     String strFull(ToStringStyle sstyle);
+
 }

@@ -67,7 +67,7 @@ public class RepoManager {
     }
 
 
-    private List<RepoClazz> scanPackage(String pkgToScan) {
+    private List<ClazzWrapper> scanPackage(String pkgToScan) {
         LOG.debug("Scanning package: {}", pkgToScan);
         List<Class<?>> classes = JkRuntime.findClasses(pkgToScan);
         classes.removeIf(c -> c.getSuperclass() != RepoEntity.class);
@@ -75,7 +75,7 @@ public class RepoManager {
         if(LOG.isDebugEnabled()) {
             classes.forEach(c -> LOG.debug("Found entity: {}", c.getName()));
         }
-        return JkStreams.map(classes, RepoClazz::wrap);
+        return JkStreams.map(classes, ClazzWrapper::wrap);
     }
 
 }

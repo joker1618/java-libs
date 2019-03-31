@@ -12,13 +12,13 @@ public class JkTextScannerImpl implements JkTextScanner {
 
     private static final Logger logger = LoggerFactory.getLogger(JkTextScannerImpl.class);
 
-	private String originalHtml;
+	private String originalText;
 	private StringBuilder buffer;
 
 
-	public JkTextScannerImpl(String htmlCode) {
-		this.originalHtml = htmlCode;
-		this.buffer = new StringBuilder(htmlCode);
+	public JkTextScannerImpl(String text) {
+		this.originalText = text;
+		this.buffer = new StringBuilder(text);
 	}
 
     @Override
@@ -71,7 +71,7 @@ public class JkTextScannerImpl implements JkTextScanner {
 
 	@Override
 	public void reset() {
-		buffer = new StringBuilder(originalHtml);
+		buffer = new StringBuilder(originalText);
 	}
 
 	@Override

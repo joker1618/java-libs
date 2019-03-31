@@ -2,6 +2,7 @@ package xxx.joker.libs.repository.engine;
 
 import org.apache.commons.lang3.tuple.Pair;
 import xxx.joker.libs.core.runtimes.JkReflection;
+import xxx.joker.libs.repository.common.RepoCommon;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoField;
 import xxx.joker.libs.repository.exceptions.RepoError;
@@ -12,19 +13,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class RepoClazz {
+class ClazzWrapper {
 
-    private static final Map<Class<?>, RepoClazz> CACHE = new HashMap<>();
+    private static final Map<Class<?>, ClazzWrapper> CACHE = new HashMap<>();
     private static final FieldWrapper CF_ENTITY_ID;
     static {
-        Field f = JkReflection.getFieldByName(RepoEntity.class, RepoConst.FIELD_NAME_REPO_ENTITY_ID);
+        Field f = JkReflection.getFieldByName(RepoEntity.class, RepoCommon.FIELD_NAME_REPO_ENTITY_ID);
         CF_ENTITY_ID = new FieldWrapper(f);
     }
 
     private final Class<?> eClazz;
     private Map<String, FieldWrapper> fieldsByName;
 
-    private RepoClazz(Class<?> eClazz) {
+    private ClazzWrapper(Class<?> eClazz) {
         this.eClazz = eClazz;
         this.fieldsByName = new HashMap<>();
         checkRepoClazz();
@@ -34,13 +35,13 @@ class RepoClazz {
         CF_ENTITY_ID.setValue(e, eID);
     }
 
-    public static synchronized RepoClazz wrap(Class<?> clazz) {
-        RepoClazz repoClazz = CACHE.get(clazz);
-        if(repoClazz == null) {
-            repoClazz = new RepoClazz(clazz);
-            CACHE.put(clazz, repoClazz);
+    public static synchronized ClazzWrapper wrap(Class<?> clazz) {
+        ClazzWrapper clazzWrapper = CACHE.get(clazz);
+        if(clazzWrapper == null) {
+            clazzWrapper = new ClazzWrapper(clazz);
+            CACHE.put(clazz, clazzWrapper);
         }
-        return repoClazz;
+        return clazzWrapper;
     }
 
     public RepoEntity parseEntity(Map<String, String> strValues) {
@@ -58,7 +59,7 @@ class RepoClazz {
         List<Pair<String,String>> toRet = new ArrayList<>();
         fieldsByName.forEach((fname,cf) -> {
             Pair<String, String> pair = Pair.of(fname, cf.formatValue(e));
-            if(RepoConst.FIELD_NAME_REPO_ENTITY_ID.equals(fname)) {
+            if(RepoCommon.FIELD_NAME_REPO_ENTITY_ID.equals(fname)) {
                 toRet.add(0, pair);
             } else {
                 toRet.add(pair);
@@ -89,7 +90,7 @@ class RepoClazz {
 
         // Check field class type
         fieldsByName.forEach((k,v) -> {
-            if(!RepoConst.isValidType(v)) {
+            if(!RepoCommon.isValidType(v.getFieldType())) {
                 throw new RepoError("Invalid field type {}::{}", eClazz.getSimpleName(), k);
             }
         });

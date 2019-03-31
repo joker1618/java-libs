@@ -57,7 +57,7 @@ class RepoHandler {
     }
 
     private void initRepoFields(RepoEntity e) {
-        RepoClazz rc = RepoClazz.wrap(e.getClass());
+        ClazzWrapper rc = ClazzWrapper.wrap(e.getClass());
 
         // Apply field directives
         rc.getEntityFields().forEach(ef -> ef.applyDirectives(e));
@@ -105,7 +105,7 @@ class RepoHandler {
     private void setDependencies(RepoEntity e) {
         List<RepoFK> fkList = fkManager.getForeignKeys(e);
         if(fkList != null && !fkList.isEmpty()) {
-            RepoClazz rc = RepoClazz.wrap(e.getClass());
+            ClazzWrapper rc = ClazzWrapper.wrap(e.getClass());
             Map<String, List<Long>> fkMap = JkStreams.toMap(fkList, RepoFK::getFieldName, RepoFK::getDepID);
             fkMap.forEach((k,v) -> {
                 List<RepoEntity> deps = JkStreams.map(v, depID -> dataByID.get(depID));
@@ -145,12 +145,12 @@ class RepoHandler {
         }
 
         synchronized (sequenceValue) {
-            RepoClazz.setEntityID(e, sequenceValue.get());
+            ClazzWrapper.setEntityID(e, sequenceValue.get());
 
             if (insColl != null) {
                 boolean added = insColl.add(e);
                 if (!added) {
-                    RepoClazz.setEntityID(e, null);
+                    ClazzWrapper.setEntityID(e, null);
                     return false;
                 }
             }
@@ -160,7 +160,7 @@ class RepoHandler {
                 if (insColl != null) {
                     insColl.remove(e);
                 }
-                RepoClazz.setEntityID(e, null);
+                ClazzWrapper.setEntityID(e, null);
                 return false;
             }
 
@@ -206,7 +206,7 @@ class RepoHandler {
         // Remove where referenced
         for(RepoFK pfk : parents) {
             RepoEntity eParent = dataByID.get(pfk.getFromID());
-            RepoClazz rc = RepoClazz.wrap(eParent.getClass());
+            ClazzWrapper rc = ClazzWrapper.wrap(eParent.getClass());
             FieldWrapper cf = rc.getEntityField(pfk.getFieldName());
             if(cf.isCollection()) {
                 ((Collection<RepoEntity>)cf.getValue(eParent)).removeIf(elem -> elem.getEntityID() == eID);
@@ -223,7 +223,7 @@ class RepoHandler {
 
     private Map<String, List<RepoEntity>> retrieveDepChilds(RepoEntity e) {
         Map<String, List<RepoEntity>> toRet = new HashMap<>();
-        RepoClazz rc = RepoClazz.wrap(e.getClass());
+        ClazzWrapper rc = ClazzWrapper.wrap(e.getClass());
         for(FieldWrapper cf : rc.getEntityFields()) {
             if(cf.isRepoEntityFlatField()) {
                 Object value = cf.getValue(e);

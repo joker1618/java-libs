@@ -6,6 +6,7 @@ import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
+import xxx.joker.libs.repository.common.RepoCommon;
 import xxx.joker.libs.repository.design.AllowNullString;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoFieldCustom;
@@ -21,7 +22,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static xxx.joker.libs.repository.engine.RepoConst.Separator.*;
+import static xxx.joker.libs.repository.common.RepoCommon.Separator.*;
 
 
 class FieldWrapper {
@@ -159,7 +160,33 @@ class FieldWrapper {
         }
 
         boolean isString = isOfType(fclazz, String.class);
-        return RepoConst.escapeString(toRet, isString);
+        return escapeString(toRet, isString);
+    }
+
+    public String escapeString(String value, boolean fullEscape) {
+        if(value == null) {
+            return PH_NULL;
+        }
+        String res = value.replace(SEP_LIST, PH_SEP_LIST);
+        res = res.replace(SEP_FIELD, PH_SEP_FIELD);
+        if(fullEscape) {
+            res = res.replaceAll("\t", PH_TAB);
+            res = res.replaceAll("\n", PH_NEWLINE);
+        }
+        return res;
+    }
+
+    public String unescapeString(String value, boolean fullEscape) {
+        if(PH_NULL.equals(value)) {
+            return null;
+        }
+        String res = value.replace(PH_SEP_LIST, SEP_LIST);
+        res = res.replace(PH_SEP_FIELD, SEP_FIELD);
+        if(fullEscape) {
+            res = res.replace(PH_TAB, "\t");
+            res = res.replace(PH_NEWLINE, "\n");
+        }
+        return res;
     }
 
     public boolean typeOf(Class<?>... classes) {
@@ -197,7 +224,7 @@ class FieldWrapper {
         Object o;
 
         boolean isString = isOfType(fclazz, String.class);
-        String unesc = RepoConst.unescapeString(value, isString);
+        String unesc = unescapeString(value, isString);
 
         if (unesc == null) {
             o = isString && !isAllowNullString() ? "" : null;

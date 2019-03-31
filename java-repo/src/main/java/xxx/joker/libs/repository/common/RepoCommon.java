@@ -1,9 +1,10 @@
-package xxx.joker.libs.repository.engine;
+package xxx.joker.libs.repository.common;
 
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoFieldCustom;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,9 +12,9 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import static xxx.joker.libs.repository.engine.RepoConst.Separator.*;
+import static xxx.joker.libs.repository.common.RepoCommon.Separator.*;
 
-class RepoConst {
+public class RepoCommon {
 
     public static final String FIELD_NAME_REPO_ENTITY_ID = "entityID";
 
@@ -28,40 +29,14 @@ class RepoConst {
         public static final String PH_NULL = "@_NUL_@";
     }
 
-    public static String escapeString(String value, boolean fullEscape) {
-        if(value == null) {
-            return PH_NULL;
-        }
-        String res = value.replace(SEP_LIST, PH_SEP_LIST);
-        res = res.replace(SEP_FIELD, PH_SEP_FIELD);
-        if(fullEscape) {
-            res = res.replaceAll("\t", PH_TAB);
-            res = res.replaceAll("\n", PH_NEWLINE);
-        }
-        return res;
-    }
-
-    public static String unescapeString(String value, boolean fullEscape) {
-        if(PH_NULL.equals(value)) {
-            return null;
-        }
-        String res = value.replace(PH_SEP_LIST, SEP_LIST);
-        res = res.replace(PH_SEP_FIELD, SEP_FIELD);
-        if(fullEscape) {
-            res = res.replace(PH_TAB, "\t");
-            res = res.replace(PH_NEWLINE, "\n");
-        }
-        return res;
-    }
-
-    public static boolean isValidType(FieldWrapper field) {
-        boolean res = ALLOWED_FIELDS.contains(field.getFieldType());
+    public static boolean isValidType(Class<?> fieldType) {
+        boolean res = ALLOWED_FIELDS.contains(fieldType);
         if(!res) {
-            Class<?> sc = field.getFieldType().getSuperclass();
+            Class<?> sc = fieldType.getSuperclass();
             res = CUSTOM_FIELDS.contains(sc);
         }
-        if(!res && ALLOWED_COLLECTIONS.contains(field.getFieldType())) {
-            Class<?> elemType = field.getElemType();
+        if(!res && ALLOWED_COLLECTIONS.contains(fieldType)) {
+            Class<?> elemType = fieldType;
             res = CUSTOM_FIELDS.contains(elemType.getSuperclass()) || ALLOWED_FIELDS.contains(elemType);
         }
         return res;

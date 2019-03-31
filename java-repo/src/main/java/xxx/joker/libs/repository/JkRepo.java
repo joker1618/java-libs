@@ -4,7 +4,7 @@ import xxx.joker.libs.repository.design.RepoEntity;
 
 import java.util.Set;
 
-interface JkRepo {
+public interface JkRepo {
 
     <T extends RepoEntity> Set<T> getDataSet(Class<T> entityClazz);
 
