@@ -60,7 +60,6 @@ class X_RepoDAO {
         return toRet;
     }
 
-
     public void saveRepoData(List<X_RepoEntityDTO> dtoList) {
         // Get all existing repo files
         List<Path> dbFiles = JkFiles.findFiles(dbFolder, false, this::isRepoEntityFile);
@@ -108,9 +107,9 @@ class X_RepoDAO {
     }
 
     private void backupRepoFiles(List<Path> dbFiles) {
-        String zipName = strf("{}.backup.{}.zip", dbName, System.currentTimeMillis());
+        String zipName = fileNameBackupZip();
         JkZip.zipFiles(dbFolder.resolve(zipName), dbFiles);
-        List<Path> oldBackupFiles = JkFiles.findFiles(dbFolder, false, p -> p.getFileName().toString().startsWith(dbName + ".backup") && !p.getFileName().toString().equals(zipName));
+        List<Path> oldBackupFiles = JkFiles.findFiles(dbFolder, false, p -> isBackupZipFile(p) && !p.getFileName().toString().equals(zipName));
         oldBackupFiles.forEach(JkFiles::delete);
     }
 
@@ -125,15 +124,6 @@ class X_RepoDAO {
                 l -> l.split(SEP_DESCR)[1]
         );
     }
-    private void saveDescr(X_RepoClazz rc, RepoEntity e) {
-        List<String> fnames = JkStreams.map(rc.formatEntity(e), Pair::getKey);
-        List<String> lines = new ArrayList<>();
-        for(int i = 0; i < fnames.size(); i++) {
-            lines.add(strf("{}{}{}", i, SEP_DESCR, fnames.get(i)));
-        }
-        JkFiles.writeFile(filePathDescr(rc), lines);
-    }
-
     private List<RepoEntity> loadData(X_RepoClazz repoClazz, Map<Integer, String> descrMap) {
         Path fpath = filePathData(repoClazz);
         if(!Files.exists(fpath))    return Collections.emptyList();
@@ -154,14 +144,6 @@ class X_RepoDAO {
         }
         return toRet;
     }
-    private void saveData(X_RepoClazz rc, List<RepoEntity> elist) {
-        List<String> lines = new ArrayList<>();
-        for (RepoEntity e : elist) {
-            lines.add(JkStreams.join(rc.formatEntity(e), SEP_FIELD, Pair::getValue));
-        }
-        JkFiles.writeFile(filePathData(rc), lines);
-    }
-
     private List<X_RepoFK> loadForeignKeys(X_RepoClazz repoClazz, Map<Integer, String> descrMap) {
         Path fpath = filePathForeignKeys(repoClazz);
         if(!Files.exists(fpath))    return Collections.emptyList();
@@ -200,4 +182,12 @@ class X_RepoDAO {
         if(!Files.isRegularFile(p)) return false;
         return p.getFileName().toString().matches("^"+dbName+"#[^#]*#jkrepo\\.[^.#]+$");
     }
+
+    private String fileNameBackupZip() {
+        return strf("{}.backup.{}.zip", dbName, System.currentTimeMillis());
+    }
+    private boolean isBackupZipFile(Path p) {
+        return p.getFileName().toString().matches("^"+dbName+"\\.backup\\.[0-9]+\\.zip$");
+    }
+
 }

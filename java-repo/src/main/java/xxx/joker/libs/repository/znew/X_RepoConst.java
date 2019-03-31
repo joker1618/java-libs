@@ -67,7 +67,6 @@ public class X_RepoConst {
         return res;
     }
 
-
     private static final List<Class<?>> CUSTOM_FIELDS = Arrays.asList(
             RepoEntity.class,
             RepoFieldCustom.class

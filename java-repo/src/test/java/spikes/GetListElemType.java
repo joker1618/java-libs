@@ -51,9 +51,5 @@ public class GetListElemType {
         Class<?> mlc2 = (Class<?>) mappapt.getActualTypeArguments()[1];
         System.out.println(strf("Map<{}, {}>", mlc1.getSimpleName(), mlc2.getSimpleName()));
 
-        Field fiarr = TryReflection.class.getDeclaredField("iarr");
-        display("{}", fiarr.getType().getName());
-        display("{}", fiarr.getType().getComponentType());
-
     }
 }

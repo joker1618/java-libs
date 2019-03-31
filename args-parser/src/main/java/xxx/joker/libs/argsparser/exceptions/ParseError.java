@@ -9,10 +9,10 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 public class ParseError extends JkRuntimeException {
 
     public ParseError(String message, Object... params) {
-        super(true, message, params);
+        super(message, params);
     }
 
     public ParseError(CmdWrapper cw, ArgWrapper aw, String mex, Object... params) {
-        super(true, strf("Command {}, arg {}: ", cw.getCmdName(), aw.getArgType()) + strf(mex, params));
+        super(strf("Command {}, arg {}: ", cw.getCmdName(), aw.getArgType()) + strf(mex, params));
     }
 }

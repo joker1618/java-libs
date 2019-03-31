@@ -9,6 +9,7 @@ import xxx.joker.libs.repository.entities2.RepoProperty;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -40,6 +41,31 @@ public class X_RepoManager {
         this.repoLock = new ReentrantReadWriteLock(true);
         this.repoHandler = new X_RepoHandler(repoDao.readRepoData(), repoLock);
     }
+
+    public void rollback() {
+        try {
+            repoLock.writeLock().lock();
+            List<X_RepoEntityDTO> daoDTOs = repoDao.readRepoData();
+            repoHandler = new X_RepoHandler(daoDTOs, repoLock);
+        } finally {
+            repoLock.writeLock().unlock();
+        }
+    }
+
+    public void commit() {
+        try {
+            repoLock.writeLock().lock();
+            List<X_RepoEntityDTO> handlerDTOs = repoHandler.getRepoEntityDTOs();
+            repoDao.saveRepoData(handlerDTOs);
+        } finally {
+            repoLock.writeLock().unlock();
+        }
+    }
+
+    public Set<RepoEntity> getDataSet(Class<?> entityClazz) {
+        return repoHandler.getDataSet(entityClazz);
+    }
+
 
     private List<X_RepoClazz> scanPackage(String pkgToScan) {
         LOG.debug("Scanning package: {}", pkgToScan);

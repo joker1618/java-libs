@@ -38,6 +38,11 @@ class X_RepoHandler {
         initRepoHandler(dtoList);
     }
 
+    public Set<RepoEntity> getDataSet(Class<?> entityClazz) {
+        HandlerDataSet handler = handlers.get(entityClazz);
+        return handler == null ? null : handler.getProxySet();
+    }
+
     private void initRepoHandler(List<X_RepoEntityDTO> dtoList) {
         for(X_RepoEntityDTO dto : dtoList) {
             handlers.put(dto.getEClazz(), new HandlerDataSet(dto.getEntities()));
