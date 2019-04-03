@@ -5,7 +5,6 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 import xxx.joker.libs.core.datetime.JkDateTime;
 import xxx.joker.libs.core.objects.Area;
-import xxx.joker.libs.core.objects.Pos;
 import xxx.joker.libs.core.utils.JkConvert;
 
 import java.sql.Date;
@@ -43,7 +42,7 @@ abstract class JkAbstractSheet implements JkSheet {
     }
 
     @Override
-    public Pos findCellPos(String cellValue, boolean caseSensitive, boolean searchByColumn) {
+    public CellPos findCellPos(String cellValue, boolean caseSensitive, boolean searchByColumn) {
         if(searchByColumn) {
             int maxColNum = -1;
             for (int c = 0; maxColNum == -1 || c < maxColNum; c++) {
@@ -55,7 +54,7 @@ abstract class JkAbstractSheet implements JkSheet {
                         }
                         boolean res = caseSensitive ? cellValue.equals(getString(r, c)) : cellValue.equalsIgnoreCase(getString(r, c));
                         if (res) {
-                            return new Pos(r, c);
+                            return new CellPos(r, c);
                         }
                     }
                 }
@@ -68,7 +67,7 @@ abstract class JkAbstractSheet implements JkSheet {
                     for(int c = 0; c < row.getLastCellNum(); c++) {
                         boolean res = caseSensitive ? cellValue.equals(getString(r, c)) : cellValue.equalsIgnoreCase(getString(r, c));
                         if (res) {
-                            return new Pos(r, c);
+                            return new CellPos(r, c);
                         }
                     }
                 }

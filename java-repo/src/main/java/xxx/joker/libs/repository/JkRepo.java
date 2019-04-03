@@ -13,7 +13,7 @@ public interface JkRepo {
 
     String getProperty(String propKey);
     String getProperty(String propKey, String _default);
-    void setProperty(String propKey, String propValue);
+    String setProperty(String propKey, String propValue);
     String delProperty(String propKey);
 
 }

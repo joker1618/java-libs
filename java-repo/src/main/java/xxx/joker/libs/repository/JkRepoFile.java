@@ -47,7 +47,7 @@ public abstract class JkRepoFile implements JkRepo {
 
     @Override
     public String getProperty(String propKey) {
-        RepoProperty prop = JkStreams.findExactMatch(getDataSet(RepoProperty.class), rp -> rp.getKey().equalsIgnoreCase(propKey));
+        RepoProperty prop = retrieveProperty(propKey);
         return prop == null ? null : prop.getValue();
     }
 
@@ -58,17 +58,28 @@ public abstract class JkRepoFile implements JkRepo {
     }
 
     @Override
-    public void setProperty(String propKey, String propValue) {
-        delProperty(propKey);
-        getDataSet(RepoProperty.class).add(new RepoProperty(propKey, propValue));
+    public String setProperty(String propKey, String propValue) {
+        RepoProperty prop = retrieveProperty(propKey);
+        String oldValue = prop == null ? null : prop.getValue();
+        if(prop != null) {
+            prop.setValue(propValue);
+        } else {
+            prop = new RepoProperty(propKey, propValue);
+            getDataSet(RepoProperty.class).add(prop);
+        }
+        return oldValue;
     }
 
     @Override
     public String delProperty(String propKey) {
-        String val = getProperty(propKey);
-        if(val != null) {
-            getDataSet(RepoProperty.class).removeIf(p -> p.getKey().equalsIgnoreCase(propKey));
+        RepoProperty prop = retrieveProperty(propKey);
+        if(prop != null) {
+            getDataSet(RepoProperty.class).remove(prop);
         }
-        return val;
+        return prop == null ? null : prop.getValue();
+    }
+
+    private RepoProperty retrieveProperty(String propKey) {
+        return JkStreams.findExactMatch(getDataSet(RepoProperty.class), rp -> rp.getKey().equalsIgnoreCase(propKey));
     }
 }

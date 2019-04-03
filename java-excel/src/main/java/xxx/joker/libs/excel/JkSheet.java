@@ -4,7 +4,6 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellReference;
 import xxx.joker.libs.core.objects.Area;
-import xxx.joker.libs.core.objects.Pos;
 
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -20,7 +19,7 @@ public interface JkSheet {
 
     int getNumberOfRows();
 
-    Pos findCellPos(String cellValue, boolean caseSensitive, boolean searchByColumn);
+    CellPos findCellPos(String cellValue, boolean caseSensitive, boolean searchByColumn);
 
     boolean isCellEmpty(int rowNum, int colNum);
 

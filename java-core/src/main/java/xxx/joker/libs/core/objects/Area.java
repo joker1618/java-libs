@@ -10,12 +10,6 @@ public class Area {
     public Area() {
 
     }
-    public Area(Pos startPos, int width, int height) {
-        this.x = startPos.getColNum();
-        this.y = startPos.getRowNum();
-        this.width = width;
-        this.height = height;
-    }
     public Area(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
