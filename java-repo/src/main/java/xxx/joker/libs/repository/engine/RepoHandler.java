@@ -1,5 +1,7 @@
 package xxx.joker.libs.repository.engine;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.design.RepoEntity;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 
 class RepoHandler {
 
+    private static final Logger LOG = LoggerFactory.getLogger(RepoHandler.class);
     private static final List<String> WRITE_METHODS = Arrays.asList("add", "addAll", "delete", "removeIf", "removeAll", "clear", "set");
 
     private final ReadWriteLock repoLock;
@@ -41,7 +44,6 @@ class RepoHandler {
 
     private void initRepoHandler(List<RepoDTO> dtoList) {
         for(RepoDTO dto : dtoList) {
-            handlers.put(dto.getEClazz(), new HandlerDataSet(dto.getEntities()));
             dataByID.putAll(JkStreams.toMapSingle(dto.getEntities(), RepoEntity::getEntityID));
             fkManager.add(dto.getForeignKeys());
         }
@@ -53,6 +55,10 @@ class RepoHandler {
             // Set sequence value
             long maxID = dataByID.keySet().stream().mapToLong(l -> l).max().getAsLong();
             sequenceValue.set(1L + maxID);
+        }
+
+        for(RepoDTO dto : dtoList) {
+            handlers.put(dto.getEClazz(), new HandlerDataSet(dto.getEntities()));
         }
     }
 
@@ -185,7 +191,23 @@ class RepoHandler {
             });
         });
 
+        LOG.debug("New entity added: {}", e);
+
         return true;
+    }
+
+    private RepoEntity setEntityInList(RepoEntity e, List<RepoEntity> insList, int setPos, Long parentID, String fieldName) {
+        if(e.getEntityID() == null) {
+            if (addEntity(e)) {
+                return null;
+            }
+        }
+
+        RepoEntity old = insList.set(setPos, e);
+        RepoFK newFK = new RepoFK(parentID, fieldName, e.getEntityID());
+        fkManager.replaceFK(parentID, fieldName, setPos, newFK);
+
+        return old;
     }
 
     private boolean removeEntity(RepoEntity e) {
@@ -217,6 +239,8 @@ class RepoHandler {
 
         // Remove from dataByID
         dataByID.remove(eID);
+
+        LOG.debug("Removed entity: {}", e);
         
         return true;
     }
@@ -304,7 +328,7 @@ class RepoHandler {
                 }
 
                 if ("clear".equals(methodName)) {
-                    List<RepoEntity> all = JkConvert.toArrayList(entities);
+                    List<RepoEntity> all = JkConvert.toList(entities);
                     boolean res = false;
                     for (RepoEntity todel : all) {
                         res |= removeEntity(todel);
@@ -417,8 +441,9 @@ class RepoHandler {
                 }
 
                 if ("set".equals(methodName)) {
+                    int pos = (int) args[0];
                     RepoEntity e = (RepoEntity) args[1];
-                    return addEntity(e, sourceList, parentID, fieldName);
+                    return setEntityInList(e, sourceList, pos, parentID, fieldName);
                 }
 
                 return method.invoke(sourceList, args);
@@ -474,7 +499,27 @@ class RepoHandler {
 
             foreignKeys.remove(entityID);
 
-            return JkConvert.toArrayList(toRet);
+            return JkConvert.toList(toRet);
+        }
+
+        public void replaceFK(long parentID, String fieldName, int fkIndex, RepoFK newFK) {
+            List<RepoFK> fkList = foreignKeys.get(parentID);
+
+            int pos = -1;
+            for(int i = 0, counter = 0; pos < 0 && i < fkList.size(); i++) {
+                if(fkList.get(i).getFieldName().equals(fieldName)) {
+                    if(counter == fkIndex) {
+                        pos = i;
+                    } else {
+                        counter++;
+                    }
+                }
+            }
+
+            RepoFK oldFK = fkList.set(pos, newFK);
+            references.get(oldFK.getDepID()).remove(parentID);
+            references.putIfAbsent(newFK.getDepID(), new HashSet<>());
+            references.get(newFK.getDepID()).add(parentID);
         }
     }
 

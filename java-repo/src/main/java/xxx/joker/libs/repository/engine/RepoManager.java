@@ -2,6 +2,8 @@ package xxx.joker.libs.repository.engine;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.datetime.JkDates;
+import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkRuntime;
 import xxx.joker.libs.repository.design.RepoEntity;
@@ -19,27 +21,17 @@ public class RepoManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(RepoManager.class);
 
-    private static final String EXT_REPO_FILE = "jkrepo";
-    private static final String EXT_DEPS_FILE = "jkdeps";
-    private static final String EXT_CLASS_DESCR_FILE = "jkdescr";
-    private static final String EXT_SEQUENCE_FILE = "jkseq";
-
     private ReadWriteLock repoLock;
     private RepoDAO repoDao;
     private RepoHandler repoHandler;
 
 
-
     public RepoManager(Path dbFolder, String dbName, String pkgToScan) {
-        this.repoLock = new ReentrantReadWriteLock(true);
-//        JkTimer timer = new JkTimer();
-//        this.designService = new DesignService(classes);
-//        logger.debug("Entity classes parsed in {}", timer.toStringElapsed());
-//        this.repoHandler = readRepoData(classes);
-//        logger.debug("Repo data loaded in {}", timer.toStringElapsed());
+        JkTimer timer = new JkTimer();
         this.repoDao = new RepoDAO(dbFolder, dbName, scanPackage(pkgToScan));
         this.repoLock = new ReentrantReadWriteLock(true);
         this.repoHandler = new RepoHandler(repoDao.readRepoData(), repoLock);
+        LOG.info("Initialized repo [{}, {}] in {}", dbFolder, dbName, timer.toStringElapsed());
     }
 
     public void rollback() {
@@ -47,6 +39,7 @@ public class RepoManager {
             repoLock.writeLock().lock();
             List<RepoDTO> daoDTOs = repoDao.readRepoData();
             repoHandler = new RepoHandler(daoDTOs, repoLock);
+            LOG.info("Rollback repo completed");
         } finally {
             repoLock.writeLock().unlock();
         }
@@ -55,8 +48,10 @@ public class RepoManager {
     public void commit() {
         try {
             repoLock.writeLock().lock();
+            JkTimer timer = new JkTimer();
             List<RepoDTO> handlerDTOs = repoHandler.getRepoEntityDTOs();
             repoDao.saveRepoData(handlerDTOs);
+            LOG.info("Committed repo in {}", timer.toStringElapsed());
         } finally {
             repoLock.writeLock().unlock();
         }

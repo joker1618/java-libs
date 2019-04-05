@@ -36,7 +36,7 @@ class ParserTypes {
     }
 
     public List<JkArgsTypes> getAllTypes() {
-        return JkConvert.toArrayList(argsNamesMap.values());
+        return JkConvert.toList(argsNamesMap.values());
     }
 
     private void init(boolean checkDesign) {

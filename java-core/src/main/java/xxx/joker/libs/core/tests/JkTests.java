@@ -179,6 +179,9 @@ public class JkTests {
     public static boolean containsIgnoreCase(String[] sourceArray, String toFind) {
         return containsIgnoreCase(Arrays.asList(sourceArray), toFind);
     }
+    public static boolean contains(String[] sourceArray, String toFind) {
+        return Arrays.asList(sourceArray).contains(toFind);
+    }
 
 
 

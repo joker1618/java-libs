@@ -7,9 +7,7 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public abstract class RepoEntity implements IRepoEntity<RepoEntity> {
 
-    /**
-     * IMPORTANT: the name 'entityID' is used to retrieve this field by reflection. Not change!!!
-     */
+    @RepoEntityID
     protected Long entityID;
 
     @Override

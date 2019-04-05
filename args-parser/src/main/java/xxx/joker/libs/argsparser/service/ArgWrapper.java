@@ -21,8 +21,8 @@ public class ArgWrapper {
 
 		JkArg ann = field.getAnnotation(JkArg.class);
 		this.argName = ann.argName();
-		this.aliases = JkConvert.toArrayList(ann.aliases());
-		this.classes = JkConvert.toArrayList(ann.classes());
+		this.aliases = JkConvert.toList(ann.aliases());
+		this.classes = JkConvert.toList(ann.classes());
 	}
 
 	public Field getField() {

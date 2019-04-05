@@ -28,7 +28,7 @@ public class CParam {
 		this.required = required;
 		this._default = _default;
 		this.dependOn = dependOn;
-		this.options = JkConvert.toArrayList(options);
+		this.options = JkConvert.toList(options);
 	}
 
 	public boolean isRequired() {

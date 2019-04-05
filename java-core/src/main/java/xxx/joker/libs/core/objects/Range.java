@@ -17,6 +17,10 @@ public class Range {
         return new Range(start, start + length);
     }
 
+    public Range shiftStart(int numShift) {
+        return new Range(start+numShift, end+numShift);
+    }
+
     public int getStart() {
         return start;
     }

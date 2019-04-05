@@ -53,7 +53,7 @@ class ParserArgs {
 
     private void checkNameAliasUniqueness(Set<String> allNameAlias, Field field, JkArg annot) {
         String annName = annot.argName();
-        List<String> annAliases = JkConvert.toArrayList(annot.aliases());
+        List<String> annAliases = JkConvert.toList(annot.aliases());
 
         if(ignoreCaseArgs) {
             annName = annName.toLowerCase();
@@ -100,7 +100,7 @@ class ParserArgs {
             }
 
         } else {
-            List<Class<?>> annotClasses = JkConvert.toArrayList(annot.classes());
+            List<Class<?>> annotClasses = JkConvert.toList(annot.classes());
 
             // annotation classes found --> field type must be Object
             if (field.getType() != Object.class) {

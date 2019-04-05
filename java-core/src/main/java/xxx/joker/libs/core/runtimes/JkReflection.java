@@ -11,6 +11,13 @@ import java.util.*;
 
 public class JkReflection {
 
+	public static <T> T createInstanceSafe(String clazzName) {
+		try {
+			return (T) createInstanceSafe(Class.forName(clazzName));
+		} catch (Exception e) {
+			throw new JkRuntimeException(e);
+		}
+	}
 	public static <T> T createInstanceSafe(Class<T> clazz) {
 		try {
 			return clazz.newInstance();

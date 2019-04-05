@@ -116,7 +116,7 @@ public class JkStreams {
 	}
 
 	@SafeVarargs
-	public static <T> T findExactMatch(Collection<T> source, Predicate<T>... filters) {
+	public static <T> T findUnique(Collection<T> source, Predicate<T>... filters) {
 		Stream<T> stream = source.stream();
 		for(Predicate<T> filter : filters) {
 			stream = stream.filter(filter);
@@ -125,7 +125,7 @@ public class JkStreams {
 		return list.size() == 1 ? list.get(0) : null;
 	}
 	@SafeVarargs
-	public static <T> T findFirstMatch(Collection<T> source, Predicate<T>... filters) {
+	public static <T> T findFirst(Collection<T> source, Predicate<T>... filters) {
 		Stream<T> stream = source.stream();
 		for(Predicate<T> filter : filters) {
 			stream = stream.filter(filter);

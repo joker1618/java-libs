@@ -131,7 +131,7 @@ public class COption {
 	}
 	@SafeVarargs
 	public final COption addChecksBeforeAll(Function<String[], String>... checksBefore) {
-		this.checksBefore = JkConvert.toArrayList(checksBefore);
+		this.checksBefore = JkConvert.toList(checksBefore);
 		return this;
 	}
 
@@ -156,7 +156,7 @@ public class COption {
 	}
 	@SafeVarargs
 	public final COption addChecksMiddleAll(Function<String[], String>... checksMiddle) {
-		this.checksMiddle = JkConvert.toArrayList(checksMiddle);
+		this.checksMiddle = JkConvert.toList(checksMiddle);
 		return this;
 	}
 
@@ -181,7 +181,7 @@ public class COption {
 	}
 	@SafeVarargs
 	public final COption addChecksAfterAll(Function<Object[], String>... checksAfter) {
-		this.checksAfter = JkConvert.toArrayList(checksAfter);
+		this.checksAfter = JkConvert.toList(checksAfter);
 		return this;
 	}
 

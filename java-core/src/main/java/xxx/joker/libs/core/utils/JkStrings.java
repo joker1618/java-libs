@@ -4,7 +4,6 @@ package xxx.joker.libs.core.utils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.runtimes.JkEnvironment;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -114,12 +113,12 @@ public class JkStrings {
 		return splitList(source, separatorString, trimValues, true);
 	}
 	public static List<String> splitList(String source, String separatorString, boolean trimValues, boolean removeSeparator) {
-		return JkConvert.toArrayList(splitArr(source, separatorString, trimValues, removeSeparator));
+		return JkConvert.toList(splitArr(source, separatorString, trimValues, removeSeparator));
 	}
 
 	public static String leftPadLines(String source, String padStr, int padSize) {
 		String[] lines = splitArr(source, "\n");
-		List<String> padded = leftPadLines(JkConvert.toArrayList(lines), padStr, padSize);
+		List<String> padded = leftPadLines(JkConvert.toList(lines), padStr, padSize);
 		return JkStreams.join(padded, "\n");
 	}
 	public static List<String> leftPadLines(List<String> list, String padStr, int padSize) {

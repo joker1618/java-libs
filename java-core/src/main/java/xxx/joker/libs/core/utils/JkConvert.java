@@ -26,10 +26,10 @@ public class JkConvert {
 		return source == null ? null : new HashSet<>(source);
 	}
 
-	public static <T> ArrayList<T> toArrayList(T[] source) {
+	public static <T> List<T> toList(T[] source) {
 		return source == null ? null : new ArrayList<>(Arrays.asList(source));
 	}
-	public static <T> ArrayList<T> toArrayList(Collection<T> source) {
+	public static <T> List<T> toList(Collection<T> source) {
 		return source == null ? null : new ArrayList<>(source);
 	}
 

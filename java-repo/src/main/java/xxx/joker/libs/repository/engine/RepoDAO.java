@@ -4,7 +4,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.files.JkFiles;
-import xxx.joker.libs.core.files.JkZip;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
@@ -13,6 +12,7 @@ import xxx.joker.libs.repository.design.RepoEntity;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 import static xxx.joker.libs.repository.common.RepoCommon.Separator.*;
@@ -45,12 +45,12 @@ class RepoDAO {
             toRet.add(dto);
 
             // 1. Read file .descr
-            Map<Integer, String> descrMap = loadDescr(rc);
-            if(descrMap != null) {
+            List<String> descrList = loadDescr(rc);
+            if(descrList != null) {
                 // 2. Read file .data
-                dto.setEntities(loadData(rc, descrMap));
+                dto.setEntities(loadData(rc, descrList));
                 // 3. Read file .fkeys
-                dto.setForeignKeys(loadForeignKeys(rc, descrMap));
+                dto.setForeignKeys(loadForeignKeys(rc, descrList));
             }
         }
 
@@ -58,70 +58,49 @@ class RepoDAO {
     }
 
     public void saveRepoData(List<RepoDTO> dtoList) {
-        // Get all existing repo files
-        List<Path> dbFiles = JkFiles.findFiles(dbFolder, false, this::isRepoEntityFile);
-
-        // Create lock file
-        Path repoLockPath = filePathRepoLock();
-        JkFiles.writeFile(repoLockPath, "");
-
-        // Backup existing repo files
-        backupRepoFiles(dbFiles);
-
-        // Delete existing repo files
-        dbFiles.forEach(JkFiles::delete);
-
-        // Persist repo data
+        // Format repo data
+        Map<Path, List<String>> formatData = new HashMap<>();
         for(RepoDTO dto : dtoList) {
             if(!dto.getEntities().isEmpty()) {
                 ClazzWrapper rc = ClazzWrapper.wrap(dto.getEClazz());
-                TreeMap<String, Integer> descrMap = new TreeMap<>();
+                List<String> descrList = new ArrayList<>();
                 List<String> dataLines = new ArrayList<>();
                 for (RepoEntity edto : dto.getEntities()) {
                     List<Pair<String, String>> pairs = rc.formatEntity(edto);
                     dataLines.add(JkStreams.join(pairs, SEP_FIELD, Pair::getValue));
-                    if(descrMap.isEmpty()) {
-                        List<String> fnames = JkStreams.map(pairs, Pair::getKey);
-                        for(int i = 0; i < fnames.size(); i++) {
-                            descrMap.put(fnames.get(i), i);
-                        }
+                    if(descrList.isEmpty()) {
+                        descrList.addAll(JkStreams.map(pairs, Pair::getKey));
                     }
                 }
-                JkFiles.writeFile(filePathDescr(rc), JkConvert.toArrayList(descrMap.keySet()));
-                JkFiles.writeFile(filePathData(rc), dataLines);
+                formatData.put(filePathDescr(rc), descrList);
+                formatData.put(filePathData(rc), dataLines);
 
-                List<String> fkLines = new ArrayList<>();
-                for (RepoFK fk : dto.getForeignKeys()) {
-                    Integer findex = descrMap.get(fk.getFieldName());
-                    fkLines.add(strf("{}{}{}{}{}", fk.getFromID(), SEP_FIELD, findex, SEP_FIELD, fk.getDepID()));
+
+                if(!dto.getForeignKeys().isEmpty()) {
+                    List<String> fkLines = new ArrayList<>();
+                    for (RepoFK fk : dto.getForeignKeys()) {
+                        Integer findex = descrList.indexOf(fk.getFieldName());
+                        fkLines.add(strf("{}{}{}{}{}", fk.getFromID(), SEP_FIELD, findex, SEP_FIELD, fk.getDepID()));
+                    }
+                    formatData.put(filePathForeignKeys(rc), fkLines);
                 }
-                JkFiles.writeFile(filePathForeignKeys(rc), fkLines);
             }
         }
 
-        // Delete lock file
-        JkFiles.delete(repoLockPath);
+        // Delete all existing repo files
+        List<Path> existingRepoFiles = JkFiles.findFiles(dbFolder, false, this::isRepoEntityFile);
+        existingRepoFiles.forEach(JkFiles::delete);
+
+        // Persist repo data
+        formatData.forEach(JkFiles::writeFile);
     }
 
-    private void backupRepoFiles(List<Path> dbFiles) {
-        String zipName = fileNameBackupZip();
-        JkZip.zipFiles(dbFolder.resolve(zipName), dbFiles);
-        List<Path> oldBackupFiles = JkFiles.findFiles(dbFolder, false, p -> isBackupZipFile(p) && !p.getFileName().toString().equals(zipName));
-        oldBackupFiles.forEach(JkFiles::delete);
-    }
-
-    private Map<Integer, String> loadDescr(ClazzWrapper clazzWrapper) {
+    private List<String> loadDescr(ClazzWrapper clazzWrapper) {
         Path fpath = filePathDescr(clazzWrapper);
         if(!Files.exists(fpath))    return null;
-
-        List<String> lines = JkFiles.readLinesNotBlank(fpath);
-        return JkStreams.toMapSingle(
-                lines,
-                l -> JkConvert.toInt(l.split(SEP_DESCR)[0]),
-                l -> l.split(SEP_DESCR)[1]
-        );
+        return JkFiles.readLinesNotBlank(fpath);
     }
-    private List<RepoEntity> loadData(ClazzWrapper clazzWrapper, Map<Integer, String> descrMap) {
+    private List<RepoEntity> loadData(ClazzWrapper clazzWrapper, List<String> descrList) {
         Path fpath = filePathData(clazzWrapper);
         if(!Files.exists(fpath))    return Collections.emptyList();
 
@@ -131,7 +110,7 @@ class RepoDAO {
             Map<String, String> strValues = new HashMap<>();
             String[] split = JkStrings.splitArr(l, SEP_FIELD);
             for(int i = 0; i < split.length; i++) {
-                String fname = descrMap.get(i);
+                String fname = descrList.get(i);
                 if(fname != null) {
                     strValues.put(fname, split[i]);
                 }
@@ -141,7 +120,7 @@ class RepoDAO {
         }
         return toRet;
     }
-    private List<RepoFK> loadForeignKeys(ClazzWrapper clazzWrapper, Map<Integer, String> descrMap) {
+    private List<RepoFK> loadForeignKeys(ClazzWrapper clazzWrapper, List<String> descrList) {
         Path fpath = filePathForeignKeys(clazzWrapper);
         if(!Files.exists(fpath))    return Collections.emptyList();
 
@@ -152,15 +131,12 @@ class RepoDAO {
             long fromID = Long.valueOf(split[0]);
             int fieldNum = Integer.parseInt(split[1]);
             long depID = Long.valueOf(split[2]);
-            String fname = descrMap.get(fieldNum);
+            String fname = descrList.get(fieldNum);
             toRet.add(new RepoFK(fromID, fname, depID));
         }
         return toRet;
     }
 
-    private Path filePathRepoLock() {
-        return dbFolder.resolve(dbName+".jkrepo.lock");
-    }
     private Path filePathDescr(ClazzWrapper clazzWrapper) {
         return filePathRepoEntity(clazzWrapper, EXT_CLASS_DESCR_FILE);
     }
@@ -178,13 +154,6 @@ class RepoDAO {
     private boolean isRepoEntityFile(Path p) {
         if(!Files.isRegularFile(p)) return false;
         return p.getFileName().toString().matches("^"+dbName+"#[^#]*#jkrepo\\.[^.#]+$");
-    }
-
-    private String fileNameBackupZip() {
-        return strf("{}.backup.{}.zip", dbName, System.currentTimeMillis());
-    }
-    private boolean isBackupZipFile(Path p) {
-        return p.getFileName().toString().matches("^"+dbName+"\\.backup\\.[0-9]+\\.zip$");
     }
 
 }

@@ -1,15 +1,11 @@
 package xxx.joker.apps.formula1.corelibs;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.objects.Range;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 
-import java.util.List;
-
-public class X_TextScannerImpl implements X_TextScanner {
+class X_TextScannerImpl implements X_TextScanner {
 
     private String originalText;
     private StringBuilder buffer;

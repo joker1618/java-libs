@@ -4,6 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.repository.common.RepoCommon;
 import xxx.joker.libs.repository.design.RepoEntity;
+import xxx.joker.libs.repository.design.RepoEntityID;
 import xxx.joker.libs.repository.design.RepoField;
 import xxx.joker.libs.repository.exceptions.RepoError;
 
@@ -18,7 +19,7 @@ class ClazzWrapper {
     private static final Map<Class<?>, ClazzWrapper> CACHE = new HashMap<>();
     private static final FieldWrapper CF_ENTITY_ID;
     static {
-        Field f = JkReflection.getFieldByName(RepoEntity.class, RepoCommon.FIELD_NAME_REPO_ENTITY_ID);
+        Field f = JkReflection.getFieldsByAnnotation(RepoEntity.class, RepoEntityID.class).get(0);
         CF_ENTITY_ID = new FieldWrapper(f);
     }
 
@@ -32,7 +33,9 @@ class ClazzWrapper {
     }
 
     public static void setEntityID(RepoEntity e, Long eID) {
-        CF_ENTITY_ID.setValue(e, eID);
+        synchronized (CF_ENTITY_ID) {
+            CF_ENTITY_ID.setValue(e, eID);
+        }
     }
 
     public static synchronized ClazzWrapper wrap(Class<?> clazz) {
@@ -57,14 +60,7 @@ class ClazzWrapper {
 
     public List<Pair<String,String>> formatEntity(RepoEntity e) {
         List<Pair<String,String>> toRet = new ArrayList<>();
-        fieldsByName.forEach((fname,cf) -> {
-            Pair<String, String> pair = Pair.of(fname, cf.formatValue(e));
-            if(RepoCommon.FIELD_NAME_REPO_ENTITY_ID.equals(fname)) {
-                toRet.add(0, pair);
-            } else {
-                toRet.add(pair);
-            }
-        });
+        fieldsByName.forEach((fname,cf) -> toRet.add(Pair.of(fname, cf.formatValue(e))));
         return toRet;
     }
 

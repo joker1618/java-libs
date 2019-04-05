@@ -1,184 +1,42 @@
 package xxx.joker.apps.formula1.corelibs;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.objects.Range;
+import xxx.joker.libs.core.tests.JkTests;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class X_TagImpl implements X_Tag {
+class X_TagImpl implements X_Tag {
 
-    private X_Tag parent;
+    // The root tag has null parent, but has the html set
+    // All other tags:
+    // - have a tag parent, but not html string
+    // - to retrieve the html, they ask to parent
+    private X_TagImpl parent;
+    private String html;
+
     private String tagName;
     private int startPos;
     private int endPos;
     private boolean autoClosed;
     private Map<String, String> attributes;
+    private List<X_Tag> children;
 
-    private X_TagImpl() {
-        this.attributes = new HashMap<>();
+
+    public X_TagImpl() {
+        this(null);
     }
-    private X_TagImpl(String tagName) {
+    public X_TagImpl(String tagName) {
         this.tagName = tagName;
         this.attributes = new HashMap<>();
-    }
-
-    public static X_Tag parse(String html, String tagName, String startString) {
-        X_TextScanner scanner = new X_TextScannerImpl(html, true);
-
-        if(StringUtils.isNotEmpty(startString)) {
-            if(!scanner.startAt(startString)) {
-                return null;
-            }
-        }
-
-        String toFind = "<";
-        if(StringUtils.isNotBlank(startString)) {
-            toFind += tagName;
-        }
-
-        if(!scanner.startAt(toFind)) {
-            return null;
-        }
-
-        scanner.rebaseOrigText();
-
-
-        X_TagImpl tag = null;
-
-        while(scanner.startAt(toFind)) {
-            if(tag == null) {
-                tag = new X_TagImpl(tagName);
-            }
-        }
-
-    }
-
-    private static X_Tag parseHtml(X_TextScanner scanner) {
-        X_Tag rootTag = null;
-        Stack<X_TagImpl> openedTags = new Stack<>();
-        Range tagRange;
-
-        while((tagRange = getNextTagRange(scanner.toString())) != null) {
-            String strTag = scanner.nextString(tagRange);
-            Pair<X_TagImpl, Boolean> pair = parseTagString(strTag);
-            X_TagImpl tag = pair.getKey();
-            boolean isClosingTag = !pair.getValue();
-
-            if(!isClosingTag) {
-                if (!openedTags.empty()) {
-                    X_TagImpl parent = openedTags.peek();
-                    parent.getChildren().add(tag);
-                } else {
-                    rootTag.add(tag);
-                }
-
-                if (!tag.isAutoClosed()) {
-                    openedTags.push(tag);
-                    openedStarts.push(seek + ltIndex);
-                } else {
-                    tag.setHtml(strTag);
-                }
-
-            } else if(openedTags.empty()) {
-                break;
-
-            } else {
-                X_TagImpl popTag = openedTags.pop();
-                if(!popTag.getTagName().equals(tag.getTagName())) {
-                    break;
-                }
-
-                String subs = html.substring(openedStarts.pop(), seek + gtIndex + 1);
-                popTag.setHtml(subs);
-
-                if(openedTags.empty() && onlyFirstTag) {
-                    break;
-                }
-            }
-
-            sb.delete(0, gtIndex + 1);
-            seek += gtIndex + 1;
-        }
-
-        return rootTag;
-    }
-
-    private static Range getNextTagRange(String html) {
-        Pattern pattern = Pattern.compile("(<[^<]*?>)");
-        Matcher m = pattern.matcher(html);
-        if(!m.find()) return null;
-        return Range.ofBounds(m.start(), m.end());
-    }
-
-    // return <tag; true if is a tag open, false if is a closing tag>
-    // strTag = <...>
-    private static Pair<X_TagImpl, Boolean> parseTagString(String strTag) {
-        // Check if is a closing tag
-        if(strTag.startsWith("</")) {
-            String tagName = strTag.replaceAll("^</", "").replaceAll(">$", "").trim();
-            return Pair.of(new X_TagImpl(tagName), false);
-        }
-
-        X_TagImpl tag = new X_TagImpl();
-        tag.setAutoClosed(strTag.endsWith("/>"));
-
-        String tempStr = strTag.replaceAll("^<", "").replaceAll(">$", "").replaceAll("/$", "").trim();
-
-        StringBuilder sb = new StringBuilder(tempStr.trim());
-        int idx = sb.indexOf(" ");
-        if(idx == -1) {
-            // tag name only
-            tag.setTagName(sb.toString());
-
-        } else {
-            // tag name + attributes
-            tag.setTagName(sb.substring(0, idx));
-
-            sb.delete(0, idx+1);
-            int eqIndex;
-            while((eqIndex = sb.indexOf("=")) != -1) {
-                String attrName = sb.substring(0, eqIndex).trim();
-                int begin = eqIndex + 1;
-                while(begin < sb.length() && sb.charAt(begin) == ' ')   begin++;
-                if(begin == sb.length())    break;
-
-                boolean isQuote = sb.charAt(begin) == '"';
-                int end = begin + 1;
-                while(end < sb.length()) {
-                    if(isQuote) {
-                        if(sb.charAt(end) == '"' && sb.charAt(end-1) != '\\') {
-                            break;
-                        }
-                    } else {
-                        if(sb.charAt(end) == ' ') {
-                            break;
-                        }
-                    }
-                    end++;
-                }
-
-                if(end == sb.length()) {
-                    if(isQuote) break;
-                } else {
-                    end++;
-                }
-
-                String attrValue = sb.substring(begin, end).replaceAll("^\"", "").replaceAll("\"$", "");
-                tag.getAttributes().put(attrName, attrValue);
-
-                sb.delete(0, end);
-            }
-        }
-
-        return Pair.of(tag, true);
+        this.children = new ArrayList<>();
+        this.startPos = -1;
+        this.endPos = -1;
     }
 
     @Override
-    public Map<String, String> getAttributes() {
-        return attributes;
+    public Map<String, String> getAllAttributes() {
+        return new HashMap<>(attributes);
     }
    
     @Override
@@ -196,11 +54,117 @@ public class X_TagImpl implements X_Tag {
         return tagName;
     }
 
+    @Override
+    public X_Tag getChild(int childNum) {
+        return childNum < children.size() ? children.get(childNum) : null;
+    }
+
+    @Override
+    public X_Tag getChild(String tagName) {
+        List<X_Tag> children = getChildren(tagName);
+        return children.isEmpty() ? null : children.get(0);
+    }
+
+    @Override
+    public List<X_Tag> getChildren() {
+        return children;
+    }
+
+    @Override
+    public List<X_Tag> getChildren(String... tagNames) {
+        return JkStreams.filter(children, ch -> JkTests.containsIgnoreCase(tagNames, ch.getTagName()));
+    }
+
+    @Override
+    public X_Tag findChild(String... tagNamesPath) {
+        List<X_Tag> res = findChildren(tagNamesPath);
+        return res == null || res.isEmpty() ? null : res.get(0);
+    }
+
+    @Override
+    public List<X_Tag> findChildren(String... tagNamesPath) {
+        X_Tag t = this;
+        int pos = 0;
+        for(; pos < tagNamesPath.length - 1; pos++) {
+            String tn = tagNamesPath[pos];
+            t = t.getChild(tn);
+            if(t == null)   return null;
+        }
+        return t.getChildren(tagNamesPath[pos]);
+    }
+
+    @Override
+    public Range getRange() {
+        return Range.ofBounds(startPos, endPos);
+    }
+
+    @Override
+    public String getHtmlTag() {
+        return getFullHtml().substring(startPos, endPos);
+    }
+
+    @Override
+    public String getText() {
+        StringBuilder sb = new StringBuilder();
+        if(!children.isEmpty()) {
+            List<Range> chRanges = JkStreams.map(children, ch -> ch.getRange().shiftStart(-1 * startPos));
+            String htag = getHtmlTag();
+            int start = 0;
+            for (Range r : chRanges) {
+                sb.append(htag, start, r.getStart());
+                start = r.getEnd();
+            }
+            sb.append(htag.substring(start));
+        } else {
+            sb.append(getHtmlTag());
+        }
+        return sb.toString().replaceAll("^<[^<]*?>", "").replaceAll("</[^<]*?>$", "").trim();
+    }
+
+    private String getFullHtml() {
+        return html == null ? parent.getFullHtml() : html;
+    }
+
+    public X_Tag getParent() {
+        return parent;
+    }
+
+    public int getStartPos() {
+        return startPos;
+    }
+
+    public int getEndPos() {
+        return endPos;
+    }
+
     protected void setTagName(String tagName) {
         this.tagName = tagName;
     }
 
     protected void setAutoClosed(boolean autoClosed) {
         this.autoClosed = autoClosed;
+    }
+
+    protected void setParent(X_TagImpl parent) {
+        this.parent = parent;
+    }
+
+    protected void setStartPos(int startPos) {
+        this.startPos = startPos;
+    }
+
+    protected void setEndPos(int endPos) {
+        this.endPos = endPos;
+    }
+
+    protected Map<String, String> getAttributes() {
+        return attributes;
+    }
+
+    protected void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
+    protected void setHtml(String html) {
+        this.html = html;
     }
 }

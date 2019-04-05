@@ -19,16 +19,13 @@ public abstract class JkRepoFile implements JkRepo {
     private final RepoManager repoManager;
 
     protected JkRepoFile(Path dbFolder, String dbName, String pkgToScan) {
-//        JkTimer timer = new JkTimer();
-//        LOG.info("Creating repository: dbName={}, dbFolder={}, pkgToScan={}", dbName, dbFolder, pkgToScan);
-//        List<Class<?>> eclasses = findPackageEntities(pkgToScan);
         this.repoManager = new RepoManager(dbFolder, dbName, pkgToScan);
-//        this.properties = JkStreams.toMapSingle(getEntities(JkRepoProperty.class), JkRepoProperty::getKey, JkRepoProperty::getValue);
-//        LOG.debug("Repository created in {}", timer.toStringElapsed());
-
-
     }
 
+    @Override
+    public Set<RepoProperty> getProperties() {
+        return getDataSet(RepoProperty.class);
+    }
 
     @Override
     public <T extends RepoEntity> Set<T> getDataSet(Class<T> entityClazz) {
@@ -80,6 +77,6 @@ public abstract class JkRepoFile implements JkRepo {
     }
 
     private RepoProperty retrieveProperty(String propKey) {
-        return JkStreams.findExactMatch(getDataSet(RepoProperty.class), rp -> rp.getKey().equalsIgnoreCase(propKey));
+        return JkStreams.findUnique(getDataSet(RepoProperty.class), rp -> rp.getKey().equalsIgnoreCase(propKey));
     }
 }
