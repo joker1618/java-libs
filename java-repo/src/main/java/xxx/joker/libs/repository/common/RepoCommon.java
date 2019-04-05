@@ -1,5 +1,6 @@
 package xxx.joker.libs.repository.common;
 
+import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoFieldCustom;
 
@@ -54,6 +55,7 @@ public class RepoCommon {
             Float.class,		float.class,
             Double.class,		double.class,
 
+            JkDuration.class,
             LocalTime.class,
             LocalDate.class,
             LocalDateTime.class,

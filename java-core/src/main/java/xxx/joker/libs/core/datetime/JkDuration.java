@@ -58,7 +58,7 @@ public class JkDuration {
         }
         return of(ms);
     }
-    public static JkDuration fromToNow(long startMillis) {
+    public static JkDuration untilNow(long startMillis) {
         return of(System.currentTimeMillis() - startMillis);
     }
 
@@ -105,7 +105,7 @@ public class JkDuration {
         return JkDuration.of(milli).toStringElapsed(showMilli, minUnit);
     }
 
-    public long getTotalMillis() {
+    public long toMillis() {
         return totalMillis;
     }
 	public int getHours() {
@@ -119,5 +119,9 @@ public class JkDuration {
     }
 	public int getMilli() {
         return milli;
+    }
+
+    public JkDuration add(JkDuration toAdd) {
+        return JkDuration.of(totalMillis + toAdd.totalMillis);
     }
 }

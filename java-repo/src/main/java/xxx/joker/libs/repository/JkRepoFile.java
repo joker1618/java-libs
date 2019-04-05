@@ -8,7 +8,11 @@ import xxx.joker.libs.repository.entities.RepoProperty;
 import xxx.joker.libs.repository.engine.RepoManager;
 
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
@@ -31,6 +35,19 @@ public abstract class JkRepoFile implements JkRepo {
     public <T extends RepoEntity> Set<T> getDataSet(Class<T> entityClazz) {
         return (Set<T>) repoManager.getDataSet(entityClazz);
     }
+
+    @Override
+    @SafeVarargs
+    public final <T extends RepoEntity> List<T> getDataList(Class<T> entityClazz, Predicate<T>... filters) {
+        return JkStreams.filter(getDataSet(entityClazz), filters);
+    }
+
+    @Override
+    @SafeVarargs
+    public final <K,T extends RepoEntity> Map<K,T> getDataMap(Class<T> entityClazz, Function<T, K> keyMapper, Predicate<T>... filters) {
+        return JkStreams.toMapSingle(getDataSet(entityClazz), keyMapper, e -> e, filters);
+    }
+
 
     @Override
     public void rollback() {

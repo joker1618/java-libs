@@ -3,11 +3,17 @@ package xxx.joker.libs.repository;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.entities.RepoProperty;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public interface JkRepo {
 
     <T extends RepoEntity> Set<T> getDataSet(Class<T> entityClazz);
+    <T extends RepoEntity> List<T> getDataList(Class<T> entityClazz, Predicate<T>... filters);
+    <K,T extends RepoEntity> Map<K,T> getDataMap(Class<T> entityClazz, Function<T,K> keyMapper, Predicate<T>... filters);
 
     void rollback();
     void commit();
