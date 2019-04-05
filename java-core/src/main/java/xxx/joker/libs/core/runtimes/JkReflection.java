@@ -9,6 +9,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 
+import static xxx.joker.libs.core.utils.JkConsole.display;
+
 public class JkReflection {
 
 	public static <T> T createInstanceSafe(String clazzName) {
@@ -140,8 +142,7 @@ public class JkReflection {
 		}
 	}
 	public static Class<?>[] getParametrizedTypes(Field field) {
-		Class<?> genType = (Class<?>) field.getGenericType();
-		if(!isInstanceOf(genType, ParameterizedType.class)) {
+		if(!isInstanceOf(field.getGenericType().getClass(), ParameterizedType.class)) {
 			return new Class<?>[0];
 		}
 

@@ -86,7 +86,7 @@ class ClazzWrapper {
 
         // Check field class type
         fieldsByName.forEach((k,v) -> {
-            if(!RepoCommon.isValidType(v.getFieldType())) {
+            if(!RepoCommon.isValidType(v)) {
                 throw new RepoError("Invalid field type {}::{}", eClazz.getSimpleName(), k);
             }
         });

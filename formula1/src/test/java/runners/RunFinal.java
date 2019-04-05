@@ -21,6 +21,6 @@ public class RunFinal {
         IWikiParser parser = IWikiParser.getParser(year);
         parser.parse();
 //        model.commit();
-//        display(ToStringRepo.toCols(model.getEntrants(year)));
+        display(ToStringRepo.toCols(model.getEntrants(year)));
     }
 }

@@ -39,7 +39,7 @@ abstract class AWikiParser implements IWikiParser {
         String url = createUrl(strf("/wiki/{}_Formula_One_World_Championship", year));
 //        parseEntrants(downloader.getHtml(url));
 
-        getGpUrls(downloader.getHtml(url)).forEach(JkConsole::display);
+//        getGpUrls(downloader.getHtml(url)).forEach(JkConsole::display);
 
 //        Map<String, Integer> expDriverMap = getExpectedDriverPoints(downloader.getHtml(url));
 //        List<Map.Entry<String, Integer>> entriesDriverMap = JkStreams.sorted(expDriverMap.entrySet(), Comparator.comparing(Map.Entry::getValue));
@@ -56,6 +56,8 @@ abstract class AWikiParser implements IWikiParser {
     protected abstract List<String> getGpUrls(String html);
     protected abstract Map<String, Integer> getExpectedDriverPoints(String html);
     protected abstract Map<String, Integer> getExpectedTeamPoints(String html);
+    protected abstract void parseQualify(String html, F1GranPrix gp);
+    protected abstract void parseRace(String html, F1GranPrix gp);
 
     protected String createUrl(String wikiSubPath) {
         return strf("{}/{}", PREFIX_URL, wikiSubPath.replaceFirst("^/", ""));

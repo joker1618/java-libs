@@ -25,7 +25,7 @@ import java.util.*;
 import static xxx.joker.libs.repository.common.RepoCommon.Separator.*;
 
 
-class FieldWrapper {
+public class FieldWrapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(FieldWrapper.class);
 
@@ -59,6 +59,10 @@ class FieldWrapper {
         if(allowNullStr) {
             directives.add(AllowNullString.class);
         }
+    }
+
+    public Field getField() {
+        return field;
     }
 
     public String getFieldName() {

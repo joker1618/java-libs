@@ -3,6 +3,7 @@ package xxx.joker.libs.repository.common;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoFieldCustom;
+import xxx.joker.libs.repository.engine.FieldWrapper;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -30,14 +31,15 @@ public class RepoCommon {
         public static final String PH_NULL = "@_NUL_@";
     }
 
-    public static boolean isValidType(Class<?> fieldType) {
+    public static boolean isValidType(FieldWrapper fieldWrapper) {
+        Class<?> fieldType = fieldWrapper.getFieldType();
         boolean res = ALLOWED_FIELDS.contains(fieldType);
         if(!res) {
             Class<?> sc = fieldType.getSuperclass();
             res = CUSTOM_FIELDS.contains(sc);
         }
         if(!res && ALLOWED_COLLECTIONS.contains(fieldType)) {
-            Class<?> elemType = fieldType;
+            Class<?> elemType = fieldWrapper.getElemType();
             res = CUSTOM_FIELDS.contains(elemType.getSuperclass()) || ALLOWED_FIELDS.contains(elemType);
         }
         return res;

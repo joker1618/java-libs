@@ -2,10 +2,7 @@ package xxx.joker.apps.formula1.parsers;
 
 import xxx.joker.apps.formula1.corelibs.X_Scanners;
 import xxx.joker.apps.formula1.corelibs.X_Tag;
-import xxx.joker.apps.formula1.model.entities.F1Driver;
-import xxx.joker.apps.formula1.model.entities.F1Entrant;
-import xxx.joker.apps.formula1.model.entities.F1Link;
-import xxx.joker.apps.formula1.model.entities.F1Team;
+import xxx.joker.apps.formula1.model.entities.*;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
 
@@ -120,6 +117,33 @@ public class Year2018 extends AWikiParser {
         }
 
         return map;
+    }
+
+    @Override
+    protected void parseQualify(String html, F1GranPrix gp) {
+        X_Tag tableQualify = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Qualifying_2\">", "<table class=\"wikitable sortable\"");
+//        X_Tag tbody = tableEntrants.getChild("tbody");
+//
+//        for (X_Tag tr : tbody.getChildren("tr")) {
+//            if(tr.getChildren("th").size() == 2) {
+//                X_Tag teamTag = tr.getChild(1).getChild("a");
+//                if(teamTag == null) {
+//                    teamTag = tr.getChild(1).findChild("span", "a");
+//                }
+//                F1Team team = model.getTeam(teamTag.getText());
+//                String spoints = tr.getChildren("th").get(1).getText();
+//                spoints = spoints.replaceAll(".*\\(", "").replaceAll("\\).*", "");
+//                int points = Integer.parseInt(spoints);
+//                map.put(team.getTeamName(), points);
+//            }
+//        }
+//
+//        return map;
+    }
+
+    @Override
+    protected void parseRace(String html, F1GranPrix gp) {
+
     }
 
 }
