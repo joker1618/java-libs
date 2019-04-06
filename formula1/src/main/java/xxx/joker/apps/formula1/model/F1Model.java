@@ -1,9 +1,6 @@
 package xxx.joker.apps.formula1.model;
 
-import xxx.joker.apps.formula1.model.entities.F1Driver;
-import xxx.joker.apps.formula1.model.entities.F1Entrant;
-import xxx.joker.apps.formula1.model.entities.F1Link;
-import xxx.joker.apps.formula1.model.entities.F1Team;
+import xxx.joker.apps.formula1.model.entities.*;
 import xxx.joker.libs.repository.JkRepo;
 
 import java.util.List;
@@ -18,7 +15,11 @@ public interface F1Model extends JkRepo {
     Set<F1Driver> getDrivers();
 
     Set<F1Entrant> getEntrants();
+    List<F1Entrant> getEntrants(int year);
+
     Set<F1Link> getLinks();
 
-    List<F1Entrant> getEntrants(int year);
+    Set<F1GranPrix> getGranPrixs();
+    List<F1GranPrix> getGranPrixs(int year);
+
 }

@@ -11,9 +11,12 @@ import java.util.function.Predicate;
 
 public interface JkRepo {
 
+    <T extends RepoEntity> Map<Class<T>, Set<T>> getDataSets();
     <T extends RepoEntity> Set<T> getDataSet(Class<T> entityClazz);
     <T extends RepoEntity> List<T> getDataList(Class<T> entityClazz, Predicate<T>... filters);
     <K,T extends RepoEntity> Map<K,T> getDataMap(Class<T> entityClazz, Function<T,K> keyMapper, Predicate<T>... filters);
+
+    <T extends RepoEntity> boolean remove(T toRemove);
 
     void rollback();
     void commit();

@@ -5,9 +5,6 @@ import util.ToStringRepo;
 import xxx.joker.apps.formula1.parsers.IWikiParser;
 import xxx.joker.apps.formula1.model.F1Model;
 import xxx.joker.apps.formula1.model.F1ModelImpl;
-import xxx.joker.libs.core.format.JkOutput;
-
-import java.util.List;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
@@ -20,7 +17,10 @@ public class RunFinal {
         int year = 2018;
         IWikiParser parser = IWikiParser.getParser(year);
         parser.parse();
-//        model.commit();
-        display(ToStringRepo.toCols(model.getEntrants(year)));
+        model.commit();
+
+        display(ToStringRepo.toColsGPs(model.getGranPrixs(year)));
+//        ToStringRepo.strGPsFull();
+//        ToStringRepo.strGPsFull();
     }
 }

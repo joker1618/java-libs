@@ -20,9 +20,11 @@ public class JkDuration {
 
     private JkDuration(long totalMillis) {
         this.totalMillis = totalMillis;
-        this.milli = (int) totalMillis % 1000;
 
-        long rem = (totalMillis - this.milli) / 1000;
+        long absTotalMillis = Math.abs(totalMillis);
+        this.milli = (int) absTotalMillis % 1000;
+
+        long rem = (absTotalMillis - this.milli) / 1000;
 
         long hourSec = HOURS.getDuration().getSeconds();
         this.hours = (int)(rem / hourSec);
@@ -48,15 +50,20 @@ public class JkDuration {
         return of(duration.toMillis());
     }
     public static JkDuration of(String elapsed) {
-        if(StringUtils.isBlank(elapsed))    return null;
-        String[] splitMs = JkStrings.splitArr(elapsed, ".");
-        String[] splitTm = JkStrings.splitArr(splitMs[0], ":");
-        long ms = 0L;
-        if(splitMs.length == 2)     ms += JkConvert.toLong(splitMs[1]);
-        for(int i = splitTm.length - 1, mult = 1000; i >= 0; i--, mult *= 60) {
-            ms += JkConvert.toLong(splitTm[i]) * mult;
+        try {
+            int sign = elapsed.startsWith("-") ? -1 : 1;
+            String strElapsed = elapsed.replaceAll("^[\\+-][ ]*", "");
+            String[] splitMs = JkStrings.splitArr(strElapsed, ".");
+            String[] splitTm = JkStrings.splitArr(splitMs[0], ":");
+            long ms = 0L;
+            if (splitMs.length == 2) ms += Long.parseLong(splitMs[1]);
+            for (int i = splitTm.length - 1, mult = 1000; i >= 0; i--, mult *= 60) {
+                ms += Long.parseLong(splitTm[i]) * mult;
+            }
+            return of(ms * sign);
+        } catch(Exception ex) {
+            return null;
         }
-        return of(ms);
     }
     public static JkDuration untilNow(long startMillis) {
         return of(System.currentTimeMillis() - startMillis);
@@ -87,6 +94,10 @@ public class JkDuration {
 
         if(showMilli) {
             sb.append(strf(".%03d", getMilli()));
+        }
+
+        if(totalMillis < 0L) {
+            sb.insert(0, "- ");
         }
 
         return sb.toString();
@@ -121,7 +132,17 @@ public class JkDuration {
         return milli;
     }
 
-    public JkDuration add(JkDuration toAdd) {
+    public JkDuration plus(JkDuration toAdd) {
         return JkDuration.of(totalMillis + toAdd.totalMillis);
     }
+
+    public JkDuration minus(JkDuration toSubtract) {
+        return JkDuration.of(totalMillis - toSubtract.totalMillis);
+    }
+
+    public JkDuration diff(JkDuration toSubtract) {
+        return minus(toSubtract);
+    }
+
+
 }

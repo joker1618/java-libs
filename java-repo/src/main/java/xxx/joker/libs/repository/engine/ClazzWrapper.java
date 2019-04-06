@@ -1,6 +1,7 @@
 package xxx.joker.libs.repository.engine;
 
 import org.apache.commons.lang3.tuple.Pair;
+import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.repository.common.RepoCommon;
 import xxx.joker.libs.repository.design.RepoEntity;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 class ClazzWrapper {
 
@@ -70,6 +72,14 @@ class ClazzWrapper {
 
     public FieldWrapper getEntityField(String fieldName) {
         return fieldsByName.get(fieldName);
+    }
+
+    public static Map<Class<?>, List<FieldWrapper>> getReferenceFields(Class<?> depClazz) {
+        List<FieldWrapper> fwList = CACHE.values().stream()
+                .flatMap(cw -> cw.getEntityFields().stream())
+                .filter(fw -> fw.typeOfFlat(depClazz))
+                .collect(Collectors.toList());
+        return JkStreams.toMap(fwList, fw -> fw.getField().getDeclaringClass());
     }
 
     public Class<?> getEClazz() {

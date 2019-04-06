@@ -3,6 +3,7 @@ package xxx.joker.apps.formula1.corelibs;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.objects.Range;
 import xxx.joker.libs.core.tests.JkTests;
+import xxx.joker.libs.core.utils.JkStrings;
 
 import java.util.*;
 
@@ -76,21 +77,31 @@ class X_TagImpl implements X_Tag {
     }
 
     @Override
-    public X_Tag findChild(String... tagNamesPath) {
-        List<X_Tag> res = findChildren(tagNamesPath);
-        return res == null || res.isEmpty() ? null : res.get(0);
+    public X_Tag findChild(String... tagsPaths) {
+        List<X_Tag> res = findChildren(tagsPaths);
+        return res.isEmpty() ? null : res.get(0);
     }
 
     @Override
-    public List<X_Tag> findChildren(String... tagNamesPath) {
+    public List<X_Tag> findChildren(String... tagsPaths) {
+        for (String tagsPath : tagsPaths) {
+            List<X_Tag> childs = findTagChilds(tagsPath);
+            if(!childs.isEmpty())   return childs;
+        }
+        return Collections.emptyList();
+    }
+    private List<X_Tag> findTagChilds(String tagsPath) {
         X_Tag t = this;
         int pos = 0;
-        for(; pos < tagNamesPath.length - 1; pos++) {
-            String tn = tagNamesPath[pos];
+        String[] tagsName = JkStrings.splitArr(tagsPath, " ", true);
+        for(; pos < tagsName.length - 1; pos++) {
+            String tn = tagsName[pos];
             t = t.getChild(tn);
-            if(t == null)   return null;
+            if(t == null) {
+                return Collections.emptyList();
+            }
         }
-        return t.getChildren(tagNamesPath[pos]);
+        return t.getChildren(tagsName[pos]);
     }
 
     @Override
@@ -119,6 +130,11 @@ class X_TagImpl implements X_Tag {
             sb.append(getHtmlTag());
         }
         return sb.toString().replaceAll("^<[^<]*?>", "").replaceAll("</[^<]*?>$", "").trim();
+    }
+
+    @Override
+    public String getTextFlat() {
+        return getHtmlTag().replaceAll("<[^<]*?>", "").trim();
     }
 
     private String getFullHtml() {

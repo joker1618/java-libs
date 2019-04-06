@@ -6,32 +6,32 @@ import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.design.RepoEntity;
 
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
-class RepoHandler {
+class RepoHandler2 {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RepoHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RepoHandler2.class);
     private static final List<String> WRITE_METHODS = Arrays.asList("add", "addAll", "remove", "removeIf", "removeAll", "clear", "set");
 
     private final ReadWriteLock repoLock;
 
     private Map<Class<?>, HandlerDataSet> handlers;
     private Map<Long, RepoEntity> dataByID;
-    private FkManager fkManager;
     private final AtomicLong sequenceValue;
 
-    RepoHandler(List<RepoDTO> dtoList, ReadWriteLock repoLock) {
+    RepoHandler2(List<RepoDTO> dtoList, ReadWriteLock repoLock) {
         this.repoLock = repoLock;
 
         this.handlers = new HashMap<>();
         this.dataByID = new HashMap<>();
-        this.fkManager = new FkManager();
         this.sequenceValue = new AtomicLong(0L);
 
         initRepoHandler(dtoList);
@@ -43,14 +43,15 @@ class RepoHandler {
     }
 
     private void initRepoHandler(List<RepoDTO> dtoList) {
+        Map<Long, List<RepoFK>> fkMap = new HashMap<>();
         for(RepoDTO dto : dtoList) {
-            dataByID.putAll(JkStreams.toMapSingle(dto.getEntities(), RepoEntity::getEntityID));
-            fkManager.add(dto.getForeignKeys());
+            dto.getEntities().forEach(e -> dataByID.put(e.getEntityID(), e));
+            fkMap.putAll(JkStreams.toMap(dto.getForeignKeys(), RepoFK::getFromID));
         }
 
         if(!dataByID.isEmpty()) {
             // 'setDependencies' does not create collection handlers, so after must be called 'initRepoFields'
-            dataByID.values().forEach(this::setDependencies);
+            dataByID.values().forEach(e -> setDependencies(e, fkMap.get(e.getEntityID())));
             dataByID.values().forEach(this::initRepoFields);
             // Set sequence value
             long maxID = dataByID.keySet().stream().mapToLong(l -> l).max().getAsLong();
@@ -91,10 +92,10 @@ class RepoHandler {
 
     private void setHandlerCollection(RepoEntity e, FieldWrapper efield, Collection<RepoEntity> eDeps) {
         if(efield.isList()) {
-            HandlerList handler = new HandlerList(e.getEntityID(), efield.getFieldName(), eDeps);
+            HandlerList handler = new HandlerList(eDeps);
             efield.setValue(e, handler.createProxyList());
         } else {
-            HandlerSet handler = new HandlerSet(e.getEntityID(), efield.getFieldName(), eDeps);
+            HandlerSet handler = new HandlerSet(eDeps);
             efield.setValue(e, handler.createProxySet());
         }
     }
@@ -108,8 +109,7 @@ class RepoHandler {
         }
     }
 
-    private void setDependencies(RepoEntity e) {
-        List<RepoFK> fkList = fkManager.getForeignKeys(e);
+    private void setDependencies(RepoEntity e, List<RepoFK> fkList) {
         if(fkList != null && !fkList.isEmpty()) {
             ClazzWrapper rc = ClazzWrapper.wrap(e.getClass());
             Map<String, List<Long>> fkMap = JkStreams.toMap(fkList, RepoFK::getFieldName, RepoFK::getDepID);
@@ -133,114 +133,99 @@ class RepoHandler {
             RepoDTO dto = new RepoDTO(c);
             dtoList.add(dto);
             dto.setEntities(h.getEntities());
-            dto.setForeignKeys(fkManager.getForeignKeys(h.getEntities()));
+            for (RepoEntity e : h.getEntities()) {
+                retrieveDepChilds(e).forEach((fname,edeps) -> edeps.forEach(ed ->
+                        dto.getForeignKeys().add(new RepoFK(e.getEntityID(), fname, ed.getEntityID()))
+                ));
+            }
         });
 
         return dtoList;
     }
 
-    private boolean addEntity(RepoEntity e) {
-        return addEntity(e, null, null, null);
+    private boolean addEntity(RepoEntity toAdd) {
+        return addEntity(toAdd, null);
     }
-    private boolean addEntity(RepoEntity e, Collection<RepoEntity> insColl, Long parentID, String fieldName) {
-        if(e.getEntityID() != null) {
+    private boolean addEntity(RepoEntity toAdd, Collection<RepoEntity> insColl) {
+        if(toAdd.getEntityID() != null) {
             if(insColl == null)  return false;
-            if(!insColl.add(e))  return false;
-            fkManager.add(parentID, fieldName, e.getEntityID());
-            return true;
+            return insColl.add(toAdd);
         }
 
         synchronized (sequenceValue) {
-            ClazzWrapper.setEntityID(e, sequenceValue.get());
+            ClazzWrapper.setEntityID(toAdd, sequenceValue.get());
 
             if (insColl != null) {
-                boolean added = insColl.add(e);
+                boolean added = insColl.add(toAdd);
                 if (!added) {
-                    ClazzWrapper.setEntityID(e, null);
+                    ClazzWrapper.setEntityID(toAdd, null);
                     return false;
                 }
             }
 
-            boolean added = handlers.get(e.getClass()).getEntities().add(e);
+            boolean added = handlers.get(toAdd.getClass()).getEntities().add(toAdd);
             if (!added) {
                 if (insColl != null) {
-                    insColl.remove(e);
+                    insColl.remove(toAdd);
                 }
-                ClazzWrapper.setEntityID(e, null);
+                ClazzWrapper.setEntityID(toAdd, null);
                 return false;
-            }
-
-            if (insColl != null) {
-                fkManager.add(parentID, fieldName, e.getEntityID());
             }
 
             sequenceValue.getAndIncrement();
         }
 
-        dataByID.put(e.getEntityID(), e);
+        dataByID.put(toAdd.getEntityID(), toAdd);
+        initRepoFields(toAdd);
 
-        initRepoFields(e);
+        retrieveDepChilds(toAdd).values().stream().flatMap(List::stream).forEach(this::addEntity);
 
-        Map<String, List<RepoEntity>> depChilds = retrieveDepChilds(e);
-        depChilds.forEach((fname,children) -> {
-            children.forEach(child -> {
-                addEntity(child);
-                if(child.getEntityID() != null) {
-                    fkManager.add(e.getEntityID(), fname, child.getEntityID());
-                }
-            });
-        });
-
-        LOG.debug("New entity added: {}", e);
+        LOG.debug("New entity added: {}", toAdd);
 
         return true;
     }
 
-    private RepoEntity setEntityInList(RepoEntity e, List<RepoEntity> insList, int setPos, Long parentID, String fieldName) {
+    private RepoEntity setEntityInList(RepoEntity e, List<RepoEntity> insList, int setPos) {
         if(e.getEntityID() == null) {
-            if (addEntity(e)) {
+            if (!addEntity(e)) {
                 return null;
             }
         }
-
-        RepoEntity old = insList.set(setPos, e);
-        RepoFK newFK = new RepoFK(parentID, fieldName, e.getEntityID());
-        fkManager.replaceFK(parentID, fieldName, setPos, newFK);
-
-        return old;
+        return insList.set(setPos, e);
     }
 
-    private boolean removeEntity(RepoEntity e) {
-        Long eID = e.getEntityID();
+    private boolean removeEntity(RepoEntity toDel) {
+        Long eID = toDel.getEntityID();
         if(eID == null) {
             return false;
         }
 
         // Remove from dataSet
-        boolean res = handlers.get(e.getClass()).getEntities().remove(e);
+        boolean res = handlers.get(toDel.getClass()).getEntities().remove(toDel);
         if(!res) {
             return false;
         }
 
-        // Remove foreign keys
-        List<RepoFK> parents = fkManager.remove(eID);
-
         // Remove where referenced
-        for(RepoFK pfk : parents) {
-            RepoEntity eParent = dataByID.get(pfk.getFromID());
-            ClazzWrapper rc = ClazzWrapper.wrap(eParent.getClass());
-            FieldWrapper cf = rc.getEntityField(pfk.getFieldName());
-            if(cf.isCollection()) {
-                ((Collection<RepoEntity>)cf.getValue(eParent)).removeIf(elem -> elem.getEntityID() == eID);
-            } else {
-                cf.setValue(eParent, null);
-            }
-        }
+        Map<Class<?>, List<FieldWrapper>> refMap = ClazzWrapper.getReferenceFields(toDel.getClass());
+        refMap.forEach((c,l) -> {
+            TreeSet<RepoEntity> eset = handlers.get(c).getEntities();
+            l.forEach(fw -> {
+                for (RepoEntity parent : eset) {
+                    if(fw.isCollection()) {
+                        Collection<RepoEntity> pcoll = (Collection<RepoEntity>) fw.getValue(parent);
+                        pcoll.removeIf(el -> el.getEntityID() == eID);
+                    } else {
+                        fw.setValue(parent, null);
+                    }
+                }
+            });
+        });
 
         // Remove from dataByID
         dataByID.remove(eID);
 
-        LOG.debug("Removed entity: {}", e);
+        LOG.debug("Removed entity: {}", toDel);
 
         return true;
     }
@@ -251,18 +236,24 @@ class RepoHandler {
         for(FieldWrapper cf : rc.getEntityFields()) {
             if(cf.isRepoEntityFlatField()) {
                 Object value = cf.getValue(e);
-                List<RepoEntity> depColl = new ArrayList<>();
+                List<RepoEntity> childs = new ArrayList<>();
                 if(cf.isCollection()) {
-                    depColl.addAll((Collection<RepoEntity>) value);
+                    childs.addAll((Collection<RepoEntity>) value);
                 } else if(value != null) {
-                    depColl.add((RepoEntity) value);
+                    childs.add((RepoEntity) value);
                 }
-                if(!depColl.isEmpty()) {
-                    toRet.put(cf.getFieldName(), depColl);
+                if(!childs.isEmpty()) {
+                    toRet.put(cf.getFieldName(), childs);
                 }
             }
         }
         return toRet;
+    }
+
+    public <T extends RepoEntity> Map<Class<T>, Set<T>> getDataSets() {
+        Map<Class<T>, Set<T>> map = new HashMap<>();
+        handlers.entrySet().forEach(e -> map.put((Class<T>) e.getKey(), (Set<T>) e.getValue().getProxySet()));
+        return map;
     }
 
     private class HandlerDataSet implements InvocationHandler {
@@ -287,7 +278,6 @@ class RepoHandler {
 
             try {
                 actualLock.lock();
-
                 if ("add".equals(methodName)) {
                     RepoEntity e = (RepoEntity) args[0];
                     return addEntity(e);
@@ -353,13 +343,9 @@ class RepoHandler {
     }
 
     private class HandlerSet implements InvocationHandler {
-        private final long parentID;
-        private final String fieldName;
         private final TreeSet<RepoEntity> sourceSet;
 
-        protected HandlerSet(long parentID, String fieldName, Collection<RepoEntity> sourceData) {
-            this.parentID = parentID;
-            this.fieldName = fieldName;
+        protected HandlerSet(Collection<RepoEntity> sourceData) {
             this.sourceSet = new TreeSet<>(sourceData);
         }
 
@@ -379,14 +365,14 @@ class RepoHandler {
 
                 if ("add".equals(methodName)) {
                     RepoEntity e = (RepoEntity) args[0];
-                    return addEntity(e, sourceSet, parentID, fieldName);
+                    return addEntity(e, sourceSet);
                 }
 
                 if ("addAll".equals(methodName)) {
                     Collection<RepoEntity> coll = (Collection<RepoEntity>) args[0];
                     boolean res = false;
                     for (RepoEntity e : coll) {
-                        res |= addEntity(e, sourceSet, parentID, fieldName);
+                        res |= addEntity(e, sourceSet);
                     }
                     return res;
                 }
@@ -400,13 +386,9 @@ class RepoHandler {
     }
 
     private class HandlerList implements InvocationHandler {
-        private final long parentID;
-        private final String fieldName;
         private final List<RepoEntity> sourceList;
 
-        protected HandlerList(long parentID, String fieldName, Collection<RepoEntity> sourceData) {
-            this.parentID = parentID;
-            this.fieldName = fieldName;
+        protected HandlerList(Collection<RepoEntity> sourceData) {
             this.sourceList = new ArrayList<>(sourceData);
         }
 
@@ -428,14 +410,14 @@ class RepoHandler {
 
                 if ("add".equals(methodName)) {
                     RepoEntity e = (RepoEntity) args[0];
-                    return addEntity(e, sourceList, parentID, fieldName);
+                    return addEntity(e, sourceList);
                 }
 
                 if ("addAll".equals(methodName)) {
                     Collection<RepoEntity> coll = (Collection<RepoEntity>) args[0];
                     boolean res = false;
                     for (RepoEntity e : coll) {
-                        res |= addEntity(e, sourceList, parentID, fieldName);
+                        res |= addEntity(e, sourceList);
                     }
                     return res;
                 }
@@ -443,7 +425,7 @@ class RepoHandler {
                 if ("set".equals(methodName)) {
                     int pos = (int) args[0];
                     RepoEntity e = (RepoEntity) args[1];
-                    return setEntityInList(e, sourceList, pos, parentID, fieldName);
+                    return setEntityInList(e, sourceList, pos);
                 }
 
                 return method.invoke(sourceList, args);
@@ -451,75 +433,6 @@ class RepoHandler {
             } finally {
                 actualLock.unlock();
             }
-        }
-    }
-
-    private class FkManager {
-        private Map<Long, List<RepoFK>> foreignKeys = new HashMap<>();
-        private Map<Long, Set<Long>> references = new HashMap<>();
-
-        public void add(Collection<RepoFK> fkeys) {
-            for(RepoFK fk : fkeys) {
-                add(fk.getFromID(), fk.getFieldName(), fk.getDepID());
-            }
-        }
-
-        public void add(long fromID, String fieldName, long depID) {
-            foreignKeys.putIfAbsent(fromID, new ArrayList<>());
-            foreignKeys.get(fromID).add(new RepoFK(fromID, fieldName, depID));
-            references.putIfAbsent(depID, new HashSet<>());
-            references.get(depID).add(fromID);
-        }
-
-        public List<RepoFK> getForeignKeys(Collection<RepoEntity> entities) {
-            return entities.stream().flatMap(e -> getForeignKeys(e).stream()).collect(Collectors.toList());
-        }
-
-        public List<RepoFK> getForeignKeys(RepoEntity e) {
-            return foreignKeys.getOrDefault(e.getEntityID(), Collections.emptyList());
-        }
-
-        public List<RepoFK> remove(long entityID) {
-            Set<RepoFK> toRet = new HashSet<>();
-
-            Set<Long> parentIDs = references.remove(entityID);
-            if(parentIDs != null) {
-                for(Long pid : parentIDs) {
-                    List<RepoFK> allParentFKs = foreignKeys.get(pid);
-                    if(allParentFKs != null) {
-                        List<RepoFK> eRefs = JkStreams.filter(allParentFKs, fk -> fk.getDepID() == entityID);
-                        toRet.addAll(eRefs);
-                        allParentFKs.removeAll(eRefs);
-                        if(allParentFKs.isEmpty()) {
-                            foreignKeys.remove(pid);
-                        }
-                    }
-                }
-            }
-
-            foreignKeys.remove(entityID);
-
-            return JkConvert.toList(toRet);
-        }
-
-        public void replaceFK(long parentID, String fieldName, int fkIndex, RepoFK newFK) {
-            List<RepoFK> fkList = foreignKeys.get(parentID);
-
-            int pos = -1;
-            for(int i = 0, counter = 0; pos < 0 && i < fkList.size(); i++) {
-                if(fkList.get(i).getFieldName().equals(fieldName)) {
-                    if(counter == fkIndex) {
-                        pos = i;
-                    } else {
-                        counter++;
-                    }
-                }
-            }
-
-            RepoFK oldFK = fkList.set(pos, newFK);
-            references.get(oldFK.getDepID()).remove(parentID);
-            references.putIfAbsent(newFK.getDepID(), new HashSet<>());
-            references.get(newFK.getDepID()).add(parentID);
         }
     }
 

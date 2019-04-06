@@ -1,10 +1,7 @@
 package xxx.joker.apps.formula1.model;
 
 import xxx.joker.apps.formula1.common.F1Const;
-import xxx.joker.apps.formula1.model.entities.F1Driver;
-import xxx.joker.apps.formula1.model.entities.F1Entrant;
-import xxx.joker.apps.formula1.model.entities.F1Link;
-import xxx.joker.apps.formula1.model.entities.F1Team;
+import xxx.joker.apps.formula1.model.entities.*;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.repository.JkRepoFile;
 
@@ -54,6 +51,16 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
     @Override
     public Set<F1Link> getLinks() {
         return getDataSet(F1Link.class);
+    }
+
+    @Override
+    public Set<F1GranPrix> getGranPrixs() {
+        return getDataSet(F1GranPrix.class);
+    }
+
+    @Override
+    public List<F1GranPrix> getGranPrixs(int year) {
+        return JkStreams.filter(getGranPrixs(), gp -> gp.getYear() == year);
     }
 
     @Override

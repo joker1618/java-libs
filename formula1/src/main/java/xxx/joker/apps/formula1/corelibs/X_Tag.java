@@ -7,7 +7,6 @@ import java.util.Map;
 
 public interface X_Tag {
 
-
     Map<String, String> getAllAttributes();
     String getAttribute(String attrName);
 
@@ -20,11 +19,12 @@ public interface X_Tag {
     List<X_Tag> getChildren();
     List<X_Tag> getChildren(String... tagNames);
 
-    X_Tag findChild(String... tagNamesPath);
-    List<X_Tag> findChildren(String... tagNamesPath);
+    X_Tag findChild(String... tagsPaths);
+    List<X_Tag> findChildren(String... tagsPaths);
 
     Range getRange();
 
     String getHtmlTag();
     String getText();
+    String getTextFlat();
 }

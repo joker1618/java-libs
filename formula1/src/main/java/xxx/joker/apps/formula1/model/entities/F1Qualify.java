@@ -4,6 +4,7 @@ import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoField;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
@@ -11,15 +12,15 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 public class F1Qualify extends RepoEntity {
 
     @RepoField
-    private F1GranPrix gp;
-    @RepoField
-    private F1Entrant entrant;
+    private String gpPK;
     @RepoField
     private int pos;
     @RepoField
+    private F1Entrant entrant;
+    @RepoField
     private int finalGrid;
     @RepoField
-    private List<JkDuration> qualTimes;
+    private List<JkDuration> times;
 
     public F1Qualify() {
 
@@ -27,15 +28,15 @@ public class F1Qualify extends RepoEntity {
 
     @Override
     public String getPrimaryKey() {
-        return strf("{}-{}", gp.getPrimaryKey(), pos);
+        return strf("%s-qualify-%02d", gpPK, pos);
     }
 
-    public F1GranPrix getGp() {
-        return gp;
+    public String getGpPK() {
+        return gpPK;
     }
 
-    public void setGp(F1GranPrix gp) {
-        this.gp = gp;
+    public void setGpPK(String gpPK) {
+        this.gpPK = gpPK;
     }
 
     public F1Entrant getEntrant() {
@@ -62,11 +63,11 @@ public class F1Qualify extends RepoEntity {
         this.finalGrid = finalGrid;
     }
 
-    public List<JkDuration> getQualTimes() {
-        return qualTimes;
+    public List<JkDuration> getTimes() {
+        return times;
     }
 
-    public void setQualTimes(List<JkDuration> qualTimes) {
-        this.qualTimes = qualTimes;
+    public void setTimes(List<JkDuration> times) {
+        this.times = times;
     }
 }

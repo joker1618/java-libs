@@ -22,7 +22,7 @@ public class F1Link extends RepoEntity {
 
     @Override
     public String getPrimaryKey() {
-        return strf("{}:{}", key, url).toLowerCase();
+        return strf("link-{}:{}", key, url).toLowerCase();
     }
 
     public String getUrl() {

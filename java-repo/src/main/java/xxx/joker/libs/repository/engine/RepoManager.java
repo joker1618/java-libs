@@ -11,6 +11,7 @@ import xxx.joker.libs.repository.entities.RepoProperty;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -23,14 +24,16 @@ public class RepoManager {
 
     private ReadWriteLock repoLock;
     private RepoDAO repoDao;
-    private RepoHandler repoHandler;
+//    private RepoHandler repoHandler;
+    private RepoHandler2 repoHandler;
 
 
     public RepoManager(Path dbFolder, String dbName, String pkgToScan) {
         JkTimer timer = new JkTimer();
         this.repoDao = new RepoDAO(dbFolder, dbName, scanPackage(pkgToScan));
         this.repoLock = new ReentrantReadWriteLock(true);
-        this.repoHandler = new RepoHandler(repoDao.readRepoData(), repoLock);
+//        this.repoHandler = new RepoHandler(repoDao.readRepoData(), repoLock);
+        this.repoHandler = new RepoHandler2(repoDao.readRepoData(), repoLock);
         LOG.info("Initialized repo [{}, {}] in {}", dbFolder, dbName, timer.toStringElapsed());
     }
 
@@ -38,7 +41,8 @@ public class RepoManager {
         try {
             repoLock.writeLock().lock();
             List<RepoDTO> daoDTOs = repoDao.readRepoData();
-            repoHandler = new RepoHandler(daoDTOs, repoLock);
+//            repoHandler = new RepoHandler(daoDTOs, repoLock);
+            repoHandler = new RepoHandler2(daoDTOs, repoLock);
             LOG.info("Rollback repo completed");
         } finally {
             repoLock.writeLock().unlock();
@@ -73,4 +77,7 @@ public class RepoManager {
         return JkStreams.map(classes, ClazzWrapper::wrap);
     }
 
+    public <T extends RepoEntity> Map<Class<T>, Set<T>> getDataSets() {
+        return repoHandler.getDataSets();
+    }
 }

@@ -130,7 +130,7 @@ public class FieldWrapper {
         if(isRepoEntityFlatField()) {
             strValue = "";
         } else if (isCollection()) {
-            Collection<RepoEntity> coll = (Collection<RepoEntity>) getValue(instance);
+            Collection<?> coll = (Collection<?>) getValue(instance);
             strValue = JkStreams.join(coll, SEP_LIST, e -> formatSingleValue(e, getElemType()));
         } else {
             strValue = formatSingleValue(getValue(instance), getFieldType());
@@ -197,6 +197,9 @@ public class FieldWrapper {
 
     public boolean typeOf(Class<?>... classes) {
         return isOfType(fieldType, classes);
+    }
+    public boolean typeOfFlat(Class<?>... classes) {
+        return isOfType(isCollection() ? elemType : fieldType, classes);
     }
 
     public void parseAndSetValue(RepoEntity instance, String str) {

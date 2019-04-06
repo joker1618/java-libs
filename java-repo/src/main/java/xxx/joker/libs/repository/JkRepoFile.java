@@ -32,6 +32,11 @@ public abstract class JkRepoFile implements JkRepo {
     }
 
     @Override
+    public  <T extends RepoEntity> Map<Class<T>, Set<T>> getDataSets() {
+        return repoManager.getDataSets();
+    }
+
+    @Override
     public <T extends RepoEntity> Set<T> getDataSet(Class<T> entityClazz) {
         return (Set<T>) repoManager.getDataSet(entityClazz);
     }
@@ -48,6 +53,10 @@ public abstract class JkRepoFile implements JkRepo {
         return JkStreams.toMapSingle(getDataSet(entityClazz), keyMapper, e -> e, filters);
     }
 
+    @Override
+    public <T extends RepoEntity> boolean remove(T toRemove) {
+        return getDataSet(toRemove.getClass()).remove(toRemove);
+    }
 
     @Override
     public void rollback() {

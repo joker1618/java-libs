@@ -6,37 +6,39 @@ import xxx.joker.libs.repository.design.RepoField;
 
 import java.util.List;
 
+import static xxx.joker.libs.core.utils.JkStrings.strf;
+
 public class F1Race extends RepoEntity {
 
     @RepoField
-    private F1GranPrix gp;
-    @RepoField
-    private F1Entrant entrant;
+    private String gpPK;
     @RepoField
     private int pos;
+    @RepoField
+    private F1Entrant entrant;
     @RepoField
     private int laps;
     @RepoField
     private boolean retired;
     @RepoField
-    private int points;
-    @RepoField
     private JkDuration time;
+    @RepoField
+    private int points;
 
     public F1Race() {
     }
 
     @Override
     public String getPrimaryKey() {
-        return null;
+        return strf("%s-race-%02d", gpPK, pos);
     }
 
-    public F1GranPrix getGp() {
-        return gp;
+    public String getGpPK() {
+        return gpPK;
     }
 
-    public void setGp(F1GranPrix gp) {
-        this.gp = gp;
+    public void setGpPK(String gpPK) {
+        this.gpPK = gpPK;
     }
 
     public F1Entrant getEntrant() {
