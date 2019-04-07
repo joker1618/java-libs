@@ -21,75 +21,71 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 public class ToStringRepo {
 
     static F1Model model = F1ModelImpl.getInstance();
-    int yearDef = -1;
+    static int yearDef = 2017;
 
 
     @Test
-    public void strEntrants() {
+    public void showEntrants() {
         int year = 2018;
-        List<F1Entrant> elist = model.getEntrants(yearDef == -1 ? year : yearDef);
-        display(toColsEntrants(elist));
+        showEntrants(yearDef == -1 ? year : yearDef);
     }
-
-    @Test
-    public void strGPs() {
-        int year = 2018;
-        List<F1GranPrix> gplist = model.getGranPrixs(yearDef == -1 ? year : yearDef);
-        display(toColsGPs(gplist));
-    }
-
-    @Test
-    public void strGPsTimes() {
-        int year = 2018;
-        List<F1GranPrix> gplist = model.getGranPrixs(yearDef == -1 ? year : yearDef);
-        display(toColsGPs(gplist));
-        gplist.forEach(gp -> display("{}\n\n{}\n\n\n\n", toColsQualify(gp.getQualifies()), toColsRaces(gp.getRaces())));
-    }
-    public static void strGPsFull() {
-        int year = 2018;
-        List<F1GranPrix> gplist = model.getGranPrixs(year);
-        display(toColsGPs(gplist));
-        gplist.forEach(gp -> display("{}\n\n{}\n\n\n\n", toColsQualify(gp.getQualifies()), toColsRaces(gp.getRaces())));
-    }
-
-
-    public static String toColsEntrants(Collection<F1Entrant> el) {
+    public void showEntrants(int year) {
+        List<F1Entrant> elist = model.getEntrants(year);
         List<String> lines = new ArrayList<>();
         lines.add(strf("YEAR|ID|TEAM|ENGINE|NUM|DRIVER"));
-        lines.addAll(JkStreams.map(el, ToStringRepo::toLine));
+        lines.addAll(JkStreams.map(elist, ToStringRepo::toLine));
         String cols = JkOutput.columnsView(lines, "|", 2);
-        return strf("*** Entrants ({})\n{}", el.size(), cols);
-    }
-    public static String toLine(F1Entrant e) {
-        return strf("{}|{}|{}|{}|{}|{}",
-            e.getYear(),
-            e.getEntityID(),
-            e.getTeam().getTeamName(),
-            e.getEngine(),
-            e.getCarNum(),
-            e.getDriver().getDriverName()
-        );
+        display("*** Entrants ({})\n{}", elist.size(), cols);
     }
 
-    public static String toColsGPs(Collection<F1GranPrix> gpList) {
+    @Test
+    public void showGPDescription() {
+        int year = 2018;
+        showGPDescription(yearDef == -1 ? year : yearDef);
+    }
+    public void showGPDescription(int year) {
+        List<F1GranPrix> gpList = model.getGranPrixs(year);
         List<String> lines = new ArrayList<>();
         lines.add(strf("YEAR|ID|NUM|DATE|LAP LEN|NUM LAPS|CITY|NATION|N.Q|N.R"));
         lines.addAll(JkStreams.map(gpList, ToStringRepo::toLine));
         String cols = JkOutput.columnsView(lines, "|", 2);
-        return strf("*** Gran Prix ({})\n{}", gpList.size(), cols);
+        display("*** Gran Prix ({})\n{}", gpList.size(), cols);
     }
-    public static String toLine(F1GranPrix gp) {
+
+    @Test
+    public void showGPTimes() {
+        int year = 2018;
+        showGPTimes(yearDef == -1 ? year : yearDef);
+    }
+    public void showGPTimes(int year) {
+        List<F1GranPrix> gplist = model.getGranPrixs(year);
+        gplist.forEach(gp -> display("{}\n\n{}\n\n\n\n", toColsQualify(gp.getQualifies()), toColsRaces(gp.getRaces())));
+    }
+
+
+    private static String toLine(F1Entrant e) {
+        return strf("{}|{}|{}|{}|{}|{}",
+                e.getYear(),
+                e.getEntityID(),
+                e.getTeam().getTeamName(),
+                e.getEngine(),
+                e.getCarNum(),
+                e.getDriver().getDriverName()
+        );
+    }
+
+    private static String toLine(F1GranPrix gp) {
         return strf("{}|{}|{}|{}|{}|{}|{}|{}|{}|{}",
-            gp.getYear(),
-            gp.getEntityID(),
-            gp.getNum(),
-            gp.getDate(),
-            gp.getLapLength(),
-            gp.getNumLapsRace(),
-            gp.getCity(),
-            gp.getNation(),
-            gp.getQualifies().size(),
-            gp.getRaces().size()
+                gp.getYear(),
+                gp.getEntityID(),
+                gp.getNum(),
+                gp.getDate(),
+                gp.getLapLength(),
+                gp.getNumLapsRace(),
+                gp.getCity(),
+                gp.getNation(),
+                gp.getQualifies().size(),
+                gp.getRaces().size()
         );
     }
 
@@ -131,7 +127,7 @@ public class ToStringRepo {
         String strTime = "";
         if(r.getTime() != null) {
             JkDuration diff = r.getTime().diff(winnerTime);
-            strTime = diff.toMillis() == 0L ? r.getTime().toStringElapsed() : diff.toStringElapsed();
+            strTime = diff.toMillis() == 0L ? r.getTime().toStringElapsed() : "+" + diff.toStringElapsed();
         }
         return strf("{}|{}|{}|{}|{}|{}|{}|{}",
             r.getGpPK(),

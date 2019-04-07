@@ -54,13 +54,16 @@ class RepoHandler2 {
             dataByID.values().forEach(e -> setDependencies(e, fkMap.get(e.getEntityID())));
             dataByID.values().forEach(this::initRepoFields);
             // Set sequence value
-            long maxID = dataByID.keySet().stream().mapToLong(l -> l).max().getAsLong();
-            sequenceValue.set(1L + maxID);
+            sequenceValue.set(1L + getMaxUsedID());
         }
 
         for(RepoDTO dto : dtoList) {
             handlers.put(dto.getEClazz(), new HandlerDataSet(dto.getEntities()));
         }
+    }
+
+    private long getMaxUsedID() {
+        return dataByID.keySet().stream().mapToLong(l -> l).max().orElse(-1);
     }
 
     private void initRepoFields(RepoEntity e) {
@@ -322,6 +325,11 @@ class RepoHandler2 {
                     boolean res = false;
                     for (RepoEntity todel : all) {
                         res |= removeEntity(todel);
+                    }
+                    if(res) {
+                        synchronized (sequenceValue) {
+                            sequenceValue.set(1L + getMaxUsedID());
+                        }
                     }
                     return res;
                 }

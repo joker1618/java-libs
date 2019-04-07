@@ -54,8 +54,19 @@ public abstract class JkRepoFile implements JkRepo {
     }
 
     @Override
+    public <T extends RepoEntity> boolean add(T toAdd) {
+        Set<T> dataSet = (Set<T>) getDataSet(toAdd.getClass());
+        return dataSet.add(toAdd);
+    }
+
+    @Override
     public <T extends RepoEntity> boolean remove(T toRemove) {
         return getDataSet(toRemove.getClass()).remove(toRemove);
+    }
+
+    @Override
+    public void clearDataSets() {
+        getDataSets().values().forEach(Set::clear);
     }
 
     @Override

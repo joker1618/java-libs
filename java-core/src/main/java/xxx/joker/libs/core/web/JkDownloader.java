@@ -1,6 +1,9 @@
 package xxx.joker.libs.core.web;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
@@ -11,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JkDownloader {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JkDownloader.class);
 
     private final Path folder;
 
@@ -31,6 +36,7 @@ public class JkDownloader {
             Path htmlPath = folder.resolve(fname);
             List<String> lines;
             if(!Files.exists(htmlPath)) {
+                LOG.info("Downloading html from: {}", url);
                 lines = JkWeb.downloadHtmlLines(url);
                 JkFiles.writeFile(htmlPath, lines);
             } else {

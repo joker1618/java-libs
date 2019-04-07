@@ -37,11 +37,9 @@ abstract class AWikiParser implements IWikiParser {
 
     @Override
     public void parse() {
-        model.getDataSets().values().forEach(Set::clear);
-
         String mainPageUrl = createUrl(strf("/wiki/{}_Formula_One_World_Championship", year));
         parseEntrants(downloader.getHtml(mainPageUrl));
-//
+
 //        Map<String, Integer> expDriverMap = getExpectedDriverPoints(downloader.getHtml(mainPageUrl));
 //        List<Map.Entry<String, Integer>> entriesDriverMap = JkStreams.sorted(expDriverMap.entrySet(), Comparator.comparing(Map.Entry::getValue));
 //        String strDrivers = JkStreams.join(entriesDriverMap, "\n", w -> strf("  %-5d%s", w.getValue(), w.getKey()));
@@ -52,11 +50,6 @@ abstract class AWikiParser implements IWikiParser {
 //        String strTeams  = JkStreams.join(entriesTeamMap, "\n", w -> strf("  %-5d%s", w.getValue(), w.getKey()));
 //        display("*** Expected team points ({})\n{}", entriesTeamMap.size(), strTeams);
 
-        // Clear all gran prix for year
-//        model.getDataSet(F1Qualify.class).clear();
-//        model.getDataSet(F1Race.class).clear();
-//        model.getDataSet(F1GranPrix.class).clear();
-
         List<String> gpUrls = getGpUrls(downloader.getHtml(mainPageUrl));
         for (int i = 0; i < gpUrls.size(); i++) {
             String html = downloader.getHtml(gpUrls.get(i));
@@ -66,7 +59,8 @@ abstract class AWikiParser implements IWikiParser {
                 display(gp.getNation());
                 parseQualify(html, gp);
                 parseRace(html, gp);
-//                if(i == 16) break;
+//                if(i == 0) break;
+//                break;
             }
         }
     }

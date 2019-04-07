@@ -22,4 +22,6 @@ public interface F1Model extends JkRepo {
     Set<F1GranPrix> getGranPrixs();
     List<F1GranPrix> getGranPrixs(int year);
 
+    void deleteData(int year);
+
 }

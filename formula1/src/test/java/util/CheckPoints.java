@@ -27,26 +27,17 @@ public class CheckPoints {
 
     @Test
     public void checkPoints() {
-        int year = 2018;
+        int year = 2017;
         List<F1GranPrix> gp = model.getGranPrixs(year);
         List<F1Race> races = gp.stream().flatMap(g -> g.getRaces().stream()).collect(Collectors.toList());
+
         Map<String, List<F1Race>> byDriver = JkStreams.toMap(races, r -> r.getEntrant().getDriver().getDriverName());
         printList(year, "DRIVER", byDriver, IWikiParser.getParser(year).getExpectedDriverPoints());
+
         Map<String, List<F1Race>> byTeam = JkStreams.toMap(races, r -> r.getEntrant().getTeam().getTeamName());
         printList(year, "TEAM", byTeam, IWikiParser.getParser(year).getExpectedTeamPoints());
-//        List<Pair<String,Integer>> list = new ArrayList<>();
-//        byDriver.forEach((k,v) -> list.add(Pair.of(k, v.stream().mapToInt(F1Race::getPoints).sum())));
-//        List<Pair<String, Integer>> sorted = JkStreams.reverseOrder(list, Comparator.comparingInt(Pair::getValue));
-//        Map<String, Integer> expected = IWikiParser.getParser(year).getExpectedDriverPoints();
-//        List<String> lines = new ArrayList<>();
-//        lines.add("DRIVER|EXPECTED||COMPUTED");
-//        for (Pair<String, Integer> pair : sorted) {
-//            Integer exp = expected.get(pair.getKey());
-//            String line = strf("{}|{}|{}|{}", pair.getKey(), exp, exp.intValue() == pair.getValue() ? "" : "<>", pair.getValue());
-//            lines.add(line);
-//        }
-//        display("DRIVER POINT CHECK {}\n{}", year, JkOutput.columnsView(lines, "|", 2));
     }
+
     public void printList(int year, String label, Map<String, List<F1Race>> raceMap, Map<String, Integer> expected) {
         List<Pair<String,Integer>> list = new ArrayList<>();
         raceMap.forEach((k,v) -> list.add(Pair.of(k, v.stream().mapToInt(F1Race::getPoints).sum())));

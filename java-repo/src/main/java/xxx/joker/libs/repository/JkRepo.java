@@ -16,7 +16,10 @@ public interface JkRepo {
     <T extends RepoEntity> List<T> getDataList(Class<T> entityClazz, Predicate<T>... filters);
     <K,T extends RepoEntity> Map<K,T> getDataMap(Class<T> entityClazz, Function<T,K> keyMapper, Predicate<T>... filters);
 
+    <T extends RepoEntity> boolean add(T toAdd);
     <T extends RepoEntity> boolean remove(T toRemove);
+
+    void clearDataSets();
 
     void rollback();
     void commit();

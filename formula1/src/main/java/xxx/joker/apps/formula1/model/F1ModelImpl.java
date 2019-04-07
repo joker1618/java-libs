@@ -4,7 +4,9 @@ import xxx.joker.apps.formula1.common.F1Const;
 import xxx.joker.apps.formula1.model.entities.*;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.repository.JkRepoFile;
+import xxx.joker.libs.repository.design.RepoEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -61,6 +63,19 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
     @Override
     public List<F1GranPrix> getGranPrixs(int year) {
         return JkStreams.filter(getGranPrixs(), gp -> gp.getYear() == year);
+    }
+
+    @Override
+    public void deleteData(int year) {
+        List<RepoEntity> list = new ArrayList<>();
+        list.addAll(getEntrants(year));
+        for (F1GranPrix gp : getGranPrixs(year)) {
+            list.addAll(gp.getQualifies());
+            list.addAll(gp.getRaces());
+            list.add(gp);
+        }
+
+        list.forEach(super::remove);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package xxx.joker.apps.formula1.parsers;
 
+import org.apache.commons.lang3.StringUtils;
 import xxx.joker.apps.formula1.corelibs.X_Scanners;
 import xxx.joker.apps.formula1.corelibs.X_Tag;
 import xxx.joker.apps.formula1.model.entities.*;
@@ -16,18 +17,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static xxx.joker.libs.core.utils.JkConsole.display;
-
-public class Year2018 extends AWikiParser {
+public class Year2017 extends AWikiParser {
 
 
-    public Year2018() {
-        super(2018);
+    public Year2017() {
+        super(2017);
     }
 
     @Override
     protected void parseEntrants(String html) {
-        X_Tag tableEntrants = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Entries\">", "<table class=\"wikitable sortable\"");
+        X_Tag tableEntrants = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Teams_and_drivers\">", "<table class=\"wikitable sortable\"");
         X_Tag tbody = tableEntrants.getChild("tbody");
 
         for (X_Tag tr : tbody.getChildren("tr")) {
@@ -36,6 +35,9 @@ public class Year2018 extends AWikiParser {
                 X_Tag tagTeamName = tdList.get(1).findChild("b a");
                 F1Team team = retrieveTeam(tagTeamName, true);
                 String engine = tdList.get(3).getText();
+                if(StringUtils.isBlank(engine)) {
+                    engine = tdList.get(3).getChild("span").getText();
+                }
 
                 String stmp = tdList.get(4).getHtmlTag().replaceAll("^<td(.*?)>", "").replace("</td>", "").replaceAll("<br[ ]?/>", "-");
                 List<Integer> carNums = JkStreams.map(JkStrings.splitList(stmp, "-", true), Integer::valueOf);
@@ -64,7 +66,7 @@ public class Year2018 extends AWikiParser {
 
     @Override
     protected List<String> getGpUrls(String html) {
-        X_Tag tableEntrants = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Grands_Prix\">", "<table class=\"wikitable sortable\"");
+        X_Tag tableEntrants = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Grands_Prix\">", "<table class=\"wikitable\"");
         X_Tag tbody = tableEntrants.getChild("tbody");
 
         List<String> urls = new ArrayList<>();
@@ -170,6 +172,10 @@ public class Year2018 extends AWikiParser {
                 int carNum = Integer.parseInt(tr.getChild(1).getText());
                 X_Tag ttag = tr.getChild(3).findChild("a", "span a");
                 F1Team team = retrieveTeam(ttag, false);
+                if(gp.getNum() == 17 && carNum == 39 && team.getTeamName().equals("Toro Rosso")) {
+                    // error on wikipedia
+                    carNum = 28;
+                }
                 q.setEntrant(getEntrant(year, carNum, team));
 
                 q.getTimes().add(JkDuration.of(tr.getChild(4).getTextFlat()));
@@ -202,12 +208,16 @@ public class Year2018 extends AWikiParser {
                 r.setRetired(tr.getChild(0).getText().equalsIgnoreCase("Ret"));
 
                 int carNum = Integer.parseInt(tr.getChild(1).getText());
+                if(gp.getNum() == 17 && carNum == 39) {
+                    // error on wikipedia
+                    carNum = 28;
+                }
                 F1Qualify q = qualifyMap.get(carNum);
                 r.setEntrant(q.getEntrant());
 
                 r.setLaps(Integer.parseInt(tr.getChild(4).getText()));
 
-                r.setTime(JkDuration.of(tr.getChild(5).getText()));
+                r.setTime(JkDuration.of(tr.getChild(5).getText().replace("&#160;", "")));
                 if(gp.getRaces().size() > 1 && r.getTime() != null) {
                     F1Race firstRace = gp.getRaces().get(0);
                     JkDuration ft = firstRace.getTime().plus(r.getTime());
@@ -217,9 +227,15 @@ public class Year2018 extends AWikiParser {
                 // Check grid pos against final grid pos in qualify (must be equals)
                 int gridPos = JkConvert.toInt(tr.getChild(6).getText(), -1);
                 if(q.getFinalGrid() != gridPos) {
-                    throw new JkRuntimeException("GP {}, driver {}: mismatch between qualify grid pos ({}) and race grid pos ({})",
-                            gp.getPrimaryKey(), q.getEntrant().getDriver().getDriverName(), q.getFinalGrid(), gridPos
-                    );
+                    if(gridPos == -1) {
+                        LOG.warn("GP {}, driver {}: mismatch between qualify grid pos ({}) and race grid pos ({})",
+                                gp.getPrimaryKey(), q.getEntrant().getDriver().getDriverName(), q.getFinalGrid(), gridPos
+                        );
+                    } else {
+                        throw new JkRuntimeException("GP {}, driver {}: mismatch between qualify grid pos ({}) and race grid pos ({})",
+                                gp.getPrimaryKey(), q.getEntrant().getDriver().getDriverName(), q.getFinalGrid(), gridPos
+                        );
+                    }
                 }
 
                 r.setPoints(JkConvert.toInt(tr.getChild(7).getTextFlat(), 0));
@@ -229,9 +245,9 @@ public class Year2018 extends AWikiParser {
 
     private F1Team retrieveTeam(X_Tag tag, boolean createIfMissing) {
         String teamName = tag.getText();
-        if(teamName.equals("Force India")) {
-            teamName = tag.getAttribute("title");
-        }
+//        if(teamName.equals("Force India")) {
+//            teamName = tag.getAttribute("title");
+//        }
         return super.retrieveTeam(teamName, createIfMissing);
     }
 
