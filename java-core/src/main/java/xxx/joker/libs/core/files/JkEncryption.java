@@ -57,6 +57,9 @@ public class JkEncryption {
         }
     }
 
+    public static void encryptFile(Path inputPath, Path outputPath, String password) {
+        encryptFile(inputPath, outputPath, password, true);
+    }
     public static void encryptFile(Path inputPath, Path outputPath, String password, boolean overwrite) {
         try {
             if (!overwrite && Files.exists(outputPath)) {
@@ -77,6 +80,9 @@ public class JkEncryption {
         } catch (Exception ex) {
             throw new JkRuntimeException(ex);
         }
+    }
+    public static void decryptFile(Path inputPath, Path outputPath, String password) {
+        decryptFile(inputPath, outputPath, password, true);
     }
     public static void decryptFile(Path inputPath, Path outputPath, String password, boolean overwrite) {
         try {

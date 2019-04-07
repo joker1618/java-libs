@@ -114,6 +114,9 @@ public class JkFiles {
         }
 	}
 
+	public static void writeFile(Path outputPath, byte[] bytes) {
+		writeFile(outputPath, bytes, true);
+	}
 	public static void writeFile(Path outputPath, byte[] bytes, boolean overwrite) {
 	    try {
             if (Files.exists(outputPath) && !overwrite) {

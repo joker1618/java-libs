@@ -21,7 +21,10 @@ public abstract class JkRepoFile implements JkRepo {
     private final RepoManager repoManager;
 
     protected JkRepoFile(Path dbFolder, String dbName, String pkgToScan) {
-        this.repoManager = new RepoManager(dbFolder, dbName, pkgToScan);
+        this(dbFolder, dbName, pkgToScan, null);
+    }
+    protected JkRepoFile(Path dbFolder, String dbName, String pkgToScan, String encryptionPwd) {
+        this.repoManager = new RepoManager(dbFolder, dbName, pkgToScan, encryptionPwd);
     }
 
     @Override

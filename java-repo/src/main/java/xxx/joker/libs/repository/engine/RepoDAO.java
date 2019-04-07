@@ -23,11 +23,9 @@ class RepoDAO {
     private static final String EXT_DEPS_FILE = "fkeys";
     private static final String EXT_CLASS_DESCR_FILE = "descr";
 
-    private static final String SEP_DESCR = ":";
-
-    private Path dbFolder;
-    private String dbName;
-    private List<ClazzWrapper> clazzWrappers;
+    protected Path dbFolder;
+    protected String dbName;
+    protected List<ClazzWrapper> clazzWrappers;
 
     RepoDAO(Path dbFolder, String dbName, List<ClazzWrapper> clazzWrappers) {
         this.dbFolder = dbFolder;
@@ -73,7 +71,6 @@ class RepoDAO {
                 formatData.put(filePathDescr(rc), descrList);
                 formatData.put(filePathData(rc), dataLines);
 
-
                 if(!dto.getForeignKeys().isEmpty()) {
                     List<String> fkLines = new ArrayList<>();
                     for (RepoFK fk : dto.getForeignKeys()) {
@@ -90,19 +87,16 @@ class RepoDAO {
         existingRepoFiles.forEach(JkFiles::delete);
 
         // Persist repo data
-        formatData.forEach(JkFiles::writeFile);
+        formatData.forEach(this::saveRepoFile);
     }
 
     private List<String> loadDescr(ClazzWrapper clazzWrapper) {
         Path fpath = filePathDescr(clazzWrapper);
-        if(!Files.exists(fpath))    return null;
-        return JkFiles.readLinesNotBlank(fpath);
+        return readRepoFile(fpath);
     }
     private List<RepoEntity> loadData(ClazzWrapper clazzWrapper, List<String> descrList) {
         Path fpath = filePathData(clazzWrapper);
-        if(!Files.exists(fpath))    return Collections.emptyList();
-
-        List<String> lines = JkFiles.readLinesNotBlank(fpath);
+        List<String> lines = readRepoFile(fpath);
         List<RepoEntity> toRet = new ArrayList<>();
         for(String l : lines) {
             Map<String, String> strValues = new HashMap<>();
@@ -120,9 +114,7 @@ class RepoDAO {
     }
     private List<RepoFK> loadForeignKeys(ClazzWrapper clazzWrapper, List<String> descrList) {
         Path fpath = filePathForeignKeys(clazzWrapper);
-        if(!Files.exists(fpath))    return Collections.emptyList();
-
-        List<String> lines = JkFiles.readLinesNotBlank(fpath);
+        List<String> lines = readRepoFile(fpath);
         List<RepoFK> toRet = new ArrayList<>();
         for(String l : lines) {
             String[] split = JkStrings.splitArr(l, SEP_FIELD);
@@ -133,6 +125,18 @@ class RepoDAO {
             toRet.add(new RepoFK(fromID, fname, depID));
         }
         return toRet;
+    }
+
+    protected List<String> readRepoFile(Path sourcePath) {
+        if(!Files.exists(sourcePath)) {
+            return Collections.emptyList();
+        } else {
+            return JkFiles.readLinesNotBlank(sourcePath);
+        }
+    }
+
+    protected void saveRepoFile(Path outputPath, List<String> lines) {
+        JkFiles.writeFile(outputPath, lines);
     }
 
     private Path filePathDescr(ClazzWrapper clazzWrapper) {

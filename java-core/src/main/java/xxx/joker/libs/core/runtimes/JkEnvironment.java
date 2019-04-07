@@ -12,7 +12,7 @@ public class JkEnvironment {
     public static final String HOME_FOLDER_KEY = "user.home";
     public static final String APPS_FOLDER_KEY = "apps.folder";
 
-    public static final Path APPS_FOLDER_DEFAULT = Paths.get(System.getProperty("user.home")).resolve(".appsFolder");
+    public static final Path APPS_FOLDER_DEFAULT = getHomeFolder().resolve(".appsFolder");
 
     private static final Map<String, Object> cacheMap = new HashMap<>();
 
@@ -28,11 +28,6 @@ public class JkEnvironment {
             cacheMap.put(APPS_FOLDER_KEY, p);
         }
         return (Path) cacheMap.get(APPS_FOLDER_KEY);
-    }
-    public static void setAppTempFolder(Path tempFolder) {
-        Path p = tempFolder.toAbsolutePath().normalize();
-        cacheMap.put(APPS_FOLDER_KEY, p);
-        System.setProperty(APPS_FOLDER_KEY, p.toString());
     }
 
 }

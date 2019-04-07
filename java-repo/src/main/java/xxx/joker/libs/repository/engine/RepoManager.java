@@ -1,5 +1,6 @@
 package xxx.joker.libs.repository.engine;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.datetime.JkTimer;
@@ -25,8 +26,16 @@ public class RepoManager {
 
 
     public RepoManager(Path dbFolder, String dbName, String pkgToScan) {
+        this(dbFolder, dbName, pkgToScan, null);
+    }
+
+    public RepoManager(Path dbFolder, String dbName, String pkgToScan, String encryptionPwd) {
         JkTimer timer = new JkTimer();
-        this.repoDao = new RepoDAO(dbFolder, dbName, scanPackage(pkgToScan));
+        if(StringUtils.isNotBlank(encryptionPwd)) {
+            this.repoDao = new RepoDAOEncrypted(dbFolder, dbName, scanPackage(pkgToScan), encryptionPwd);
+        } else {
+            this.repoDao = new RepoDAO(dbFolder, dbName, scanPackage(pkgToScan));
+        }
         this.repoLock = new ReentrantReadWriteLock(true);
         this.repoHandler = new RepoHandler(repoDao.readRepoData(), repoLock);
         LOG.info("Initialized repo [{}, {}] in {}", dbFolder, dbName, timer.toStringElapsed());
@@ -59,6 +68,10 @@ public class RepoManager {
         return repoHandler.getDataSet(entityClazz);
     }
 
+    public <T extends RepoEntity> Map<Class<T>, Set<T>> getDataSets() {
+        return repoHandler.getDataSets();
+    }
+
 
     private List<ClazzWrapper> scanPackage(String pkgToScan) {
         LOG.debug("Scanning package: {}", pkgToScan);
@@ -71,7 +84,4 @@ public class RepoManager {
         return JkStreams.map(classes, ClazzWrapper::wrap);
     }
 
-    public <T extends RepoEntity> Map<Class<T>, Set<T>> getDataSets() {
-        return repoHandler.getDataSets();
-    }
 }
