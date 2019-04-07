@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.repository.design.RepoEntity;
-import xxx.joker.libs.repository.entities.RepoProperty;
 import xxx.joker.libs.repository.engine.RepoManager;
+import xxx.joker.libs.repository.entities.RepoProperty;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public abstract class JkRepoFile implements JkRepo {
 

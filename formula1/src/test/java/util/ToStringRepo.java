@@ -12,7 +12,6 @@ import xxx.joker.libs.core.format.JkOutput;
 import xxx.joker.libs.core.lambdas.JkStreams;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
@@ -32,7 +31,7 @@ public class ToStringRepo {
     public void showEntrants(int year) {
         List<F1Entrant> elist = model.getEntrants(year);
         List<String> lines = new ArrayList<>();
-        lines.add(strf("YEAR|ID|TEAM|ENGINE|NUM|DRIVER"));
+        lines.add(strf("YEAR|ID|TEAM|T_NATION|ENGINE|NUM|DRIVER|D_NATION"));
         lines.addAll(JkStreams.map(elist, ToStringRepo::toLine));
         String cols = JkOutput.columnsView(lines, "|", 2);
         display("*** Entrants ({})\n{}", elist.size(), cols);
@@ -64,13 +63,15 @@ public class ToStringRepo {
 
 
     private static String toLine(F1Entrant e) {
-        return strf("{}|{}|{}|{}|{}|{}",
+        return strf("{}|{}|{}|{}|{}|{}|{}|{}",
                 e.getYear(),
                 e.getEntityID(),
                 e.getTeam().getTeamName(),
+                e.getTeam().getNation(),
                 e.getEngine(),
                 e.getCarNum(),
-                e.getDriver().getDriverName()
+                e.getDriver().getFullName(),
+                e.getDriver().getNation()
         );
     }
 
@@ -107,7 +108,7 @@ public class ToStringRepo {
             q.getGpPK(),
             q.getEntityID(),
             q.getPos(),
-            q.getEntrant().getDriver().getDriverName(),
+            q.getEntrant().getDriver().getFullName(),
             strTimes,
             q.getFinalGrid()
         );
@@ -133,7 +134,7 @@ public class ToStringRepo {
             r.getGpPK(),
             r.getEntityID(),
             r.getPos(),
-            r.getEntrant().getDriver().getDriverName(),
+            r.getEntrant().getDriver().getFullName(),
             r.getLaps(),
             r.isRetired() ? "RET" : "",
             strTime,

@@ -14,17 +14,36 @@ public class RunFinal {
 
     @Test
     public void runYear() {
-        int year = 2017;
-        model.deleteData(year);
+        int year = 2018;
+//        model.deleteData(year);
 
         IWikiParser parser = IWikiParser.getParser(year);
         parser.parse();
 //        model.commit();
 
         ToStringRepo printer = new ToStringRepo();
-//        printer.showEntrants(year);
+        printer.showEntrants(year);
 //        printer.showGPDescription(year);
 //        printer.showGPTimes(year);
+
+    }
+
+    @Test
+    public void runRange() {
+        int ystart = 2017;
+        int yend = 2018;
+//        model.deleteData(year);
+
+        for(int year = yend; year >= ystart; year--) {
+            display("Start parsing year {}", year);
+            IWikiParser parser = IWikiParser.getParser(year);
+            parser.parse();
+
+//            ToStringRepo printer = new ToStringRepo();
+//            printer.showEntrants(year);
+        }
+
+        model.commit();
 
     }
 }

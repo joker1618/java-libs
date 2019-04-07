@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static xxx.joker.libs.core.utils.JkConsole.display;
+
 public class Year2017 extends AWikiParser {
 
 
@@ -34,6 +36,13 @@ public class Year2017 extends AWikiParser {
             if(tdList.size() >= 8) {
                 X_Tag tagTeamName = tdList.get(1).findChild("b a");
                 F1Team team = retrieveTeam(tagTeamName, true);
+                if(StringUtils.isBlank(team.getNation())) {
+                    team.setNation(tdList.get(0).findChild("span a").getAttribute("title"));
+                }
+                if(StringUtils.isBlank(team.getNation())) {
+                    throw new JkRuntimeException("Nation blank for team {}, year {}", tagTeamName, year);
+                }
+
                 String engine = tdList.get(3).getText();
                 if(StringUtils.isBlank(engine)) {
                     engine = tdList.get(3).getChild("span").getText();
@@ -43,13 +52,15 @@ public class Year2017 extends AWikiParser {
                 List<Integer> carNums = JkStreams.map(JkStrings.splitList(stmp, "-", true), Integer::valueOf);
 
                 List<F1Driver> drivers = new ArrayList<>();
-                tdList.get(5).getChildren("a").forEach(t -> {
-                    F1Driver d = retrieveDriver(t.getText(), true);
+                List<X_Tag> spanTags = tdList.get(5).getChildren("span");
+                List<X_Tag> aTags = tdList.get(5).getChildren("a");
+                for(int i = 0; i < aTags.size(); i++) {
+                    F1Driver d = retrieveDriver(aTags.get(i).getText(), true);
+                    if(StringUtils.isBlank(d.getNation())) {
+                        d.setNation(spanTags.get(i).getChild("a").getAttribute("title"));
+                    }
                     drivers.add(d);
-                    String key = d.getEntityID()+"";
-                    String url = createUrl(t.getAttribute("href"));
-                    model.getLinks().add(new F1Link(key, url));
-                });
+                }
 
                 for(int c = 0; c < drivers.size(); c++) {
                     F1Entrant e = new F1Entrant();
@@ -94,7 +105,7 @@ public class Year2017 extends AWikiParser {
                 F1Driver driver = model.getDriver(dTag.getText());
                 String spoints = tr.getChildren("th").get(1).getText();
                 int points = Integer.parseInt(spoints);
-                map.put(driver.getDriverName(), points);
+                map.put(driver.getFullName(), points);
             }
         }
 
@@ -229,11 +240,11 @@ public class Year2017 extends AWikiParser {
                 if(q.getFinalGrid() != gridPos) {
                     if(gridPos == -1) {
                         LOG.warn("GP {}, driver {}: mismatch between qualify grid pos ({}) and race grid pos ({})",
-                                gp.getPrimaryKey(), q.getEntrant().getDriver().getDriverName(), q.getFinalGrid(), gridPos
+                                gp.getPrimaryKey(), q.getEntrant().getDriver().getFullName(), q.getFinalGrid(), gridPos
                         );
                     } else {
                         throw new JkRuntimeException("GP {}, driver {}: mismatch between qualify grid pos ({}) and race grid pos ({})",
-                                gp.getPrimaryKey(), q.getEntrant().getDriver().getDriverName(), q.getFinalGrid(), gridPos
+                                gp.getPrimaryKey(), q.getEntrant().getDriver().getFullName(), q.getFinalGrid(), gridPos
                         );
                     }
                 }

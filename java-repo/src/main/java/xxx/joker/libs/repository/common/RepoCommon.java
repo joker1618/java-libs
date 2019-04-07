@@ -6,7 +6,6 @@ import xxx.joker.libs.repository.design.RepoFieldCustom;
 import xxx.joker.libs.repository.engine.FieldWrapper;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,11 +13,8 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import static xxx.joker.libs.repository.common.RepoCommon.Separator.*;
 
 public class RepoCommon {
-
-    public static final String FIELD_NAME_REPO_ENTITY_ID = "entityID";
 
     public static class Separator {
         public static final String SEP_FIELD = "|";

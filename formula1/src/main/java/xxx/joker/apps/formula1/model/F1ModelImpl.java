@@ -37,7 +37,7 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
 
     @Override
     public F1Driver getDriver(String driverName) {
-        return JkStreams.findUnique(getDrivers(), d -> d.getDriverName().equals(driverName));
+        return JkStreams.findUnique(getDrivers(), d -> d.getFullName().equals(driverName));
     }
 
     @Override

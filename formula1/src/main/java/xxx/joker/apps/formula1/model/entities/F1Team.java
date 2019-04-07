@@ -7,6 +7,8 @@ public class F1Team extends RepoEntity {
 
     @RepoField
     private String teamName;
+    @RepoField
+    private String nation;
 
     public F1Team() {
     }
@@ -26,5 +28,13 @@ public class F1Team extends RepoEntity {
 
     public void setTeamName(String teamName) {
         this.teamName = teamName;
+    }
+
+    public String getNation() {
+        return nation;
+    }
+
+    public void setNation(String nation) {
+        this.nation = nation;
     }
 }
