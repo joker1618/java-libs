@@ -9,7 +9,7 @@
         </encoder>
     </appender>
 
-    <!--<logger name="xxx.joker.libs.repository.engine.RepoHandler2" level="info" additivity="false">-->
+    <!--<logger name="xxx.joker.libs.repository.engine.RepoHandler" level="info" additivity="false">-->
         <!--<appender-ref ref="STDOUT"/>-->
     <!--</logger>-->
 

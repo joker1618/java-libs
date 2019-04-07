@@ -21,16 +21,14 @@ public class RepoManager {
 
     private ReadWriteLock repoLock;
     private RepoDAO repoDao;
-//    private RepoHandler repoHandler;
-    private RepoHandler2 repoHandler;
+    private RepoHandler repoHandler;
 
 
     public RepoManager(Path dbFolder, String dbName, String pkgToScan) {
         JkTimer timer = new JkTimer();
         this.repoDao = new RepoDAO(dbFolder, dbName, scanPackage(pkgToScan));
         this.repoLock = new ReentrantReadWriteLock(true);
-//        this.repoHandler = new RepoHandler(repoDao.readRepoData(), repoLock);
-        this.repoHandler = new RepoHandler2(repoDao.readRepoData(), repoLock);
+        this.repoHandler = new RepoHandler(repoDao.readRepoData(), repoLock);
         LOG.info("Initialized repo [{}, {}] in {}", dbFolder, dbName, timer.toStringElapsed());
     }
 
@@ -38,8 +36,7 @@ public class RepoManager {
         try {
             repoLock.writeLock().lock();
             List<RepoDTO> daoDTOs = repoDao.readRepoData();
-//            repoHandler = new RepoHandler(daoDTOs, repoLock);
-            repoHandler = new RepoHandler2(daoDTOs, repoLock);
+            repoHandler = new RepoHandler(daoDTOs, repoLock);
             LOG.info("Rollback repo completed");
         } finally {
             repoLock.writeLock().unlock();

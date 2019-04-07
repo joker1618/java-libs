@@ -16,9 +16,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Predicate;
 
-class RepoHandler2 {
+class RepoHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RepoHandler2.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RepoHandler.class);
     private static final List<String> WRITE_METHODS = Arrays.asList("add", "addAll", "remove", "removeIf", "removeAll", "clear", "set");
 
     private final ReadWriteLock repoLock;
@@ -27,7 +27,7 @@ class RepoHandler2 {
     private Map<Long, RepoEntity> dataByID;
     private final AtomicLong sequenceValue;
 
-    RepoHandler2(List<RepoDTO> dtoList, ReadWriteLock repoLock) {
+    RepoHandler(List<RepoDTO> dtoList, ReadWriteLock repoLock) {
         this.repoLock = repoLock;
 
         this.handlers = new HashMap<>();
