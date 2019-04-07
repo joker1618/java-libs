@@ -101,7 +101,7 @@ public class JkReflection {
 		return null;
 	}
 
-	public static boolean isInstanceOf(Class<?> clazz, Class<?>... expected) {
+	public static boolean isInstanceOf(Class<?> clazz, Collection<Class<?>> expected) {
 		List<Class<?>> types = findAllClassTypes(clazz);
 		for(Class<?> cexp : expected) {
 			if(types.contains(cexp)) {
@@ -109,6 +109,9 @@ public class JkReflection {
 			}
 		}
 		return false;
+	}
+	public static boolean isInstanceOf(Class<?> clazz, Class<?>... expected) {
+		return isInstanceOf(clazz, Arrays.asList(expected));
 	}
 
 	public static List<Class<?>> findAllClassTypes(Class<?> clazz) {

@@ -22,6 +22,9 @@ public interface X_Tag {
     X_Tag findChild(String... tagsPaths);
     List<X_Tag> findChildren(String... tagsPaths);
 
+    X_Tag findFirstTag(String tagName);
+    List<X_Tag> findFirstTags(String tagName);
+
     Range getRange();
 
     String getHtmlTag();

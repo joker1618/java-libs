@@ -159,7 +159,7 @@ public class FieldWrapper {
             toRet = String.valueOf(value);
         } else if (isOfType(fclazz, String.class)) {
             toRet = (String) value;
-        } else if (isOfType(fclazz.getSuperclass(), RepoFieldCustom.class)) {
+        } else if (JkReflection.isInstanceOf(fclazz, RepoFieldCustom.class)) {
             toRet = ((RepoFieldCustom)value).format();
         } else {
             throw new RepoError("Object formatting not implemented for: class = {}, value = {}", fclazz, value);
@@ -259,7 +259,7 @@ public class FieldWrapper {
             o = LocalDate.parse(unesc, DTF_DATE);
         } else if (isOfType(fclazz, LocalDateTime.class)) {
             o = LocalDateTime.parse(unesc, DTF_DATETIME);
-        } else if (isOfType(fclazz.getSuperclass(), RepoFieldCustom.class)) {
+        } else if (JkReflection.isInstanceOf(fclazz, RepoFieldCustom.class)) {
             o = JkReflection.createInstanceSafe(fclazz);
             ((RepoFieldCustom) o).parse(unesc);
         } else if (isString) {

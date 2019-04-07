@@ -1,6 +1,7 @@
 package xxx.joker.libs.repository.common;
 
 import xxx.joker.libs.core.datetime.JkDuration;
+import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoFieldCustom;
 import xxx.joker.libs.repository.engine.FieldWrapper;
@@ -31,12 +32,11 @@ public class RepoCommon {
         Class<?> fieldType = fieldWrapper.getFieldType();
         boolean res = ALLOWED_FIELDS.contains(fieldType);
         if(!res) {
-            Class<?> sc = fieldType.getSuperclass();
-            res = CUSTOM_FIELDS.contains(sc);
+            res = JkReflection.isInstanceOf(fieldType, CUSTOM_FIELDS);
         }
         if(!res && ALLOWED_COLLECTIONS.contains(fieldType)) {
             Class<?> elemType = fieldWrapper.getElemType();
-            res = CUSTOM_FIELDS.contains(elemType.getSuperclass()) || ALLOWED_FIELDS.contains(elemType);
+            res = JkReflection.isInstanceOf(elemType, CUSTOM_FIELDS) || ALLOWED_FIELDS.contains(elemType);
         }
         return res;
     }

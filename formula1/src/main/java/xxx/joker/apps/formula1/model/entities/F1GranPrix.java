@@ -25,6 +25,8 @@ public class F1GranPrix extends RepoEntity {
     @RepoField
     private int numLapsRace;
     @RepoField
+    private F1FastLap fastLap;
+    @RepoField
     private List<F1Qualify> qualifies;
     @RepoField
     private List<F1Race> races;
@@ -112,5 +114,13 @@ public class F1GranPrix extends RepoEntity {
 
     public void setRaces(List<F1Race> races) {
         this.races = races;
+    }
+
+    public F1FastLap getFastLap() {
+        return fastLap;
+    }
+
+    public void setFastLap(F1FastLap fastLap) {
+        this.fastLap = fastLap;
     }
 }

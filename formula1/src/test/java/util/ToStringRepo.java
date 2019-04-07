@@ -10,6 +10,7 @@ import xxx.joker.apps.formula1.model.entities.F1Race;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.format.JkOutput;
 import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.core.utils.JkStrings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,22 @@ public class ToStringRepo {
     static F1Model model = F1ModelImpl.getInstance();
     static int yearDef = 2017;
 
+
+    @Test
+    public void showTeams() {
+        List<String> lines = new ArrayList<>();
+        lines.add("ID|TEAM NAME|NATION");
+        lines.addAll(JkStreams.map(model.getTeams(), t -> strf("{}|{}|{}", t.getEntityID(), t.getTeamName(), t.getNation())));
+        display("TEAMS\n{}", JkOutput.columnsView(lines, "|", 2));
+    }
+
+    @Test
+    public void showDrivers() {
+        List<String> lines = new ArrayList<>();
+        lines.add("ID|DRIVER NAME|NATION");
+        lines.addAll(JkStreams.map(model.getDrivers(), t -> strf("{}|{}|{}", t.getEntityID(), t.getFullName(), t.getNation())));
+        display("DRIVERS\n{}", JkOutput.columnsView(lines, "|", 2));
+    }
 
     @Test
     public void showEntrants() {
@@ -45,7 +62,7 @@ public class ToStringRepo {
     public void showGPDescription(int year) {
         List<F1GranPrix> gpList = model.getGranPrixs(year);
         List<String> lines = new ArrayList<>();
-        lines.add(strf("YEAR|ID|NUM|DATE|LAP LEN|NUM LAPS|CITY|NATION|N.Q|N.R"));
+        lines.add(strf("YEAR|ID|NUM|DATE|LAP LEN|NUM LAPS|CITY|NATION|N.Q|N.R|FAST LAP"));
         lines.addAll(JkStreams.map(gpList, ToStringRepo::toLine));
         String cols = JkOutput.columnsView(lines, "|", 2);
         display("*** Gran Prix ({})\n{}", gpList.size(), cols);
@@ -76,7 +93,7 @@ public class ToStringRepo {
     }
 
     private static String toLine(F1GranPrix gp) {
-        return strf("{}|{}|{}|{}|{}|{}|{}|{}|{}|{}",
+        return strf("{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}",
                 gp.getYear(),
                 gp.getEntityID(),
                 gp.getNum(),
@@ -86,7 +103,8 @@ public class ToStringRepo {
                 gp.getCity(),
                 gp.getNation(),
                 gp.getQualifies().size(),
-                gp.getRaces().size()
+                gp.getRaces().size(),
+                gp.getFastLap().toLine()
         );
     }
 

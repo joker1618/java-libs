@@ -59,6 +59,9 @@ public class Year2017 extends AWikiParser {
                     if(StringUtils.isBlank(d.getNation())) {
                         d.setNation(spanTags.get(i).getChild("a").getAttribute("title"));
                     }
+                    if(StringUtils.isBlank(d.getNation())) {
+                        throw new JkRuntimeException("Nation blank for driver {}, year {}", d.getFullName(), year);
+                    }
                     drivers.add(d);
                 }
 
@@ -138,8 +141,31 @@ public class Year2017 extends AWikiParser {
         X_Tag tableGp = X_Scanners.parseHtmlTag(html, "table", "<table class=\"infobox vevent\"");
         X_Tag tbody = tableGp.getChild("tbody");
 
+        int counterFastLast = 0;
+        F1FastLap fastLap = new F1FastLap();
+        gp.setFastLap(fastLap);
+
         for (X_Tag tr : tbody.getChildren("tr")) {
-            if(tr.getChildren().size() == 2) {
+            if(counterFastLast == 2) {
+                F1Driver d = retrieveDriver(tr.findChild("td span a").getAttribute("title"), false);
+                if(d == null) {
+                    d = retrieveDriver(tr.findChild("td a").getAttribute("title"), false);
+                }
+                fastLap.setDriverPK(d.getPrimaryKey());
+                counterFastLast--;
+
+            } else if(counterFastLast == 1) {
+                String txt = tr.findChild("td").getText().replaceAll(" .*", "");
+                fastLap.setLapTime(JkDuration.of(txt));
+                counterFastLast--;
+
+            } else if(tr.getChildren().size() == 1) {
+                X_Tag tag = tr.findChild("th a");
+                if(tag != null && tag.getText().equals("Fastest lap")) {
+                    counterFastLast = 2;
+                }
+
+            } else if(tr.getChildren().size() == 2) {
                 if(tr.getChild(0).getText().equals("Location")) {
                     String allText = tr.getChild(1).getHtmlTag().replaceAll("<br[^<]*?>", ",").replaceAll(",[ ]*?,", ",").replaceAll("<[^<]*?>", "");
                     List<String> list = JkStrings.splitList(allText, ",", true);

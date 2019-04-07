@@ -90,6 +90,27 @@ class X_TagImpl implements X_Tag {
         }
         return Collections.emptyList();
     }
+
+    @Override
+    public X_Tag findFirstTag(String tagName) {
+        List<X_Tag> res = findFirstTags(tagName);
+        return res.isEmpty() ? null : res.get(0);
+    }
+
+    @Override
+    public List<X_Tag> findFirstTags(String tagName) {
+        List<X_Tag> res = getChildren(tagName);
+        while(res.isEmpty()) {
+            for (X_Tag child : children) {
+                res = child.findFirstTags(tagName);
+                if(!res.isEmpty()) {
+                    return res;
+                }
+            }
+        }
+        return res;
+    }
+
     private List<X_Tag> findTagChilds(String tagsPath) {
         X_Tag t = this;
         int pos = 0;

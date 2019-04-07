@@ -50,19 +50,19 @@ abstract class AWikiParser implements IWikiParser {
 //        String strTeams  = JkStreams.join(entriesTeamMap, "\n", w -> strf("  %-5d%s", w.getValue(), w.getKey()));
 //        display("*** Expected team points ({})\n{}", entriesTeamMap.size(), strTeams);
 
-//        List<String> gpUrls = getGpUrls(downloader.getHtml(mainPageUrl));
-//        for (int i = 0; i < gpUrls.size(); i++) {
-//            String html = downloader.getHtml(gpUrls.get(i));
-//            F1GranPrix gp = new F1GranPrix(year, i + 1);
-//            if(model.getGranPrixs().add(gp)) {
-//                parseGpDetails(html, gp);
-//                display(gp.getNation());
+        List<String> gpUrls = getGpUrls(downloader.getHtml(mainPageUrl));
+        for (int i = 0; i < gpUrls.size(); i++) {
+            String html = downloader.getHtml(gpUrls.get(i));
+            F1GranPrix gp = new F1GranPrix(year, i + 1);
+            if(model.getGranPrixs().add(gp)) {
+                parseGpDetails(html, gp);
+                display(gp.getNation());
 //                parseQualify(html, gp);
 //                parseRace(html, gp);
-////                if(i == 0) break;
-////                break;
-//            }
-//        }
+//                if(i == 0) break;
+//                break;
+            }
+        }
     }
 
     @Override
