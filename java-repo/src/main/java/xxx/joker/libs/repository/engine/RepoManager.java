@@ -72,6 +72,10 @@ public class RepoManager {
         return repoHandler.getDataSets();
     }
 
+    public void clearDataSets() {
+        repoHandler.clearDataSets();
+    }
+
 
     private List<ClazzWrapper> scanPackage(String pkgToScan) {
         LOG.debug("Scanning package: {}", pkgToScan);

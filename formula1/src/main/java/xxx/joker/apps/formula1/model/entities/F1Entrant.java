@@ -3,8 +3,6 @@ package xxx.joker.apps.formula1.model.entities;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoField;
 
-import java.util.List;
-
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class F1Entrant extends RepoEntity {
@@ -16,14 +14,14 @@ public class F1Entrant extends RepoEntity {
     @RepoField
     private String engine;
     @RepoField
-    private int carNum;
+    private int carNo;
     @RepoField
     private F1Driver driver;
 
-
+public String getDN(){return driver.getNation();}
     @Override
     public String getPrimaryKey() {
-        return strf("entrant-{}-{}-{}", year, team.getTeamName(), carNum);
+        return strf("entrant-{}-{}-{}", year, team.getTeamName(), carNo);
     }
 
     public int getYear() {
@@ -50,12 +48,12 @@ public class F1Entrant extends RepoEntity {
         this.engine = engine;
     }
 
-    public int getCarNum() {
-        return carNum;
+    public int getCarNo() {
+        return carNo;
     }
 
-    public void setCarNum(int carNum) {
-        this.carNum = carNum;
+    public void setCarNo(int carNo) {
+        this.carNo = carNo;
     }
 
     public F1Driver getDriver() {

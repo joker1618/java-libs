@@ -100,7 +100,7 @@ class X_TagImpl implements X_Tag {
     @Override
     public List<X_Tag> findFirstTags(String tagName) {
         List<X_Tag> res = getChildren(tagName);
-        while(res.isEmpty()) {
+        if(res.isEmpty()) {
             for (X_Tag child : children) {
                 res = child.findFirstTags(tagName);
                 if(!res.isEmpty()) {

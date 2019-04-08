@@ -67,7 +67,7 @@ public abstract class JkRepoFile implements JkRepo {
 
     @Override
     public void clearDataSets() {
-        getDataSets().values().forEach(Set::clear);
+        repoManager.clearDataSets();
     }
 
     @Override

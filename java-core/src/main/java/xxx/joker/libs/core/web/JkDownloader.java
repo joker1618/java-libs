@@ -13,6 +13,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import static xxx.joker.libs.core.utils.JkStrings.strf;
+
 public class JkDownloader {
 
     private static final Logger LOG = LoggerFactory.getLogger(JkDownloader.class);
@@ -47,6 +49,20 @@ public class JkDownloader {
         } catch(Exception ex) {
             throw new JkRuntimeException(ex);
         }
+    }
+
+    public Path downloadResource(String outFileName, String url) {
+        int idx = url.lastIndexOf(".");
+        String fext = url.substring(idx + 1);
+        String finalFname = outFileName;
+        if(!finalFname.endsWith(fext)) {
+            finalFname += "." + fext;
+        }
+        Path outPath = folder.resolve(finalFname);
+        if(!Files.exists(outPath)) {
+            JkWeb.downloadResource(url, outPath);
+        }
+        return outPath;
     }
 
 }

@@ -70,7 +70,7 @@ public class Year2017 extends AWikiParser {
                     e.setYear(year);
                     e.setTeam(team);
                     e.setEngine(engine);
-                    e.setCarNum(carNums.get(c));
+                    e.setCarNo(carNums.get(c));
                     e.setDriver(drivers.get(c));
                     model.getEntrants().add(e);
                 }
@@ -232,7 +232,7 @@ public class Year2017 extends AWikiParser {
         }
         X_Tag tbody = tableRace.getChild("tbody");
 
-        Map<Integer, F1Qualify> qualifyMap = JkStreams.toMapSingle(gp.getQualifies(), q -> q.getEntrant().getCarNum());
+        Map<Integer, F1Qualify> qualifyMap = JkStreams.toMapSingle(gp.getQualifies(), q -> q.getEntrant().getCarNo());
         int pos = 1;
 
         for (X_Tag tr : tbody.getChildren("tr")) {

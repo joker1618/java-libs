@@ -7,7 +7,6 @@ import xxx.joker.apps.formula1.model.entities.*;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.runtimes.JkRuntime;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 
@@ -38,11 +37,12 @@ public class Year2018 extends AWikiParser {
                 X_Tag tagTeamName = tdList.get(1).findChild("b a");
                 F1Team team = retrieveTeam(tagTeamName, true);
                 if(StringUtils.isBlank(team.getNation())) {
-                    team.setNation(tdList.get(0).findChild("span a").getAttribute("title"));
+                    X_Tag img = tdList.get(0).findFirstTag("img");
+                    team.setNation(img.getAttribute("alt"));
+                    addFlagIconLink(img);
                 }
-                if(StringUtils.isBlank(team.getNation())) {
-                    throw new JkRuntimeException("Nation blank for team {}, year {}", tagTeamName, year);
-                }
+                checkField(team.getNation(), "Nation for team {}, year {}", tagTeamName, year);
+
 
                 String engine = tdList.get(3).getText();
 
@@ -53,13 +53,14 @@ public class Year2018 extends AWikiParser {
                 List<X_Tag> spanTags = tdList.get(5).getChildren("span");
                 List<X_Tag> aTags = tdList.get(5).getChildren("a");
                 for(int i = 0; i < aTags.size(); i++) {
-                    F1Driver d = retrieveDriver(aTags.get(i).getText(), true);
+                    F1Driver d = retrieveDriver(aTags.get(i).getAttribute("title"), true);
                     if(StringUtils.isBlank(d.getNation())) {
-                        d.setNation(spanTags.get(i).getChild("a").getAttribute("title"));
+                        X_Tag img = spanTags.get(i).findFirstTag("img");
+                        d.setNation(img.getAttribute("alt"));
+                        addDriverLink(d, aTags.get(i));
+                        addFlagIconLink(img);
                     }
-                    if(StringUtils.isBlank(d.getNation())) {
-                        throw new JkRuntimeException("Nation blank for driver {}, year {}", d.getFullName(), year);
-                    }
+                    checkField(d.getNation(), "Nation for driver {}, year {}", d.getFullName(), year);
                     drivers.add(d);
                 }
 
@@ -68,7 +69,7 @@ public class Year2018 extends AWikiParser {
                     e.setYear(year);
                     e.setTeam(team);
                     e.setEngine(engine);
-                    e.setCarNum(carNums.get(c));
+                    e.setCarNo(carNums.get(c));
                     e.setDriver(drivers.get(c));
                     model.getEntrants().add(e);
                 }
@@ -87,6 +88,9 @@ public class Year2018 extends AWikiParser {
             if(tdList.size() == 6) {
                 String href = tdList.get(5).getChild("a").getAttribute("href");
                 urls.add(createUrl(href));
+
+                X_Tag img = tdList.get(0).findFirstTag("img");
+                addFlagIconLink(img);
             }
         }
 
@@ -139,7 +143,7 @@ public class Year2018 extends AWikiParser {
         X_Tag tableGp = X_Scanners.parseHtmlTag(html, "table", "<table class=\"infobox vevent\"");
         X_Tag tbody = tableGp.getChild("tbody");
 
-        int counterFastLast = 0;
+        int counterFastLast = -1;
         F1FastLap fastLap = new F1FastLap();
         gp.setFastLap(fastLap);
 
@@ -157,9 +161,13 @@ public class Year2018 extends AWikiParser {
                 fastLap.setLapTime(JkDuration.of(txt));
                 counterFastLast--;
 
-            } else if(tr.getChildren().size() == 1) {
+            } else if(tr.findChild("td a img") != null) {
+                X_Tag img = tr.findChild("td a img");
+                persistGpTrackMap(gp, img);
+
+            } else if(counterFastLast == -1 && tr.getChildren().size() == 1 && tr.findChild("th a") != null) {
                 X_Tag tag = tr.findChild("th a");
-                if(tag != null && tag.getText().equals("Fastest lap")) {
+                if (tag.getText().equals("Fastest lap")) {
                     counterFastLast = 2;
                 }
 
@@ -226,7 +234,7 @@ public class Year2018 extends AWikiParser {
         }
         X_Tag tbody = tableRace.getChild("tbody");
 
-        Map<Integer, F1Qualify> qualifyMap = JkStreams.toMapSingle(gp.getQualifies(), q -> q.getEntrant().getCarNum());
+        Map<Integer, F1Qualify> qualifyMap = JkStreams.toMapSingle(gp.getQualifies(), q -> q.getEntrant().getCarNo());
         int pos = 1;
 
         for (X_Tag tr : tbody.getChildren("tr")) {

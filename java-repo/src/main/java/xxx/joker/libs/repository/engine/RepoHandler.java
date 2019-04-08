@@ -6,10 +6,7 @@ import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.design.RepoEntity;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
@@ -257,6 +254,32 @@ class RepoHandler {
         Map<Class<T>, Set<T>> map = new HashMap<>();
         handlers.entrySet().forEach(e -> map.put((Class<T>) e.getKey(), (Set<T>) e.getValue().getProxySet()));
         return map;
+    }
+
+    public void clearDataSets() {
+        // Remove entities without dependencies before
+        List<Class<?>> toDelete = JkConvert.toList(handlers.keySet());
+        List<Class<?>> delList = new ArrayList<>();
+        Map<Class<?>, List<Class<?>>> refMap = JkStreams.toMapSingle(toDelete, c -> c, c -> JkConvert.toList(ClazzWrapper.getReferenceFields(c).keySet()));
+
+        int prev = -1;
+        while(!toDelete.isEmpty() && prev != delList.size()) {
+            prev = delList.size();
+            for (Class<?> toDel : toDelete) {
+                List<Class<?>> refs = refMap.get(toDel);
+                if (refs == null || refs.isEmpty()) {
+                    delList.add(toDel);
+                }
+            }
+            refMap.values().forEach(list -> list.removeIf(delList::contains));
+            toDelete.removeAll(delList);
+        }
+
+        if(!toDelete.isEmpty()) {
+            delList.addAll(toDelete);
+        }
+
+        JkStreams.distinct(delList).forEach(clazz -> getDataSet(clazz).clear());
     }
 
     private class HandlerDataSet implements InvocationHandler {

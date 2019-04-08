@@ -10,7 +10,6 @@ import xxx.joker.apps.formula1.model.entities.F1Race;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.format.JkOutput;
 import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.utils.JkStrings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +24,15 @@ public class ToStringRepo {
 
 
     @Test
+    public void showLinks() {
+        List<String> lines = new ArrayList<>();
+        lines.add("KEY|URL");
+        lines.addAll(JkStreams.map(model.getLinks(), t -> strf("{}|{}", t.getKey(), t.getUrl())));
+        display("LINKS\n{}", JkOutput.columnsView(lines, "|", 2));
+    }
+
+
+    @Test
     public void showTeams() {
         List<String> lines = new ArrayList<>();
         lines.add("ID|TEAM NAME|NATION");
@@ -35,8 +43,10 @@ public class ToStringRepo {
     @Test
     public void showDrivers() {
         List<String> lines = new ArrayList<>();
-        lines.add("ID|DRIVER NAME|NATION");
-        lines.addAll(JkStreams.map(model.getDrivers(), t -> strf("{}|{}|{}", t.getEntityID(), t.getFullName(), t.getNation())));
+        lines.add("ID|DRIVER NAME|NATION|BDATE|CITY");
+        lines.addAll(JkStreams.map(model.getDrivers(), t -> strf("{}|{}|{}|{}|{}",
+                t.getEntityID(), t.getFullName(), t.getNation(), t.getBirthDate(), t.getBirthCity()
+        )));
         display("DRIVERS\n{}", JkOutput.columnsView(lines, "|", 2));
     }
 
@@ -86,7 +96,7 @@ public class ToStringRepo {
                 e.getTeam().getTeamName(),
                 e.getTeam().getNation(),
                 e.getEngine(),
-                e.getCarNum(),
+                e.getCarNo(),
                 e.getDriver().getFullName(),
                 e.getDriver().getNation()
         );
