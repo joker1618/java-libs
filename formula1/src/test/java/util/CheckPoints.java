@@ -6,7 +6,7 @@ import xxx.joker.apps.formula1.model.F1Model;
 import xxx.joker.apps.formula1.model.F1ModelImpl;
 import xxx.joker.apps.formula1.model.entities.F1GranPrix;
 import xxx.joker.apps.formula1.model.entities.F1Race;
-import xxx.joker.apps.formula1.parsers.IWikiParser;
+import xxx.joker.apps.formula1.parsers.WikiParser;
 import xxx.joker.libs.core.format.JkOutput;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
@@ -27,14 +27,17 @@ public class CheckPoints {
     @Test
     public void checkPoints() {
         int year = 2017;
+        checkPoints(year);
+    }
+    public void checkPoints(int year) {
         List<F1GranPrix> gp = model.getGranPrixs(year);
         List<F1Race> races = gp.stream().flatMap(g -> g.getRaces().stream()).collect(Collectors.toList());
 
         Map<String, List<F1Race>> byDriver = JkStreams.toMap(races, r -> r.getEntrant().getDriver().getFullName());
-        printList(year, "DRIVER", byDriver, IWikiParser.getParser(year).getExpectedDriverPoints());
+        printList(year, "DRIVER", byDriver, WikiParser.getParser(year).getExpectedDriverPoints());
 
         Map<String, List<F1Race>> byTeam = JkStreams.toMap(races, r -> r.getEntrant().getTeam().getTeamName());
-        printList(year, "TEAM", byTeam, IWikiParser.getParser(year).getExpectedTeamPoints());
+        printList(year, "TEAM", byTeam, WikiParser.getParser(year).getExpectedTeamPoints());
     }
 
     public void printList(int year, String label, Map<String, List<F1Race>> raceMap, Map<String, Integer> expected) {

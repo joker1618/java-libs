@@ -22,6 +22,7 @@ class RepoHandler {
 
     private Map<Class<?>, HandlerDataSet> handlers;
     private Map<Long, RepoEntity> dataByID;
+    private Map<Class<?>, List<Class<?>>> referenceMap;
     private final AtomicLong sequenceValue;
 
     RepoHandler(List<RepoDTO> dtoList, ReadWriteLock repoLock) {
@@ -29,6 +30,7 @@ class RepoHandler {
 
         this.handlers = new HashMap<>();
         this.dataByID = new HashMap<>();
+        this.referenceMap = new HashMap<>();
         this.sequenceValue = new AtomicLong(0L);
 
         initRepoHandler(dtoList);
@@ -64,7 +66,7 @@ class RepoHandler {
     }
 
     private void initRepoFields(RepoEntity e) {
-        ClazzWrapper rc = ClazzWrapper.wrap(e.getClass());
+        ClazzWrapper rc = ClazzWrapper.get(e);
 
         // Apply field directives
         rc.getEntityFields().forEach(ef -> ef.applyDirectives(e));
@@ -111,7 +113,7 @@ class RepoHandler {
 
     private void setDependencies(RepoEntity e, List<RepoFK> fkList) {
         if(fkList != null && !fkList.isEmpty()) {
-            ClazzWrapper rc = ClazzWrapper.wrap(e.getClass());
+            ClazzWrapper rc = ClazzWrapper.get(e);
             Map<String, List<Long>> fkMap = JkStreams.toMap(fkList, RepoFK::getFieldName, RepoFK::getDepID);
             fkMap.forEach((k,v) -> {
                 List<RepoEntity> deps = JkStreams.map(v, depID -> dataByID.get(depID));
@@ -232,7 +234,7 @@ class RepoHandler {
 
     private Map<String, List<RepoEntity>> retrieveDepChilds(RepoEntity e) {
         Map<String, List<RepoEntity>> toRet = new HashMap<>();
-        ClazzWrapper rc = ClazzWrapper.wrap(e.getClass());
+        ClazzWrapper rc = ClazzWrapper.get(e);
         for(FieldWrapper cf : rc.getEntityFields()) {
             if(cf.isRepoEntityFlatField()) {
                 Object value = cf.getValue(e);

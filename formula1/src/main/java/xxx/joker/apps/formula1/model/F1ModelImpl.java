@@ -74,7 +74,6 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
             list.addAll(gp.getRaces());
             list.add(gp);
         }
-
         list.forEach(super::remove);
     }
 

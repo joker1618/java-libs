@@ -58,7 +58,7 @@ class RepoDAO {
         Map<Path, List<String>> formatData = new HashMap<>();
         for(RepoDTO dto : dtoList) {
             if(!dto.getEntities().isEmpty()) {
-                ClazzWrapper rc = ClazzWrapper.wrap(dto.getEClazz());
+                ClazzWrapper rc = ClazzWrapper.get(dto.getEClazz());
                 List<String> descrList = new ArrayList<>();
                 List<String> dataLines = new ArrayList<>();
                 for (RepoEntity edto : dto.getEntities()) {

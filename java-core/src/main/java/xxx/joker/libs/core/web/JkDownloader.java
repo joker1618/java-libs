@@ -51,18 +51,13 @@ public class JkDownloader {
         }
     }
 
-    public Path downloadResource(String outFileName, String url) {
-        int idx = url.lastIndexOf(".");
-        String fext = url.substring(idx + 1);
-        String finalFname = outFileName;
-        if(!finalFname.endsWith(fext)) {
-            finalFname += "." + fext;
-        }
-        Path outPath = folder.resolve(finalFname);
+    public boolean downloadResource(String outFileName, String url) {
+        Path outPath = folder.resolve(outFileName);
         if(!Files.exists(outPath)) {
             JkWeb.downloadResource(url, outPath);
+            return true;
         }
-        return outPath;
+        return false;
     }
 
 }

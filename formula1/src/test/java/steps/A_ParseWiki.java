@@ -1,14 +1,17 @@
-package runners;
+package steps;
 
 import org.junit.Test;
+import util.CheckPoints;
 import util.ToStringRepo;
-import xxx.joker.apps.formula1.parsers.IWikiParser;
+import xxx.joker.apps.formula1.common.F1Const;
 import xxx.joker.apps.formula1.model.F1Model;
 import xxx.joker.apps.formula1.model.F1ModelImpl;
+import xxx.joker.apps.formula1.parsers.WikiParser;
+import xxx.joker.libs.core.files.JkFiles;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
-public class RunFinal {
+public class A_ParseWiki {
 
     F1Model model = F1ModelImpl.getInstance();
 
@@ -16,18 +19,21 @@ public class RunFinal {
     public void runYear() {
         int year = 2018;
 
+        JkFiles.delete(F1Const.DB_FOLDER);
 //        model.clearDataSets();
 //        model.deleteData(year);
 
-        IWikiParser parser = IWikiParser.getParser(year);
+        WikiParser parser = WikiParser.getParser(year);
         parser.parse();
         model.commit();
 
         ToStringRepo printer = new ToStringRepo();
-//        printer.showEntrants(year);
-//        printer.showGPDescription(year);
-//        printer.showGPTimes(year);
-//        printer.showLinks();
+        printer.showEntrants(year);
+        printer.showGPDescription(year);
+        printer.showGPTimes(year);
+        printer.showLinks();
+
+        new CheckPoints().checkPoints(year);
 
     }
 
@@ -40,7 +46,7 @@ public class RunFinal {
         for(int year = yend; year >= ystart; year--) {
             display("Start parsing year {}", year);
             model.deleteData(year);
-            IWikiParser parser = IWikiParser.getParser(year);
+            WikiParser parser = WikiParser.getParser(year);
             parser.parse();
 
 //

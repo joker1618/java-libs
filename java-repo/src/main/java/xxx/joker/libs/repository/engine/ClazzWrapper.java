@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 class ClazzWrapper {
 
     private static final Map<Class<?>, ClazzWrapper> CACHE = new HashMap<>();
+    private static final Map<Class<?>, Map<Class<?>, List<FieldWrapper>>> REFERENCES = new HashMap<>();
     private static final FieldWrapper CF_ENTITY_ID;
     static {
         Field f = JkReflection.getFieldsByAnnotation(RepoEntity.class, RepoEntityID.class).get(0);
@@ -31,7 +32,7 @@ class ClazzWrapper {
     private ClazzWrapper(Class<?> eClazz) {
         this.eClazz = eClazz;
         this.fieldsByName = new HashMap<>();
-        checkRepoClazz();
+        initClazz();
     }
 
     public static void setEntityID(RepoEntity e, Long eID) {
@@ -40,7 +41,10 @@ class ClazzWrapper {
         }
     }
 
-    public static synchronized ClazzWrapper wrap(Class<?> clazz) {
+    public static ClazzWrapper get(RepoEntity e) {
+        return get(e.getClass());
+    }
+    public static synchronized ClazzWrapper get(Class<?> clazz) {
         ClazzWrapper clazzWrapper = CACHE.get(clazz);
         if(clazzWrapper == null) {
             clazzWrapper = new ClazzWrapper(clazz);
@@ -75,18 +79,25 @@ class ClazzWrapper {
     }
 
     public static Map<Class<?>, List<FieldWrapper>> getReferenceFields(Class<?> depClazz) {
-        List<FieldWrapper> fwList = CACHE.values().stream()
-                .flatMap(cw -> cw.getEntityFields().stream())
-                .filter(fw -> fw.typeOfFlat(depClazz))
-                .collect(Collectors.toList());
-        return JkStreams.toMap(fwList, fw -> fw.getField().getDeclaringClass());
+        synchronized (REFERENCES) {
+            Map<Class<?>, List<FieldWrapper>> res = REFERENCES.get(depClazz);
+            if(res == null) {
+                List<FieldWrapper> fwList = CACHE.values().stream()
+                        .flatMap(cw -> cw.getEntityFields().stream())
+                        .filter(fw -> fw.typeOfFlat(depClazz))
+                        .collect(Collectors.toList());
+                res = JkStreams.toMap(fwList, fw -> fw.getField().getDeclaringClass());
+                REFERENCES.put(depClazz, res);
+            }
+            return res;
+        }
     }
 
     public Class<?> getEClazz() {
         return eClazz;
     }
 
-    private void checkRepoClazz() {
+    private void initClazz() {
         // At least 1 RepoField present
         List<Field> fields = JkReflection.getFieldsByAnnotation(eClazz, RepoField.class);
         if(fields.isEmpty()) {

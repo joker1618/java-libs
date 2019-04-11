@@ -85,7 +85,7 @@ public class RepoManager {
         if(LOG.isDebugEnabled()) {
             classes.forEach(c -> LOG.debug("Found entity: {}", c.getName()));
         }
-        return JkStreams.map(classes, ClazzWrapper::wrap);
+        return JkStreams.map(classes, ClazzWrapper::get);
     }
 
 }

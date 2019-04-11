@@ -425,7 +425,7 @@ public class JkFiles {
 		return fn.replaceAll(Pattern.quote(".") + ext + "$", "");
 	}
 	public static String getFileName(String fileName) {
-		return StringUtils.isBlank(fileName) ? null : getFileName(Paths.get(fileName));
+		return getFileName(Paths.get(fileName));
 	}
 
 	public static String getExtension(Path path) {

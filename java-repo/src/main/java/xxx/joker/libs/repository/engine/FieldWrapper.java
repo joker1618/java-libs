@@ -101,6 +101,9 @@ public class FieldWrapper {
     public Class<?> getElemType() {
         return elemType;
     }
+    public Class<?> getFlatFieldType() {
+        return isCollection() ? getElemType() : getFieldType();
+    }
 
     public Object getValue(RepoEntity instance) {
         return JkReflection.getFieldValue(instance, field);

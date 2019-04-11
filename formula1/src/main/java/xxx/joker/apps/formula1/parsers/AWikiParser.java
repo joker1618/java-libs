@@ -16,13 +16,11 @@ import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.web.JkDownloader;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-abstract class AWikiParser implements IWikiParser {
+abstract class AWikiParser implements WikiParser {
 
     public static final Logger LOG = LoggerFactory.getLogger(AWikiParser.class);
 
@@ -37,6 +35,16 @@ abstract class AWikiParser implements IWikiParser {
         this.htmlDownloader = new JkDownloader(HTML_FOLDER);
         this.model = F1ModelImpl.getInstance();
     }
+
+    protected abstract void parseEntrants(String html);
+    protected abstract List<String> getGpUrls(String html);
+    protected abstract Map<String, Integer> getExpectedDriverPoints(String html);
+    protected abstract Map<String, Integer> getExpectedTeamPoints(String html);
+
+    protected abstract void parseGpDetails(String html, F1GranPrix gp);
+    protected abstract void parseQualify(String html, F1GranPrix gp);
+    protected abstract void parseRace(String html, F1GranPrix gp);
+
 
     @Override
     public void parse() {
@@ -81,7 +89,7 @@ abstract class AWikiParser implements IWikiParser {
             X_Tag tableEntrants = X_Scanners.parseHtmlTag(html, "table", "<table class=\"infobox");
             X_Tag tbody = tableEntrants.getChild("tbody");
 
-            JkDownloader dw = new JkDownloader(DRIVER_PIC_FOLDER);
+            JkDownloader dw = new JkDownloader(IMG_DRIVER_PIC_FOLDER);
 
             X_Tag img = null;
             List<X_Tag> trList = tbody.getChildren("tr");
@@ -92,10 +100,7 @@ abstract class AWikiParser implements IWikiParser {
             }
             String picUrl = createResourceUrl(img);
             String imgFilename = driver.getPrimaryKey();
-            Path picPath = dw.downloadResource(imgFilename, picUrl);
-            if(!Files.exists(picPath)) {
-                LOG.warn("Pic not found for {}", driver);
-            }
+            dw.downloadResource(imgFilename, picUrl);
 
             X_Tag rowBorn = null;
             while(rowBorn == null && rowNum < trList.size()) {
@@ -118,7 +123,6 @@ abstract class AWikiParser implements IWikiParser {
         }
     }
 
-
     @Override
     public Map<String, Integer> getExpectedDriverPoints() {
         String mainPageUrl = createUrl(strf("/wiki/{}_Formula_One_World_Championship", year));
@@ -131,15 +135,6 @@ abstract class AWikiParser implements IWikiParser {
         String mainPageUrl = createUrl(strf("/wiki/{}_Formula_One_World_Championship", year));
         return getExpectedTeamPoints(htmlDownloader.getHtml(mainPageUrl));
     }
-
-    protected abstract void parseEntrants(String html);
-    protected abstract List<String> getGpUrls(String html);
-    protected abstract Map<String, Integer> getExpectedDriverPoints(String html);
-    protected abstract Map<String, Integer> getExpectedTeamPoints(String html);
-
-    protected abstract void parseGpDetails(String html, F1GranPrix gp);
-    protected abstract void parseQualify(String html, F1GranPrix gp);
-    protected abstract void parseRace(String html, F1GranPrix gp);
 
     protected String createUrl(String wikiSubPath) {
         return strf("{}/{}", PREFIX_URL, wikiSubPath.replaceFirst("^/", ""));
@@ -163,7 +158,7 @@ abstract class AWikiParser implements IWikiParser {
     }
 
     protected void persistGpTrackMap(F1GranPrix gp, X_Tag img) {
-        JkDownloader dw = new JkDownloader(TRACK_MAP_FOLDER);
+        JkDownloader dw = new JkDownloader(IMG_TRACK_MAP_FOLDER);
         String url = createResourceUrl(img);
         dw.downloadResource(gp.getPrimaryKey(), url);
     }
@@ -178,7 +173,7 @@ abstract class AWikiParser implements IWikiParser {
         return team;
     }
     protected F1Driver retrieveDriver(String driverName, boolean createIfMissing) {
-        F1Driver driver = model.getDriver(driverName);
+        F1Driver driver = model.getDriver(driverName.replace("(racing driver)", "").trim());
         if(driver == null && createIfMissing) {
             driver = new F1Driver(driverName);
             model.getDrivers().add(driver);

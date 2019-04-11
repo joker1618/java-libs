@@ -2,12 +2,14 @@ package xxx.joker.apps.formula1.fxlibs;
 
 import javafx.event.Event;
 import javafx.scene.Node;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -94,6 +96,22 @@ public class X_FxUtil {
 
 	public static <V> void setTableCellValueBinding(TableColumn<?, V> column, String bindVarName) {
 		column.setCellValueFactory(new PropertyValueFactory<>(bindVarName));
+	}
+
+	public static <T, V> Callback<TableColumn<T, V>, TableCell<T, V>> getCellFactory(Function<V, String> toStringFunc) {
+		return column -> {
+			return new TableCell<T, V> () {
+				@Override
+				protected void updateItem (V item, boolean empty) {
+					super.updateItem (item, empty);
+					if (item == null || empty) {
+						setText(null);
+					} else {
+						setText(toStringFunc.apply(item));
+					}
+				}
+			};
+		};
 	}
 
 
