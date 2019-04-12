@@ -2,7 +2,6 @@ package runners;
 
 import org.junit.Test;
 import xxx.joker.apps.formula1.model.F1ModelImpl;
-import xxx.joker.apps.formula1.model.entities.F1Link;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.web.JkDownloader;
 
@@ -31,17 +30,4 @@ public class StaticDownload {
         }
     }
 
-    @Test
-    public void getAllFlagIcons(){
-        Set<F1Link> links = F1ModelImpl.getInstance().getLinks();
-        List<F1Link> flagLinks = JkStreams.filter(links, l -> l.getKey().startsWith("nation.icon"));
-
-        JkDownloader downloader = new JkDownloader(IMG_FLAGS_ICON_FOLDER);
-        display("Downloading flag icons:");
-        flagLinks.forEach(l -> {
-            String flagName = l.getKey().replaceAll(".*\\.", "") + ".icon";
-            downloader.downloadResource(flagName, l.getUrl());
-            display("  {}", flagName);
-        });
-    }
 }

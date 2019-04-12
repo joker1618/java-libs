@@ -23,14 +23,6 @@ public class ToStringRepo {
     static int yearDef = 2017;
 
 
-    @Test
-    public void showLinks() {
-        List<String> lines = new ArrayList<>();
-        lines.add("KEY|URL");
-        lines.addAll(JkStreams.map(model.getLinks(), t -> strf("{}|{}", t.getKey(), t.getUrl())));
-        display("LINKS\n{}", JkOutput.columnsView(lines, "|", 2));
-    }
-
 
     @Test
     public void showTeams() {
@@ -110,8 +102,8 @@ public class ToStringRepo {
                 gp.getDate(),
                 gp.getLapLength(),
                 gp.getNumLapsRace(),
-                gp.getCity(),
-                gp.getNation(),
+                gp.getCircuit().getCity(),
+                gp.getCircuit().getNation(),
                 gp.getQualifies().size(),
                 gp.getRaces().size(),
                 gp.getFastLap().toLine()

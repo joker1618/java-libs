@@ -7,6 +7,8 @@ import xxx.joker.apps.formula1.corelibs.X_Scanners;
 import xxx.joker.apps.formula1.corelibs.X_Tag;
 import xxx.joker.apps.formula1.model.F1Model;
 import xxx.joker.apps.formula1.model.F1ModelImpl;
+import xxx.joker.apps.formula1.model.F1ResourceManager;
+import xxx.joker.apps.formula1.model.F1Resources;
 import xxx.joker.apps.formula1.model.entities.*;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.lambdas.JkStreams;
@@ -14,6 +16,7 @@ import xxx.joker.libs.core.web.JkDownloader;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,11 +33,15 @@ abstract class AWikiParser2 implements WikiParser {
     private JkDownloader dwHtml;
     protected int year;
     protected F1Model model;
+    protected F1Resources resources;
+
+    private Map<F1Driver, String> driverUrls = new HashMap<>();
 
     protected AWikiParser2(int year) {
         this.year = year;
         this.dwHtml = new JkDownloader(HTML_FOLDER);
         this.model = F1ModelImpl.getInstance();
+        this.resources = F1ResourceManager.getInstance();
     }
 
 
@@ -73,7 +80,7 @@ abstract class AWikiParser2 implements WikiParser {
             F1GranPrix gp = new F1GranPrix(year, i + 1);
             if(model.getGranPrixs().add(gp)) {
                 parseGpDetails(html, gp);
-                display(gp.getNation());
+                display(""+gp.getCircuit());
                 parseQualify(html, gp);
                 parseRace(html, gp);
 //                if(i == 0) break;
@@ -94,24 +101,27 @@ abstract class AWikiParser2 implements WikiParser {
     }
 
     protected void addDriverLink(F1Driver driver, X_Tag aTag) {
-        String key = strf("driver.{}", driver.getEntityID());
         String url = createWikiUrl(aTag);
-        model.add(new F1Link(key, url));
+        driverUrls.putIfAbsent(driver, url);
     }
 
-    protected void downloadFlagIcon(X_Tag img) {
+    protected boolean downloadFlagIcon(X_Tag img) {
         String url = createResourceUrl(img);
-        String fn = createResourceFilename(img.getAttribute("alt"), url);
-        if(new JkDownloader(IMG_FLAGS_ICON_FOLDER).downloadResource(fn, url)) {
-            LOG.debug("Downloaded flag icon for {}", fn);
-        }
+        String nation = img.getAttribute("alt");
+        return resources.saveFlagIcon(nation, url);
     }
-    protected void downloadTrackMap(F1GranPrix gp, X_Tag img) {
+    protected boolean downloadTrackMap(F1GranPrix gp, X_Tag img) {
         String url = createResourceUrl(img);
-        String fn = createResourceFilename(gp.getPrimaryKey(), url);
-        if(new JkDownloader(IMG_TRACK_MAP_FOLDER).downloadResource(fn, url)) {
-            LOG.debug("Downloaded flag icon for {}", fn);
+        return resources.saveTrackMap(gp, url);
+    }
+
+    protected F1Circuit retrieveCircuit(String city, String nation, boolean createIfMissing) {
+        F1Circuit circuit = model.getCircuit(city, nation);
+        if(circuit == null && createIfMissing) {
+            circuit = new F1Circuit(city, nation);
+            model.add(circuit);
         }
+        return circuit;
     }
 
     protected F1Team retrieveTeam(String teamName, boolean createIfMissing) {
@@ -193,14 +203,11 @@ abstract class AWikiParser2 implements WikiParser {
         if(driver.getBirthDate() == null) {
 //            display(driver.getCity());
 
-            F1Link dlink = JkStreams.findUnique(model.getLinks(), l -> l.getKey().equals("driver." + driver.getEntityID()));
-
-            String html = dwHtml.getHtml(dlink.getUrl());
+            String pageUrl = driverUrls.get(driver);
+            String html = dwHtml.getHtml(pageUrl);
 
             X_Tag tableEntrants = X_Scanners.parseHtmlTag(html, "table", "<table class=\"infobox");
             X_Tag tbody = tableEntrants.getChild("tbody");
-
-            JkDownloader dw = new JkDownloader(IMG_DRIVER_PIC_FOLDER);
 
             X_Tag img = null;
             List<X_Tag> trList = tbody.getChildren("tr");
@@ -210,8 +217,7 @@ abstract class AWikiParser2 implements WikiParser {
                 rowNum++;
             }
             String picUrl = createResourceUrl(img);
-            String imgFilename = createResourceFilename(driver.getPrimaryKey(), picUrl);
-            dw.downloadResource(imgFilename, picUrl);
+            resources.saveDriverPicture(driver, picUrl);
 
             X_Tag rowBorn = null;
             while(rowBorn == null && rowNum < trList.size()) {

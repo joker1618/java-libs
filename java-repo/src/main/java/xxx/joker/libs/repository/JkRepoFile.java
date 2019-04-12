@@ -55,6 +55,12 @@ public abstract class JkRepoFile implements JkRepo {
     }
 
     @Override
+    public <T extends RepoEntity> T retrieveByPK(T entity) {
+        Set<T> dataSet = (Set<T>) getDataSet(entity.getClass());
+        return JkStreams.findUnique(dataSet, entity::equals);
+    }
+
+    @Override
     public <T extends RepoEntity> boolean add(T toAdd) {
         Set<T> dataSet = (Set<T>) getDataSet(toAdd.getClass());
         return dataSet.add(toAdd);

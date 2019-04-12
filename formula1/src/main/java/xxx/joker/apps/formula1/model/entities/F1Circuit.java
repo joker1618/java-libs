@@ -5,6 +5,8 @@ import xxx.joker.libs.repository.design.RepoField;
 
 import java.time.LocalDate;
 
+import static xxx.joker.libs.core.utils.JkStrings.strf;
+
 public class F1Circuit extends RepoEntity {
 
     @RepoField
@@ -15,13 +17,14 @@ public class F1Circuit extends RepoEntity {
     public F1Circuit() {
     }
 
-    public F1Circuit(String city) {
+    public F1Circuit(String city, String nation) {
         this.city = city;
+        this.nation = nation;
     }
 
     @Override
     public String getPrimaryKey() {
-        return city;
+        return strf("{}-{}", city, nation);
     }
 
     public String getCity() {

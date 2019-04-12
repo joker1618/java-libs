@@ -226,4 +226,17 @@ public class JkStreams {
 		List<T> sorted = sorted(coll);
 		return sorted.isEmpty() ? null : sorted.get(sorted.size() - 1);
 	}
+
+	public static int sumInt(Collection<Integer> intColl) {
+		return intColl.stream().mapToInt(e -> e).sum();
+	}
+	public static <T> int sumInt(Collection<T> coll, Function<T, Integer> mapper) {
+		return coll.stream().mapToInt(mapper::apply).sum();
+	}
+	public static double sumDouble(Collection<Double> doubleColl) {
+		return doubleColl.stream().mapToDouble(e -> e).sum();
+	}
+	public static <T> double sumDouble(Collection<T> coll, Function<T, Double> mapper) {
+		return coll.stream().mapToDouble(mapper::apply).sum();
+	}
 }

@@ -183,8 +183,10 @@ public class X_Year2018 extends AWikiParser2 {
                 if(tr.getChild(0).getText().equals("Location")) {
                     String allText = tr.getChild(1).getHtmlTag().replaceAll("<br[^<]*?>", ",").replaceAll(",[ ]*?,", ",").replaceAll("<[^<]*?>", "");
                     List<String> list = JkStrings.splitList(allText, ",", true);
-                    gp.setNation(list.get(list.size() - 1));
-                    gp.setCity(JkStreams.join(list.subList(1, list.size() - 1), ", "));
+                    String nation = list.get(list.size() - 1);
+                    String city = JkStreams.join(list.subList(1, list.size() - 1), ", ");
+                    F1Circuit f1Circuit = super.retrieveCircuit(city, nation, true);
+                    gp.setCircuit(f1Circuit);
                 } else if(tr.getChild(0).getText().equals("Course length")) {
                     String lenStr = tr.getChild(1).getText().replaceAll("[ ]*km.*", "").trim();
                     gp.setLapLength(Double.parseDouble(lenStr));

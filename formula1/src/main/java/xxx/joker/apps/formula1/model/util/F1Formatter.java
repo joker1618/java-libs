@@ -76,8 +76,7 @@ public class F1Formatter {
                 gp.getDate(),
                 gp.getLapLength(),
                 gp.getNumLapsRace(),
-                gp.getCity(),
-                gp.getNation(),
+                gp.getCircuit(),
                 gp.getQualifies().size(),
                 gp.getRaces().size(),
                 gp.getFastLap().toLine()

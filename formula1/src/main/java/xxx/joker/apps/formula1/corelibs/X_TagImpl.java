@@ -12,7 +12,7 @@ class X_TagImpl implements X_Tag {
     // The root tag has null parent, but has the html set
     // All other tags:
     // - have a tag parent, but not html string
-    // - to retrieve the html, they ask to parent
+    // - to retrieveByPK the html, they ask to parent
     private X_TagImpl parent;
     private String html;
 

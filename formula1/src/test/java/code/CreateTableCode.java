@@ -24,7 +24,7 @@ public class CreateTableCode {
                 "driverBirthDate"
         );
         list.forEach(s -> {
-            display("TableColumn<F1EntrantWrapper, String> col{} = X_FxUtil.createTableColumnString(\"{}\", \"{}\");",
+            display("TableColumn<F1SeasonResult, String> col{} = X_FxUtil.createTableColumnString(\"{}\", \"{}\");",
                     StringUtils.capitalize(s), s.toUpperCase(), s
             );
         });

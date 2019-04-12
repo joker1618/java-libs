@@ -31,7 +31,6 @@ public class A_ParseWiki {
         printer.showEntrants(year);
         printer.showGPDescription(year);
         printer.showGPTimes(year);
-        printer.showLinks();
 
         new CheckPoints().checkPoints(year);
 

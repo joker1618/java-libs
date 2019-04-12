@@ -17,9 +17,7 @@ public class F1GranPrix extends RepoEntity {
     @RepoField
     private LocalDate date;
     @RepoField
-    private String city;
-    @RepoField
-    private String nation;
+    private F1Circuit circuit;
     @RepoField
     private double lapLength;
     @RepoField
@@ -68,20 +66,12 @@ public class F1GranPrix extends RepoEntity {
         this.date = date;
     }
 
-    public String getCity() {
-        return city;
+    public F1Circuit getCircuit() {
+        return circuit;
     }
 
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getNation() {
-        return nation;
-    }
-
-    public void setNation(String nation) {
-        this.nation = nation;
+    public void setCircuit(F1Circuit circuit) {
+        this.circuit = circuit;
     }
 
     public double getLapLength() {

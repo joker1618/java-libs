@@ -1,18 +1,25 @@
 package xxx.joker.apps.formula1.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xxx.joker.apps.formula1.common.F1Const;
+import xxx.joker.apps.formula1.model.beans.F1Season;
+import xxx.joker.apps.formula1.model.beans.F1SeasonResult;
 import xxx.joker.apps.formula1.model.entities.*;
 import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.core.web.JkDownloader;
 import xxx.joker.libs.repository.JkRepoFile;
 import xxx.joker.libs.repository.design.RepoEntity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.nio.file.Path;
+import java.util.*;
 
 public class F1ModelImpl extends JkRepoFile implements F1Model {
 
+    private static final Logger LOG = LoggerFactory.getLogger(F1ModelImpl.class);
     private static F1Model instance;
+
+    private Map<Integer, F1Season> seasonMap = new HashMap<>();
 
     private F1ModelImpl() {
         super(F1Const.DB_FOLDER, F1Const.DB_NAME, "xxx.joker.apps.formula1.model.entities");
@@ -49,10 +56,9 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
     public Set<F1Entrant> getEntrants() {
         return getDataSet(F1Entrant.class);
     }
-
     @Override
-    public Set<F1Link> getLinks() {
-        return getDataSet(F1Link.class);
+    public List<F1Entrant> getEntrants(int year) {
+        return JkStreams.filter(getEntrants(), e -> e.getYear() == year);
     }
 
     @Override
@@ -63,6 +69,16 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
     @Override
     public List<F1GranPrix> getGranPrixs(int year) {
         return JkStreams.filter(getGranPrixs(), gp -> gp.getYear() == year);
+    }
+
+    @Override
+    public Set<F1Circuit> getCircuits() {
+        return getDataSet(F1Circuit.class);
+    }
+
+    @Override
+    public F1Circuit getCircuit(String city, String nation) {
+        return JkStreams.findUnique(getCircuits(), c -> city.equals(c.getCity()) && nation.equals(c.getNation()));
     }
 
     @Override
@@ -78,8 +94,35 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
     }
 
     @Override
-    public List<F1Entrant> getEntrants(int year) {
-        return JkStreams.filter(getEntrants(), e -> e.getYear() == year);
+    public F1Season getSeason(int year) {
+        F1Season season = seasonMap.get(year);
+
+        if(season == null) {
+            List<F1GranPrix> gpList = getGranPrixs(year);
+            List<F1Entrant> entrants = getEntrants(year);
+
+            List<F1SeasonResult> results = new ArrayList<>();
+            entrants.stream().map(F1Entrant::getDriver).distinct().forEach(d -> {
+                F1SeasonResult res = new F1SeasonResult();
+                res.setDriver(d);
+                gpList.forEach(gp -> {
+                    F1Race race = JkStreams.findUnique(gp.getRaces(), r -> r.getEntrant().getDriver().equals(d));
+                    res.getPoints().put(gp, race);
+                });
+                res.setTotPoints(JkStreams.sumInt(res.getPoints().values(), F1Race::getPoints));
+                results.add(res);
+            });
+            Collections.sort(results);
+
+            season = new F1Season(year);
+            season.setEntrants(entrants);
+            season.setGpList(gpList);
+            season.setResults(results);
+            seasonMap.put(year, season);
+        }
+
+        return season;
     }
+
 
 }
