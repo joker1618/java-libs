@@ -1,6 +1,7 @@
 package xxx.joker.libs.core.lambdas;
 
 import xxx.joker.libs.core.exception.JkRuntimeException;
+import xxx.joker.libs.core.utils.JkConvert;
 
 import java.util.*;
 import java.util.function.Function;
@@ -223,8 +224,8 @@ public class JkStreams {
 	}
 
 	public static <T> T getLastElem(Collection<T> coll) {
-		List<T> sorted = sorted(coll);
-		return sorted.isEmpty() ? null : sorted.get(sorted.size() - 1);
+		List<T> list = JkConvert.toList(coll);
+		return list.isEmpty() ? null : list.get(list.size() - 1);
 	}
 
 	public static int sumInt(Collection<Integer> intColl) {
