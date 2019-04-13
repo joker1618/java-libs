@@ -11,5 +11,7 @@ public interface F1Resources {
     boolean saveDriverPicture(F1Driver driver, String url);
 
     JkImage getFlagIcon(String nation);
+    JkImage getTrackMap(F1GranPrix gp);
+    JkImage getDriverPicture(F1Driver driver);
 
 }

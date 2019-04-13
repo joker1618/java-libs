@@ -12,8 +12,7 @@ public interface WikiParser {
     Map<String, Integer> getExpectedTeamPoints();
 
     static WikiParser getParser(int year) {
-        return JkReflection.createInstanceSafe("xxx.joker.apps.formula1.parsers.X_Year"+year);
-//        return JkReflection.createInstanceSafe("xxx.joker.apps.formula1.parsers.Year"+year);
+        return JkReflection.createInstanceSafe("xxx.joker.apps.formula1.parsers.Year"+year);
     }
 
 }

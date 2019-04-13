@@ -67,7 +67,7 @@ public class JkOutput {
 
 
 	// Number formatter
-	private static NumberFormat getNumberFmtEN(int numFractionDigits) {
+	public static NumberFormat getNumberFmtEN(int numFractionDigits) {
 		NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
 		nf.setMinimumFractionDigits(numFractionDigits);
 		nf.setMaximumFractionDigits(numFractionDigits);

@@ -18,12 +18,10 @@ import javafx.util.Callback;
 import org.scenicview.ScenicView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.apps.formula1.fxlibs.JkImage;
 import xxx.joker.apps.formula1.gui.yearView.YearView;
 import xxx.joker.apps.formula1.model.F1Model;
 import xxx.joker.apps.formula1.model.F1ModelImpl;
 import xxx.joker.apps.formula1.model.entities.F1Entrant;
-import xxx.joker.apps.formula1.model.managers.ResourceManager;
 import xxx.joker.libs.core.files.JkFiles;
 
 import java.nio.file.Path;
@@ -58,7 +56,8 @@ public class Formula1GUI extends Application {
 
         // Show stage
         primaryStage.setScene(scene);
-        primaryStage.sizeToScene();
+//        primaryStage.sizeToScene();
+        primaryStage.setMaximized(true);
         primaryStage.show();
 
         if(scenicView) {
@@ -78,7 +77,7 @@ public class Formula1GUI extends Application {
 //        TableColumn<F1Entrant, F1Driver> colDriverName = X_FxUtil.createTableColumn("DRIVER", "driver", F1Driver::getCity);
 //        TableColumn<F1Entrant, String> colDriverNat = X_FxUtil.createTableColumnString("NATION", "DN");
 ////        TableColumn<F1Entrant, F1Driver> colDriverNat = X_FxUtil.createTableColumn("NATION", "driver", F1Driver::getCircuit);
-//        TableColumn<F1Entrant, F1Driver> colDriverCity = X_FxUtil.createTableColumn("BIRTH CITY", "driver", F1Driver::getBirthCity);
+//        TableColumn<F1Entrant, F1Driver> colDriverCity = X_FxUtil.createTableColumn("BIRTH CITY", "driver", F1Driver::getCity);
 //        TableColumn<F1Entrant, F1Driver> colDriverBirthDate = X_FxUtil.createTableColumn("BIRTH DATE", "driver", d -> d.getBirthDate().toString());
 ////        table.getColumns().addAll(colEngine, colCarNo);
 //        table.getColumns().addAll(colTeamName, colTeamNat, colEngine, colCarNo, colDriverName, colDriverNat, colDriverCity, colDriverBirthDate);
@@ -102,8 +101,6 @@ public class Formula1GUI extends Application {
 //        F1Model.getInstance().commit();
         LOG.debug("STOP APP");
 //        table.getItems().forEach(e -> display(e.toString()));
-        JkImage img = ResourceManager.getFlagIconImage("Australia");
-        display(img.getWidth()+"x"+img.getHeight());
     }
 
     public static void main(String[] args) {
@@ -122,7 +119,7 @@ public class Formula1GUI extends Application {
         table.getColumns().add(createColumn("engine"));
         table.getColumns().add(createColumn("carNo"));
         table.getColumns().add(createColumn("DRIVER NAME", e -> e.getDriver().getFullName()));
-        table.getColumns().add(createColumn("DRIVER INFO", e -> strf("{}, {}, {}", e.getDriver().getBirthDate(), e.getDriver().getBirthCity(), e.getDriver().getNation())));
+        table.getColumns().add(createColumn("DRIVER INFO", e -> strf("{}, {}, {}", e.getDriver().getBirthDate(), e.getDriver().getCity(), e.getDriver().getNation())));
 
     }
 

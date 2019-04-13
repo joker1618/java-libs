@@ -19,10 +19,10 @@ import java.util.Map;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
-public class X_Year2018 extends AWikiParser2 {
+public class Year2018 extends AWikiParser {
 
 
-    public X_Year2018() {
+    public Year2018() {
         super(2018);
     }
 

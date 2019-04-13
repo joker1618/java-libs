@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 
 class RepoHandler {
@@ -306,6 +307,7 @@ class RepoHandler {
 
             try {
                 actualLock.lock();
+
                 if ("add".equals(methodName)) {
                     RepoEntity e = (RepoEntity) args[0];
                     return addEntity(e);

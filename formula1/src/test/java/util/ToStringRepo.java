@@ -37,7 +37,7 @@ public class ToStringRepo {
         List<String> lines = new ArrayList<>();
         lines.add("ID|DRIVER NAME|NATION|BDATE|CITY");
         lines.addAll(JkStreams.map(model.getDrivers(), t -> strf("{}|{}|{}|{}|{}",
-                t.getEntityID(), t.getFullName(), t.getNation(), t.getBirthDate(), t.getBirthCity()
+                t.getEntityID(), t.getFullName(), t.getNation(), t.getBirthDate(), t.getCity()
         )));
         display("DRIVERS\n{}", JkOutput.columnsView(lines, "|", 2));
     }

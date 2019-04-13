@@ -44,11 +44,11 @@ public class YearView extends BorderPane {
 
         this.entrantsPane = new EntrantsPane(season);
         this.resultPane = new ResultsPane(season);
-        this.granPrixPane = new GranPrixPane(season.numberOfQualifyRounds());
+        this.granPrixPane = new GranPrixPane(season);
 
         setLeft(createLeft());
-//        setCenter(entrantsPane);
-        setCenter(resultPane);
+        setCenter(entrantsPane);
+//        setCenter(resultPane);
 
     }
 
@@ -85,7 +85,7 @@ public class YearView extends BorderPane {
 //        t.getColumns().add(X_FxTable.createColumn("engine"));
 //        t.getColumns().add(X_FxTable.createColumn("carNo"));
 //        t.getColumns().add(X_FxTable.createColumn("DRIVER NAME", e -> e.getDriver().getFullName()));
-//        t.getColumns().add(X_FxTable.createColumn("DRIVER INFO", e -> strf("{}, {}, {}", e.getDriver().getBirthDate(), e.getDriver().getBirthCity(), e.getDriver().getNation())));
+//        t.getColumns().add(X_FxTable.createColumn("DRIVER INFO", e -> strf("{}, {}, {}", e.getDriver().getBirthDate(), e.getDriver().getCity(), e.getDriver().getNation())));
 //        return t;
 //    }
 //

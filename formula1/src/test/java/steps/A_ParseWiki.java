@@ -1,5 +1,7 @@
 package steps;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import util.CheckPoints;
 import util.ToStringRepo;
@@ -13,13 +15,22 @@ import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class A_ParseWiki {
 
-    F1Model model = F1ModelImpl.getInstance();
+    F1Model model;
+
+    @BeforeClass
+    public static void beforeClass() {
+//        JkFiles.delete(F1Const.DB_FOLDER);
+    }
+
+   @Before
+    public void before() {
+        model = F1ModelImpl.getInstance();
+    }
 
     @Test
     public void runYear() {
         int year = 2018;
 
-        JkFiles.delete(F1Const.DB_FOLDER);
 //        model.clearDataSets();
 //        model.deleteData(year);
 

@@ -1,5 +1,6 @@
 package xxx.joker.apps.formula1.model.entities;
 
+import xxx.joker.apps.formula1.fxlibs.JkImage;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoField;
@@ -23,9 +24,13 @@ public class F1Resource extends RepoEntity {
 
     public F1Resource() {
     }
-
     public F1Resource(Path path) {
         this.path = path;
+    }
+    public F1Resource(JkImage image) {
+        this.path = image.getPath();
+        this.width = image.getWidth();
+        this.height = image.getHeight();
     }
 
     @Override

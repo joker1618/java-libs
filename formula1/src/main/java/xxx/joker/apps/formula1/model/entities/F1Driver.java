@@ -12,7 +12,7 @@ public class F1Driver extends RepoEntity {
     @RepoField
     private String nation;
     @RepoField
-    private String birthCity;
+    private String city;
     @RepoField
     private LocalDate birthDate;
 
@@ -44,12 +44,12 @@ public class F1Driver extends RepoEntity {
         this.nation = nation;
     }
 
-    public String getBirthCity() {
-        return birthCity;
+    public String getCity() {
+        return city;
     }
 
-    public void setBirthCity(String birthCity) {
-        this.birthCity = birthCity;
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public LocalDate getBirthDate() {

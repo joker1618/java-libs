@@ -24,9 +24,9 @@ import static xxx.joker.apps.formula1.common.F1Const.*;
 import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
-abstract class AWikiParser2 implements WikiParser {
+abstract class AWikiParser implements WikiParser {
 
-    public static final Logger LOG = LoggerFactory.getLogger(AWikiParser2.class);
+    public static final Logger LOG = LoggerFactory.getLogger(AWikiParser.class);
 
     public static final String PREFIX_URL = "https://en.wikipedia.org";
 
@@ -37,7 +37,7 @@ abstract class AWikiParser2 implements WikiParser {
 
     private Map<F1Driver, String> driverUrls = new HashMap<>();
 
-    protected AWikiParser2(int year) {
+    protected AWikiParser(int year) {
         this.year = year;
         this.dwHtml = new JkDownloader(HTML_FOLDER);
         this.model = F1ModelImpl.getInstance();
@@ -62,7 +62,9 @@ abstract class AWikiParser2 implements WikiParser {
     public void parse() {
         parseEntrants(getMainPageHtml());
 
-        model.getDrivers().forEach(this::parseDriverPage);
+        for (F1Driver driver : model.getDrivers()) {
+            parseDriverPage(driver);
+        }
 
 //        Map<String, Integer> expDriverMap = getExpectedDriverPoints(dwHtml.getHtml(mainPageUrl));
 //        List<Map.Entry<String, Integer>> entriesDriverMap = JkStreams.sorted(expDriverMap.entrySet(), Comparator.comparing(Map.Entry::getValue));
@@ -80,7 +82,7 @@ abstract class AWikiParser2 implements WikiParser {
             F1GranPrix gp = new F1GranPrix(year, i + 1);
             if(model.getGranPrixs().add(gp)) {
                 parseGpDetails(html, gp);
-                display(""+gp.getCircuit());
+                display(gp.getCircuit().getNation());
                 parseQualify(html, gp);
                 parseRace(html, gp);
 //                if(i == 0) break;
@@ -170,18 +172,6 @@ abstract class AWikiParser2 implements WikiParser {
     private String createResourceUrl(X_Tag img) {
         return strf("https:{}", img.getAttribute("srcset").replaceAll(" [^ ]+$", "").replaceAll(".*,", "").trim());
     }
-    private String createResourceFilename(String fn, String url) {
-        String finalFname = fn;
-        int dotIdx = url.lastIndexOf(".");
-        int slashIdx = url.lastIndexOf("/");
-        if(dotIdx != -1 && (slashIdx == -1 || dotIdx > slashIdx)) {
-            String fext = url.substring(dotIdx);
-            if (!finalFname.endsWith(fext)) {
-                finalFname += fext;
-            }
-        }
-        return finalFname;
-    }
 
     private String getMainPageHtml() {
         String mainPageUrl = createWikiUrl(strf("/wiki/{}_Formula_One_World_Championship", year));
@@ -235,8 +225,8 @@ abstract class AWikiParser2 implements WikiParser {
 
             String[] split = rowBorn.getHtmlTag().split("<br[ ]?/>");
             String strCity = split[split.length - 1].replaceAll("<[^<]*?>", "").replaceAll(",[^,]*$", "").trim();
-            driver.setBirthCity(strCity);
-            checkField(driver.getBirthCity(), "No birth city for {}", driver);
+            driver.setCity(strCity);
+            checkField(driver.getCity(), "No birth city for {}", driver);
         }
     }
 

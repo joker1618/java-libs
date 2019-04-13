@@ -2,7 +2,6 @@ package xxx.joker.apps.formula1.model.managers;
 
 import javafx.scene.image.Image;
 import xxx.joker.apps.formula1.common.F1Const;
-import xxx.joker.apps.formula1.fxlibs.JkImage;
 import xxx.joker.apps.formula1.model.entities.F1Driver;
 import xxx.joker.apps.formula1.model.entities.F1GranPrix;
 import xxx.joker.libs.core.files.JkFiles;
@@ -17,13 +16,13 @@ import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class ResourceManager {
 
-    private static final Map<F1GranPrix, JkImage> trackMaps = new HashMap<>();
-    private static final Map<F1Driver, JkImage> driverImageMap = new HashMap<>();
-    private static final Map<String, JkImage> flagIconMap = new HashMap<>();
+    private static final Map<F1GranPrix, Image> trackMaps = new HashMap<>();
+    private static final Map<F1Driver, Image> driverImageMap = new HashMap<>();
+    private static final Map<String, Image> flagIconMap = new HashMap<>();
 
-    public static JkImage getDriverImage(F1Driver driver) {
+    public static Image getDriverImage(F1Driver driver) {
         synchronized (driverImageMap) {
-            JkImage img = driverImageMap.get(driver);
+            Image img = driverImageMap.get(driver);
             if(img == null) {
                 img = getImage(F1Const.IMG_DRIVER_PIC_FOLDER, driver.getPrimaryKey());
                 if(img != null) {
@@ -34,9 +33,9 @@ public class ResourceManager {
         }
     }
 
-    public static JkImage getTrackMapImage(F1GranPrix gp) {
+    public static Image getTrackMapImage(F1GranPrix gp) {
         synchronized (trackMaps) {
-            JkImage img = trackMaps.get(gp);
+            Image img = trackMaps.get(gp);
             if(img == null) {
                 img = getImage(F1Const.IMG_TRACK_MAP_FOLDER, gp.getPrimaryKey());
                 if(img != null) {
@@ -47,9 +46,9 @@ public class ResourceManager {
         }
     }
 
-    public static JkImage getFlagIconImage(String nation) {
+    public static Image getFlagIconImage(String nation) {
         synchronized (flagIconMap) {
-            JkImage img = flagIconMap.get(nation);
+            Image img = flagIconMap.get(nation);
             if(img == null) {
                 img = getImage(F1Const.IMG_FLAGS_ICON_FOLDER, nation);
                 if(img != null) {
@@ -60,11 +59,12 @@ public class ResourceManager {
         }
     }
 
-    private static JkImage getImage(Path folder, String filename) {
-        JkImage img = null;
+    private static Image getImage(Path folder, String filename) {
+        Image img = null;
         List<Path> paths = JkFiles.findFiles(folder, false, Files::isRegularFile, p -> JkFiles.getFileName(p).equals(filename));
         if(!paths.isEmpty()) {
-            img = new JkImage(paths.get(0));
+            String picUrl = JkFiles.toURL(paths.get(0));
+            img = new Image(picUrl, true);
         }
         return img;
     }
