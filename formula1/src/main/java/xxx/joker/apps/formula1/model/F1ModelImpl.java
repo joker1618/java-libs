@@ -111,7 +111,6 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
                 F1SeasonResult res = new F1SeasonResult();
                 res.setDriver(d);
                 gpList.forEach(gp -> {
-                    display("###  "+gp.getPrimaryKey());
                     F1Race race = JkStreams.findUnique(gp.getRaces(), r -> r.getEntrant().getDriver().equals(d));
                     if(race != null) {
                         res.getPoints().put(gp, race);

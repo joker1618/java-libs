@@ -114,7 +114,6 @@ public class Year2018 extends AWikiParser {
         for (X_Tag tr : tbody.getChildren("tr")) {
             if(tr.getChildren("th").size() == 2) {
                 X_Tag dTag = tr.getChild(1).findChild("a", "span a");
-                display(dTag.getText());
                 F1Driver driver = retrieveDriver(dTag.getText(), false);
                 String spoints = tr.getChildren("th").get(1).getText();
                 int points = Integer.parseInt(spoints);
