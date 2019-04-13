@@ -115,8 +115,13 @@ public class F1ResourceManager implements F1Resources {
     private boolean saveImage(Path folder, String resourceKey, String url, String... tags) {
         JkDownloader dw = new JkDownloader(folder);
         String finalName = fixResourceName(resourceKey, url);
-        Path resourcePath = folder.resolve(finalName);
+        boolean res = false;
+        if(dw.downloadResource(finalName, url)) {
+            LOG.info("Downloaded resource: {}", finalName);
+            res = true;
+        }
 
+        Path resourcePath = folder.resolve(finalName);
         F1Resource resource = new F1Resource(resourcePath);
         if(model.retrieveByPK(resource) == null) {
             resource.setKey(resourceKey);
@@ -126,11 +131,8 @@ public class F1ResourceManager implements F1Resources {
             resource.setHeight(jkImage.getHeight());
             model.add(resource);
         }
-        if(dw.downloadResource(finalName, url)) {
-            LOG.info("Downloaded resource: {}", finalName);
-            return true;
-        }
-        return false;
+
+        return res;
     }
     private String fixResourceName(String fn, String url) {
         String finalFname = fn;

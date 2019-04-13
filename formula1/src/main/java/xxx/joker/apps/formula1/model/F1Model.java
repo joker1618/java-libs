@@ -29,4 +29,5 @@ public interface F1Model extends JkRepo {
 
     F1Season getSeason(int year);
 
+    List<Integer> getAvailableYears();
 }

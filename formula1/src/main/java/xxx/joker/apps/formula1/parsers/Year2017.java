@@ -19,11 +19,11 @@ import java.util.Map;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
-public class Year2018 extends AWikiParser {
+public class Year2017 extends AWikiParser {
 
 
-    public Year2018() {
-        super(2018);
+    public Year2017() {
+        super(2017);
     }
 
     /**
@@ -34,7 +34,7 @@ public class Year2018 extends AWikiParser {
      */
     @Override
     protected void parseEntrants(String html) {
-        X_Tag tableEntrants = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Entries\">", "<table class=\"wikitable sortable\"");
+        X_Tag tableEntrants = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Teams_and_drivers\">", "<table class=\"wikitable sortable");
         X_Tag tbody = tableEntrants.getChild("tbody");
 
         for (X_Tag tr : tbody.getChildren("tr")) {
@@ -78,7 +78,7 @@ public class Year2018 extends AWikiParser {
                     e.setEngine(engine);
                     e.setCarNo(carNums.get(c));
                     e.setDriver(drivers.get(c));
-                    model.getEntrants().add(e);
+                    model.add(e);
                 }
             }
         }
@@ -86,7 +86,7 @@ public class Year2018 extends AWikiParser {
 
     @Override
     protected List<String> getGpUrls(String html) {
-        X_Tag tableEntrants = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Grands_Prix\">", "<table class=\"wikitable sortable\"");
+        X_Tag tableEntrants = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Grands_Prix\">", "<table class=\"wikitable\"");
         X_Tag tbody = tableEntrants.getChild("tbody");
 
         List<String> urls = new ArrayList<>();
@@ -223,6 +223,10 @@ public class Year2018 extends AWikiParser {
                 gp.getQualifies().add(q);
 
                 int carNum = Integer.parseInt(tr.getChild(1).getText());
+                if(gp.getNum() == 17 && carNum == 39) {
+                    // error on wikipedia
+                    carNum = 28;
+                }
                 X_Tag ttag = tr.getChild(3).findChild("a", "span a");
                 F1Team team = retrieveTeam(ttag, false);
                 q.setEntrant(getEntrant(year, carNum, team));
@@ -257,12 +261,16 @@ public class Year2018 extends AWikiParser {
                 r.setRetired(tr.getChild(0).getText().equalsIgnoreCase("Ret"));
 
                 int carNum = Integer.parseInt(tr.getChild(1).getText());
+                if(gp.getNum() == 17 && carNum == 39) {
+                    // error on wikipedia
+                    carNum = 28;
+                }
                 F1Qualify q = qualifyMap.get(carNum);
                 r.setEntrant(q.getEntrant());
 
                 r.setLaps(Integer.parseInt(tr.getChild(4).getText()));
 
-                r.setTime(JkDuration.of(tr.getChild(5).getText()));
+                r.setTime(JkDuration.of(tr.getChild(5).getText().replace("&#160;", "")));
                 if(gp.getRaces().size() > 1 && r.getTime() != null) {
                     F1Race firstRace = gp.getRaces().get(0);
                     JkDuration ft = firstRace.getTime().plus(r.getTime());

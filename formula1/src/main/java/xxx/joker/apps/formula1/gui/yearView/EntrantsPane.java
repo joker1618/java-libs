@@ -16,6 +16,8 @@ import xxx.joker.apps.formula1.model.beans.F1Season;
 import xxx.joker.apps.formula1.model.entities.F1Entrant;
 import xxx.joker.libs.core.datetime.JkDates;
 
+import java.util.List;
+
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class EntrantsPane extends BorderPane {
@@ -24,16 +26,20 @@ public class EntrantsPane extends BorderPane {
     private TableView<F1Entrant> table;
     private BorderPane driverPane;
 
-    public EntrantsPane(F1Season season) {
+    public EntrantsPane(List<F1Entrant> entrants) {
         this.resources = F1ResourceManager.getInstance();
 
         table = createTableEntrants();
-        table.getItems().setAll(season.getEntrants());
-
+        table.getItems().setAll(entrants);
         driverPane = createDriverPane();
 
         setCenter(table);
         setRight(driverPane);
+    }
+
+
+    public void setEntrants(List<F1Entrant> entrants) {
+        table.getItems().setAll(entrants);
     }
 
     private TableView<F1Entrant> createTableEntrants() {

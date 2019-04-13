@@ -14,6 +14,8 @@ import xxx.joker.libs.repository.design.RepoEntity;
 import java.nio.file.Path;
 import java.util.*;
 
+import static xxx.joker.libs.core.utils.JkConsole.display;
+
 public class F1ModelImpl extends JkRepoFile implements F1Model {
 
     private static final Logger LOG = LoggerFactory.getLogger(F1ModelImpl.class);
@@ -107,7 +109,9 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
                 res.setDriver(d);
                 gpList.forEach(gp -> {
                     F1Race race = JkStreams.findUnique(gp.getRaces(), r -> r.getEntrant().getDriver().equals(d));
-                    res.getPoints().put(gp, race);
+                    if(race != null) {
+                        res.getPoints().put(gp, race);
+                    }
                 });
                 res.setTotPoints(JkStreams.sumInt(res.getPoints().values(), F1Race::getPoints));
                 results.add(res);
@@ -122,6 +126,16 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
         }
 
         return season;
+    }
+
+    @Override
+    public List<Integer> getAvailableYears() {
+        return JkStreams.mapFilterSortUniq(
+                getEntrants(),
+                F1Entrant::getYear,
+                f -> true,
+                Comparator.reverseOrder()
+        );
     }
 
 

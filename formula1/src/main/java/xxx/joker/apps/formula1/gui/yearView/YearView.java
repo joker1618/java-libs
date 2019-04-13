@@ -3,10 +3,7 @@ package xxx.joker.apps.formula1.gui.yearView;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -42,7 +39,7 @@ public class YearView extends BorderPane {
     public YearView(int year) {
         this.season = model.getSeason(year);
 
-        this.entrantsPane = new EntrantsPane(season);
+        this.entrantsPane = new EntrantsPane(season.getEntrants());
         this.resultPane = new ResultsPane(season);
         this.granPrixPane = new GranPrixPane(season);
 
