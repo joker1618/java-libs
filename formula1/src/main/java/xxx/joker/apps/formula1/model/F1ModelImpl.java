@@ -92,7 +92,10 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
             list.addAll(gp.getRaces());
             list.add(gp);
         }
-        list.forEach(super::remove);
+        for (RepoEntity entity : list) {
+            LOG.debug("Start deleting {}", entity);
+            super.remove(entity);
+        }
     }
 
     @Override
@@ -108,6 +111,7 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
                 F1SeasonResult res = new F1SeasonResult();
                 res.setDriver(d);
                 gpList.forEach(gp -> {
+                    display("###  "+gp.getPrimaryKey());
                     F1Race race = JkStreams.findUnique(gp.getRaces(), r -> r.getEntrant().getDriver().equals(d));
                     if(race != null) {
                         res.getPoints().put(gp, race);

@@ -41,7 +41,7 @@ public class Year2017 extends AWikiParser {
             List<X_Tag> tdList = tr.getChildren("td");
             if(tdList.size() >= 8) {
                 X_Tag tagTeamName = tdList.get(1).findChild("b a");
-                F1Team team = retrieveTeam(tagTeamName, true);
+                F1Team team = retrieveTeam(tagTeamName.getText(), true);
                 if(StringUtils.isBlank(team.getNation())) {
                     X_Tag img = tdList.get(0).findFirstTag("img");
                     team.setNation(img.getAttribute("alt"));
@@ -51,6 +51,9 @@ public class Year2017 extends AWikiParser {
                 checkField(team.getNation(), "Nation for team {}, year {}", tagTeamName, year);
 
                 String engine = tdList.get(3).getText();
+                if(StringUtils.isBlank(engine)) {
+                    engine = tdList.get(3).getChild("span").getText();
+                }
 
                 String stmp = tdList.get(4).getHtmlTag().replaceAll("^<td(.*?)>", "").replace("</td>", "").replaceAll("<br[ ]?/>", "-");
                 List<Integer> carNums = JkStreams.map(JkStrings.splitList(stmp, "-", true), Integer::valueOf);
@@ -114,7 +117,6 @@ public class Year2017 extends AWikiParser {
         for (X_Tag tr : tbody.getChildren("tr")) {
             if(tr.getChildren("th").size() == 2) {
                 X_Tag dTag = tr.getChild(1).findChild("a", "span a");
-                display(dTag.getText());
                 F1Driver driver = retrieveDriver(dTag.getText(), false);
                 String spoints = tr.getChildren("th").get(1).getText();
                 int points = Integer.parseInt(spoints);
@@ -135,7 +137,7 @@ public class Year2017 extends AWikiParser {
         for (X_Tag tr : tbody.getChildren("tr")) {
             if(tr.getChildren("th").size() == 2) {
                 X_Tag teamTag = tr.getChild(1).findChild("a", "span a");
-                F1Team team = retrieveTeam(teamTag, false);
+                F1Team team = retrieveTeam(teamTag.getText(), false);
                 String spoints = tr.getChildren("th").get(1).getText();
                 spoints = spoints.replaceAll(".*\\(", "").replaceAll("\\).*", "");
                 int points = Integer.parseInt(spoints);
@@ -228,7 +230,7 @@ public class Year2017 extends AWikiParser {
                     carNum = 28;
                 }
                 X_Tag ttag = tr.getChild(3).findChild("a", "span a");
-                F1Team team = retrieveTeam(ttag, false);
+                F1Team team = retrieveTeam(ttag.getText(), false);
                 q.setEntrant(getEntrant(year, carNum, team));
 
                 q.getTimes().add(JkDuration.of(tr.getChild(4).getTextFlat()));
@@ -282,12 +284,5 @@ public class Year2017 extends AWikiParser {
         }
     }
 
-    private F1Team retrieveTeam(X_Tag tag, boolean createIfMissing) {
-        String teamName = tag.getText();
-        if(teamName.equals("Force India")) {
-            teamName = tag.getAttribute("title");
-        }
-        return super.retrieveTeam(teamName, createIfMissing);
-    }
 
 }

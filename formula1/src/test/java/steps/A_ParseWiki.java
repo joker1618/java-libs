@@ -32,7 +32,7 @@ public class A_ParseWiki {
         int year = 2017;
 
 //        model.clearDataSets();
-//        model.deleteData(year);
+        model.deleteData(year);
 
         WikiParser parser = WikiParser.getParser(year);
         parser.parse();
@@ -55,7 +55,6 @@ public class A_ParseWiki {
 
         for(int year = yend; year >= ystart; year--) {
             display("Start parsing year {}", year);
-            model.deleteData(year);
             WikiParser parser = WikiParser.getParser(year);
             parser.parse();
 

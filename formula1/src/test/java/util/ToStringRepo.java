@@ -72,7 +72,7 @@ public class ToStringRepo {
 
     @Test
     public void showGPTimes() {
-        int year = 2018;
+        int year = 2017;
         showGPTimes(yearDef == -1 ? year : yearDef);
     }
     public void showGPTimes(int year) {

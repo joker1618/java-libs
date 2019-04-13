@@ -26,7 +26,7 @@ public class CheckPoints {
 
     @Test
     public void checkPoints() {
-        int year = 2017;
+        int year = 2018;
         checkPoints(year);
     }
     public void checkPoints(int year) {

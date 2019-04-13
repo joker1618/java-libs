@@ -219,7 +219,10 @@ class RepoHandler {
                         Collection<RepoEntity> pcoll = (Collection<RepoEntity>) fw.getValue(parent);
                         pcoll.removeIf(el -> el.getEntityID() == eID);
                     } else {
-                        fw.setValue(parent, null);
+                        RepoEntity e = (RepoEntity) fw.getValue(parent);
+                        if(e != null && e.getEntityID() == eID) {
+                            fw.setValue(parent, null);
+                        }
                     }
                 }
             });
