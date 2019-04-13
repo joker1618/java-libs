@@ -118,12 +118,27 @@ abstract class AWikiParser implements WikiParser {
     }
 
     protected F1Circuit retrieveCircuit(String city, String nation, boolean createIfMissing) {
+        nation = fixNation(nation);
+        city = fixCity(city);
         F1Circuit circuit = model.getCircuit(city, nation);
         if(circuit == null && createIfMissing) {
             circuit = new F1Circuit(city, nation);
             model.add(circuit);
         }
         return circuit;
+    }
+
+    private String fixNation(String nation) {
+        if(nation.equals("Texas"))  return "United States";
+        return nation;
+    }
+    private String fixCity(String city) {
+        if(city.equals("Travis County, Austin"))  return "Austin, Texas";
+        if(city.equals("Suzuka, Mie Prefecture"))  return "Suzuka";
+        if(city.equals("Sepang, Kuala Lumpur") || city.equals("Sepang, Selangor"))  return "Sepang";
+        if(city.equals("Magdalena Mixhuca, Mexico City"))  return "Mexico City";
+        if(city.equals("Yas Island, Abu Dhabi"))  return "Abu Dhabi";
+        return city;
     }
 
     protected F1Team retrieveTeam(String teamName, boolean createIfMissing) {
@@ -181,6 +196,9 @@ abstract class AWikiParser implements WikiParser {
     private String fixTeamName(String teamName) {
         if("Scuderia Toro Rosso".equals(teamName)){
             return "Toro Rosso";
+        }
+        if("Red Bull Racing".equals(teamName)){
+            return "Red Bull";
         }
         return teamName;
     }

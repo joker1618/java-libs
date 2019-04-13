@@ -70,6 +70,7 @@ public class GranPrixPane extends BorderPane {
             int num = i;
             table.getColumns().add(X_FxTable.createColumn("Q"+(num+1),
                     q -> {
+                        if(q.getTimes().size() <= num)    return "";
                         JkDuration qtime = q.getTimes().get(num);
                         return qtime == null ? "" : qtime.toStringElapsed();
                     }

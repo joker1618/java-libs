@@ -1,5 +1,6 @@
 package xxx.joker.apps.formula1.corelibs;
 
+import xxx.joker.libs.core.html.HtmlChars;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.objects.Range;
 import xxx.joker.libs.core.tests.JkTests;
@@ -150,8 +151,11 @@ class X_TagImpl implements X_Tag {
         } else {
             sb.append(getHtmlTag());
         }
-        return sb.toString().replaceAll("^<[^<]*?>", "").replaceAll("</[^<]*?>$", "").trim();
+
+        String str = sb.toString().replaceAll("^<[^<]*?>", "").replaceAll("</[^<]*?>$", "");
+        return HtmlChars.removeDirtyChars(str).trim();
     }
+
 
     @Override
     public String getTextFlat() {

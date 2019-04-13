@@ -255,6 +255,15 @@ public class HtmlChars {
         );
     }
 
+    private static final List<String> customRemove = Arrays.asList("&#160;");
+
+    public static String removeDirtyChars(String str) {
+        for (String s : customRemove) {
+            str = str.replace(s, "");
+        }
+        return str;
+    }
+
     public static String escapeHtmlChars(String html) {
         for(HtmlChar hc : charList) {
             if(!hc.getAndCode().isEmpty()) {

@@ -24,7 +24,7 @@ public class F1Circuit extends RepoEntity {
 
     @Override
     public String getPrimaryKey() {
-        return strf("{}-{}", city, nation);
+        return strf("{}-{}", nation, city);
     }
 
     public String getCity() {
