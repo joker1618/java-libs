@@ -26,80 +26,75 @@ public class JkEncryption {
     }
 
     /* FILE ENCRYPTION */
-    public static byte[] encryptBytes(byte[] source, String password) {
-        try {
-            Cipher cipher = makeCipher(password, true);
-
-            byte blockSize = 8;
-            int paddedCount = blockSize - source.length % blockSize;
-            byte[] bytes = JkBytes.mergeArrays(source, new byte[paddedCount]);
-
-            return cipher.doFinal(bytes);
-
-        } catch (GeneralSecurityException ex) {
-            throw new JkRuntimeException(ex);
-        }
-    }
-    public static byte[] decryptBytes(byte[] source, String password) {
-        try {
-            Cipher cipher = makeCipher(password, false);
-
-            byte[] decData = cipher.doFinal(source);
-            byte padCount = decData[decData.length - 1];
-            if (padCount >= 1 && padCount <= 8) {
-                decData = Arrays.copyOfRange(decData, 0, decData.length - padCount);
-            }
-
-            return decData;
-
-        } catch (GeneralSecurityException ex) {
-            throw new JkRuntimeException(ex);
-        }
-    }
+//    public static byte[] encryptBytes(byte[] source, String password) {
+//        try {
+//            Cipher cipher = makeCipher(password, true);
+//
+//            byte blockSize = 8;
+//            int paddedCount = blockSize - source.length % blockSize;
+//            byte[] bytes = JkBytes.mergeArrays(source, new byte[paddedCount]);
+//
+//            return cipher.doFinal(bytes);
+//
+//        } catch (GeneralSecurityException ex) {
+//            throw new JkRuntimeException(ex);
+//        }
+//    }
+//    public static byte[] decryptBytes(byte[] source, String password) {
+//        try {
+//            Cipher cipher = makeCipher(password, false);
+//
+//            byte[] decData = cipher.doFinal(source);
+//            byte padCount = decData[decData.length - 1];
+//            if (padCount >= 1 && padCount <= 8) {
+//                decData = Arrays.copyOfRange(decData, 0, decData.length - padCount);
+//            }
+//
+//            return decData;
+//
+//        } catch (GeneralSecurityException ex) {
+//            throw new JkRuntimeException(ex);
+//        }
+//    }
 
     public static void encryptFile(Path inputPath, Path outputPath, String password) {
-        encryptFile(inputPath, outputPath, password, true);
-    }
-    public static void encryptFile(Path inputPath, Path outputPath, String password, boolean overwrite) {
         try {
-            if (!overwrite && Files.exists(outputPath)) {
-                throw new IOException("File [" + outputPath + "] already exists!");
-            }
-
+            Cipher cipher = makeCipher(getMD5(password), true);
             File inputFile = inputPath.toFile();
-            byte[] inputBytes;
-            try (FileInputStream inStream = new FileInputStream(inputFile)) {
-                inputBytes = new byte[(int) inputFile.length()];
-                inStream.read(inputBytes);
+            FileInputStream inStream = new FileInputStream(inputFile);
+            byte blockSize = 8;
+            int paddedCount = blockSize - (int)inputFile.length() % blockSize;
+            int padded = (int)inputFile.length() + paddedCount;
+            byte[] decData = new byte[padded];
+            inStream.read(decData);
+            inStream.close();
+
+            for(int encData = (int)inputFile.length(); encData < padded; ++encData) {
+                decData[encData] = (byte)paddedCount;
             }
 
-            byte[] encData = encryptBytes(inputBytes, password);
-
-            JkFiles.writeFile(outputPath, encData, overwrite);
+            byte[] var11 = cipher.doFinal(decData);
+            JkFiles.writeFile(outputPath, var11);
 
         } catch (Exception ex) {
             throw new JkRuntimeException(ex);
         }
     }
     public static void decryptFile(Path inputPath, Path outputPath, String password) {
-        decryptFile(inputPath, outputPath, password, true);
-    }
-    public static void decryptFile(Path inputPath, Path outputPath, String password, boolean overwrite) {
         try {
-            if (!overwrite && Files.exists(outputPath)) {
-                throw new IOException("File [" + outputPath + "] already exists!");
-            }
-
+            Cipher cipher = makeCipher(getMD5(password), false);
             File inputFile = inputPath.toFile();
-            byte[] encData;
-            try (FileInputStream inStream = new FileInputStream(inputFile)) {
-                encData = new byte[(int) inputFile.length()];
-                inStream.read(encData);
+            FileInputStream inStream = new FileInputStream(inputFile);
+            byte[] encData = new byte[(int) inputFile.length()];
+            inStream.read(encData);
+            inStream.close();
+            byte[] decData = cipher.doFinal(encData);
+            byte padCount = decData[decData.length - 1];
+            if (padCount >= 1 && padCount <= 8) {
+                decData = Arrays.copyOfRange(decData, 0, decData.length - padCount);
             }
 
-            byte[] decrBytes = decryptBytes(encData, password);
-
-            JkFiles.writeFile(outputPath, decrBytes, overwrite);
+            JkFiles.writeFile(outputPath, decData);
 
         } catch (Exception ex) {
             throw new JkRuntimeException(ex);

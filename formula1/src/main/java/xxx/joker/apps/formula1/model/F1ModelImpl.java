@@ -25,6 +25,7 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
 
     private F1ModelImpl() {
         super(F1Const.DB_FOLDER, F1Const.DB_NAME, "xxx.joker.apps.formula1.model.entities");
+//        super(F1Const.DB_FOLDER, F1Const.DB_NAME, "xxx.joker.apps.formula1.model.entities", "fede");
     }
 
     public static synchronized F1Model getInstance() {

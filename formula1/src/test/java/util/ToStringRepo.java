@@ -45,7 +45,8 @@ public class ToStringRepo {
     @Test
     public void showEntrants() {
         int year = 2018;
-        showEntrants(yearDef == -1 ? year : yearDef);
+//        int year = -1;
+        showEntrants(year != -1 ? year : yearDef);
     }
     public void showEntrants(int year) {
         List<F1Entrant> elist = model.getEntrants(year);
@@ -59,7 +60,7 @@ public class ToStringRepo {
     @Test
     public void showGPDescription() {
         int year = 2018;
-        showGPDescription(yearDef == -1 ? year : yearDef);
+        showGPDescription(year != -1 ? year : yearDef);
     }
     public void showGPDescription(int year) {
         List<F1GranPrix> gpList = model.getGranPrixs(year);
@@ -73,7 +74,7 @@ public class ToStringRepo {
     @Test
     public void showGPTimes() {
         int year = 2017;
-        showGPTimes(yearDef == -1 ? year : yearDef);
+        showGPTimes(year != -1 ? year : yearDef);
     }
     public void showGPTimes(int year) {
         List<F1GranPrix> gplist = model.getGranPrixs(year);
