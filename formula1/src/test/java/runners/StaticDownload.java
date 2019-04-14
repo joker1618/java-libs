@@ -40,27 +40,6 @@ public class StaticDownload {
     }
 
     @Test
-    public void getFlagImages() {
-        List<Path> flagFiles = JkFiles.findFiles(IMG_FLAGS_ICON_FOLDER, false, Files::isRegularFile);
-        List<String> urlEnds = JkStreams.map(flagFiles, p -> JkFiles.getFileName(p).replace(" ", "_"));
-
-        JkDownloader dhtml = new JkDownloader(HTML_FOLDER);
-        F1Resources resources = F1ResourceManager.getInstance();
-        for (String nation : urlEnds) {
-            display("Processing {}", nation);
-            String url = "https://en.wikipedia.org/wiki/"+nation;
-            String html = dhtml.getHtml(url);
-            X_Tag atag = X_Scanners.parseHtmlTag(html, "a", "<table class=\"infobox geography vcard\"", "<a href=\"/wiki/File:Flag_of_");
-            String hs = dhtml.getHtml(createWikiUrl(atag));
-            X_Tag imgTag = X_Scanners.parseHtmlTag(hs, "img", "<img alt=\"File:Flag");
-            display(resources.saveFlag(nation, createResourceUrl(imgTag))+"");
-        }
-
-        F1ModelImpl.getInstance().commit();
-
-    }
-
-    @Test
     public void getAllSovereignFlags() {
         F1Resources resources = F1ResourceManager.getInstance();
 
