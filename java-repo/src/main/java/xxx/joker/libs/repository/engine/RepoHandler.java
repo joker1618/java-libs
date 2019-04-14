@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
+import xxx.joker.libs.repository.common.RepoCommon;
 import xxx.joker.libs.repository.design.RepoEntity;
 
 import java.lang.reflect.*;
@@ -22,7 +23,7 @@ class RepoHandler {
     private final ReadWriteLock repoLock;
 
     private Map<Class<?>, HandlerDataSet> handlers;
-    private Map<Long, RepoEntity> dataByID;
+    private TreeMap<Long, RepoEntity> dataByID;
     private Map<Class<?>, List<Class<?>>> referenceMap;
     private final AtomicLong sequenceValue;
 
@@ -30,7 +31,7 @@ class RepoHandler {
         this.repoLock = repoLock;
 
         this.handlers = new HashMap<>();
-        this.dataByID = new HashMap<>();
+        this.dataByID = new TreeMap<>();
         this.referenceMap = new HashMap<>();
         this.sequenceValue = new AtomicLong(0L);
 
@@ -60,6 +61,37 @@ class RepoHandler {
         for(RepoDTO dto : dtoList) {
             handlers.put(dto.getEClazz(), new HandlerDataSet(dto.getEntities()));
         }
+    }
+
+    /**
+     *     Fix IDs if at least 1/2 is unused, and if the max ID is greater than RepoCommon.MIN_SIZE_FOR_COMPACT_IDS
+     *     todo test
+     */
+    private boolean compactEntityIDs() {
+        boolean changed = false;
+
+        long maxUsedID = getMaxUsedID();
+        if(maxUsedID > RepoCommon.MIN_SIZE_FOR_COMPACT_IDS) {
+            if(dataByID.size() < (maxUsedID / 2)) {
+                List<Long> idList = JkConvert.toList(dataByID.keySet());
+                long pos = 0;
+                for (int i = 0; i < idList.size(); i++) {
+                    Long uid = idList.get(i);
+                    if(uid > pos) {
+                        RepoEntity e = dataByID.remove(uid);
+                        ClazzWrapper.setEntityID(e, pos);
+                        dataByID.put(pos, e);
+                        changed = true;
+                    }
+                    pos++;
+                }
+                if(changed) {
+                    sequenceValue.set(1L + getMaxUsedID());
+                }
+            }
+        }
+
+        return changed;
     }
 
     private long getMaxUsedID() {

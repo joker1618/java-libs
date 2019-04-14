@@ -17,6 +17,8 @@ import java.util.Set;
 
 public class RepoCommon {
 
+    public static final long MIN_SIZE_FOR_COMPACT_IDS = 1_000_000_000;
+
     public static class Separator {
         public static final String SEP_FIELD = "|";
         public static final String SEP_LIST = ";";
