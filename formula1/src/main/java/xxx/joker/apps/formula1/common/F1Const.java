@@ -15,6 +15,7 @@ public class F1Const {
 
     public static final Path IMG_FOLDER = BASE_FOLDER.resolve("images");
     public static final Path IMG_FLAGS_ICON_FOLDER = IMG_FOLDER.resolve("icons/flags");
+    public static final Path IMG_FLAGS_FOLDER = IMG_FOLDER.resolve("normal/flags");
     public static final Path IMG_DRIVER_PIC_FOLDER = IMG_FOLDER.resolve("normal/drivers");
     public static final Path IMG_TRACK_MAP_FOLDER = IMG_FOLDER.resolve("normal/trackMap");
 

@@ -46,6 +46,27 @@ class X_TagImpl implements X_Tag {
     }
 
     @Override
+    public boolean hasAttribute(String attrName) {
+        return attributes.get(attrName) != null;
+    }
+
+    @Override
+    public boolean matchAttribute(String attrName, String attrValue) {
+        return hasAttribute(attrName) && attrValue.equals(getAttribute(attrName));
+    }
+
+    @Override
+    public boolean matchAttributes(String... attribs) {
+        for (String attrib : attribs) {
+            String[] split = JkStrings.splitArr(attrib, "=", true);
+            if(!matchAttribute(split[0], split[1])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public boolean isAutoClosed() {
         return autoClosed;
     }
@@ -63,6 +84,16 @@ class X_TagImpl implements X_Tag {
     @Override
     public X_Tag getChild(String tagName) {
         List<X_Tag> children = getChildren(tagName);
+        return children.isEmpty() ? null : children.get(0);
+    }
+
+    @Override
+    public X_Tag getChild(String tagName, String... attributes) {
+        List<X_Tag> children = getChildren(tagName);
+        for (String attribute : attributes) {
+            String[] split = JkStrings.splitArr(attribute, "=", true);
+            children.removeIf(t -> !t.matchAttribute(split[0], split[1]));
+        }
         return children.isEmpty() ? null : children.get(0);
     }
 
@@ -98,11 +129,34 @@ class X_TagImpl implements X_Tag {
     }
 
     @Override
+    public X_Tag findFirstTag(String tagName, String... attributes) {
+        List<X_Tag> res = findFirstTags(tagName, attributes);
+        return res.isEmpty() ? null : res.get(0);
+    }
+
+    @Override
     public List<X_Tag> findFirstTags(String tagName) {
         List<X_Tag> res = getChildren(tagName);
         if(res.isEmpty()) {
             for (X_Tag child : children) {
                 res = child.findFirstTags(tagName);
+                if(!res.isEmpty()) {
+                    return res;
+                }
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public List<X_Tag> findFirstTags(String tagName, String... attributes) {
+        List<X_Tag> res = getChildren(tagName);
+        if(attributes.length > 0) {
+            res.removeIf(t -> !t.matchAttributes(attributes));
+        }
+        if(res.isEmpty()) {
+            for (X_Tag child : children) {
+                res = child.findFirstTags(tagName, attributes);
                 if(!res.isEmpty()) {
                     return res;
                 }

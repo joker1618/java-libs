@@ -498,6 +498,9 @@ public class JkFiles {
 		return Paths.get(path.startsWith("/") ? path.substring(1) : path);
 	}
 
+	public static String toURL(String source) {
+		return toURL(Paths.get(source));
+	}
 	public static String toURL(Path source) {
 		try {
 			return source.toUri().toURL().toExternalForm();

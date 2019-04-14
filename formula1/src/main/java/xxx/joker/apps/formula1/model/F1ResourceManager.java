@@ -43,6 +43,11 @@ public class F1ResourceManager implements F1Resources {
     }
 
     @Override
+    public boolean saveFlag(String nation, String url) {
+        return saveImage(F1Const.IMG_FLAGS_FOLDER, nation, url, "image", "flag");
+    }
+
+    @Override
     public boolean saveTrackMap(F1GranPrix gp, String url) {
         return saveImage(F1Const.IMG_TRACK_MAP_FOLDER, gp.getPrimaryKey(), url, "image", "trackMap");
     }
@@ -132,6 +137,7 @@ public class F1ResourceManager implements F1Resources {
 
         return res;
     }
+
     private String fixResourceName(String fn, String url) {
         String finalFname = fn;
         int dotIdx = url.lastIndexOf(".");
