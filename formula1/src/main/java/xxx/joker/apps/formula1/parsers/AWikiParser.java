@@ -130,11 +130,14 @@ abstract class AWikiParser implements WikiParser {
 
     private String fixNation(String nation) {
         if(nation.equals("Texas"))  return "United States";
+        if(nation.equals("People's Republic of China"))  return "China";
+        if(nation.equals("Quebec Canada"))  return "Canada";
+        if(nation.equals("Lombardy"))  return "Italy";
         return nation;
     }
     private String fixCity(String city) {
         if(city.equals("Travis County, Austin"))  return "Austin, Texas";
-        if(city.equals("Suzuka, Mie Prefecture"))  return "Suzuka";
+        if(city.startsWith("Suzuka, Mie"))  return "Suzuka";
         if(city.equals("Sepang, Kuala Lumpur") || city.equals("Sepang, Selangor"))  return "Sepang";
         if(city.equals("Magdalena Mixhuca, Mexico City"))  return "Mexico City";
         if(city.equals("Yas Island, Abu Dhabi"))  return "Abu Dhabi";

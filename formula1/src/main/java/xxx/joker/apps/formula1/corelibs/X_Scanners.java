@@ -66,7 +66,7 @@ public class X_Scanners {
                 if (!tag.isAutoClosed()) {
                     openedTags.push(tag);
                 } else {
-                    rootTag.setEndPos((int)scanner.position());
+                    tag.setEndPos((int)scanner.position());
                     if(openedTags.isEmpty()) { // the first tag is auto-closed
                         break;
                     }

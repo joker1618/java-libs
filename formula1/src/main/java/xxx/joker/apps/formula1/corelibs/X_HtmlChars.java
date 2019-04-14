@@ -257,11 +257,9 @@ public class X_HtmlChars {
 
     private static final List<String> customRemove = Arrays.asList("&#160;");
     
-    public static String removeDirtyChars(String str) {
-        for (String s : customRemove) {
-            str = str.replace(s, "");
-        }
-        return str;
+    public static String fixDirtyChars(String str) {
+        String toRet = str.replace("&#160;", " ");
+        return toRet;
     }
 
     public static String escapeHtmlChars(String html) {

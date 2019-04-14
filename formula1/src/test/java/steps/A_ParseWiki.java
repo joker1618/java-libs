@@ -29,10 +29,10 @@ public class A_ParseWiki {
 
     @Test
     public void runYear() {
-        int year = 2015;
+        int year = 2014;
 
 //        model.clearDataSets();
-//        model.deleteData(year);
+        model.deleteData(year);
 
         WikiParser parser = WikiParser.getParser(year);
         parser.parse();
@@ -49,7 +49,7 @@ public class A_ParseWiki {
 
     @Test
     public void runRange() {
-        int ystart = 2015;
+        int ystart = 2014;
         int yend = 2018;
 //        model.deleteData(year);
 

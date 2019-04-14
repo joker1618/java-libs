@@ -25,8 +25,13 @@ public class CheckPoints {
     F1Model model = F1ModelImpl.getInstance();
 
     @Test
+    public void checkAllPoints() {
+        model.getAvailableYears().forEach(this::checkPoints);
+    }
+
+    @Test
     public void checkPoints() {
-        int year = 2018;
+        int year = 2015;
         checkPoints(year);
     }
     public void checkPoints(int year) {
