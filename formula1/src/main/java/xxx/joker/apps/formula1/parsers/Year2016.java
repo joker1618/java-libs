@@ -264,7 +264,7 @@ public class Year2016 extends AWikiParser {
                 r.setPos(pos++);
                 gp.getRaces().add(r);
 
-                r.setRetired(tr.getChild(0).getText().equalsIgnoreCase("Ret"));
+                r.setRetired(JkConvert.toInt(tr.getChild(0).getText()) == null);
 
                 int carNum = Integer.parseInt(tr.getChild(1).getText());
                 F1Qualify q = qualifyMap.get(carNum);

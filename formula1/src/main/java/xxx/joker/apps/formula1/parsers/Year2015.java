@@ -242,17 +242,24 @@ public class Year2015 extends AWikiParser {
                 F1Team team = retrieveTeam(ttag.getText(), false);
                 q.setEntrant(getEntrant(year, carNum, team));
 
-                q.getTimes().add(JkDuration.of(tr.getChild(4).getTextFlat()));
-                q.getTimes().add(JkDuration.of(tr.getChild(5).getTextFlat()));
+                q.getTimes().add(JkDuration.of(fixTime(tr.getChild(4).getTextFlat())));
+                q.getTimes().add(JkDuration.of(fixTime(tr.getChild(5).getTextFlat())));
 
                 int counter = 6;
                 if(tdNum == 7) {
-                    q.getTimes().add(JkDuration.of(tr.getChild(counter++).getTextFlat()));
+                    q.getTimes().add(JkDuration.of(fixTime(tr.getChild(counter++).getTextFlat())));
                 }
 
                 q.setFinalGrid(JkConvert.toInt(tr.getChild(counter).getText(), -1));
             }
         }
+    }
+
+    private String fixTime(String str) {
+        int index = str.lastIndexOf(".");
+        if(index == -1) return str;
+        String toRet = str.substring(0, index).replace(".", ":");
+        return toRet + str.substring(index);
     }
 
     @Override
@@ -273,7 +280,7 @@ public class Year2015 extends AWikiParser {
                 r.setPos(pos++);
                 gp.getRaces().add(r);
 
-                r.setRetired(tr.getChild(0).getText().equalsIgnoreCase("Ret"));
+                r.setRetired(JkConvert.toInt(tr.getChild(0).getText()) == null);
 
                 int carNum = Integer.parseInt(tr.getChild(1).getText());
                 F1Qualify q = qualifyMap.get(carNum);

@@ -7,11 +7,9 @@ import xxx.joker.apps.formula1.fxlibs.JkImage;
 import xxx.joker.apps.formula1.model.entities.F1Driver;
 import xxx.joker.apps.formula1.model.entities.F1GranPrix;
 import xxx.joker.apps.formula1.model.entities.F1Resource;
-import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.web.JkDownloader;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class F1ResourceManager implements F1Resources {
@@ -123,7 +121,7 @@ public class F1ResourceManager implements F1Resources {
 
         Path resourcePath = folder.resolve(finalName);
         F1Resource resource = new F1Resource(resourcePath);
-        if(model.retrieveByPK(resource) == null) {
+        if(model.getByPK(resource) == null) {
             resource.setKey(resourceKey);
             resource.setTags(tags);
             JkImage jkImage = JkImage.parse(resourcePath);

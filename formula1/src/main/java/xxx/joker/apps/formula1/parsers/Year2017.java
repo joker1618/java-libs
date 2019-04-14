@@ -260,7 +260,7 @@ public class Year2017 extends AWikiParser {
                 r.setPos(pos++);
                 gp.getRaces().add(r);
 
-                r.setRetired(tr.getChild(0).getText().equalsIgnoreCase("Ret"));
+                r.setRetired(JkConvert.toInt(tr.getChild(0).getText()) == null);
 
                 int carNum = Integer.parseInt(tr.getChild(1).getText());
                 if(gp.getNum() == 17 && carNum == 39) {

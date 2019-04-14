@@ -259,7 +259,7 @@ public class Year2018 extends AWikiParser {
                 F1Qualify q = qualifyMap.get(carNum);
                 r.setEntrant(q.getEntrant());
 
-                r.setLaps(Integer.parseInt(tr.getChild(4).getText()));
+                r.setRetired(JkConvert.toInt(tr.getChild(0).getText()) == null);
 
                 r.setTime(JkDuration.of(tr.getChild(5).getText()));
                 if(gp.getRaces().size() > 1 && r.getTime() != null) {
