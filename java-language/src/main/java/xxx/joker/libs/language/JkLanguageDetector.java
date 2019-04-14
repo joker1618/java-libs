@@ -26,18 +26,13 @@ public class JkLanguageDetector {
 		// Load dictionaries statically
 		for (JkLanguage lan : JkLanguage.values()) {
 			List<String> words = getWords(lan);
-			if (words != null) {
-				languages.put(lan, words);
-			}
+			languages.put(lan, words);
 		}
 	}
 
 	private static List<String> getWords(JkLanguage language) {
 		String dictPath = String.format("/dictionaries/lan_%s.txt", language.getLabel());
 		InputStream is = JkLanguageDetector.class.getResourceAsStream(dictPath);
-		if (is == null) {
-			return null;
-		}
 
 		List<String> words = new ArrayList<>();
 		String line;
