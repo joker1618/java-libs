@@ -3,6 +3,7 @@ package xxx.joker.apps.formula1.model;
 import xxx.joker.apps.formula1.fxlibs.JkImage;
 import xxx.joker.apps.formula1.model.entities.F1Driver;
 import xxx.joker.apps.formula1.model.entities.F1GranPrix;
+import xxx.joker.apps.formula1.model.entities.F1Resource;
 
 import java.util.Map;
 

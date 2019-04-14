@@ -26,7 +26,44 @@ public class CheckPoints {
 
     @Test
     public void checkAllPoints() {
-        model.getAvailableYears().forEach(this::checkPoints);
+        display("POINTS CHECK");
+
+        List<Integer> years = model.getAvailableYears();
+        for(Integer year : years) {
+            display("YEAR {}", year);
+
+            List<F1GranPrix> gp = model.getGranPrixs(year);
+            List<F1Race> races = gp.stream().flatMap(g -> g.getRaces().stream()).collect(Collectors.toList());
+
+            Map<String, List<Integer>> byDriver = JkStreams.toMap(races, r -> r.getEntrant().getDriver().getFullName(), F1Race::getPoints);
+            WikiParser parser = WikiParser.getParser(year);
+            Map<String, Integer> dExp = parser.getExpectedDriverPoints();
+            List<String> lines = new ArrayList<>();
+            for (String dname : dExp.keySet()) {
+                int computed = JkStreams.sumInt(byDriver.get(dname));
+                Integer exp = dExp.get(dname);
+                if(computed != exp) {
+                    lines.add(strf("{}|{}|<>|{}", dname, exp, computed));
+                }
+            }
+
+            if(lines.isEmpty()) {
+                display("");
+            }
+
+
+//            List<Pair<String, Integer>> list = new ArrayList<>();
+//            raceMap.forEach((k, v) -> list.add(Pair.of(k, v.stream().mapToInt(F1Race::getPoints).sum())));
+//            List<Pair<String, Integer>> sorted = JkStreams.reverseOrder(list, Comparator.comparingInt(Pair::getValue));
+//            List<String> lines = new ArrayList<>();
+//            lines.add(label + "|EXPECTED||COMPUTED");
+//            for (Pair<String, Integer> pair : sorted) {
+//                Integer exp = expected.get(pair.getKey());
+//                String line = strf("{}|{}|{}|{}", pair.getKey(), exp, exp.intValue() == pair.getValue() ? "" : "<>", pair.getValue());
+//                lines.add(line);
+//            }
+//            display("{} POINT CHECK {}\n{}", label, year, JkStrings.leftPadLines(JkOutput.columnsView(lines, "|", 2), " ", 2));
+        }
     }
 
     @Test

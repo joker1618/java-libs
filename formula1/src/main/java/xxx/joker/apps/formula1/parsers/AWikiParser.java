@@ -62,9 +62,7 @@ abstract class AWikiParser implements WikiParser {
     public void parse() {
         parseEntrants(getMainPageHtml());
 
-        for (F1Driver driver : model.getDrivers()) {
-            parseDriverPage(driver);
-        }
+        parseDriverPages();
 
 //        Map<String, Integer> expDriverMap = getExpectedDriverPoints(dwHtml.getHtml(mainPageUrl));
 //        List<Map.Entry<String, Integer>> entriesDriverMap = JkStreams.sorted(expDriverMap.entrySet(), Comparator.comparing(Map.Entry::getValue));
@@ -210,10 +208,8 @@ abstract class AWikiParser implements WikiParser {
      * Parse:
      * - driver, birth day, birth city, download pic
      */
-    private void parseDriverPage(F1Driver driver) {
-        if(driver.getBirthDate() == null) {
-//            display(driver.getCity());
-
+    private void parseDriverPages() {
+        for (F1Driver driver : driverUrls.keySet()) {
             String pageUrl = driverUrls.get(driver);
             String html = dwHtml.getHtml(pageUrl);
 
@@ -230,24 +226,31 @@ abstract class AWikiParser implements WikiParser {
             String picUrl = createResourceUrl(img);
             resources.saveDriverPicture(driver, picUrl);
 
-            X_Tag rowBorn = null;
-            while(rowBorn == null && rowNum < trList.size()) {
-                X_Tag tr = tbody.getChild(rowNum);
-                X_Tag ch = tr.getChild(0);
-                if(ch.getTagName().equals("th") && "Born".equals(ch.getText())) {
-                    rowBorn = tr;
+            if(driver.getBirthDate() == null || driver.getCity() == null) {
+                X_Tag rowBorn = null;
+                while (rowBorn == null && rowNum < trList.size()) {
+                    X_Tag tr = tbody.getChild(rowNum);
+                    X_Tag ch = tr.getChild(0);
+                    if (ch.getTagName().equals("th") && "Born".equals(ch.getText())) {
+                        rowBorn = tr;
+                    }
+                    rowNum++;
                 }
-                rowNum++;
+
+                if (driver.getBirthDate() == null) {
+                    String strBirth = rowBorn.getChild(1).findChild("span span").getText();
+                    driver.setBirthDate(LocalDate.parse(strBirth));
+                    checkField(driver.getBirthDate(), "No birth date for {}", driver);
+                }
+
+                if (driver.getCity() == null) {
+                    String[] split = rowBorn.getHtmlTag().split("<br[ ]?/>");
+                    String strCity = split[split.length - 1].replaceAll("<[^<]*?>", "").replaceAll(",[^,]*$", "").trim();
+                    driver.setCity(strCity);
+                    checkField(driver.getCity(), "No birth city for {}", driver);
+                }
             }
 
-            String strBirth = rowBorn.getChild(1).findChild("span span").getText();
-            driver.setBirthDate(LocalDate.parse(strBirth));
-            checkField(driver.getBirthDate(), "No birth date for {}", driver);
-
-            String[] split = rowBorn.getHtmlTag().split("<br[ ]?/>");
-            String strCity = split[split.length - 1].replaceAll("<[^<]*?>", "").replaceAll(",[^,]*$", "").trim();
-            driver.setCity(strCity);
-            checkField(driver.getCity(), "No birth city for {}", driver);
         }
     }
 
