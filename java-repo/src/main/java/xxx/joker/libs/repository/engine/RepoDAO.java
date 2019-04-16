@@ -3,6 +3,8 @@ package xxx.joker.libs.repository.engine;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.datetime.JkDuration;
+import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
@@ -23,6 +25,8 @@ class RepoDAO {
     private static final String EXT_DEPS_FILE = "fkeys";
     private static final String EXT_CLASS_DESCR_FILE = "descr";
 
+    private static final String SEP_DESCR = ":";
+
     protected Path dbFolder;
     protected String dbName;
     protected List<ClazzWrapper> clazzWrappers;
@@ -34,6 +38,7 @@ class RepoDAO {
     }
 
     public List<RepoDTO> readRepoData() {
+        JkTimer timer = new JkTimer();
         List<RepoDTO> toRet = new ArrayList<>();
 
         for(ClazzWrapper rc : clazzWrappers) {
@@ -41,7 +46,7 @@ class RepoDAO {
             toRet.add(dto);
 
             // 1. Read file .descr
-            List<String> descrList = loadDescr(rc);
+            List<String> descrList = loadFieldsDescr(rc);
             if(descrList != null) {
                 // 2. Read file .data
                 dto.setEntities(loadData(rc, descrList));
@@ -49,6 +54,8 @@ class RepoDAO {
                 dto.setForeignKeys(loadForeignKeys(rc, descrList));
             }
         }
+
+        LOG.debug("Repo readed in {}", timer.toStringElapsed());
 
         return toRet;
     }
@@ -60,12 +67,14 @@ class RepoDAO {
             if(!dto.getEntities().isEmpty()) {
                 ClazzWrapper rc = ClazzWrapper.get(dto.getEClazz());
                 List<String> descrList = new ArrayList<>();
+                List<String> fnames = new ArrayList<>();
                 List<String> dataLines = new ArrayList<>();
                 for (RepoEntity edto : dto.getEntities()) {
                     List<Pair<String, String>> pairs = rc.formatEntity(edto);
                     dataLines.add(JkStreams.join(pairs, SEP_FIELD, Pair::getValue));
                     if(descrList.isEmpty()) {
-                        descrList.addAll(JkStreams.map(pairs, Pair::getKey));
+                        descrList.addAll(JkStreams.map(pairs, p -> strf("{}{}{}", p.getKey(), SEP_DESCR, rc.getEntityField(p.getKey()).getFieldType().getName())));
+                        fnames.addAll(JkStreams.map(pairs, Pair::getKey));
                     }
                 }
                 formatData.put(filePathDescr(rc), descrList);
@@ -74,7 +83,7 @@ class RepoDAO {
                 if(!dto.getForeignKeys().isEmpty()) {
                     List<String> fkLines = new ArrayList<>();
                     for (RepoFK fk : dto.getForeignKeys()) {
-                        Integer findex = descrList.indexOf(fk.getFieldName());
+                        Integer findex = fnames.indexOf(fk.getFieldName());
                         fkLines.add(strf("{}{}{}{}{}", fk.getFromID(), SEP_FIELD, findex, SEP_FIELD, fk.getDepID()));
                     }
                     formatData.put(filePathForeignKeys(rc), fkLines);
@@ -90,9 +99,10 @@ class RepoDAO {
         formatData.forEach(this::saveRepoFile);
     }
 
-    private List<String> loadDescr(ClazzWrapper clazzWrapper) {
+    private List<String> loadFieldsDescr(ClazzWrapper clazzWrapper) {
         Path fpath = filePathDescr(clazzWrapper);
-        return readRepoFile(fpath);
+        List<String> lines = readRepoFile(fpath);
+        return JkStreams.map(lines, l -> JkStrings.splitArr(l, SEP_DESCR)[0]);
     }
     private List<RepoEntity> loadData(ClazzWrapper clazzWrapper, List<String> descrList) {
         Path fpath = filePathData(clazzWrapper);

@@ -56,7 +56,7 @@ public class JkDuration {
             String[] splitMs = JkStrings.splitArr(strElapsed, ".");
             String[] splitTm = JkStrings.splitArr(splitMs[0], ":");
             long ms = 0L;
-            if (splitMs.length == 2) ms += Long.parseLong(splitMs[1]);
+            if (splitMs.length > 1) ms += Long.parseLong(splitMs[1]);
             for (int i = splitTm.length - 1, mult = 1000; i >= 0; i--, mult *= 60) {
                 ms += Long.parseLong(splitTm[i]) * mult;
             }

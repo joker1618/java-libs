@@ -77,8 +77,12 @@ class X_TagImpl implements X_Tag {
     }
 
     @Override
-    public X_Tag getChild(int childNum) {
-        return childNum < children.size() ? children.get(childNum) : null;
+    public X_Tag getChild(int childNum, int... subNums) {
+        X_Tag source = childNum < children.size() ? children.get(childNum) : null;
+        for(int i = 0; source != null && i < subNums.length; i++) {
+            source = source.getChild(subNums[i]);
+        }
+        return source;
     }
 
     @Override

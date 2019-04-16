@@ -2,6 +2,7 @@ package xxx.joker.libs.repository.engine;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.common.RepoCommon;
@@ -44,6 +45,7 @@ class RepoHandler {
     }
 
     private void initRepoHandler(List<RepoDTO> dtoList) {
+        JkTimer timer = new JkTimer();
         Map<Long, List<RepoFK>> fkMap = new HashMap<>();
         for(RepoDTO dto : dtoList) {
             dto.getEntities().forEach(e -> dataByID.put(e.getEntityID(), e));
@@ -61,6 +63,8 @@ class RepoHandler {
         for(RepoDTO dto : dtoList) {
             handlers.put(dto.getEClazz(), new HandlerDataSet(dto.getEntities()));
         }
+
+        LOG.debug("Repo handler initialized in {}", timer.toStringElapsed());
     }
 
 //    /**
@@ -215,7 +219,7 @@ class RepoHandler {
 
         retrieveDepChilds(toAdd).values().stream().flatMap(List::stream).forEach(this::addEntity);
 
-        LOG.debug("New entity added: {}", toAdd);
+        LOG.trace("New entity added: {}", toAdd);
 
         return true;
     }
@@ -263,7 +267,7 @@ class RepoHandler {
         // Remove from dataByID
         dataByID.remove(eID);
 
-        LOG.debug("Removed entity: {}", toDel);
+        LOG.trace("Removed entity: {}", toDel);
 
         return true;
     }

@@ -253,15 +253,15 @@ public class Year2018 extends AWikiParser {
                 r.setPos(pos++);
                 gp.getRaces().add(r);
 
-                r.setRetired(tr.getChild(0).getText().equalsIgnoreCase("Ret"));
+                r.setRetired(JkConvert.toInt(tr.getChild(0).getText()) == null);
 
                 int carNum = Integer.parseInt(tr.getChild(1).getText());
                 F1Qualify q = qualifyMap.get(carNum);
                 r.setEntrant(q.getEntrant());
 
-                r.setRetired(JkConvert.toInt(tr.getChild(0).getText()) == null);
+                r.setLaps(Integer.parseInt(tr.getChild(4).getText()));
 
-                r.setTime(JkDuration.of(tr.getChild(5).getText()));
+                r.setTime(JkDuration.of(tr.getChild(5).getText().replace("&#160;", "")));
                 if(gp.getRaces().size() > 1 && r.getTime() != null) {
                     F1Race firstRace = gp.getRaces().get(0);
                     JkDuration ft = firstRace.getTime().plus(r.getTime());

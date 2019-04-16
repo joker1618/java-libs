@@ -81,6 +81,15 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
 
     @Override
     public F1Circuit getCircuit(String city, String nation) {
+        for (F1Circuit circuit : getCircuits()) {
+            String cc = circuit.getCity();
+            String nn = circuit.getNation();
+            boolean rc = city.equals(cc);
+            boolean rn = nation.equals(nn);
+            if(rc && rn) {
+                return circuit;
+            }
+        }
         return JkStreams.findUnique(getCircuits(), c -> city.equals(c.getCity()) && nation.equals(c.getNation()));
     }
 
@@ -94,7 +103,6 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
             list.add(gp);
         }
         for (RepoEntity entity : list) {
-            LOG.debug("Start deleting {}", entity);
             super.remove(entity);
         }
     }

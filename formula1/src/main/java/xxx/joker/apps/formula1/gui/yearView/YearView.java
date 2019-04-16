@@ -61,14 +61,35 @@ public class YearView extends BorderPane {
         btnResult.setOnAction(e -> setCenter(resultPane));
         nodes.add(btnResult);
 
-        for (F1GranPrix gp : season.getGpList()) {
-            Button btnGp = new Button(gp.getCircuit().getNation());
-            btnGp.setOnAction(e -> {
-                granPrixPane.setGranPrix(gp);
+//        for (F1GranPrix gp : season.getGpList()) {
+//            Button btnGp = new Button(gp.getCircuit().getNation());
+//            btnGp.setOnAction(e -> {
+//                granPrixPane.setGranPrix(gp);
+//                setCenter(granPrixPane);
+//            });
+//            nodes.add(btnGp);
+//        }
+
+        ListView<F1GranPrix> lview = new ListView<>();
+        lview.getItems().setAll(season.getGpList());
+        lview.setCellFactory(lv -> new ListCell<F1GranPrix>() {
+            @Override
+            public void updateItem(F1GranPrix item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(item.getCircuit().getNation());
+                }
+            }
+        });
+        lview.getSelectionModel().selectedItemProperty().addListener((obs,o,n) -> {
+            if(n != null && n != o) {
+                granPrixPane.setGranPrix(n);
                 setCenter(granPrixPane);
-            });
-            nodes.add(btnGp);
-        }
+            }
+        });
+        nodes.add(lview);
 
         return vBox;
     }

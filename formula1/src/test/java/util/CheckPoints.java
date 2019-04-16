@@ -30,7 +30,7 @@ public class CheckPoints {
 
         List<Integer> years = model.getAvailableYears();
         for(Integer year : years) {
-            display("YEAR {}", year);
+            display("### YEAR {}", year);
 
             List<F1GranPrix> gp = model.getGranPrixs(year);
             List<F1Race> races = gp.stream().flatMap(g -> g.getRaces().stream()).collect(Collectors.toList());
@@ -40,15 +40,21 @@ public class CheckPoints {
             Map<String, Integer> dExp = parser.getExpectedDriverPoints();
             List<String> lines = new ArrayList<>();
             for (String dname : dExp.keySet()) {
-                int computed = JkStreams.sumInt(byDriver.get(dname));
-                Integer exp = dExp.get(dname);
-                if(computed != exp) {
-                    lines.add(strf("{}|{}|<>|{}", dname, exp, computed));
+                List<Integer> ilist = byDriver.get(dname);
+                if(ilist != null) {
+                    int computed = JkStreams.sumInt(ilist);
+                    Integer exp = dExp.get(dname);
+                    if (computed != exp) {
+                        lines.add(strf("{}|{}|<>|{}", dname, exp, computed));
+                    }
                 }
             }
 
             if(lines.isEmpty()) {
-                display("");
+                display("OK {}", year);
+            } else {
+                display("KO {}", year);
+                display(JkOutput.columnsView(lines, "|", 2));
             }
 
 
@@ -68,7 +74,7 @@ public class CheckPoints {
 
     @Test
     public void checkPoints() {
-        int year = 2015;
+        int year = 2014;
         checkPoints(year);
     }
     public void checkPoints(int year) {

@@ -10,6 +10,7 @@ import xxx.joker.apps.formula1.model.F1ModelImpl;
 import xxx.joker.apps.formula1.model.F1ResourceManager;
 import xxx.joker.apps.formula1.model.F1Resources;
 import xxx.joker.apps.formula1.model.entities.*;
+import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.web.JkDownloader;
@@ -74,8 +75,11 @@ abstract class AWikiParser implements WikiParser {
 //        String strTeams  = JkStreams.join(entriesTeamMap, "\n", w -> strf("  %-5d%s", w.getValue(), w.getKey()));
 //        display("*** Expected team points ({})\n{}", entriesTeamMap.size(), strTeams);
 
+//        if(1==1)    return;
+
         List<String> gpUrls = getGpUrls(getMainPageHtml());
         for (int i = 0; i < gpUrls.size(); i++) {
+            display(""+i);
             String html = dwHtml.getHtml(gpUrls.get(i));
             F1GranPrix gp = new F1GranPrix(year, i + 1);
             if(model.getGranPrixs().add(gp)) {
@@ -127,6 +131,7 @@ abstract class AWikiParser implements WikiParser {
     }
 
     private String fixNation(String nation) {
+        if(nation.contains("Melbourne"))  return "Melbourne";
         if(nation.equals("Texas"))  return "United States";
         if(nation.equals("People's Republic of China"))  return "China";
         if(nation.equals("Quebec Canada"))  return "Canada";
@@ -134,11 +139,19 @@ abstract class AWikiParser implements WikiParser {
         return nation;
     }
     private String fixCity(String city) {
-        if(city.equals("Travis County, Austin"))  return "Austin, Texas";
-        if(city.startsWith("Suzuka, Mie"))  return "Suzuka";
-        if(city.equals("Sepang, Kuala Lumpur") || city.equals("Sepang, Selangor"))  return "Sepang";
-        if(city.equals("Magdalena Mixhuca, Mexico City"))  return "Mexico City";
-        if(city.equals("Yas Island, Abu Dhabi"))  return "Abu Dhabi";
+        if(city.contains("Austin"))  return "Austin";
+        if(city.contains("Montreal"))  return "Montreal";
+        if(city.contains("Suzuka"))  return "Suzuka";
+        if(city.contains("Sepang"))  return "Sepang";
+        if(city.contains("Mexico City"))  return "Mexico City";
+        if(city.contains("Abu Dhabi"))  return "Abu Dhabi";
+        if(city.contains("Monte Carlo"))  return "Monte Carlo";
+        if(city.contains("Sochi"))  return "Sochi";
+        if(city.contains("Montmel"))  return "Barcelona";
+        if(city.contains("Stavelot"))  return "Spa";
+        if(city.contains("Le Castellet"))  return "Le Castellet";
+        if(city.contains("Spielberg"))  return "Spielberg";
+        if(city.contains("Nürburg"))  return "Hockenheim";
         return city;
     }
 
@@ -185,6 +198,16 @@ abstract class AWikiParser implements WikiParser {
         return createWikiUrl(aTag.getAttribute("href"));
     }
 
+    protected JkDuration parseDuration(String str) {
+        String s = str.replace("&#160;", "");
+        int idx = s.lastIndexOf(".");
+        if(idx != -1) {
+            String stmp = s.substring(0, idx).replace(".", ":");
+            s = stmp + s.substring(idx);
+        }
+        return JkDuration.of(s);
+    }
+
     private String createResourceUrl(X_Tag img) {
         return strf("https:{}", img.getAttribute("srcset").replaceAll(" [^ ]+$", "").replaceAll(".*,", "").trim());
     }
@@ -226,7 +249,7 @@ abstract class AWikiParser implements WikiParser {
             String picUrl = createResourceUrl(img);
             resources.saveDriverPicture(driver, picUrl);
 
-            if(driver.getBirthDate() == null || driver.getCity() == null) {
+            if(driver.getBirthDate() == null || StringUtils.isBlank(driver.getCity())) {
                 X_Tag rowBorn = null;
                 while (rowBorn == null && rowNum < trList.size()) {
                     X_Tag tr = tbody.getChild(rowNum);
@@ -243,7 +266,7 @@ abstract class AWikiParser implements WikiParser {
                     checkField(driver.getBirthDate(), "No birth date for {}", driver);
                 }
 
-                if (driver.getCity() == null) {
+                if (StringUtils.isBlank(driver.getCity())) {
                     String[] split = rowBorn.getHtmlTag().split("<br[ ]?/>");
                     String strCity = split[split.length - 1].replaceAll("<[^<]*?>", "").replaceAll(",[^,]*$", "").trim();
                     driver.setCity(strCity);

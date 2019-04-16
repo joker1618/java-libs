@@ -18,10 +18,9 @@ public class F1Entrant extends RepoEntity {
     @RepoField
     private F1Driver driver;
 
-public String getDN(){return driver.getNation();}
     @Override
     public String getPrimaryKey() {
-        return strf("entrant-{}-{}-{}", year, team.getTeamName(), carNo);
+        return strf("entrant-{}-{}-{}", year, team.getTeamName(), driver.getFullName());
     }
 
     public int getYear() {

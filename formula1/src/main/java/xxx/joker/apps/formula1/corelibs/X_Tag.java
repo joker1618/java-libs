@@ -18,7 +18,7 @@ public interface X_Tag {
 
     String getTagName();
 
-    X_Tag getChild(int childNum);
+    X_Tag getChild(int childNum, int... subNums);
     X_Tag getChild(String tagName);
     X_Tag getChild(String tagName, String... attributes);
     List<X_Tag> getChildren();

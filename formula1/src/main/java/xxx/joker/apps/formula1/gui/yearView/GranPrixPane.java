@@ -76,7 +76,7 @@ public class GranPrixPane extends BorderPane {
                     }
             ));
         }
-        table.getColumns().add(X_FxTable.createColumn("finalGrid"));
+        table.getColumns().add(X_FxTable.createColumn("FINAL GRID", q -> q.getFinalGrid() == -1 ? "PL" : ""+q.getFinalGrid()));
 
         return table;
     }
@@ -114,6 +114,7 @@ public class GranPrixPane extends BorderPane {
         bpane.setCenter(vBox);
 
         GridPane gridPane = new GridPane();
+        gridPane.setHgap(10);
         vBox.getChildren().add(gridPane);
 
         int row = 0;

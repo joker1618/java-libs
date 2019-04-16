@@ -25,6 +25,13 @@ public class ToStringRepo {
 
 
     @Test
+    public void showCDT() {
+        showCircuits();
+        showDrivers();
+        showTeams();
+    }
+
+    @Test
     public void showTeams() {
         List<String> lines = new ArrayList<>();
         lines.add("ID|TEAM NAME|NATION");
@@ -40,6 +47,16 @@ public class ToStringRepo {
                 t.getEntityID(), t.getFullName(), t.getNation(), t.getBirthDate(), t.getCity()
         )));
         display("DRIVERS\n{}", JkOutput.columnsView(lines, "|", 2));
+    }
+
+    @Test
+    public void showCircuits() {
+        List<String> lines = new ArrayList<>();
+        lines.add("ID|NATION|CITY");
+        lines.addAll(JkStreams.map(model.getCircuits(), t -> strf("{}|{}|{}",
+                t.getEntityID(), t.getNation(), t.getCity()
+        )));
+        display("CIRCUITS\n{}", JkOutput.columnsView(lines, "|", 2));
     }
 
     @Test
