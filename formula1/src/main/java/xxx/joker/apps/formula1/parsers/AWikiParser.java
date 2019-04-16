@@ -205,8 +205,8 @@ abstract class AWikiParser implements WikiParser {
     }
 
     protected JkDuration parseDuration(String str) {
-        String s = str.replace("&#160;", "");
-        int idx = s.lastIndexOf(".");
+        String s = str;
+        int idx = str.lastIndexOf(".");
         if(idx != -1) {
             String stmp = s.substring(0, idx).replace(".", ":");
             s = stmp + s.substring(idx);

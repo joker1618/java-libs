@@ -95,7 +95,7 @@ public class ToStringRepo {
 
     @Test
     public void showGPTimes() {
-        int year = 2017;
+        int year = 2016;
         showGPTimes(year != -1 ? year : yearDef);
     }
     public void showGPTimes(int year) {

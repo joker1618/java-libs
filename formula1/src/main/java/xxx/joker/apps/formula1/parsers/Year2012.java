@@ -242,7 +242,7 @@ public class Year2012 extends AWikiParser {
 
             } else if(counterFastLast == 1) {
                 String txt = tr.findChild("td").getText().replaceAll(" .*", "");
-                fastLap.setLapTime(JkDuration.of(txt));
+                fastLap.setLapTime(parseDuration(txt));
                 counterFastLast--;
 
             } else if(tr.findChild("td a img") != null) {

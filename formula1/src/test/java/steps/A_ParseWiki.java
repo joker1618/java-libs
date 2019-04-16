@@ -29,7 +29,7 @@ public class A_ParseWiki {
 
     @Test
     public void runYear() {
-        int year = 2012;
+        int year = 2016;
 
 //        model.deleteData(year);
 

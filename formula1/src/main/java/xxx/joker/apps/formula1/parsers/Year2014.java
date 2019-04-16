@@ -181,7 +181,7 @@ public class Year2014 extends AWikiParser {
 
             } else if(counterFastLast == 1) {
                 String txt = tr.findChild("td").getText().replaceAll(" .*", "");
-                fastLap.setLapTime(JkDuration.of(txt));
+                fastLap.setLapTime(parseDuration(txt));
                 counterFastLast--;
 
             } else if(tr.findChild("td a img") != null) {
@@ -245,9 +245,9 @@ public class Year2014 extends AWikiParser {
                 F1Team team = retrieveTeam(ttag.getText(), false);
                 q.setEntrant(getEntrant(year, carNum, team));
 
-                q.getTimes().add(JkDuration.of(fixTime(tr.getChild(counter++).getTextFlat())));
-                q.getTimes().add(JkDuration.of(fixTime(tr.getChild(counter++).getTextFlat())));
-                q.getTimes().add(JkDuration.of(fixTime(tr.getChild(counter++).getTextFlat())));
+                q.getTimes().add(parseDuration(fixTime(tr.getChild(counter++).getTextFlat())));
+                q.getTimes().add(parseDuration(fixTime(tr.getChild(counter++).getTextFlat())));
+                q.getTimes().add(parseDuration(fixTime(tr.getChild(counter++).getTextFlat())));
 
                 q.setFinalGrid(JkConvert.toInt(tr.getChild(counter).getText(), -1));
             }
@@ -290,7 +290,7 @@ public class Year2014 extends AWikiParser {
 
                 r.setLaps(Integer.parseInt(tr.getChild(counter++).getText()));
 
-                r.setTime(JkDuration.of(tr.getChild(counter++).getText().replace("&#160;", "")));
+                r.setTime(parseDuration(tr.getChild(counter++).getText().replace("&#160;", "")));
                 if(gp.getRaces().size() > 1 && r.getTime() != null) {
                     F1Race firstRace = gp.getRaces().get(0);
                     JkDuration ft = firstRace.getTime().plus(r.getTime());
