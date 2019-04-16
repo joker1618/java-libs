@@ -32,6 +32,7 @@ public class YearView extends BorderPane {
     private final F1Model model = F1ModelImpl.getInstance();
     private F1Season season;
 
+    private CheckPane checkPane;
     private EntrantsPane entrantsPane;
     private GranPrixPane granPrixPane;
     private ResultsPane resultPane;
@@ -39,6 +40,7 @@ public class YearView extends BorderPane {
     public YearView(int year) {
         this.season = model.getSeason(year);
 
+        this.checkPane = new CheckPane();
         this.entrantsPane = new EntrantsPane(season.getEntrants());
         this.resultPane = new ResultsPane(season);
         this.granPrixPane = new GranPrixPane(season);
@@ -51,7 +53,13 @@ public class YearView extends BorderPane {
 
     private Pane createLeft() {
         VBox vBox = new VBox();
+        vBox.setSpacing(10);
+
         ObservableList<Node> nodes = vBox.getChildren();
+
+        Button btnCheck = new Button("CHECK PANE");
+        btnCheck.setOnAction(e -> setCenter(checkPane));
+        nodes.add(btnCheck);
 
         Button btnEntrants = new Button("ENTRANTS");
         btnEntrants.setOnAction(e -> setCenter(entrantsPane));
@@ -60,15 +68,6 @@ public class YearView extends BorderPane {
         Button btnResult = new Button("RESULTS");
         btnResult.setOnAction(e -> setCenter(resultPane));
         nodes.add(btnResult);
-
-//        for (F1GranPrix gp : season.getGpList()) {
-//            Button btnGp = new Button(gp.getCircuit().getNation());
-//            btnGp.setOnAction(e -> {
-//                granPrixPane.setGranPrix(gp);
-//                setCenter(granPrixPane);
-//            });
-//            nodes.add(btnGp);
-//        }
 
         ListView<F1GranPrix> lview = new ListView<>();
         lview.getItems().setAll(season.getGpList());
@@ -89,6 +88,7 @@ public class YearView extends BorderPane {
                 setCenter(granPrixPane);
             }
         });
+        lview.setMaxWidth(-1);
         nodes.add(lview);
 
         return vBox;
