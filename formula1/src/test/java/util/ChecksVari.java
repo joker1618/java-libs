@@ -33,7 +33,16 @@ public class ChecksVari {
                 .distinct()
                 .forEach(r -> JkConsole.display("   {}", r.strFull()));
 
-        display("\n\n\n");
+        display("\n##################################\n");
+
+        display("Fast lap times weird");
+        model.getGranPrixs().stream()
+                .filter(gp -> gp.getFastLap().getLapTime().toMillis() < (1000*60))
+                .filter(gp -> gp.getFastLap().getLapTime().toMillis() > (1000*60*3))
+                .forEach(gp -> JkConsole.display("   {}", gp));
+
+        display("\n##################################\n");
+
         display("Qualify times weird");
         model.getGranPrixs().stream()
                 .flatMap(gp -> gp.getQualifies().stream())

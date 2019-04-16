@@ -65,8 +65,8 @@ abstract class AWikiParser implements WikiParser {
         parseEntrants(getMainPageHtml());
 
         parseDriverPages();
-
 //        if(1==1)    return;
+
 //        Map<String, Integer> expDriverMap = getExpectedDriverPoints(dwHtml.getHtml(mainPageUrl));
 //        List<Map.Entry<String, Integer>> entriesDriverMap = JkStreams.sorted(expDriverMap.entrySet(), Comparator.comparing(Map.Entry::getValue));
 //        String strDrivers = JkStreams.join(entriesDriverMap, "\n", w -> strf("  %-5d%s", w.getValue(), w.getKey()));

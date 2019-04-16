@@ -29,7 +29,7 @@ public class A_ParseWiki {
 
     @Test
     public void runYear() {
-        int year = 2016;
+        int year = 2011;
 
 //        model.deleteData(year);
 
@@ -41,8 +41,8 @@ public class A_ParseWiki {
         printer.showEntrants(year);
         printer.showGPDescription(year);
         printer.showGPTimes(year);
-        printer.showCDT();
-
+//        printer.showCDT();
+//
         new CheckPoints().checkPoints(year);
 
     }

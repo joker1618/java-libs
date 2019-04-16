@@ -36,6 +36,7 @@ public class ResultsPane extends BorderPane {
 
     private TableView<F1SeasonResult> createTableResults(List<F1GranPrix> gpList) {
         TableView<F1SeasonResult> t = new TableView<>();
+        t.getColumns().add(X_FxTable.createColumn("POS.", res -> 1 + t.getItems().indexOf(res)));
         t.getColumns().add(X_FxTable.createColumn("DRIVER", e -> e.getDriver().getFullName()));
 
         gpList.forEach(gp -> {
@@ -43,7 +44,10 @@ public class ResultsPane extends BorderPane {
             String nation = gp.getCircuit().getNation();
 //            display(nation);
             JkImage img = resources.getFlagIcon(nation);
-            col.setGraphic(new ImageView(img.getImage()));
+            ImageView iv = new ImageView(img.getImage());
+            iv.setPreserveRatio(true);
+            iv.setFitWidth(35);
+            col.setGraphic(iv);
             col.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getPoints().get(gp)));
             col.setCellFactory(param -> new TableCell<F1SeasonResult, F1Race>() {
                 @Override

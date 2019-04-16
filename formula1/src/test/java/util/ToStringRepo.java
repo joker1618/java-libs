@@ -81,7 +81,7 @@ public class ToStringRepo {
 
     @Test
     public void showGPDescription() {
-        int year = 2018;
+        int year = 2011;
         showGPDescription(year != -1 ? year : yearDef);
     }
     public void showGPDescription(int year) {
