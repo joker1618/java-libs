@@ -41,6 +41,7 @@ public class ResultsPane extends BorderPane {
         gpList.forEach(gp -> {
             TableColumn<F1SeasonResult, F1Race> col = new TableColumn<>();
             String nation = gp.getCircuit().getNation();
+//            display(nation);
             JkImage img = resources.getFlagIcon(nation);
             col.setGraphic(new ImageView(img.getImage()));
             col.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getPoints().get(gp)));

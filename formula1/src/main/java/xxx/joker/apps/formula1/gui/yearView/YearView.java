@@ -61,15 +61,16 @@ public class YearView extends BorderPane {
         btnCheck.setOnAction(e -> setCenter(checkPane));
         nodes.add(btnCheck);
 
-        Button btnEntrants = new Button("ENTRANTS");
+        Button btnEntrants = new Button(strf("ENTRANTS ({})", season.getEntrants().size()));
         btnEntrants.setOnAction(e -> setCenter(entrantsPane));
         nodes.add(btnEntrants);
 
-        Button btnResult = new Button("RESULTS");
+        Button btnResult = new Button(strf("RESULTS ({})", season.getResults().size()));
         btnResult.setOnAction(e -> setCenter(resultPane));
         nodes.add(btnResult);
 
         ListView<F1GranPrix> lview = new ListView<>();
+        lview.setMinHeight(800);
         lview.getItems().setAll(season.getGpList());
         lview.setCellFactory(lv -> new ListCell<F1GranPrix>() {
             @Override
@@ -89,6 +90,7 @@ public class YearView extends BorderPane {
             }
         });
         lview.setMaxWidth(-1);
+        nodes.add(new Label("NUM GRAN PRIX: "+season.getGpList().size()));
         nodes.add(lview);
 
         return vBox;

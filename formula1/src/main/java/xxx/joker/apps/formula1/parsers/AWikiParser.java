@@ -3,6 +3,7 @@ package xxx.joker.apps.formula1.parsers;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.apps.formula1.corelibs.X_HtmlChars;
 import xxx.joker.apps.formula1.corelibs.X_Scanners;
 import xxx.joker.apps.formula1.corelibs.X_Tag;
 import xxx.joker.apps.formula1.model.F1Model;
@@ -65,6 +66,7 @@ abstract class AWikiParser implements WikiParser {
 
         parseDriverPages();
 
+//        if(1==1)    return;
 //        Map<String, Integer> expDriverMap = getExpectedDriverPoints(dwHtml.getHtml(mainPageUrl));
 //        List<Map.Entry<String, Integer>> entriesDriverMap = JkStreams.sorted(expDriverMap.entrySet(), Comparator.comparing(Map.Entry::getValue));
 //        String strDrivers = JkStreams.join(entriesDriverMap, "\n", w -> strf("  %-5d%s", w.getValue(), w.getKey()));
@@ -75,7 +77,6 @@ abstract class AWikiParser implements WikiParser {
 //        String strTeams  = JkStreams.join(entriesTeamMap, "\n", w -> strf("  %-5d%s", w.getValue(), w.getKey()));
 //        display("*** Expected team points ({})\n{}", entriesTeamMap.size(), strTeams);
 
-//        if(1==1)    return;
 
         List<String> gpUrls = getGpUrls(getMainPageHtml());
         for (int i = 0; i < gpUrls.size(); i++) {
@@ -136,6 +137,7 @@ abstract class AWikiParser implements WikiParser {
         if(nation.equals("People's Republic of China"))  return "China";
         if(nation.equals("Quebec Canada"))  return "Canada";
         if(nation.equals("Lombardy"))  return "Italy";
+        if(nation.equals("England"))  return "United Kingdom";
         return nation;
     }
     private String fixCity(String city) {
@@ -147,11 +149,14 @@ abstract class AWikiParser implements WikiParser {
         if(city.contains("Abu Dhabi"))  return "Abu Dhabi";
         if(city.contains("Monte Carlo"))  return "Monte Carlo";
         if(city.contains("Sochi"))  return "Sochi";
-        if(city.contains("Montmel"))  return "Barcelona";
+        if(StringUtils.containsAny(city, "Montmel", "Valencia"))  return "Barcelona";
         if(city.contains("Stavelot"))  return "Spa";
         if(city.contains("Le Castellet"))  return "Le Castellet";
         if(city.contains("Spielberg"))  return "Spielberg";
         if(city.contains("Nürburg"))  return "Hockenheim";
+        if(city.contains("Northamptonshire"))  return "Silverstone";
+        if(city.contains("South Jeolla"))  return "Yeongam";
+        if(city.contains("Uttar Pradesh"))  return "Uttar Pradesh";
         return city;
     }
 
@@ -166,7 +171,8 @@ abstract class AWikiParser implements WikiParser {
     }
 
     protected F1Driver retrieveDriver(String driverName, boolean createIfMissing) {
-        String dname = driverName.replace("(racing driver)", "").trim();
+        String dname = X_HtmlChars.fixDirtyChars(driverName);
+        dname = dname.replace("(racing driver)", "").trim();
         F1Driver driver = model.getDriver(dname);
         if(driver == null && createIfMissing) {
             driver = new F1Driver(dname);

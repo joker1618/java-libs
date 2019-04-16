@@ -259,6 +259,7 @@ public class X_HtmlChars {
     
     public static String fixDirtyChars(String str) {
         String toRet = str.replace("&#160;", " ");
+        toRet = toRet.replace("&#39;", "'");
         return toRet;
     }
 

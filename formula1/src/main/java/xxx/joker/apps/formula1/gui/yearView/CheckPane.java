@@ -1,6 +1,7 @@
 package xxx.joker.apps.formula1.gui.yearView;
 
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
@@ -19,6 +20,9 @@ import xxx.joker.libs.core.datetime.JkDates;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.format.JkOutput;
 
+import java.util.Arrays;
+import java.util.Set;
+
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class CheckPane extends BorderPane {
@@ -32,19 +36,33 @@ public class CheckPane extends BorderPane {
     public CheckPane() {
         F1Model model = F1ModelImpl.getInstance();
 
-        tableTeams = createTableTeams();
-        tableTeams.getItems().setAll(model.getTeams());
-
-        tableDrivers = createTableDrivers();
-        tableDrivers.getItems().setAll(model.getDrivers());
-
-        tableCircuits = createTableCircuits();
-        tableCircuits.getItems().setAll(model.getCircuits());
-
-        HBox hbox = new HBox(tableTeams, tableDrivers, tableCircuits);
+        HBox hbox = new HBox();
         hbox.setSpacing(20);
 
+        tableTeams = createTableTeams();
+        Set<F1Team> teams = model.getTeams();
+        tableTeams.getItems().setAll(teams);
+        hbox.getChildren().add(wrapElems("TEAMS - "+teams.size(), tableTeams));
+
+        tableDrivers = createTableDrivers();
+        Set<F1Driver> drivers = model.getDrivers();
+        tableDrivers.getItems().setAll(drivers);
+        hbox.getChildren().add(wrapElems("DRIVERS - "+drivers.size(), tableDrivers));
+
+        tableCircuits = createTableCircuits();
+        Set<F1Circuit> circuits = model.getCircuits();
+        tableCircuits.getItems().setAll(circuits);
+        hbox.getChildren().add(wrapElems("CIRCUITS - "+circuits.size(), tableCircuits));
+
         setCenter(hbox);
+    }
+    private VBox wrapElems(String labelMex, TableView<?> tview) {
+        VBox vBox = new VBox();
+        vBox.setSpacing(15);
+        vBox.getChildren().add(new Label(labelMex));
+        vBox.getChildren().add(tview);
+        tview.setMinHeight(900);
+        return vBox;
     }
 
 

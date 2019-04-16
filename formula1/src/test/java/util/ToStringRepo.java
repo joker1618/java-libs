@@ -75,6 +75,11 @@ public class ToStringRepo {
     }
 
     @Test
+    public void showAllGPDescription() {
+        model.getAvailableYears().forEach(this::showGPDescription);
+    }
+
+    @Test
     public void showGPDescription() {
         int year = 2018;
         showGPDescription(year != -1 ? year : yearDef);

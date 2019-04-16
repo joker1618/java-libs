@@ -29,21 +29,19 @@ public class A_ParseWiki {
 
     @Test
     public void runYear() {
-        int year = 2013;
+        int year = 2012;
 
-        model.deleteData(year);
+//        model.deleteData(year);
 
         WikiParser parser = WikiParser.getParser(year);
         parser.parse();
-        model.commit();
+//        model.commit();
 
         ToStringRepo printer = new ToStringRepo();
         printer.showEntrants(year);
         printer.showGPDescription(year);
         printer.showGPTimes(year);
-        printer.showDrivers();
-        printer.showTeams();
-        printer.showCircuits();
+        printer.showCDT();
 
         new CheckPoints().checkPoints(year);
 
@@ -51,7 +49,7 @@ public class A_ParseWiki {
 
     @Test
     public void runRange() {
-        int ystart = 2013;
+        int ystart = 2012;
         int yend = 2018;
 //        model.deleteData(year);
 
