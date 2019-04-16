@@ -63,36 +63,36 @@ class RepoHandler {
         }
     }
 
-    /**
-     *     Fix IDs if at least 1/2 is unused, and if the max ID is greater than RepoCommon.MIN_SIZE_FOR_COMPACT_IDS
-     *     todo test
-     */
-    private boolean compactEntityIDs() {
-        boolean changed = false;
-
-        long maxUsedID = getMaxUsedID();
-        if(maxUsedID > RepoCommon.MIN_SIZE_FOR_COMPACT_IDS) {
-            if(dataByID.size() < (maxUsedID / 2)) {
-                List<Long> idList = JkConvert.toList(dataByID.keySet());
-                long pos = 0;
-                for (int i = 0; i < idList.size(); i++) {
-                    Long uid = idList.get(i);
-                    if(uid > pos) {
-                        RepoEntity e = dataByID.remove(uid);
-                        ClazzWrapper.setEntityID(e, pos);
-                        dataByID.put(pos, e);
-                        changed = true;
-                    }
-                    pos++;
-                }
-                if(changed) {
-                    sequenceValue.set(1L + getMaxUsedID());
-                }
-            }
-        }
-
-        return changed;
-    }
+//    /**
+//     *     Fix IDs if at least 1/2 is unused, and if the max ID is greater than RepoCommon.MIN_SIZE_FOR_COMPACT_IDS
+//     *     todo test
+//     */
+//    private boolean compactEntityIDs() {
+//        boolean changed = false;
+//
+//        long maxUsedID = getMaxUsedID();
+//        if(maxUsedID > RepoCommon.MIN_SIZE_FOR_COMPACT_IDS) {
+//            if(dataByID.size() < (maxUsedID / 2)) {
+//                List<Long> idList = JkConvert.toList(dataByID.keySet());
+//                long pos = 0;
+//                for (int i = 0; i < idList.size(); i++) {
+//                    Long uid = idList.get(i);
+//                    if(uid > pos) {
+//                        RepoEntity e = dataByID.remove(uid);
+//                        ClazzWrapper.setEntityID(e, pos);
+//                        dataByID.put(pos, e);
+//                        changed = true;
+//                    }
+//                    pos++;
+//                }
+//                if(changed) {
+//                    sequenceValue.set(1L + getMaxUsedID());
+//                }
+//            }
+//        }
+//
+//        return changed;
+//    }
 
     private long getMaxUsedID() {
         return dataByID.keySet().stream().mapToLong(l -> l).max().orElse(-1);
