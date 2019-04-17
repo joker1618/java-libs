@@ -153,7 +153,7 @@ abstract class AWikiParser implements WikiParser {
         if(city.contains("Stavelot"))  return "Spa";
         if(city.contains("Le Castellet"))  return "Le Castellet";
         if(city.contains("Spielberg"))  return "Spielberg";
-        if(city.contains("Nürburg"))  return "Hockenheim";
+        if(StringUtils.containsAny(city, "Nürburg", "Hockenheim"))  return "Hockenheim";
         if(city.contains("Northamptonshire"))  return "Silverstone";
         if(city.contains("South Jeolla"))  return "Yeongam";
         if(city.contains("Uttar Pradesh"))  return "Uttar Pradesh";

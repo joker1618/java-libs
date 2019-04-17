@@ -26,7 +26,6 @@ public abstract class RepoEntity implements IRepoEntity<RepoEntity> {
     @Override
     public String toString() {
         return strFull();
-//        return strShort();
     }
 
     @Override

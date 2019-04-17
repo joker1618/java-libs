@@ -57,18 +57,6 @@ public class CheckPoints {
                 display(JkOutput.columnsView(lines, "|", 2));
             }
 
-
-//            List<Pair<String, Integer>> list = new ArrayList<>();
-//            raceMap.forEach((k, v) -> list.add(Pair.of(k, v.stream().mapToInt(F1Race::getPoints).sum())));
-//            List<Pair<String, Integer>> sorted = JkStreams.reverseOrder(list, Comparator.comparingInt(Pair::getValue));
-//            List<String> lines = new ArrayList<>();
-//            lines.add(label + "|EXPECTED||COMPUTED");
-//            for (Pair<String, Integer> pair : sorted) {
-//                Integer exp = expected.get(pair.getKey());
-//                String line = strf("{}|{}|{}|{}", pair.getKey(), exp, exp.intValue() == pair.getValue() ? "" : "<>", pair.getValue());
-//                lines.add(line);
-//            }
-//            display("{} POINT CHECK {}\n{}", label, year, JkStrings.leftPadLines(JkOutput.columnsView(lines, "|", 2), " ", 2));
         }
     }
 
