@@ -1,20 +1,20 @@
-package xxx.joker.apps.formula1.corelibs;
+package xxx.joker.libs.core.scanners;
 
 import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.objects.Range;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 
-class X_TextScannerImpl implements X_TextScanner {
+class JkTextScannerImpl implements JkTextScanner {
 
     private String originalText;
     private StringBuilder buffer;
     private boolean ignoreCase;
 
-    public X_TextScannerImpl(String text) {
+    public JkTextScannerImpl(String text) {
         this(text, false);
     }
-    public X_TextScannerImpl(String text, boolean ignoreCase) {
+    public JkTextScannerImpl(String text, boolean ignoreCase) {
         this.originalText = text;
         this.buffer = new StringBuilder(text);
         this.ignoreCase = ignoreCase;
@@ -160,7 +160,7 @@ class X_TextScannerImpl implements X_TextScanner {
 
 
     private boolean setCursorMulti(boolean setStart, boolean cursorAfterToFind, boolean findForward, String... toFind) {
-        X_TextScannerImpl sc = new X_TextScannerImpl(buffer.toString(), ignoreCase);
+        JkTextScannerImpl sc = new JkTextScannerImpl(buffer.toString(), ignoreCase);
         for(String findStr : toFind) {
             if(!sc.setCursor(setStart, cursorAfterToFind, findForward, findStr)) {
                 return false;

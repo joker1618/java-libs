@@ -3,9 +3,9 @@ package xxx.joker.apps.formula1.parsers;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.apps.formula1.corelibs.X_HtmlChars;
-import xxx.joker.apps.formula1.corelibs.X_Scanners;
-import xxx.joker.apps.formula1.corelibs.X_Tag;
+import xxx.joker.libs.core.scanners.JkHtmlChars;
+import xxx.joker.libs.core.scanners.JkScanners;
+import xxx.joker.libs.core.scanners.JkTag;
 import xxx.joker.apps.formula1.model.F1Model;
 import xxx.joker.apps.formula1.model.F1ModelImpl;
 import xxx.joker.apps.formula1.model.F1ResourceManager;
@@ -105,17 +105,17 @@ abstract class AWikiParser implements WikiParser {
         return getExpectedTeamPoints(getMainPageHtml());
     }
 
-    protected void addDriverLink(F1Driver driver, X_Tag aTag) {
+    protected void addDriverLink(F1Driver driver, JkTag aTag) {
         String url = createWikiUrl(aTag);
         driverUrls.putIfAbsent(driver, url);
     }
 
-    protected boolean downloadFlagIcon(X_Tag img) {
+    protected boolean downloadFlagIcon(JkTag img) {
         String url = createResourceUrl(img);
         String nation = img.getAttribute("alt");
         return resources.saveFlagIcon(nation, url);
     }
-    protected boolean downloadTrackMap(F1GranPrix gp, X_Tag img) {
+    protected boolean downloadTrackMap(F1GranPrix gp, JkTag img) {
         String url = createResourceUrl(img);
         return resources.saveTrackMap(gp, url);
     }
@@ -171,7 +171,7 @@ abstract class AWikiParser implements WikiParser {
     }
 
     protected F1Driver retrieveDriver(String driverName, boolean createIfMissing) {
-        String dname = X_HtmlChars.fixDirtyChars(driverName);
+        String dname = JkHtmlChars.fixDirtyChars(driverName);
         dname = dname.replace("(racing driver)", "").trim();
         F1Driver driver = model.getDriver(dname);
         if(driver == null && createIfMissing) {
@@ -200,7 +200,7 @@ abstract class AWikiParser implements WikiParser {
     protected String createWikiUrl(String wikiSubPath) {
         return strf("{}/{}", PREFIX_URL, wikiSubPath.replaceFirst("^/", ""));
     }
-    protected String createWikiUrl(X_Tag aTag) {
+    protected String createWikiUrl(JkTag aTag) {
         return createWikiUrl(aTag.getAttribute("href"));
     }
 
@@ -214,7 +214,7 @@ abstract class AWikiParser implements WikiParser {
         return JkDuration.of(s);
     }
 
-    private String createResourceUrl(X_Tag img) {
+    private String createResourceUrl(JkTag img) {
         return strf("https:{}", img.getAttribute("srcset").replaceAll(" [^ ]+$", "").replaceAll(".*,", "").trim());
     }
 
@@ -242,11 +242,11 @@ abstract class AWikiParser implements WikiParser {
             String pageUrl = driverUrls.get(driver);
             String html = dwHtml.getHtml(pageUrl);
 
-            X_Tag tableEntrants = X_Scanners.parseHtmlTag(html, "table", "<table class=\"infobox");
-            X_Tag tbody = tableEntrants.getChild("tbody");
+            JkTag tableEntrants = JkScanners.parseHtmlTag(html, "table", "<table class=\"infobox");
+            JkTag tbody = tableEntrants.getChild("tbody");
 
-            X_Tag img = null;
-            List<X_Tag> trList = tbody.getChildren("tr");
+            JkTag img = null;
+            List<JkTag> trList = tbody.getChildren("tr");
             int rowNum = 0;
             while(img == null && rowNum < trList.size()) {
                 img = tbody.getChild(rowNum).findFirstTag("img");
@@ -256,10 +256,10 @@ abstract class AWikiParser implements WikiParser {
             resources.saveDriverPicture(driver, picUrl);
 
             if(driver.getBirthDate() == null || StringUtils.isBlank(driver.getCity())) {
-                X_Tag rowBorn = null;
+                JkTag rowBorn = null;
                 while (rowBorn == null && rowNum < trList.size()) {
-                    X_Tag tr = tbody.getChild(rowNum);
-                    X_Tag ch = tr.getChild(0);
+                    JkTag tr = tbody.getChild(rowNum);
+                    JkTag ch = tr.getChild(0);
                     if (ch.getTagName().equals("th") && "Born".equals(ch.getText())) {
                         rowBorn = tr;
                     }

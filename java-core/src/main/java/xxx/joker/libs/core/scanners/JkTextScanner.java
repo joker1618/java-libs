@@ -1,8 +1,8 @@
-package xxx.joker.apps.formula1.corelibs;
+package xxx.joker.libs.core.scanners;
 
 import xxx.joker.libs.core.objects.Range;
 
-public interface X_TextScanner {
+public interface JkTextScanner {
 
     void skip(long offset);
     long position();

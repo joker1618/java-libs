@@ -1,4 +1,4 @@
-package xxx.joker.apps.formula1.corelibs;
+package xxx.joker.libs.core.scanners;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -8,17 +8,17 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class X_Scanners {
+public class JkScanners {
 
-    public static X_TextScanner getTextScanner(String txt) {
+    public static JkTextScanner getTextScanner(String txt) {
         return getTextScanner(txt, false);
     }
-    public static X_TextScanner getTextScanner(String txt, boolean ignoreCase) {
-        return new X_TextScannerImpl(txt, ignoreCase);
+    public static JkTextScanner getTextScanner(String txt, boolean ignoreCase) {
+        return new JkTextScannerImpl(txt, ignoreCase);
     }
 
-    public static X_Tag parseHtmlTag(String html, String tagName, String... startStrings) {
-        X_TextScanner scanner = new X_TextScannerImpl(html, true);
+    public static JkTag parseHtmlTag(String html, String tagName, String... startStrings) {
+        JkTextScanner scanner = new JkTextScannerImpl(html, true);
 
         for(String ss : startStrings) {
             if(StringUtils.isNotEmpty(ss)) {
@@ -39,17 +39,17 @@ public class X_Scanners {
         scanner.rebaseOrigText();
         return parseHtml(scanner);
     }
-    private static X_Tag parseHtml(X_TextScanner scanner) {
-        X_TagImpl rootTag = null;
-        Stack<X_TagImpl> openedTags = new Stack<>();
+    private static JkTag parseHtml(JkTextScanner scanner) {
+        JkTagImpl rootTag = null;
+        Stack<JkTagImpl> openedTags = new Stack<>();
         Range tagRange;
 
         while((tagRange = getNextTagRange(scanner.toString())) != null) {
             String strTag = scanner.nextString(tagRange);
             scanner.skip(tagRange.getEnd());
 
-            Pair<X_TagImpl, Boolean> pair = parseTagString(strTag);
-            X_TagImpl tag = pair.getKey();
+            Pair<JkTagImpl, Boolean> pair = parseTagString(strTag);
+            JkTagImpl tag = pair.getKey();
             boolean isClosingTag = !pair.getValue();
 
             if(!isClosingTag) {
@@ -58,7 +58,7 @@ public class X_Scanners {
                 if(rootTag == null) {
                     rootTag = tag;
                 } else {
-                    X_TagImpl parent = openedTags.peek();
+                    JkTagImpl parent = openedTags.peek();
                     parent.getChildren().add(tag);
                     tag.setParent(parent);
                 }
@@ -73,7 +73,7 @@ public class X_Scanners {
                 }
 
             } else {
-                X_TagImpl popTag = openedTags.pop();
+                JkTagImpl popTag = openedTags.pop();
                 popTag.setEndPos((int)scanner.position());
                 if(openedTags.empty() || !popTag.getTagName().equals(tag.getTagName())) {
                     break;
@@ -100,14 +100,14 @@ public class X_Scanners {
     }
     // return <tag; true if is a tag open (i.e. <div>), false if is a closing tag (i.e. </div>)>
     // strTag = <...>
-    private static Pair<X_TagImpl, Boolean> parseTagString(String strTag) {
+    private static Pair<JkTagImpl, Boolean> parseTagString(String strTag) {
         // Check if is a closing tag
         if(strTag.startsWith("</")) {
             String tagName = strTag.replaceAll("^</", "").replaceAll(">$", "").trim();
-            return Pair.of(new X_TagImpl(tagName), false);
+            return Pair.of(new JkTagImpl(tagName), false);
         }
 
-        X_TagImpl tag = new X_TagImpl();
+        JkTagImpl tag = new JkTagImpl();
         tag.setAutoClosed(strTag.endsWith("/>"));
 
         String tempStr = strTag.replaceAll("^<", "").replaceAll(">$", "").replaceAll("/$", "").trim();

@@ -1,8 +1,8 @@
 package xxx.joker.apps.formula1.parsers;
 
 import org.apache.commons.lang3.StringUtils;
-import xxx.joker.apps.formula1.corelibs.X_Scanners;
-import xxx.joker.apps.formula1.corelibs.X_Tag;
+import xxx.joker.libs.core.scanners.JkScanners;
+import xxx.joker.libs.core.scanners.JkTag;
 import xxx.joker.apps.formula1.model.entities.*;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.lambdas.JkStreams;
@@ -31,18 +31,18 @@ public class Year2012 extends AWikiParser {
      */
     @Override
     protected void parseEntrants(String html) {
-        X_Tag tableEntrants = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Teams_and_drivers\">", "<table class=\"wikitable\"");
-        X_Tag tbody = tableEntrants.getChild("tbody");
+        JkTag tableEntrants = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Teams_and_drivers\">", "<table class=\"wikitable\"");
+        JkTag tbody = tableEntrants.getChild("tbody");
 
         F1Entrant previous = null;
-        for (X_Tag tr : tbody.getChildren("tr")) {
-            List<X_Tag> tdList = tr.getChildren("td");
+        for (JkTag tr : tbody.getChildren("tr")) {
+            List<JkTag> tdList = tr.getChildren("td");
 
             if(tdList.size() == tr.getChildren().size() && tdList.size() == 2) {
-                X_Tag spanTag;
-                X_Tag aTag;
-                X_Tag firstTd = tr.getChild(0);
-                X_Tag chTag = firstTd.getChild("span");
+                JkTag spanTag;
+                JkTag aTag;
+                JkTag firstTd = tr.getChild(0);
+                JkTag chTag = firstTd.getChild("span");
                 if(chTag.getAttribute("class").equals("nowrap")) {
                     spanTag = chTag.getChild("span");
                     aTag = chTag.getChild("a");
@@ -56,7 +56,7 @@ public class Year2012 extends AWikiParser {
 
                 F1Driver d = retrieveDriver(aTag.getAttribute("title"), true);
                 if(StringUtils.isBlank(d.getNation())) {
-                    X_Tag img = spanTag.findFirstTag("img");
+                    JkTag img = spanTag.findFirstTag("img");
                     d.setNation(img.getAttribute("alt"));
                     super.checkField(d.getNation(), "Driver nation {}", d.getFullName());
                     super.addDriverLink(d, aTag);
@@ -75,9 +75,9 @@ public class Year2012 extends AWikiParser {
             } else if(tdList.size() == tr.getChildren().size() && tdList.size() == 3) {
                 int carNum = Integer.valueOf(tr.getChild(0).getText());
 
-                X_Tag spanTag;
-                X_Tag aTag;
-                X_Tag chTag = tr.getChild(1).getChild("span");
+                JkTag spanTag;
+                JkTag aTag;
+                JkTag chTag = tr.getChild(1).getChild("span");
                 if(chTag.getAttribute("class").equals("nowrap")) {
                     spanTag = chTag.getChild("span");
                     aTag = chTag.getChild("a");
@@ -88,7 +88,7 @@ public class Year2012 extends AWikiParser {
 
                 F1Driver d = retrieveDriver(aTag.getAttribute("title"), true);
                 if(StringUtils.isBlank(d.getNation())) {
-                    X_Tag img = spanTag.findFirstTag("img");
+                    JkTag img = spanTag.findFirstTag("img");
                     d.setNation(img.getAttribute("alt"));
                     super.checkField(d.getNation(), "Driver nation {}", d.getFullName());
                     super.addDriverLink(d, aTag);
@@ -105,10 +105,10 @@ public class Year2012 extends AWikiParser {
                 model.add(e);
 
             } else if(tdList.size() >= 7) {
-                X_Tag tagTeamName = tr.getChild(1).findChild("a");
+                JkTag tagTeamName = tr.getChild(1).findChild("a");
                 F1Team team = retrieveTeam(tagTeamName.getText(), true);
                 if(StringUtils.isBlank(team.getNation())) {
-                    X_Tag img = tr.getChild(0).findFirstTag("img");
+                    JkTag img = tr.getChild(0).findFirstTag("img");
                     team.setNation(img.getAttribute("alt"));
                     super.checkField(team.getNation(), "Team nation {}", team.getTeamName());
                     super.downloadFlagIcon(img);
@@ -125,9 +125,9 @@ public class Year2012 extends AWikiParser {
 
                 int carNum = Integer.valueOf(tr.getChild(4).getText());
 
-                X_Tag spanTag;
-                X_Tag aTag;
-                X_Tag chTag = tr.getChild(5).getChild("span");
+                JkTag spanTag;
+                JkTag aTag;
+                JkTag chTag = tr.getChild(5).getChild("span");
                 if(chTag.getAttribute("class").equals("nowrap")) {
                     spanTag = chTag.getChild("span");
                     aTag = chTag.getChild("a");
@@ -138,7 +138,7 @@ public class Year2012 extends AWikiParser {
 
                 F1Driver d = retrieveDriver(aTag.getAttribute("title"), true);
                 if(StringUtils.isBlank(d.getNation())) {
-                    X_Tag img = spanTag.findFirstTag("img");
+                    JkTag img = spanTag.findFirstTag("img");
                     d.setNation(img.getAttribute("alt"));
                     super.checkField(d.getNation(), "Driver nation {}", d.getFullName());
                     super.addDriverLink(d, aTag);
@@ -161,17 +161,17 @@ public class Year2012 extends AWikiParser {
 
     @Override
     protected List<String> getGpUrls(String html) {
-        X_Tag tableEntrants = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Grands_Prix\">", "<table class=\"wikitable");
-        X_Tag tbody = tableEntrants.getChild("tbody");
+        JkTag tableEntrants = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Grands_Prix\">", "<table class=\"wikitable");
+        JkTag tbody = tableEntrants.getChild("tbody");
 
         List<String> urls = new ArrayList<>();
-        for (X_Tag tr : tbody.getChildren("tr")) {
-            List<X_Tag> tdList = tr.getChildren("td");
+        for (JkTag tr : tbody.getChildren("tr")) {
+            List<JkTag> tdList = tr.getChildren("td");
             if(tdList.size() == 6) {
-                X_Tag a = tdList.get(5).getChild("a");
+                JkTag a = tdList.get(5).getChild("a");
                 urls.add(super.createWikiUrl(a));
 
-                X_Tag img = tdList.get(0).findFirstTag("img");
+                JkTag img = tdList.get(0).findFirstTag("img");
                 super.downloadFlagIcon(img);
             }
         }
@@ -183,13 +183,13 @@ public class Year2012 extends AWikiParser {
     protected Map<String, Integer> getExpectedDriverPoints(String html) {
         Map<String, Integer> map = new HashMap<>();
 
-        X_Tag tableEntrants = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"World_Drivers'_Championship_standings\">"
+        JkTag tableEntrants = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"World_Drivers'_Championship_standings\">"
                 , "<table class=\"wikitable\"", "<table>", "<table class=\"wikitable\"");
-        X_Tag tbody = tableEntrants.getChild("tbody");
+        JkTag tbody = tableEntrants.getChild("tbody");
 
-        for (X_Tag tr : tbody.getChildren("tr")) {
+        for (JkTag tr : tbody.getChildren("tr")) {
             if(tr.getChildren("th").size() == 2) {
-                X_Tag dTag = tr.getChild(1).findChild("a", "span a");
+                JkTag dTag = tr.getChild(1).findChild("a", "span a");
                 F1Driver driver = retrieveDriver(dTag.getText(), false);
                 String spoints = JkStreams.getLastElem(tr.getChildren()).getText();
                 int points = Integer.parseInt(spoints);
@@ -204,14 +204,14 @@ public class Year2012 extends AWikiParser {
     protected Map<String, Integer> getExpectedTeamPoints(String html) {
         Map<String, Integer> map = new HashMap<>();
 
-        X_Tag tableEntrants = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"World_Constructors'_Championship_standings\">", "<table class=\"wikitable\"");
-        X_Tag tbody = tableEntrants.getChild("tbody");
+        JkTag tableEntrants = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"World_Constructors'_Championship_standings\">", "<table class=\"wikitable\"");
+        JkTag tbody = tableEntrants.getChild("tbody");
 
-        for (X_Tag tr : tbody.getChildren("tr")) {
+        for (JkTag tr : tbody.getChildren("tr")) {
             if(tr.getChildren("th").size() <= 2 && tr.getChild(0).getTagName().equals("th")) {
-                X_Tag teamTag = tr.getChild(1).findChild("a", "span a");
+                JkTag teamTag = tr.getChild(1).findChild("a", "span a");
                 F1Team team = retrieveTeam(teamTag.getText(), false);
-                X_Tag last = JkStreams.getLastElem(tr.getChildren());
+                JkTag last = JkStreams.getLastElem(tr.getChildren());
                 String spoints = last.getTagName().equals("th") ? last.getText() : last.getChild("b").getText();
                 spoints = spoints.replaceAll(".*\\(", "").replaceAll("\\).*", "");
                 int points = Integer.parseInt(spoints);
@@ -224,14 +224,14 @@ public class Year2012 extends AWikiParser {
 
     @Override
     protected void parseGpDetails(String html, F1GranPrix gp) {
-        X_Tag tableGp = X_Scanners.parseHtmlTag(html, "table", "<table class=\"infobox vevent\"");
-        X_Tag tbody = tableGp.getChild("tbody");
+        JkTag tableGp = JkScanners.parseHtmlTag(html, "table", "<table class=\"infobox vevent\"");
+        JkTag tbody = tableGp.getChild("tbody");
 
         int counterFastLast = -1;
         F1FastLap fastLap = new F1FastLap();
         gp.setFastLap(fastLap);
 
-        for (X_Tag tr : tbody.getChildren("tr")) {
+        for (JkTag tr : tbody.getChildren("tr")) {
             if(counterFastLast == 2) {
                 F1Driver d = retrieveDriver(tr.findChild("td span a").getAttribute("title"), false);
                 if(d == null) {
@@ -246,11 +246,11 @@ public class Year2012 extends AWikiParser {
                 counterFastLast--;
 
             } else if(tr.findChild("td a img") != null) {
-                X_Tag img = tr.findChild("td a img");
+                JkTag img = tr.findChild("td a img");
                 downloadTrackMap(gp, img);
 
             } else if(counterFastLast == -1 && tr.getChildren().size() == 1 && tr.findChild("th a") != null) {
-                X_Tag tag = tr.findChild("th a");
+                JkTag tag = tr.findChild("th a");
                 if (tag.getText().equals("Fastest lap")) {
                     counterFastLast = 2;
                 }
@@ -294,15 +294,15 @@ public class Year2012 extends AWikiParser {
 
     @Override
     protected void parseQualify(String html, F1GranPrix gp) {
-        X_Tag tableQualify = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Qualifying_2\">", "<table class=\"wikitable");
+        JkTag tableQualify = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Qualifying_2\">", "<table class=\"wikitable");
         if(tableQualify == null) {
-            tableQualify = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Qualifying\">", "<table class=\"wikitable");
+            tableQualify = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Qualifying\">", "<table class=\"wikitable");
         }
-        X_Tag tbody = tableQualify.getChild("tbody");
+        JkTag tbody = tableQualify.getChild("tbody");
 
         int pos = 1;
 
-        for (X_Tag tr : tbody.getChildren("tr")) {
+        for (JkTag tr : tbody.getChildren("tr")) {
             int tdNum = tr.getChildren("td").size();
             if(tr.getChildren("th").size() == 1 && (tdNum >= 6 && tdNum <= 8)) {
                 F1Qualify q = new F1Qualify();
@@ -327,16 +327,16 @@ public class Year2012 extends AWikiParser {
 
     @Override
     protected void parseRace(String html, F1GranPrix gp) {
-        X_Tag tableRace = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Race_2\">", "<table class=\"wikitable\"");
+        JkTag tableRace = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Race_2\">", "<table class=\"wikitable\"");
         if(tableRace == null) {
-            tableRace = X_Scanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Race\">", "<table class=\"wikitable");
+            tableRace = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Race\">", "<table class=\"wikitable");
         }
-        X_Tag tbody = tableRace.getChild("tbody");
+        JkTag tbody = tableRace.getChild("tbody");
 
         Map<String, F1Qualify> qualifyMap = JkStreams.toMapSingle(gp.getQualifies(), q -> q.getEntrant().getDriver().getFullName());
         int pos = 1;
 
-        for (X_Tag tr : tbody.getChildren("tr")) {
+        for (JkTag tr : tbody.getChildren("tr")) {
             int tdNum = tr.getChildren("td").size();
             if(tr.getChildren("th").size() == 1 && (tdNum == 7 || tdNum == 8)) {
                 F1Race r = new F1Race();

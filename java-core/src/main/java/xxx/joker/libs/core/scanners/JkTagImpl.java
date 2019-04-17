@@ -1,4 +1,4 @@
-package xxx.joker.apps.formula1.corelibs;
+package xxx.joker.libs.core.scanners;
 
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.objects.Range;
@@ -7,13 +7,13 @@ import xxx.joker.libs.core.utils.JkStrings;
 
 import java.util.*;
 
-class X_TagImpl implements X_Tag {
+class JkTagImpl implements JkTag {
 
     // The root tag has null parent, but has the html set
     // All other tags:
     // - have a tag parent, but not html string
     // - to retrieve the html, they ask to parent
-    private X_TagImpl parent;
+    private JkTagImpl parent;
     private String html;
 
     private String tagName;
@@ -21,13 +21,13 @@ class X_TagImpl implements X_Tag {
     private int endPos;
     private boolean autoClosed;
     private Map<String, String> attributes;
-    private List<X_Tag> children;
+    private List<JkTag> children;
 
 
-    public X_TagImpl() {
+    public JkTagImpl() {
         this(null);
     }
-    public X_TagImpl(String tagName) {
+    public JkTagImpl(String tagName) {
         this.tagName = tagName;
         this.attributes = new HashMap<>();
         this.children = new ArrayList<>();
@@ -77,8 +77,8 @@ class X_TagImpl implements X_Tag {
     }
 
     @Override
-    public X_Tag getChild(int childNum, int... subNums) {
-        X_Tag source = childNum < children.size() ? children.get(childNum) : null;
+    public JkTag getChild(int childNum, int... subNums) {
+        JkTag source = childNum < children.size() ? children.get(childNum) : null;
         for(int i = 0; source != null && i < subNums.length; i++) {
             source = source.getChild(subNums[i]);
         }
@@ -86,14 +86,14 @@ class X_TagImpl implements X_Tag {
     }
 
     @Override
-    public X_Tag getChild(String tagName) {
-        List<X_Tag> children = getChildren(tagName);
+    public JkTag getChild(String tagName) {
+        List<JkTag> children = getChildren(tagName);
         return children.isEmpty() ? null : children.get(0);
     }
 
     @Override
-    public X_Tag getChild(String tagName, String... attributes) {
-        List<X_Tag> children = getChildren(tagName);
+    public JkTag getChild(String tagName, String... attributes) {
+        List<JkTag> children = getChildren(tagName);
         for (String attribute : attributes) {
             String[] split = JkStrings.splitArr(attribute, "=", true);
             children.removeIf(t -> !t.matchAttribute(split[0], split[1]));
@@ -102,47 +102,47 @@ class X_TagImpl implements X_Tag {
     }
 
     @Override
-    public List<X_Tag> getChildren() {
+    public List<JkTag> getChildren() {
         return children;
     }
 
     @Override
-    public List<X_Tag> getChildren(String... tagNames) {
+    public List<JkTag> getChildren(String... tagNames) {
         return JkStreams.filter(children, ch -> JkTests.containsIgnoreCase(tagNames, ch.getTagName()));
     }
 
     @Override
-    public X_Tag findChild(String... tagsPaths) {
-        List<X_Tag> res = findChildren(tagsPaths);
+    public JkTag findChild(String... tagsPaths) {
+        List<JkTag> res = findChildren(tagsPaths);
         return res.isEmpty() ? null : res.get(0);
     }
 
     @Override
-    public List<X_Tag> findChildren(String... tagsPaths) {
+    public List<JkTag> findChildren(String... tagsPaths) {
         for (String tagsPath : tagsPaths) {
-            List<X_Tag> childs = findTagChilds(tagsPath);
+            List<JkTag> childs = findTagChilds(tagsPath);
             if(!childs.isEmpty())   return childs;
         }
         return Collections.emptyList();
     }
 
     @Override
-    public X_Tag findFirstTag(String tagName) {
-        List<X_Tag> res = findFirstTags(tagName);
+    public JkTag findFirstTag(String tagName) {
+        List<JkTag> res = findFirstTags(tagName);
         return res.isEmpty() ? null : res.get(0);
     }
 
     @Override
-    public X_Tag findFirstTag(String tagName, String... attributes) {
-        List<X_Tag> res = findFirstTags(tagName, attributes);
+    public JkTag findFirstTag(String tagName, String... attributes) {
+        List<JkTag> res = findFirstTags(tagName, attributes);
         return res.isEmpty() ? null : res.get(0);
     }
 
     @Override
-    public List<X_Tag> findFirstTags(String tagName) {
-        List<X_Tag> res = getChildren(tagName);
+    public List<JkTag> findFirstTags(String tagName) {
+        List<JkTag> res = getChildren(tagName);
         if(res.isEmpty()) {
-            for (X_Tag child : children) {
+            for (JkTag child : children) {
                 res = child.findFirstTags(tagName);
                 if(!res.isEmpty()) {
                     return res;
@@ -153,13 +153,13 @@ class X_TagImpl implements X_Tag {
     }
 
     @Override
-    public List<X_Tag> findFirstTags(String tagName, String... attributes) {
-        List<X_Tag> res = getChildren(tagName);
+    public List<JkTag> findFirstTags(String tagName, String... attributes) {
+        List<JkTag> res = getChildren(tagName);
         if(attributes.length > 0) {
             res.removeIf(t -> !t.matchAttributes(attributes));
         }
         if(res.isEmpty()) {
-            for (X_Tag child : children) {
+            for (JkTag child : children) {
                 res = child.findFirstTags(tagName, attributes);
                 if(!res.isEmpty()) {
                     return res;
@@ -169,8 +169,8 @@ class X_TagImpl implements X_Tag {
         return res;
     }
 
-    private List<X_Tag> findTagChilds(String tagsPath) {
-        X_Tag t = this;
+    private List<JkTag> findTagChilds(String tagsPath) {
+        JkTag t = this;
         int pos = 0;
         String[] tagsName = JkStrings.splitArr(tagsPath, " ", true);
         for(; pos < tagsName.length - 1; pos++) {
@@ -210,7 +210,7 @@ class X_TagImpl implements X_Tag {
         }
 
         String str = sb.toString().replaceAll("^<[^<]*?>", "").replaceAll("</[^<]*?>$", "");
-        return X_HtmlChars.fixDirtyChars(str).trim();
+        return JkHtmlChars.fixDirtyChars(str).trim();
     }
 
 
@@ -223,7 +223,7 @@ class X_TagImpl implements X_Tag {
         return html == null ? parent.getFullHtml() : html;
     }
 
-    public X_Tag getParent() {
+    public JkTag getParent() {
         return parent;
     }
 
@@ -243,7 +243,7 @@ class X_TagImpl implements X_Tag {
         this.autoClosed = autoClosed;
     }
 
-    protected void setParent(X_TagImpl parent) {
+    protected void setParent(JkTagImpl parent) {
         this.parent = parent;
     }
 
