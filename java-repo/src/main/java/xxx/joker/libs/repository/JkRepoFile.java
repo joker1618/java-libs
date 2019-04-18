@@ -55,9 +55,19 @@ public abstract class JkRepoFile implements JkRepo {
     }
 
     @Override
-    public <T extends RepoEntity> T getByPK(T entity) {
+    public <T extends RepoEntity> T get(T entity) {
         Set<T> dataSet = (Set<T>) getDataSet(entity.getClass());
         return JkStreams.findUnique(dataSet, entity::equals);
+    }
+
+    @Override
+    public <T extends RepoEntity> T getOrAdd(T entity) {
+        T found = get(entity);
+        if(found == null) {
+            add(entity);
+            found = entity;
+        }
+        return found;
     }
 
     @Override

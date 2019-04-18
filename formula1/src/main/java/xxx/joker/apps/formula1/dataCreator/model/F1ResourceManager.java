@@ -126,7 +126,7 @@ public class F1ResourceManager implements F1Resources {
 
         Path resourcePath = folder.resolve(finalName);
         F1Resource resource = new F1Resource(resourcePath);
-        if(model.getByPK(resource) == null) {
+        if(model.get(resource) == null) {
             resource.setKey(resourceKey);
             resource.setTags(tags);
             JxImage jxImage = JxImage.parse(resourcePath);

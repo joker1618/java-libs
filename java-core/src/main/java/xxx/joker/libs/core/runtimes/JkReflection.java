@@ -28,6 +28,20 @@ public class JkReflection {
 		}
 	}
 
+	public static void setFieldValue(Object instance, String fieldName, Object value) {
+		try {
+			Field field = null;
+			Class<?> clazz = instance.getClass();
+			while(field == null && clazz != null) {
+				field = getFieldByName(instance.getClass(), fieldName);
+				clazz = clazz.getSuperclass();
+			}
+			setFieldValue(instance, field, value);
+
+		} catch (Exception e) {
+			throw new JkRuntimeException("Class {}: error setting field ({}) value ({})", instance.getClass(), fieldName, value);
+		}
+	}
 	public static void setFieldValue(Object instance, Field field, Object value) {
 		try {
 			if(field.isAccessible()) {
@@ -42,6 +56,20 @@ public class JkReflection {
 		}
 	}
 
+	public static Object getFieldValue(Object instance, String fieldName) {
+		try {
+			Field field = null;
+			Class<?> clazz = instance.getClass();
+			while(field == null && clazz != null) {
+				field = getFieldByName(instance.getClass(), fieldName);
+				clazz = clazz.getSuperclass();
+			}
+			return getFieldValue(instance, field);
+
+		} catch (Exception ex) {
+			throw new JkRuntimeException("Class {}: error getting field value from ({})", instance.getClass().getName(), fieldName);
+		}
+	}
 	public static Object getFieldValue(Object instance, Field field) {
 		try {
 			Object obj;
