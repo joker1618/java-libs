@@ -1,36 +1,24 @@
 package xxx.joker.apps.formula1.gui;
 
 import javafx.application.Application;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import org.scenicview.ScenicView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.apps.formula1.gui.yearView.YearView;
-import xxx.joker.apps.formula1.model.F1Model;
-import xxx.joker.apps.formula1.model.F1ModelImpl;
-import xxx.joker.apps.formula1.model.entities.F1Entrant;
-import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.apps.formula1.dataCreator.model.F1Model;
+import xxx.joker.apps.formula1.dataCreator.model.F1ModelImpl;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.Function;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
-import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class Formula1GUI extends Application {
 
@@ -63,6 +51,7 @@ public class Formula1GUI extends Application {
             ScenicView.show(scene);
         }
 
+        rootPane.heightProperty().addListener(o -> LOG.debug("height {}", o));
     }
 
     private BorderPane createRootPane() {

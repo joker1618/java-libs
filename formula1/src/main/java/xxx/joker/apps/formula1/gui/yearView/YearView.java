@@ -1,6 +1,7 @@
 package xxx.joker.apps.formula1.gui.yearView;
 
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -8,26 +9,25 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import xxx.joker.apps.formula1.fxlibs.X_FxTable;
-import xxx.joker.apps.formula1.model.beans.F1Season;
-import xxx.joker.apps.formula1.model.beans.F1SeasonResult;
-import xxx.joker.apps.formula1.model.F1Model;
-import xxx.joker.apps.formula1.model.F1ModelImpl;
-import xxx.joker.apps.formula1.model.entities.F1Entrant;
-import xxx.joker.apps.formula1.model.entities.F1GranPrix;
-import xxx.joker.apps.formula1.model.entities.F1Race;
-import xxx.joker.apps.formula1.model.managers.ResourceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import xxx.joker.apps.formula1.dataCreator.model.beans.F1Season;
+import xxx.joker.apps.formula1.dataCreator.model.F1Model;
+import xxx.joker.apps.formula1.dataCreator.model.F1ModelImpl;
+import xxx.joker.apps.formula1.dataCreator.model.entities.F1GranPrix;
 import xxx.joker.libs.core.files.JkFiles;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class YearView extends BorderPane {
+
+    private static final Logger LOG = LoggerFactory.getLogger(YearView.class);
 
     private final F1Model model = F1ModelImpl.getInstance();
     private F1Season season;
@@ -49,6 +49,7 @@ public class YearView extends BorderPane {
         setCenter(entrantsPane);
 //        setCenter(resultPane);
 
+//        heightProperty().addListener(o -> LOG.debug("height {}", o));
     }
 
     private Pane createLeft() {
@@ -89,9 +90,18 @@ public class YearView extends BorderPane {
                 setCenter(granPrixPane);
             }
         });
-        lview.setMaxWidth(-1);
+//        lview.setMaxWidth(-1);
         nodes.add(new Label("NUM GRAN PRIX: "+season.getGpList().size()));
         nodes.add(lview);
+
+//        vBox.layoutBoundsProperty().addListener((obs,o,n) -> {
+//            if(n != null && n != o) {
+//                double delta = Math.abs(lview.getLayoutX() - n.getMinX());
+//                lview.setPrefHeight(n.getHeight() - delta);
+//                LOG.debug("vbox={}, lview={}", n.getHeight(), n.getHeight() - delta);
+//            }
+//        });
+//        vBox.heightProperty().addListener(o -> LOG.debug("height {}", o));
 
         return vBox;
     }

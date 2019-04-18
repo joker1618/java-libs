@@ -3,6 +3,10 @@ package xxx.joker.libs.repository.design;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
+import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public abstract class RepoEntity implements IRepoEntity<RepoEntity> {
@@ -25,7 +29,7 @@ public abstract class RepoEntity implements IRepoEntity<RepoEntity> {
 
     @Override
     public String toString() {
-        return strFull();
+        return strShort();
     }
 
     @Override

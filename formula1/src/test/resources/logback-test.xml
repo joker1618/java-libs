@@ -9,11 +9,8 @@
         </encoder>
     </appender>
 
-    <logger name="xxx.joker.libs.repository.engine.RepoManager" level="info" additivity="false">
-        <appender-ref ref="STDOUT"/>
-    </logger>
 
-    <root level="trace">
+    <root level="debug">
         <appender-ref ref="STDOUT"/>
     </root>
 

@@ -1,12 +1,12 @@
 package util;
 
 import org.junit.Test;
-import xxx.joker.apps.formula1.model.F1Model;
-import xxx.joker.apps.formula1.model.F1ModelImpl;
-import xxx.joker.apps.formula1.model.entities.F1Entrant;
-import xxx.joker.apps.formula1.model.entities.F1GranPrix;
-import xxx.joker.apps.formula1.model.entities.F1Qualify;
-import xxx.joker.apps.formula1.model.entities.F1Race;
+import xxx.joker.apps.formula1.dataCreator.model.F1Model;
+import xxx.joker.apps.formula1.dataCreator.model.F1ModelImpl;
+import xxx.joker.apps.formula1.dataCreator.model.entities.F1Entrant;
+import xxx.joker.apps.formula1.dataCreator.model.entities.F1GranPrix;
+import xxx.joker.apps.formula1.dataCreator.model.entities.F1Qualify;
+import xxx.joker.apps.formula1.dataCreator.model.entities.F1Race;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.format.JkOutput;
 import xxx.joker.libs.core.lambdas.JkStreams;

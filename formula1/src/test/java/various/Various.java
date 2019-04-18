@@ -1,16 +1,12 @@
 package various;
 
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.junit.Test;
-import xxx.joker.apps.formula1.common.F1Const;
-import xxx.joker.apps.formula1.model.F1ModelImpl;
-import xxx.joker.apps.formula1.model.entities.F1GranPrix;
-import xxx.joker.apps.formula1.model.entities.F1Race;
+import xxx.joker.apps.formula1.dataCreator.common.F1Const;
+import xxx.joker.apps.formula1.dataCreator.model.F1ModelImpl;
+import xxx.joker.apps.formula1.dataCreator.model.entities.F1Race;
 import xxx.joker.libs.core.files.JkFiles;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -20,7 +16,7 @@ public class Various {
 
     @Test
     public void tmp() throws Exception {
-        F1ModelImpl.getInstance().getGranPrixs(2018).forEach(gp -> display(gp.strFull()));
+        display(F1ModelImpl.getInstance().getGranPrixs(2018).get(0).strFull(ToStringStyle.MULTI_LINE_STYLE));
     }
 
     @Test

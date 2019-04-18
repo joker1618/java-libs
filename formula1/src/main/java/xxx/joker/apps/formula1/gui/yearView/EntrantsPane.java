@@ -3,20 +3,17 @@ package xxx.joker.apps.formula1.gui.yearView;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableView;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import xxx.joker.apps.formula1.fxlibs.JkImage;
+import xxx.joker.apps.formula1.fxlibs.JxImage;
 import xxx.joker.apps.formula1.fxlibs.X_FxTable;
-import xxx.joker.apps.formula1.model.F1ResourceManager;
-import xxx.joker.apps.formula1.model.F1Resources;
-import xxx.joker.apps.formula1.model.beans.F1Season;
-import xxx.joker.apps.formula1.model.entities.F1Entrant;
+import xxx.joker.apps.formula1.dataCreator.model.F1ResourceManager;
+import xxx.joker.apps.formula1.dataCreator.model.F1Resources;
+import xxx.joker.apps.formula1.dataCreator.model.entities.F1Entrant;
 import xxx.joker.libs.core.datetime.JkDates;
-import xxx.joker.libs.core.files.JkFiles;
 
 import java.util.List;
 
@@ -109,7 +106,7 @@ public class EntrantsPane extends BorderPane {
                 lblBDate.setText(JkDates.format(n.getDriver().getBirthDate(), "dd/MM/yyyy"));
                 lblNation.setText(n.getDriver().getNation());
                 lblCity.setText(n.getDriver().getCity());
-                JkImage imgDriver = resources.getDriverPicture(n.getDriver());
+                JxImage imgDriver = resources.getDriverPicture(n.getDriver());
                 if(imgDriver.getRatio() > 0.8) {
                     imageView.setFitWidth(400d);
                 } else {

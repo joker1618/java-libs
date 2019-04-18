@@ -1,21 +1,20 @@
 package xxx.joker.apps.formula1.gui.yearView;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.apps.formula1.fxlibs.JkImage;
+import xxx.joker.apps.formula1.dataCreator.model.entities.F1GranPrix;
+import xxx.joker.apps.formula1.dataCreator.model.entities.F1Qualify;
+import xxx.joker.apps.formula1.dataCreator.model.entities.F1Race;
+import xxx.joker.apps.formula1.fxlibs.JxImage;
 import xxx.joker.apps.formula1.fxlibs.X_FxTable;
-import xxx.joker.apps.formula1.model.F1ResourceManager;
-import xxx.joker.apps.formula1.model.F1Resources;
-import xxx.joker.apps.formula1.model.beans.F1Season;
-import xxx.joker.apps.formula1.model.entities.*;
+import xxx.joker.apps.formula1.dataCreator.model.F1ResourceManager;
+import xxx.joker.apps.formula1.dataCreator.model.F1Resources;
+import xxx.joker.apps.formula1.dataCreator.model.beans.F1Season;
 import xxx.joker.libs.core.datetime.JkDates;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.format.JkOutput;
@@ -186,7 +185,7 @@ public class GranPrixPane extends BorderPane {
                 lblNumLaps.setText(n.getNumLapsRace()+"");
                 lblRaceLength.setText(JkOutput.getNumberFmtEN(3).format(n.getLapLength()*n.getNumLapsRace())+" km");
                 lblFast.setText(n.getFastLap().toLine());
-                JkImage imgTrackMap = resources.getTrackMap(n);
+                JxImage imgTrackMap = resources.getTrackMap(n);
                 if(imgTrackMap.getRatio() > 1d) {
                     imageView.setFitWidth(400d);
                 } else {

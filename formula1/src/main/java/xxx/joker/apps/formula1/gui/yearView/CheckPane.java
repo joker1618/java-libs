@@ -1,29 +1,18 @@
 package xxx.joker.apps.formula1.gui.yearView;
 
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.apps.formula1.fxlibs.JkImage;
+import xxx.joker.apps.formula1.dataCreator.model.entities.F1Circuit;
+import xxx.joker.apps.formula1.dataCreator.model.entities.F1Driver;
+import xxx.joker.apps.formula1.dataCreator.model.entities.F1Team;
 import xxx.joker.apps.formula1.fxlibs.X_FxTable;
-import xxx.joker.apps.formula1.model.F1Model;
-import xxx.joker.apps.formula1.model.F1ModelImpl;
-import xxx.joker.apps.formula1.model.F1ResourceManager;
-import xxx.joker.apps.formula1.model.F1Resources;
-import xxx.joker.apps.formula1.model.beans.F1Season;
-import xxx.joker.apps.formula1.model.entities.*;
-import xxx.joker.libs.core.datetime.JkDates;
-import xxx.joker.libs.core.datetime.JkDuration;
-import xxx.joker.libs.core.format.JkOutput;
+import xxx.joker.apps.formula1.dataCreator.model.F1Model;
+import xxx.joker.apps.formula1.dataCreator.model.F1ModelImpl;
 
-import java.util.Arrays;
 import java.util.Set;
-
-import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class CheckPane extends BorderPane {
 

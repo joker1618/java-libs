@@ -1,9 +1,9 @@
 package code.checks;
 
 import org.junit.Test;
-import xxx.joker.apps.formula1.model.F1Model;
-import xxx.joker.apps.formula1.model.F1ModelImpl;
-import xxx.joker.apps.formula1.model.entities.F1GranPrix;
+import xxx.joker.apps.formula1.dataCreator.model.F1Model;
+import xxx.joker.apps.formula1.dataCreator.model.F1ModelImpl;
+import xxx.joker.apps.formula1.dataCreator.model.entities.F1GranPrix;
 import xxx.joker.libs.core.format.JkOutput;
 
 import java.util.ArrayList;

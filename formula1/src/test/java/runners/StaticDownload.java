@@ -3,15 +3,15 @@ package runners;
 import org.junit.Test;
 import xxx.joker.libs.core.scanners.JkScanners;
 import xxx.joker.libs.core.scanners.JkTag;
-import xxx.joker.apps.formula1.model.F1ModelImpl;
-import xxx.joker.apps.formula1.model.F1ResourceManager;
-import xxx.joker.apps.formula1.model.F1Resources;
+import xxx.joker.apps.formula1.dataCreator.model.F1ModelImpl;
+import xxx.joker.apps.formula1.dataCreator.model.F1ResourceManager;
+import xxx.joker.apps.formula1.dataCreator.model.F1Resources;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.web.JkDownloader;
 
 import java.util.List;
 
-import static xxx.joker.apps.formula1.common.F1Const.*;
+import static xxx.joker.apps.formula1.dataCreator.common.F1Const.*;
 import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 

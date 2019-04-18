@@ -2,11 +2,11 @@ package util;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
-import xxx.joker.apps.formula1.model.F1Model;
-import xxx.joker.apps.formula1.model.F1ModelImpl;
-import xxx.joker.apps.formula1.model.entities.F1GranPrix;
-import xxx.joker.apps.formula1.model.entities.F1Race;
-import xxx.joker.apps.formula1.parsers.WikiParser;
+import xxx.joker.apps.formula1.dataCreator.model.F1Model;
+import xxx.joker.apps.formula1.dataCreator.model.F1ModelImpl;
+import xxx.joker.apps.formula1.dataCreator.model.entities.F1GranPrix;
+import xxx.joker.apps.formula1.dataCreator.model.entities.F1Race;
+import xxx.joker.apps.formula1.dataCreator.parsers.WikiParser;
 import xxx.joker.libs.core.format.JkOutput;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;

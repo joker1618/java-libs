@@ -5,11 +5,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import util.CheckPoints;
 import util.ToStringRepo;
-import xxx.joker.apps.formula1.common.F1Const;
-import xxx.joker.apps.formula1.model.F1Model;
-import xxx.joker.apps.formula1.model.F1ModelImpl;
-import xxx.joker.apps.formula1.parsers.WikiParser;
-import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.apps.formula1.dataCreator.model.F1Model;
+import xxx.joker.apps.formula1.dataCreator.model.F1ModelImpl;
+import xxx.joker.apps.formula1.dataCreator.parsers.WikiParser;
+import xxx.joker.libs.core.datetime.JkTimer;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
@@ -52,10 +51,11 @@ public class A_ParseWiki {
 
     @Test
     public void runRange() {
-        int ystart = 2012;
+        int ystart = 2018;
         int yend = 2018;
 //        model.deleteData(year);
 
+        JkTimer timer = new JkTimer();
         for(int year = yend; year >= ystart; year--) {
             display("####  Start parsing year {}", year);
             WikiParser parser = WikiParser.getParser(year);
@@ -66,6 +66,8 @@ public class A_ParseWiki {
         }
 
         model.commit();
+
+        display("Total time: {}", timer.toStringElapsed());
 
     }
 }
