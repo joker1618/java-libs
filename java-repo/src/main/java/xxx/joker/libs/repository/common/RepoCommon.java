@@ -3,7 +3,7 @@ package xxx.joker.libs.repository.common;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.repository.design.RepoEntity;
-import xxx.joker.libs.repository.design.RepoFieldCustom;
+import xxx.joker.libs.core.types.JkFormattable;
 import xxx.joker.libs.repository.engine.FieldWrapper;
 
 import java.io.File;
@@ -45,7 +45,7 @@ public class RepoCommon {
 
     private static final List<Class<?>> CUSTOM_FIELDS = Arrays.asList(
             RepoEntity.class,
-            RepoFieldCustom.class
+            JkFormattable.class
     );
 
     private static final List<Class<?>> ALLOWED_FIELDS = Arrays.asList(

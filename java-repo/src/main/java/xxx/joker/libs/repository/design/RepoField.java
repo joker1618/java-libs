@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
  * 	LocalDateTime.class
  * 	String.class
  *
- * 	? extends RepoFieldCustom
+ * 	? extends JkFormattable
  * 	? extends RepoEntity
  *
  * ALLOWED COLLECTION TYPES:

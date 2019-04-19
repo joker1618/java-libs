@@ -44,7 +44,7 @@ public abstract class RepoEntity implements IRepoEntity<RepoEntity> {
 
     @Override
     public String strShort() {
-        return strf("{} [ID={}, PK={}]", getClass().getSimpleName(), entityID, getPrimaryKey());
+        return strf("{}[{},{}]", getClass().getSimpleName(), entityID, getPrimaryKey());
     }
 
     @Override

@@ -143,7 +143,7 @@ class RepoHandler {
         if(cf.isList()) {
             cf.setValue(e, new ArrayList<>(eDeps));
         } else {
-            Object o = cf.isComparableFlatField() ? new TreeSet<>(eDeps) : new HashSet<>(eDeps);
+            Object o = cf.isComparableFlatField() ? new TreeSet<>(eDeps) : new LinkedHashSet<>(eDeps);
             cf.setValue(e, o);
         }
     }

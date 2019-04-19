@@ -4,12 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.core.runtimes.JkEnvironment;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.repository.design.AllowNullString;
+import xxx.joker.libs.core.types.JkFormattable;
 import xxx.joker.libs.repository.design.RepoEntity;
-import xxx.joker.libs.repository.design.RepoFieldCustom;
 import xxx.joker.libs.repository.exceptions.RepoError;
 
 import java.io.File;
@@ -149,7 +150,7 @@ public class FieldWrapper {
         } else if (isOfType(fclazz, boolean.class, Boolean.class)) {
             toRet = ((Boolean) value) ? "true" : "false";
         } else if (isOfType(fclazz, File.class, Path.class)) {
-            toRet = value.toString();
+            toRet = JkEnvironment.relativizeAppsPath(value.toString()).toString();
         } else if (isOfType(fclazz, JkDuration.class)) {
             toRet = String.valueOf(((JkDuration) value).toMillis());
         } else if (isOfType(fclazz, LocalTime.class)) {
@@ -162,8 +163,8 @@ public class FieldWrapper {
             toRet = String.valueOf(value);
         } else if (isOfType(fclazz, String.class)) {
             toRet = (String) value;
-        } else if (JkReflection.isInstanceOf(fclazz, RepoFieldCustom.class)) {
-            toRet = ((RepoFieldCustom)value).format();
+        } else if (JkReflection.isInstanceOf(fclazz, JkFormattable.class)) {
+            toRet = ((JkFormattable)value).format();
         } else {
             throw new RepoError("Object formatting not implemented for: class = {}, value = {}", fclazz, value);
         }
@@ -251,9 +252,9 @@ public class FieldWrapper {
         } else if (isOfType(fclazz, double.class, Double.class)) {
             o = JkConvert.toDouble(unesc);
         } else if (isOfType(fclazz, Path.class)) {
-            o = Paths.get(unesc);
+            o = JkEnvironment.toAbsoluteAppsPath(Paths.get(unesc));
         } else if (isOfType(fclazz, File.class)) {
-            o = new File(unesc);
+            o = JkEnvironment.toAbsoluteAppsPath(Paths.get(unesc)).toFile();
         } else if (isOfType(fclazz, JkDuration.class)) {
             o = JkDuration.of(Long.valueOf(unesc));
         } else if (isOfType(fclazz, LocalTime.class)) {
@@ -262,9 +263,9 @@ public class FieldWrapper {
             o = LocalDate.parse(unesc, DTF_DATE);
         } else if (isOfType(fclazz, LocalDateTime.class)) {
             o = LocalDateTime.parse(unesc, DTF_DATETIME);
-        } else if (JkReflection.isInstanceOf(fclazz, RepoFieldCustom.class)) {
+        } else if (JkReflection.isInstanceOf(fclazz, JkFormattable.class)) {
             o = JkReflection.createInstanceSafe(fclazz);
-            ((RepoFieldCustom) o).parse(unesc);
+            ((JkFormattable) o).parse(unesc);
         } else if (isString) {
             o = unesc;
         } else {

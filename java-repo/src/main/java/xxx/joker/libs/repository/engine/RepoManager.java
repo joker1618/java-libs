@@ -10,9 +10,7 @@ import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.entities.RepoProperty;
 
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -25,16 +23,16 @@ public class RepoManager {
     private RepoHandler repoHandler;
 
 
-    public RepoManager(Path dbFolder, String dbName, String pkgToScan) {
-        this(dbFolder, dbName, pkgToScan, null);
+    public RepoManager(Path dbFolder, String dbName, String... pkgsToScan) {
+        this(null, dbFolder, dbName, pkgsToScan);
     }
 
-    public RepoManager(Path dbFolder, String dbName, String pkgToScan, String encryptionPwd) {
+    public RepoManager(String encryptionPwd, Path dbFolder, String dbName, String... pkgsToScan) {
         JkTimer timer = new JkTimer();
         if(StringUtils.isNotBlank(encryptionPwd)) {
-            this.repoDao = new RepoDAOEncrypted(dbFolder, dbName, scanPackage(pkgToScan), encryptionPwd);
+            this.repoDao = new RepoDAOEncrypted(dbFolder, dbName, scanPackage(pkgsToScan), encryptionPwd);
         } else {
-            this.repoDao = new RepoDAO(dbFolder, dbName, scanPackage(pkgToScan));
+            this.repoDao = new RepoDAO(dbFolder, dbName, scanPackage(pkgsToScan));
         }
         this.repoLock = new ReentrantReadWriteLock(true);
         this.repoHandler = new RepoHandler(repoDao.readRepoData(), repoLock);
@@ -77,9 +75,13 @@ public class RepoManager {
     }
 
 
-    private List<ClazzWrapper> scanPackage(String pkgToScan) {
-        LOG.debug("Scanning package: {}", pkgToScan);
-        List<Class<?>> classes = JkRuntime.findClasses(pkgToScan);
+    private List<ClazzWrapper> scanPackage(String... pkgsToScan) {
+        Set<Class<?>> classes = new HashSet<>();
+        Arrays.stream(pkgsToScan).forEach(pkg -> {
+            LOG.debug("Scanning package: {}", pkg);
+            classes.addAll(JkRuntime.findClasses(pkg));
+        });
+
         classes.removeIf(c -> c.getSuperclass() != RepoEntity.class);
         classes.add(RepoProperty.class);
         if(LOG.isDebugEnabled()) {
