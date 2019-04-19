@@ -1,5 +1,6 @@
 package xxx.joker.apps.formula1.dataCreator.model;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.apps.formula1.dataCreator.common.F1Const;
@@ -119,7 +120,8 @@ public class F1ResourceManager implements F1Resources {
         JkDownloader dw = new JkDownloader(folder);
         String finalName = fixResourceName(resourceKey, url);
         boolean res = false;
-        if(dw.downloadResource(finalName, url)) {
+        Pair<Boolean, Path> resDw = dw.downloadResource(finalName, url);
+        if(resDw.getKey()) {
             LOG.info("Downloaded resource: {}", finalName);
             res = true;
         }

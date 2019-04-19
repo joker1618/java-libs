@@ -43,19 +43,59 @@ public class StaticDownload {
 
         JkTag rootDiv = JkScanners.parseHtmlTag(html, "div", "<div class=\"mw-parser-output\"");
         List<JkTag> divs = JkStreams.filter(rootDiv.getChildren("div"), t -> "mod-gallery mod-gallery-default".equals(t.getAttribute("class")));
+
+        int n = 0;
+        int e = 0;
         for (JkTag div : divs) {
-            div.findFirstTags("li", "class=gallerybox").forEach(li -> {
+            for (JkTag li : div.findFirstTags("li", "class=gallerybox")) {
                 String atitle = li.findFirstTag("div", "class=gallerytext").findFirstTag("a").getAttribute("title");
                 String nation = atitle.replaceAll("^Flag of the", "").replaceAll("^Flag of", "").replace("_", " ").replaceAll(" +", " ").trim();
                 display(nation);
                 JkTag aTag = li.findFirstTag("a", "class=image");
                 String lastHtml = dhtml.getHtml(createWikiUrl(aTag));
                 JkTag img = JkScanners.parseHtmlTag(lastHtml, "div", "<div class=\"fullImageLink\"").findFirstTag("img");
-                resources.saveFlag(nation, createResourceUrl(img));
-            });
+                boolean res = resources.saveFlag(nation, createImageUrl(img));
+                if(res) n++; else e++;
+            }
         }
 
+        display("Flags recap: {} ({} new, {} old)", n+e, n, e);
+
         F1ModelImpl.getInstance().commit();
+    }
+
+    @Test
+    public void getAllIconFlagsAndCountryCodes() {
+        F1Resources resources = F1ResourceManager.getInstance();
+
+        JkDownloader dhtml = new JkDownloader(HTML_FOLDER);
+        String html = dhtml.getHtml("https://en.wikipedia.org/wiki/List_of_IOC_country_codes");
+
+        JkTag tableTag = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Current_NOCs\">", "<table class=\"wikitable sortable");
+        List<JkTag> trList = tableTag.findChildren("tbody tr");
+
+        int n = 0;
+        int e = 0;
+        for (JkTag tr : trList) {
+            int tdNum = tr.getChildren("td").size();
+            if(tdNum == 4 && tdNum == tr.getChildren().size()) {
+                String countryCode = tr.getChild(0).findFirstTag("span", "class=monospaced").getText();
+                String imgUrl = createImageUrl(tr.getChild(1).findChild("img", "span a img"));
+                String nation = tr.getChild(1).getChild("a").getText();
+                display("{}   {}", countryCode, nation);
+                boolean res = resources.saveFlagIcon(nation, imgUrl);
+                if(res) n++; else e++;
+            }
+        }
+
+        display("Flags icons recap: {} ({} new, {} old)", n+e, n, e);
+
+        F1ModelImpl.getInstance().commit();
+    }
+
+    @Test
+    public void checkFlags() {
+        
     }
 
 
@@ -66,7 +106,7 @@ public class StaticDownload {
         return createWikiUrl(aTag.getAttribute("href"));
     }
 
-    private String createResourceUrl(JkTag img) {
+    private String createImageUrl(JkTag img) {
         return strf("https:{}", img.getAttribute("srcset").replaceAll(" [^ ]+$", "").replaceAll(".*,", "").trim());
     }
 }

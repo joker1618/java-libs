@@ -2,11 +2,11 @@ package xxx.joker.apps.formula1.dataCreator.model.fields;
 
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.utils.JkStrings;
-import xxx.joker.libs.repository.design.RepoFieldCustom;
+import xxx.joker.libs.core.types.JkFormattable;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
-public class F1FastLap implements RepoFieldCustom {
+public class F1FastLap implements JkFormattable {
 
     private static final String SEP = "::";
 
@@ -32,10 +32,11 @@ public class F1FastLap implements RepoFieldCustom {
     }
 
     @Override
-    public void parse(String str) {
+    public F1FastLap parse(String str) {
         String[] split = JkStrings.splitArr(str, SEP, true);
         driverPK = split[0];
         lapTime = JkDuration.of(Long.valueOf(split[1]));
+        return this;
     }
 
     public String toLine() {

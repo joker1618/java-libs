@@ -40,7 +40,7 @@ public class F1Resource extends RepoEntity {
 
     @Override
     public String getPrimaryKey() {
-        return path.toString();
+        return "resource-" + path.toString();
     }
 
     public String getKey() {

@@ -19,7 +19,7 @@ public class F1Team extends RepoEntity {
 
     @Override
     public String getPrimaryKey() {
-        return teamName;
+        return "team-" + teamName;
     }
 
     public String getTeamName() {

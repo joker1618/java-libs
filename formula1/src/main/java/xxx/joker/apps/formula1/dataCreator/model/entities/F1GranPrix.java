@@ -45,7 +45,7 @@ public class F1GranPrix extends RepoEntity {
 
     @Override
     public String getPrimaryKey() {
-        return strf("gp-%d-%02d", year, num);
+        return strf("gp-%04d-%02d", year, num);
     }
 
     public int getYear() {

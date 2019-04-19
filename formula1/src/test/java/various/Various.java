@@ -5,14 +5,33 @@ import org.junit.Test;
 import xxx.joker.apps.formula1.dataCreator.common.F1Const;
 import xxx.joker.apps.formula1.dataCreator.model.F1ModelImpl;
 import xxx.joker.apps.formula1.dataCreator.model.entities.F1Race;
+import xxx.joker.libs.core.datetime.JkTimer;
+import xxx.joker.libs.core.files.JkEncryption;
 import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.format.JkOutput;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class Various {
+
+    @Test
+    public void ee() throws Exception {
+        JkTimer timer = new JkTimer();
+        Path file = Paths.get("C:\\Users\\fede\\.appsFolder\\common-repo\\data\\flags\\images\\Zambia.png");
+        display("\n{}  {}", JkEncryption.getMD5(file), file.getFileName());
+        display("File {}: {}", JkOutput.humanSize(Files.size(file)), timer.toStringElapsed());
+
+        timer.reset();
+        file = Paths.get("");
+        display("\n{}  {}", JkEncryption.getMD5(file), file.getFileName());
+        display("File {}: {}", JkOutput.humanSize(Files.size(file)), timer.toStringElapsed());
+
+    }
 
     @Test
     public void tmp() throws Exception {

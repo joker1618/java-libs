@@ -25,7 +25,7 @@ public class F1Driver extends RepoEntity {
 
     @Override
     public String getPrimaryKey() {
-        return fullName;
+        return "driver-" + fullName;
     }
 
     public String getFullName() {
