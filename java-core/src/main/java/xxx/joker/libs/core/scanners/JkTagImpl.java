@@ -127,29 +127,9 @@ class JkTagImpl implements JkTag {
     }
 
     @Override
-    public JkTag findFirstTag(String tagName) {
-        List<JkTag> res = findFirstTags(tagName);
-        return res.isEmpty() ? null : res.get(0);
-    }
-
-    @Override
     public JkTag findFirstTag(String tagName, String... attributes) {
         List<JkTag> res = findFirstTags(tagName, attributes);
         return res.isEmpty() ? null : res.get(0);
-    }
-
-    @Override
-    public List<JkTag> findFirstTags(String tagName) {
-        List<JkTag> res = getChildren(tagName);
-        if(res.isEmpty()) {
-            for (JkTag child : children) {
-                res = child.findFirstTags(tagName);
-                if(!res.isEmpty()) {
-                    return res;
-                }
-            }
-        }
-        return res;
     }
 
     @Override
@@ -167,6 +147,19 @@ class JkTagImpl implements JkTag {
             }
         }
         return res;
+    }
+
+    @Override
+    public List<JkTag> findAllTags(String tagName, String... attributes) {
+        List<JkTag> found = new ArrayList<>();
+        JkTag tag = this;
+        for (JkTag child : tag.getChildren()) {
+            if(child.getTagName().equalsIgnoreCase(tagName) && child.matchAttributes(attributes)) {
+                found.add(child);
+            }
+            found.addAll(child.findAllTags(tagName, attributes));
+        }
+        return found;
     }
 
     private List<JkTag> findTagChilds(String tagsPath) {

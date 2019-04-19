@@ -1,5 +1,6 @@
 package xxx.joker.libs.core.lambdas;
 
+import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.utils.JkConvert;
 
@@ -109,6 +110,9 @@ public class JkStreams {
 		return list;
 	}
 
+	public static <T> String join(Collection<T> source) {
+		return join(source, StringUtils.LF);
+	}
 	public static <T> String join(Collection<T> source, String separator) {
 		return source.stream().map(Object::toString).collect(Collectors.joining(separator));
 	}

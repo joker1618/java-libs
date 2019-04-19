@@ -30,4 +30,24 @@ public class JkEnvironment {
         return (Path) cacheMap.get(APPS_FOLDER_KEY);
     }
 
+    public static Path relativizeAppsPath(String sourcePath) {
+        return relativizeAppsPath(Paths.get(sourcePath));
+    }
+    public static Path relativizeAppsPath(Path source) {
+        if(source.isAbsolute() && source.startsWith(getAppsFolder())) {
+            return getAppsFolder().relativize(source);
+        }
+        return source;
+    }
+
+    public static Path toAbsoluteAppsPath(String sourcePath) {
+        return toAbsoluteAppsPath(Paths.get(sourcePath));
+    }
+    public static Path toAbsoluteAppsPath(Path source) {
+        if(!source.isAbsolute()) {
+            return getAppsFolder().resolve(source);
+        }
+        return source;
+    }
+
 }

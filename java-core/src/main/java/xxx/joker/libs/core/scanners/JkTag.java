@@ -27,10 +27,10 @@ public interface JkTag {
     JkTag findChild(String... tagsPaths);
     List<JkTag> findChildren(String... tagsPaths);
 
-    JkTag findFirstTag(String tagName);
     JkTag findFirstTag(String tagName, String... attributes);
-    List<JkTag> findFirstTags(String tagName);
     List<JkTag> findFirstTags(String tagName, String... attributes);
+
+    List<JkTag> findAllTags(String tagName, String... attributes);
 
     Range getRange();
 

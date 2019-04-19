@@ -10,10 +10,15 @@ import java.nio.file.Path;
 
 public class JkMedia {
 
-    public static Dim getImageDim(Path imgPath) {
+    public static JkImage parseImage(Path imgPath) {
         try {
+            JkImage res = new JkImage();
+            res.setPath(imgPath);
             BufferedImage img = ImageIO.read(imgPath.toFile());
-            return new Dim(img.getWidth(), img.getHeight());
+            res.setWidth(img.getWidth());
+            res.setHeight(img.getHeight());
+            return res;
+
         } catch (IOException ex) {
             throw new JkRuntimeException(ex, "Error parsing image file {}", imgPath);
         }

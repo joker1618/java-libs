@@ -30,14 +30,7 @@ public class JkReflection {
 
 	public static void setFieldValue(Object instance, String fieldName, Object value) {
 		try {
-			Field field = null;
-			Class<?> clazz = instance.getClass();
-			while(field == null && clazz != null) {
-				field = getFieldByName(instance.getClass(), fieldName);
-				clazz = clazz.getSuperclass();
-			}
-			setFieldValue(instance, field, value);
-
+			setFieldValue(instance, getFieldByName(instance.getClass(), fieldName), value);
 		} catch (Exception e) {
 			throw new JkRuntimeException("Class {}: error setting field ({}) value ({})", instance.getClass(), fieldName, value);
 		}
@@ -58,14 +51,7 @@ public class JkReflection {
 
 	public static Object getFieldValue(Object instance, String fieldName) {
 		try {
-			Field field = null;
-			Class<?> clazz = instance.getClass();
-			while(field == null && clazz != null) {
-				field = getFieldByName(instance.getClass(), fieldName);
-				clazz = clazz.getSuperclass();
-			}
-			return getFieldValue(instance, field);
-
+			return getFieldValue(instance, getFieldByName(instance.getClass(), fieldName));
 		} catch (Exception ex) {
 			throw new JkRuntimeException("Class {}: error getting field value from ({})", instance.getClass().getName(), fieldName);
 		}
@@ -86,7 +72,6 @@ public class JkReflection {
 			throw new JkRuntimeException("Class {}: error getting field value from ({})", instance.getClass().getName(), field.getName());
 		}
 	}
-
 
 	public static List<Field> getFieldsByAnnotation(Class<?> sourceClass, Class<? extends Annotation> annotationClass) {
 		List<Field> toRet = new ArrayList<>();
@@ -115,9 +100,15 @@ public class JkReflection {
 	}
 
 	public static Field getFieldByName(Class<?> sourceClass, String fieldName) {
-		List<Field> declaredFields = Arrays.asList(sourceClass.getDeclaredFields());
-		List<Field> fields = JkStreams.filter(declaredFields, f -> f.getName().equals(fieldName));
-		return fields.isEmpty() ? null : fields.get(0);
+		while(sourceClass != null) {
+			List<Field> declaredFields = Arrays.asList(sourceClass.getDeclaredFields());
+			List<Field> fields = JkStreams.filter(declaredFields, f -> f.getName().equals(fieldName));
+			if(!fields.isEmpty()) {
+				return fields.get(0);
+			}
+			sourceClass = sourceClass.getSuperclass();
+		}
+		return null;
 	}
 	public static Enum getEnumByName(Class<?> enumClass, String enumName) {
 		Enum[] enumConstants = (Enum[]) enumClass.getEnumConstants();

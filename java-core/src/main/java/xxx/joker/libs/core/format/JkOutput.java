@@ -15,6 +15,18 @@ import java.util.Locale;
 
 public class JkOutput {
 
+	public static final String DEF_SEP = "|";
+	public static final int DEF_DISTANCE = 2;
+
+	public static String columnsView(String lines) {
+		return columnsView(lines, DEF_SEP, DEF_DISTANCE, false);
+	}
+	public static String columnsView(String lines, int colsDistance) {
+		return columnsView(lines, DEF_SEP, colsDistance, false);
+	}
+	public static String columnsView(String lines, String fieldSep) {
+		return columnsView(lines, fieldSep, DEF_DISTANCE, false);
+	}
 	public static String columnsView(String lines, String fieldSep, int colsDistance) {
 		return columnsView(lines, fieldSep, colsDistance, false);
 	}
@@ -27,6 +39,16 @@ public class JkOutput {
 	}
 	public static String columnsView(String lines, String fieldSep, String colsFiller, boolean hasHeader) {
 		return columnsView(JkStrings.splitList(lines, StringUtils.LF), fieldSep, colsFiller, hasHeader);
+	}
+
+	public static String columnsView(List<String> lines) {
+		return columnsView(lines, DEF_SEP, DEF_DISTANCE, false);
+	}
+	public static String columnsView(List<String> lines, int colsDistance) {
+		return columnsView(lines, DEF_SEP, colsDistance, false);
+	}
+	public static String columnsView(List<String> lines, String fieldSep) {
+		return columnsView(lines, fieldSep, DEF_DISTANCE, false);
 	}
 	public static String columnsView(List<String> lines, String fieldSep, int colsDistance) {
 		return columnsView(lines, fieldSep, colsDistance, false);
@@ -56,6 +78,9 @@ public class JkOutput {
 			return humanSize(bytes, JkSizeUnit.KB, false);
 		}
 	}
+	public static String humanSize(double bytes, JkSizeUnit scale) {
+		return humanSize(bytes, scale, false);
+	}
 	public static String humanSize(double bytes, JkSizeUnit scale, boolean roundInt) {
 		double value = scale.parse(bytes);
 		if(roundInt) {
@@ -65,8 +90,7 @@ public class JkOutput {
 		}
 	}
 
-
-	// Number formatter
+	// Number formatters
 	public static NumberFormat getNumberFmtEN(int numFractionDigits) {
 		NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
 		nf.setMinimumFractionDigits(numFractionDigits);

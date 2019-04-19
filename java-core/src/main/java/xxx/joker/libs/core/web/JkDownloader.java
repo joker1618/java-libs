@@ -1,6 +1,7 @@
 package xxx.joker.libs.core.web;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.datetime.JkDuration;
@@ -51,13 +52,18 @@ public class JkDownloader {
         }
     }
 
-    public boolean downloadResource(String outFileName, String url) {
+    public Pair<Boolean, Path> downloadResource(String outFileName, String url) {
         Path outPath = folder.resolve(outFileName);
+        boolean isDw = false;
         if(!Files.exists(outPath)) {
+            LOG.info("Downloading resource from: {}", url);
             JkWeb.downloadResource(url, outPath);
-            return true;
+            isDw = true;
         }
-        return false;
+        return Pair.of(isDw, outPath);
     }
 
+    public Path getFolder() {
+        return folder;
+    }
 }
