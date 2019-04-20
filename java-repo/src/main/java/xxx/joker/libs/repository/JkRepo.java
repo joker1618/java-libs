@@ -37,6 +37,5 @@ public interface JkRepo {
 
     RepoResource getResource(String resName, String... tags);
     RepoResource addResource(Path sourcePath, String resName, String... tags);
-    
 
 }
