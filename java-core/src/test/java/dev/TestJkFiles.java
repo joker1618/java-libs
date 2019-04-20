@@ -15,7 +15,7 @@ public class TestJkFiles {
     @Test
     public void testFind() {
         Path root = Paths.get("C:\\Users\\f.barbano\\Desktop\\moveTest\\sec\\1 Studio albums\\1974h");
-        JkFiles.findFiles(root, false).forEach(p -> display("  {}", p));
+        JkFiles.find(root, false).forEach(p -> display("  {}", p));
     }
 
     @Test

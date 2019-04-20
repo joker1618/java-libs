@@ -2,7 +2,7 @@ package xxx.joker.libs.repository;
 
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.entities.RepoProperty;
-import xxx.joker.libs.repository.entities.RepoURI;
+import xxx.joker.libs.repository.entities.RepoResource;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -35,6 +35,7 @@ public interface JkRepo {
     String setProperty(String propKey, String propValue);
     String delProperty(String propKey);
 
-    RepoURI saveResource(String resName, Path resPath);
+    RepoResource getResource(String resName, String... tags);
+    RepoResource saveResource(Path sourcePath, String resName, String... tags);
 
 }

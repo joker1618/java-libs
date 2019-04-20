@@ -15,7 +15,7 @@ public class TryZip {
     @Test
     public void zipAllFiles() {
         Path zipPath = TEST_FOLDER.resolve("content.zip");
-        List<Path> files = JkFiles.findFiles(TEST_FOLDER, false);
+        List<Path> files = JkFiles.find(TEST_FOLDER, false);
         JkZip.zipFiles(zipPath, files);
     }
 

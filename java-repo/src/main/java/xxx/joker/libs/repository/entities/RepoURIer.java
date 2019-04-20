@@ -1,34 +1,27 @@
 package xxx.joker.libs.repository.entities;
 
-import xxx.joker.libs.core.runtimes.JkEnvironment;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoField;
 
 import java.nio.file.Path;
 import java.util.Set;
 
-public class RepoURI extends RepoEntity {
+public class RepoURIer extends RepoEntity {
 
     @RepoField
     private Path path;
     @RepoField
     private String md5;
     @RepoField
-    private String name;
-    @RepoField
     private RepoMetaData repoMetaData;
-    @RepoField
-    private Set<String> tags;
 
-    public RepoURI() {
+    public RepoURIer() {
     }
-    public RepoURI(Path path) {
-        this.path = path;
-    }
+
 
     @Override
     public String getPrimaryKey() {
-        return JkEnvironment.relativizeAppsPath(path).toString();
+        return md5;
     }
 
     public Path getPath() {
@@ -37,14 +30,6 @@ public class RepoURI extends RepoEntity {
 
     public void setPath(Path path) {
         this.path = path;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public RepoMetaData getRepoMetaData() {
@@ -63,11 +48,4 @@ public class RepoURI extends RepoEntity {
         this.md5 = md5;
     }
 
-    public Set<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<String> tags) {
-        this.tags = tags;
-    }
 }

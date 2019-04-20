@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkBytes;
+import xxx.joker.libs.core.utils.JkConvert;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -13,7 +14,6 @@ import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -255,14 +255,44 @@ public class JkFiles {
 
 	/* FIND methods */
 	@SafeVarargs
+	public static Path findFile(Path root, boolean recursive, Predicate<Path>... filterConds) {
+		List<Path> files = findFiles(root, recursive ? Integer.MAX_VALUE : 1, filterConds);
+		return files.size() != 1 ? null : files.get(0);
+	}
+	@SafeVarargs
 	public static List<Path> findFiles(Path root, int maxDepth, Predicate<Path>... filterConds) {
-		return findFiles1(root, maxDepth, Arrays.asList(filterConds));
+		List<Predicate<Path>> conds = JkConvert.toList(filterConds);
+		conds.add(0, Files::isRegularFile);
+		return findContent1(root, maxDepth, conds);
 	}
 	@SafeVarargs
 	public static List<Path> findFiles(Path root, boolean recursive, Predicate<Path>... filterConds) {
-		return findFiles1(root, recursive ? Integer.MAX_VALUE : 1, Arrays.asList(filterConds));
+		return findFiles(root, recursive ? Integer.MAX_VALUE : 1, filterConds);
 	}
-	private static List<Path> findFiles1(Path root, int maxDepth, List<Predicate<Path>> filterConds) {
+	@SafeVarargs
+	public static Path findFolder(Path root, boolean recursive, Predicate<Path>... filterConds) {
+		List<Path> files = findFolders(root, recursive ? Integer.MAX_VALUE : 1, filterConds);
+		return files.size() != 1 ? null : files.get(0);
+	}
+	@SafeVarargs
+	public static List<Path> findFolders(Path root, int maxDepth, Predicate<Path>... filterConds) {
+		List<Predicate<Path>> conds = JkConvert.toList(filterConds);
+		conds.add(0, Files::isDirectory);
+		return findContent1(root, maxDepth, conds);
+	}
+	@SafeVarargs
+	public static List<Path> findFolders(Path root, boolean recursive, Predicate<Path>... filterConds) {
+		return findFolders(root, recursive ? Integer.MAX_VALUE : 1, filterConds);
+	}
+	@SafeVarargs
+	public static List<Path> find(Path root, int maxDepth, Predicate<Path>... filterConds) {
+		return findContent1(root, maxDepth, Arrays.asList(filterConds));
+	}
+	@SafeVarargs
+	public static List<Path> find(Path root, boolean recursive, Predicate<Path>... filterConds) {
+		return findContent1(root, recursive ? Integer.MAX_VALUE : 1, Arrays.asList(filterConds));
+	}
+	private static List<Path> findContent1(Path root, int maxDepth, List<Predicate<Path>> filterConds) {
 		try {
 			if (Files.notExists(root)) {
 				return Collections.emptyList();
@@ -280,17 +310,36 @@ public class JkFiles {
 
 
 	/* REMOVE methods */
-	public static boolean delete(Path fileToDel) {
-		if(!Files.exists(fileToDel)) {
+	public static boolean delete(Path toDelPath, Path... otherPaths) {
+		boolean res = delete1(toDelPath);
+		for (Path p : otherPaths) {
+			res |= delete1(p);
+		}
+		return res;
+	}
+	public static boolean deleteContent(Path toDelPath, Path... otherPaths) {
+		List<Path> plist = JkConvert.toList(otherPaths);
+		plist.add(0, toDelPath);
+		boolean res = false;
+		for (Path p : plist) {
+			List<Path> pchilds = JkFiles.find(p, true);
+			for (Path pchild : pchilds) {
+				res |= delete1(pchild);
+			}
+		}
+		return res;
+	}
+	private static boolean delete1(Path toDelPath) {
+		if(!Files.exists(toDelPath)) {
 			return false;
 		}
 
 		try {
-			if(Files.isRegularFile(fileToDel)) {
-				Files.delete(fileToDel);
+			if(Files.isRegularFile(toDelPath)) {
+				Files.delete(toDelPath);
 
 			} else {
-				List<Path> files = JkFiles.findFiles(fileToDel, true);
+				List<Path> files = JkFiles.find(toDelPath, true);
 				Map<Boolean, List<Path>> filesMap = JkStreams.toMap(files, Files::isRegularFile);
 				// Remove all files before
 				for(Path file : filesMap.getOrDefault(true, Collections.emptyList())) {
@@ -302,7 +351,7 @@ public class JkFiles {
 					Files.delete(subFolder);
 				}
 				// Remove folder in input (pathToDel)
-				Files.delete(fileToDel);
+				Files.delete(toDelPath);
 			}
 
 			return true;
@@ -350,7 +399,7 @@ public class JkFiles {
 				Files.createDirectories(targetPath);
 				Path absSource = sourcePath.toAbsolutePath();
 				Path absTarget = targetPath.toAbsolutePath();
-				List<Path> files = findFiles(absSource, true);
+				List<Path> files = find(absSource, true);
 				Map<Boolean, List<Path>> filesMap = JkStreams.toMap(files, Files::isRegularFile);
 				// Create all folders before
 				for(Path folder : filesMap.getOrDefault(false, Collections.emptyList())) {
@@ -422,22 +471,31 @@ public class JkFiles {
 		String fn = path.toAbsolutePath().normalize().getFileName().toString();
 		if(Files.isDirectory(path)) return fn;
 		String ext = getExtension(path);
-		return fn.replaceAll(Pattern.quote(".") + ext + "$", "");
+		return fn.replaceAll("\\." + ext + "$", "");
 	}
-	public static String getFileName(String fileName) {
-		return getFileName(Paths.get(fileName));
+	public static String getFileName(String uriString) {
+		String fnRes = getResourceFilename(uriString);
+		String ext = getExtension(fnRes);
+		return fnRes.replaceAll("\\."+ext+"$", "");
 	}
 
 	public static String getExtension(Path path) {
 		if(Files.isDirectory(path)) {
 			return "";
 		}
-		String fn = path.toAbsolutePath().normalize().getFileName().toString();
-		int index = fn.lastIndexOf('.');
-		return index == -1  ? "" : fn.substring(index+1);
+		return getExtension(path.normalize().toString());
 	}
-	public static String getExtension(String fileName) {
-		return getExtension(Paths.get(fileName));
+	public static String getExtension(String uriString) {
+		String fnRes = getResourceFilename(uriString);
+		int index = fnRes.lastIndexOf('.');
+		boolean found = false;
+		for(int i = index - 1; !found && i >= 0; i--) {
+			found |= fnRes.charAt(i) != '.';
+		}
+		return !found ? "" : fnRes.substring(index + 1);
+	}
+	private static String getResourceFilename(String str) {
+		return str.replaceAll("[\\\\/]*$", "").replaceAll(".*[\\\\/]", "");
 	}
 
 	public static Path getParent(Path path) {

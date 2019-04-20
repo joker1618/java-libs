@@ -1,5 +1,6 @@
 package xxx.joker.libs.repository.util;
 
+import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.format.JkOutput;
 import xxx.joker.libs.core.lambdas.JkStreams;
@@ -18,7 +19,7 @@ public class RepoUtil {
     /**
      *  // todo put method in core libs
      * @param fieldNames string in the form 'nation|date|...' or 'nation date ...'.
-     *                   Keywords allowed: eid, epk
+     *                   Keywords allowed: eid, epk, etm
      * @return
      */
     public static String formatEntities(Collection<? extends RepoEntity> entities, String fieldNames) {
@@ -30,13 +31,17 @@ public class RepoUtil {
                 StringBuilder sb = new StringBuilder();
                 for (String fname : split) {
                     if (sb.length() > 0) sb.append("|");
-                    if (fname.equalsIgnoreCase("eid")) {
+                    if (StringUtils.equalsAnyIgnoreCase(fname, "eid", "entityID")) {
                         Object fval = JkReflection.getFieldValue(e, "entityID");
                         if(fval == null)  sb.append("NULL");
                         else              sb.append(fval);
                     } else if (fname.equalsIgnoreCase("epk")) {
                         Method method = e.getClass().getMethod("getPrimaryKey");
                         sb.append((String) method.invoke(e));
+                    } else if (StringUtils.equalsAnyIgnoreCase(fname, "etm", "creationTm")) {
+                        Object fval = JkReflection.getFieldValue(e, "creationTm");
+                        if(fval == null)  sb.append("NULL");
+                        else              sb.append(((JkFormattable)fval).format());
                     } else {
                         Object fval = JkReflection.getFieldValue(e, fname);
                         if(fval == null) {

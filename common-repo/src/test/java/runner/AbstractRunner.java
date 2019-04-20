@@ -1,0 +1,47 @@
+package runner;
+
+import org.apache.commons.lang3.tuple.Pair;
+import xxx.joker.libs.core.files.JkEncryption;
+import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.scanners.JkTag;
+import xxx.joker.libs.core.web.JkDownloader;
+import xxx.joker.service.commonRepo.JkCommonRepo;
+import xxx.joker.service.commonRepo.JkCommonRepoImpl;
+
+import java.nio.file.Path;
+
+import static xxx.joker.libs.core.utils.JkStrings.strf;
+import static xxx.joker.service.commonRepo.config.Configs.HTML_FOLDER;
+import static xxx.joker.service.commonRepo.config.Configs.TMP_FOLDER;
+
+abstract class AbstractRunner {
+
+    protected JkCommonRepo model = JkCommonRepoImpl.getInstance();
+
+    protected JkDownloader dhtml = new JkDownloader(HTML_FOLDER);
+    protected JkDownloader dwTemp = new JkDownloader(TMP_FOLDER);
+
+    protected Pair<Boolean, Path> downloadResource(String resUrl) {
+        return dwTemp.downloadResource(JkEncryption.getMD5(resUrl), resUrl);
+    }
+
+    protected String fixResourceName(String fn, String url) {
+        String finalFname = fn;
+        String ext = JkFiles.getExtension(url);
+        if(!ext.isEmpty() && !finalFname.endsWith("." + ext)) {
+            finalFname += "." + ext;
+        }
+        return finalFname;
+    }
+
+    protected String createWikiUrl(String wikiSubPath) {
+        return strf("https://en.wikipedia.org/{}", wikiSubPath.replaceFirst("^/", ""));
+    }
+    protected String createWikiUrl(JkTag aTag) {
+        return createWikiUrl(aTag.getAttribute("href"));
+    }
+
+    protected String createImageUrl(JkTag img) {
+        return strf("https:{}", img.getAttribute("srcset").replaceAll(" [^ ]+$", "").replaceAll(".*,", "").trim());
+    }
+}

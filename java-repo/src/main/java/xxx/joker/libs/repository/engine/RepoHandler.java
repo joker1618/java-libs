@@ -5,15 +5,16 @@ import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
-import xxx.joker.libs.repository.common.RepoCommon;
 import xxx.joker.libs.repository.design.RepoEntity;
 
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 
 class RepoHandler {
@@ -68,14 +69,14 @@ class RepoHandler {
     }
 
 //    /**
-//     *     Fix IDs if at least 1/2 is unused, and if the max ID is greater than RepoCommon.MIN_SIZE_FOR_COMPACT_IDS
+//     *     Fix IDs if at least 1/2 is unused, and if the max ID is greater than RepoConfig.MIN_SIZE_FOR_COMPACT_IDS
 //     *     todo test
 //     */
 //    private boolean compactEntityIDs() {
 //        boolean changed = false;
 //
 //        long maxUsedID = getMaxUsedID();
-//        if(maxUsedID > RepoCommon.MIN_SIZE_FOR_COMPACT_IDS) {
+//        if(maxUsedID > RepoConfig.MIN_SIZE_FOR_COMPACT_IDS) {
 //            if(dataByID.size() < (maxUsedID / 2)) {
 //                List<Long> idList = JkConvert.toList(dataByID.keySet());
 //                long pos = 0;

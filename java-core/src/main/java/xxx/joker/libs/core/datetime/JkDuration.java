@@ -1,6 +1,7 @@
 package xxx.joker.libs.core.datetime;
 
 import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.core.types.JkFormattable;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 
@@ -10,7 +11,7 @@ import java.time.temporal.ChronoUnit;
 import static java.time.temporal.ChronoUnit.*;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
-public class JkDuration {
+public class JkDuration implements JkFormattable {
     private long totalMillis;
 
     private int hours;
@@ -19,6 +20,9 @@ public class JkDuration {
     private int milli;
 
     private JkDuration(long totalMillis) {
+        init(totalMillis);
+    }
+    private void init(long totalMillis) {
         this.totalMillis = totalMillis;
 
         long absTotalMillis = Math.abs(totalMillis);
@@ -36,7 +40,7 @@ public class JkDuration {
 
         this.seconds =  (int)rem;
     }
-    
+
     public static JkDuration of(double totalMillis) {
         return new JkDuration((long)totalMillis);
     }
@@ -145,4 +149,14 @@ public class JkDuration {
     }
 
 
+    @Override
+    public String format() {
+        return String.valueOf(totalMillis);
+    }
+
+    @Override
+    public JkDuration parse(String str) {
+        init(Long.valueOf(str));
+        return this;
+    }
 }

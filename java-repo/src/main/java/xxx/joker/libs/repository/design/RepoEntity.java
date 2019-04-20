@@ -2,17 +2,15 @@ package xxx.joker.libs.repository.design;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import xxx.joker.libs.core.datetime.JkDateTime;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
-
-import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public abstract class RepoEntity implements IRepoEntity<RepoEntity> {
 
     @RepoEntityID
     protected Long entityID;
+    protected JkDateTime creationTm;
 
     @Override
     public int hashCode() {
@@ -35,6 +33,11 @@ public abstract class RepoEntity implements IRepoEntity<RepoEntity> {
     @Override
     public final Long getEntityID() {
         return entityID;
+    }
+
+    @Override
+    public final JkDateTime getCreationTm() {
+        return creationTm;
     }
 
     @Override

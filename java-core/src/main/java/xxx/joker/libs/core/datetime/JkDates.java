@@ -5,16 +5,14 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.time.temporal.ChronoUnit.SECONDS;
-
 public class JkDates {
 
-    public static final DateTimeFormatter DTF_AOD = DateTimeFormatter.ofPattern("yyyyMMdd");
+    public static final DateTimeFormatter FMT_AOD = DateTimeFormatter.ofPattern("yyyyMMdd");
+    public static final DateTimeFormatter FMT_AODT = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     /* PARSER */
     public static LocalDate toDate(String str, String pattern) {
@@ -47,7 +45,7 @@ public class JkDates {
     /* CHECKS */
     public static boolean isAOD(String source) {
         try {
-            DTF_AOD.parse(source);
+            FMT_AOD.parse(source);
             return true;
         } catch(DateTimeParseException ex) {
             return false;

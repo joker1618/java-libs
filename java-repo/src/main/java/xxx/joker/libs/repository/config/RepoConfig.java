@@ -1,9 +1,8 @@
-package xxx.joker.libs.repository.common;
+package xxx.joker.libs.repository.config;
 
-import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.runtimes.JkReflection;
-import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.core.types.JkFormattable;
+import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.engine.FieldWrapper;
 
 import java.io.File;
@@ -15,9 +14,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-public class RepoCommon {
+public class RepoConfig {
 
 //    public static final long MIN_SIZE_FOR_COMPACT_IDS = 1_000_000_000;
+
+    public static final String RESOURCE_FOLDER = "resources";
 
     public static class Separator {
         public static final String SEP_FIELD = "|";
@@ -55,7 +56,6 @@ public class RepoCommon {
             Float.class,		float.class,
             Double.class,		double.class,
 
-            JkDuration.class,
             LocalTime.class,
             LocalDate.class,
             LocalDateTime.class,
@@ -68,5 +68,9 @@ public class RepoCommon {
     private static final List<Class<?>> ALLOWED_COLLECTIONS = Arrays.asList(
             List.class,
             Set.class
+    );
+
+    private static final List<String> IMAGE_EXTENSIONS = Arrays.asList(
+            "gif", "jpeg", "jpg", "png", "tif", "tiff", "jif", "jfif"
     );
 }

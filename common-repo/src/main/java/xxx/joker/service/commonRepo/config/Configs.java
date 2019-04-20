@@ -6,7 +6,9 @@ import java.nio.file.Path;
 
 public class Configs {
 
-    public static final Path BASE_FOLDER = JkEnvironment.getAppsFolder().resolve("common-repo");
+    public static final Path BASE_FOLDER = JkEnvironment.getAppsFolder().resolve("config-repo");
+
+    public static final Path TMP_FOLDER = BASE_FOLDER.resolve("tmp");
 
     public static final Path HTML_FOLDER = BASE_FOLDER.resolve("html");
 

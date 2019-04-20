@@ -1,8 +1,8 @@
 package xxx.joker.service.commonRepo.entities;
 
-import xxx.joker.libs.core.media.JkImage;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoField;
+import xxx.joker.libs.repository.entities.RepoResource;
 
 public class JkNation extends RepoEntity {
 
@@ -11,7 +11,9 @@ public class JkNation extends RepoEntity {
     @RepoField
     private String code;
     @RepoField
-    private JkFlag flag;
+    private RepoResource flagIcon;
+    @RepoField
+    private RepoResource flagImage;
 
     public JkNation() {
     }
@@ -41,11 +43,20 @@ public class JkNation extends RepoEntity {
         this.code = code;
     }
 
-    public JkFlag getFlag() {
-        return flag;
+    public RepoResource getFlagIcon() {
+        return flagIcon;
     }
 
-    public void setFlag(JkFlag flag) {
-        this.flag = flag;
+    public void setFlagIcon(RepoResource flagIcon) {
+        this.flagIcon = flagIcon;
     }
+
+    public RepoResource getFlagImage() {
+        return flagImage;
+    }
+
+    public void setFlagImage(RepoResource flagImage) {
+        this.flagImage = flagImage;
+    }
+
 }

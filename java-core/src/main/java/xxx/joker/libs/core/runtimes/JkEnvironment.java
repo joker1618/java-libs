@@ -9,10 +9,10 @@ import java.util.Map;
 
 public class JkEnvironment {
 
-    public static final String HOME_FOLDER_KEY = "user.home";
-    public static final String APPS_FOLDER_KEY = "apps.folder";
+    private static final String HOME_FOLDER_KEY = "user.home";
+    private static final String APPS_FOLDER_KEY = "apps.folder";
 
-    public static final Path APPS_FOLDER_DEFAULT = getHomeFolder().resolve(".appsFolder");
+    private static final Path APPS_FOLDER_DEFAULT = getHomeFolder().resolve(".appsFolder");
 
     private static final Map<String, Object> cacheMap = new HashMap<>();
 

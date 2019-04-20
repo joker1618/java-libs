@@ -1,19 +1,17 @@
 package xxx.joker.libs.repository.engine;
 
 import org.apache.commons.lang3.tuple.Pair;
+import xxx.joker.libs.core.datetime.JkDateTime;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
-import xxx.joker.libs.repository.common.RepoCommon;
+import xxx.joker.libs.repository.config.RepoConfig;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoEntityID;
 import xxx.joker.libs.repository.design.RepoField;
 import xxx.joker.libs.repository.exceptions.RepoError;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class ClazzWrapper {
@@ -21,9 +19,12 @@ class ClazzWrapper {
     private static final Map<Class<?>, ClazzWrapper> CACHE = new HashMap<>();
     private static final Map<Class<?>, Map<Class<?>, List<FieldWrapper>>> REFERENCES = new HashMap<>();
     private static final FieldWrapper CF_ENTITY_ID;
+    private static final FieldWrapper CF_CREATION_TIME;
     static {
         Field f = JkReflection.getFieldsByAnnotation(RepoEntity.class, RepoEntityID.class).get(0);
         CF_ENTITY_ID = new FieldWrapper(f);
+        Field f2 = JkReflection.getFieldByName(RepoEntity.class, "creationTm");
+        CF_CREATION_TIME = new FieldWrapper(f2);
     }
 
     private final Class<?> eClazz;
@@ -31,13 +32,14 @@ class ClazzWrapper {
 
     private ClazzWrapper(Class<?> eClazz) {
         this.eClazz = eClazz;
-        this.fieldsByName = new HashMap<>();
+        this.fieldsByName = new LinkedHashMap<>();
         initClazz();
     }
 
     public static void setEntityID(RepoEntity e, Long eID) {
         synchronized (CF_ENTITY_ID) {
             CF_ENTITY_ID.setValue(e, eID);
+            CF_CREATION_TIME.setValue(e, eID == null ? null : JkDateTime.now());
         }
     }
 
@@ -103,17 +105,20 @@ class ClazzWrapper {
         if(fields.isEmpty()) {
             throw new RepoError("No fields annotated with '@{}' found in class {}", RepoField.class.getSimpleName(), eClazz.getSimpleName());
         }
-        fields.forEach(f -> fieldsByName.put(f.getName(), new FieldWrapper(f)));
-
-        // Check field class type
-        fieldsByName.forEach((k,v) -> {
-            if(!RepoCommon.isValidType(v)) {
-                throw new RepoError("Invalid field type {}::{}", eClazz.getSimpleName(), k);
-            }
-        });
 
         // Add field 'RepoEntity.entityID'
         fieldsByName.put(CF_ENTITY_ID.getFieldName(), CF_ENTITY_ID);
+        // Add all @RepoField fields
+        fields.forEach(f -> fieldsByName.put(f.getName(), new FieldWrapper(f)));
+        // Add field 'RepoEntity.creationTm'
+        fieldsByName.put(CF_CREATION_TIME.getFieldName(), CF_CREATION_TIME);
+
+        // Check field class type
+        fieldsByName.forEach((k,v) -> {
+            if(!RepoConfig.isValidType(v)) {
+                throw new RepoError("Invalid field type {}::{}", eClazz.getSimpleName(), k);
+            }
+        });
     }
 
 }

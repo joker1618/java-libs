@@ -22,7 +22,7 @@ public class Various {
     @Test
     public void ee() throws Exception {
         JkTimer timer = new JkTimer();
-        Path file = Paths.get("C:\\Users\\fede\\.appsFolder\\common-repo\\data\\flags\\images\\Zambia.png");
+        Path file = Paths.get("C:\\Users\\fede\\.appsFolder\\config-repo\\data\\flags\\images\\Zambia.png");
         display("\n{}  {}", JkEncryption.getMD5(file), file.getFileName());
         display("File {}: {}", JkOutput.humanSize(Files.size(file)), timer.toStringElapsed());
 
@@ -51,7 +51,7 @@ public class Various {
 
     @Test
     public void checkWeirdCharsInRepoFiles() throws Exception {
-        List<Path> files = JkFiles.findFiles(F1Const.DB_FOLDER, false,
+        List<Path> files = JkFiles.find(F1Const.DB_FOLDER, false,
                 p -> JkFiles.getFileName(p).startsWith(F1Const.DB_NAME + "#"),
                 p -> JkFiles.getFileName(p).contains("#jkrepo")
         );

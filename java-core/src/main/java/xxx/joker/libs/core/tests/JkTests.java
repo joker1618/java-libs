@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class JkTests {
@@ -17,9 +18,9 @@ public class JkTests {
         return source.toLowerCase().equals("true") || source.toLowerCase().equals("false");
     }
     public static boolean isBooleanArray(String[] source) {
-        return isBooleanList(Arrays.asList(source));
+        return areBooleans(Arrays.asList(source));
     }
-    public static boolean isBooleanList(List<String> source) {
+    public static boolean areBooleans(Collection<String> source) {
         for(String elem : source) {
             if(!isBoolean(elem)) {
                 return false;
@@ -39,7 +40,7 @@ public class JkTests {
     public static boolean areInts(String[] source) {
         return areInts(Arrays.asList(source));
     }
-    public static boolean areInts(List<String> source) {
+    public static boolean areInts(Collection<String> source) {
         for(String elem : source) {
             if(!isInt(elem)) {
                 return false;
@@ -59,7 +60,7 @@ public class JkTests {
     public static boolean areLongs(String[] source) {
         return areLongs(Arrays.asList(source));
     }
-    public static boolean areLongs(List<String> source) {
+    public static boolean areLongs(Collection<String> source) {
         for(String elem : source) {
             if(!isLong(elem)) {
                 return false;
@@ -79,7 +80,7 @@ public class JkTests {
     public static boolean areFloats(String[] source) {
         return areFloats(Arrays.asList(source));
     }
-    public static boolean areFloats(List<String> source) {
+    public static boolean areFloats(Collection<String> source) {
         for(String elem : source) {
             if(!isFloat(elem)) {
                 return false;
@@ -99,7 +100,7 @@ public class JkTests {
     public static boolean areDoubles(String[] source) {
         return areDoubles(Arrays.asList(source));
     }
-    public static boolean areDoubles(List<String> source) {
+    public static boolean areDoubles(Collection<String> source) {
         for(String elem : source) {
             if(!isDouble(elem)) {
                 return false;
@@ -114,7 +115,7 @@ public class JkTests {
     public static boolean areNumbers(String[] source) {
         return areNumbers(Arrays.asList(source));
     }
-    public static boolean areNumbers(List<String> source) {
+    public static boolean areNumbers(Collection<String> source) {
         for(String str : source) {
             if(!isNumber(str)) {
                 return false;
@@ -173,7 +174,7 @@ public class JkTests {
         return duplicatesPresents(Arrays.asList(sourceArray));
     }
 
-    public static boolean containsIgnoreCase(List<String> sourceList, String toFind) {
+    public static boolean containsIgnoreCase(Collection<String> sourceList, String toFind) {
         return !JkStreams.filter(sourceList, toFind::equalsIgnoreCase).isEmpty();
     }
     public static boolean containsIgnoreCase(String[] sourceArray, String toFind) {

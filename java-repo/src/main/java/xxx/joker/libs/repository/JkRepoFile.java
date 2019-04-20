@@ -3,11 +3,15 @@ package xxx.joker.libs.repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.core.tests.JkTests;
+import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.engine.RepoManager;
 import xxx.joker.libs.repository.entities.RepoProperty;
+import xxx.joker.libs.repository.entities.RepoResource;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -132,5 +136,30 @@ public abstract class JkRepoFile implements JkRepo {
 
     private RepoProperty retrieveProperty(String propKey) {
         return JkStreams.findUnique(getDataSet(RepoProperty.class), rp -> rp.getKey().equalsIgnoreCase(propKey));
+    }
+
+    @Override
+    public RepoResource getResource(String resName, String... tags) {
+        //todo impl
+        return null;
+    }
+
+    @Override
+    public RepoResource saveResource(Path sourcePath, String resName, String... tags) {
+        //todo impl
+        return null;
+    }
+
+    private List<String> getTagList(String... tags) {
+        List<String> toRet = new ArrayList<>();
+        for (String tag : tags) {
+            List<String> tlist = JkStrings.splitList(tag.replaceAll(" +", " ").trim(), " ");
+            for (String t : tlist) {
+                if(!JkTests.containsIgnoreCase(toRet, t)) {
+                    toRet.add(t);
+                }
+            }
+        }
+        return toRet;
     }
 }

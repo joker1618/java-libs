@@ -2,14 +2,13 @@ package xxx.joker.libs.repository.engine;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkEnvironment;
 import xxx.joker.libs.core.runtimes.JkReflection;
+import xxx.joker.libs.core.types.JkFormattable;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.repository.design.AllowNullString;
-import xxx.joker.libs.core.types.JkFormattable;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.exceptions.RepoError;
 
@@ -23,7 +22,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static xxx.joker.libs.repository.common.RepoCommon.Separator.*;
+import static xxx.joker.libs.repository.config.RepoConfig.Separator.*;
 
 
 public class FieldWrapper {
@@ -151,8 +150,6 @@ public class FieldWrapper {
             toRet = ((Boolean) value) ? "true" : "false";
         } else if (isOfType(fclazz, File.class, Path.class)) {
             toRet = JkEnvironment.relativizeAppsPath(value.toString()).toString();
-        } else if (isOfType(fclazz, JkDuration.class)) {
-            toRet = String.valueOf(((JkDuration) value).toMillis());
         } else if (isOfType(fclazz, LocalTime.class)) {
             toRet = DateTimeFormatter.ISO_TIME.format((LocalTime) value);
         } else if (isOfType(fclazz, LocalDate.class)) {
@@ -255,8 +252,6 @@ public class FieldWrapper {
             o = JkEnvironment.toAbsoluteAppsPath(Paths.get(unesc));
         } else if (isOfType(fclazz, File.class)) {
             o = JkEnvironment.toAbsoluteAppsPath(Paths.get(unesc)).toFile();
-        } else if (isOfType(fclazz, JkDuration.class)) {
-            o = JkDuration.of(Long.valueOf(unesc));
         } else if (isOfType(fclazz, LocalTime.class)) {
             o = LocalTime.parse(unesc, DTF_TIME);
         } else if (isOfType(fclazz, LocalDate.class)) {

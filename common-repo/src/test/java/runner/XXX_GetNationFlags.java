@@ -3,20 +3,14 @@ package runner;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.media.JkImage;
-import xxx.joker.libs.core.media.JkMedia;
 import xxx.joker.libs.core.scanners.JkScanners;
 import xxx.joker.libs.core.scanners.JkTag;
 import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.core.web.JkDownloader;
-import xxx.joker.service.commonRepo.JkCommonRepo;
-import xxx.joker.service.commonRepo.JkCommonRepoImpl;
-import xxx.joker.service.commonRepo.entities.JkFlag;
+import xxx.joker.libs.repository.entities.RepoResource;
 import xxx.joker.service.commonRepo.entities.JkNation;
 
-import java.lang.reflect.Array;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,20 +19,14 @@ import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 import static xxx.joker.service.commonRepo.config.Configs.*;
 
-public class GetNationFlags {
-
-    private JkCommonRepo model = JkCommonRepoImpl.getInstance();
+public class XXX_GetNationFlags extends AbstractRunner {
 
     @Test
     public void getAllNationFlags() {
-        JkDownloader dhtml = new JkDownloader(HTML_FOLDER);
         String html = dhtml.getHtml("https://en.wikipedia.org/wiki/List_of_sovereign_states");
 
         JkTag tableTag = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"List_of_states\">", "<table class=\"sortable wikitable");
         List<JkTag> trList = tableTag.findChildren("tbody tr");
-
-        JkDownloader dicon = new JkDownloader(FLAGS_FOLDER_ICON);
-        JkDownloader dimg = new JkDownloader(FLAGS_FOLDER_IMAGE);
 
         Map<String, String> codes = getAllCountryCodes();
 
@@ -70,42 +58,44 @@ public class GetNationFlags {
                 continue;
             }
 
-//            JkNation nation = model.getOrAdd(new JkNation(nationName));
-//            nation.setCode(code);
-//            if(nation.getFlag() == null) {
-//                String nationPageUrl = createWikiUrl(a);
-//
-//                JkFlag flag = new JkFlag();
-//                nation.setFlag(flag);
-//
-//                String iconName = fixResourceName(nationName, iconUrl);
-//                Pair<Boolean, Path> resDw = dicon.downloadResource(iconName, iconUrl);
-//                flag.setIcon(JkMedia.parseImage(resDw.getValue()));
-//
-//                JkTag vcard = JkScanners.parseHtmlTag(dhtml.getHtml(nationPageUrl), "table", "<table class=\"infobox geography vcard\"");
-//                List<JkTag> vcardRows = vcard.findChildren("tbody tr");
-//
-//                for (JkTag row : vcardRows) {
-//                    List<JkTag> alist = row.findAllTags("a", "class=image");
-//                    if(alist.size() >= 1) {
-//                        display("{}  {}", c++, nationName);
-////                        c++;
-//
-//                        String flagPageUrl = createWikiUrl(alist.get(0));
-//                        JkTag imgTag = JkScanners.parseHtmlTag(dhtml.getHtml(flagPageUrl), "img", "<div class=\"fullImageLink\"");
-//                        String imageUrl = createImageUrl(imgTag);
-//
-//                        String imageName = fixResourceName(nationName, imageUrl);
-//                        resDw = dimg.downloadResource(imageName, imageUrl);
-//                        flag.setImage(JkMedia.parseImage(resDw.getValue()));
-//
-//                        break;
-//                    }
-//                }
-//            }
-        }
+            String strInfo = strf("{}\t{}", c++, nationName);
 
-        if(!codes.isEmpty()) display("Codes unused: {}", codes.values());
+            JkNation nation = model.getOrAdd(new JkNation(nationName));
+            nation.setCode(code);
+            if(nation.getFlagIcon() == null) {
+                Pair<Boolean, Path> dwRes = dwTemp.downloadResource(nationName, iconUrl);
+                String iconName = fixResourceName(nationName, iconUrl);
+                RepoResource iconURI = model.saveResource(dwRes.getValue(), iconName, "icon flag");
+                nation.setFlagIcon(iconURI);
+                strInfo += " icon";
+            }
+
+            if(nation.getFlagImage() == null) {
+                String nationPageUrl = createWikiUrl(a);
+                JkTag vcard = JkScanners.parseHtmlTag(dhtml.getHtml(nationPageUrl), "table", "<table class=\"infobox geography vcard\"");
+                List<JkTag> vcardRows = vcard.findChildren("tbody tr");
+
+                for (JkTag row : vcardRows) {
+                    List<JkTag> alist = row.findAllTags("a", "class=image");
+                    if(alist.size() >= 1) {
+                        strInfo += " image";
+
+                        String flagPageUrl = createWikiUrl(alist.get(0));
+                        JkTag imgTag = JkScanners.parseHtmlTag(dhtml.getHtml(flagPageUrl), "img", "<div class=\"fullImageLink\"");
+                        String imageUrl = createImageUrl(imgTag);
+
+                        Pair<Boolean, Path> dwRes = dwTemp.downloadResource(nationName, imageUrl);
+                        String imageName = fixResourceName(nationName, imageUrl);
+                        RepoResource imageURI = model.saveResource(dwRes.getValue(), imageName, "image flag");
+                        nation.setFlagImage(imageURI);
+
+                        break;
+                    }
+                }
+            }
+
+            display(strInfo);
+        }
 
         display("Nation flags downloaded {}", c);
 
@@ -136,27 +126,4 @@ public class GetNationFlags {
         return map;
     }
 
-    private String fixResourceName(String fn, String url) {
-        String finalFname = fn;
-        int dotIdx = url.lastIndexOf(".");
-        int slashIdx = url.lastIndexOf("/");
-        if(dotIdx != -1 && (slashIdx == -1 || dotIdx > slashIdx)) {
-            String fext = url.substring(dotIdx);
-            if (!finalFname.endsWith(fext)) {
-                finalFname += fext;
-            }
-        }
-        return finalFname;
-    }
-
-    protected String createWikiUrl(String wikiSubPath) {
-        return strf("https://en.wikipedia.org/{}", wikiSubPath.replaceFirst("^/", ""));
-    }
-    protected String createWikiUrl(JkTag aTag) {
-        return createWikiUrl(aTag.getAttribute("href"));
-    }
-
-    private String createImageUrl(JkTag img) {
-        return strf("https:{}", img.getAttribute("srcset").replaceAll(" [^ ]+$", "").replaceAll(".*,", "").trim());
-    }
 }

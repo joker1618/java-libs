@@ -160,24 +160,6 @@ public class JkStrings {
 	}
 
 
-//	@ToAnalyze
-//	@Deprecated
-//	public static String mergeLines(String left, String right, String separator) {
-//		List<String> mergedLines = mergeLines(splitList(left, StringUtils.LF), splitList(right, StringUtils.LF), separator);
-//		return JkStreams.join(mergedLines, StringUtils.LF);
-//	}
-//	@ToAnalyze
-//	@Deprecated
-//	public static List<String> mergeLines(List<String> left, List<String> right, String separator) {
-//		List<String> merged = new ArrayList<>();
-//		for(int i = 0; i < Math.max(left.size(), right.size()); i++) {
-//			String l = i < left.size() ? left.get(i) : "";
-//			String r = i < right.size() ? right.get(i) : "";
-//			merged.add(l + separator + r);
-//		}
-//		return merged;
-//	}
-//
 
 
 }

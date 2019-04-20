@@ -16,6 +16,12 @@ import static xxx.joker.libs.core.utils.JkConsole.display;
 public class Vari {
 
     @Test
+    public void provaas() throws IOException, ParseException {
+        String str = "primo.secondo.mp3";
+        display(str.replaceAll("\\.[^\\.]*$", ""));
+    }
+
+    @Test
     public void prova12() throws IOException, ParseException {
         Path root = Paths.get("C:\\Users\\f.barbano\\Desktop\\music");
 

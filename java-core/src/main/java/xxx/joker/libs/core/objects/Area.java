@@ -1,5 +1,7 @@
 package xxx.joker.libs.core.objects;
 
+import static xxx.joker.libs.core.utils.JkStrings.strf;
+
 public class Area {
 
     int x;
@@ -15,6 +17,11 @@ public class Area {
         this.y = y;
         this.width = width;
         this.height = height;
+    }
+
+    @Override
+    public String toString() {
+        return strf("[{}:{} - {}:{}]", x, y, width, height);
     }
 
     public int getX() {

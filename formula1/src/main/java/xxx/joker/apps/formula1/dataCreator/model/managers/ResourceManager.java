@@ -61,7 +61,7 @@ public class ResourceManager {
 
     private static Image getImage(Path folder, String filename) {
         Image img = null;
-        List<Path> paths = JkFiles.findFiles(folder, false, Files::isRegularFile, p -> JkFiles.getFileName(p).equals(filename));
+        List<Path> paths = JkFiles.find(folder, false, Files::isRegularFile, p -> JkFiles.getFileName(p).equals(filename));
         if(!paths.isEmpty()) {
             String picUrl = JkFiles.toURL(paths.get(0));
             img = new Image(picUrl, true);

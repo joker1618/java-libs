@@ -3,7 +3,6 @@ package xxx.joker.libs.repository.engine;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
@@ -15,7 +14,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
-import static xxx.joker.libs.repository.common.RepoCommon.Separator.SEP_FIELD;
+import static xxx.joker.libs.repository.config.RepoConfig.Separator.SEP_FIELD;
 
 class RepoDAO {
 
@@ -164,7 +163,6 @@ class RepoDAO {
     }
 
     private boolean isRepoEntityFile(Path p) {
-        if(!Files.isRegularFile(p)) return false;
         return p.getFileName().toString().matches("^"+dbName+"#[^#]*#jkrepo\\.[^.#]+$");
     }
 
