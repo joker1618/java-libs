@@ -10,7 +10,7 @@ import java.util.*;
 
 public class RepoTags implements JkFormattable<RepoTags> {
 
-    private static final String SEP = ",";
+    private static final String SEP = "-";
 
     private TreeSet<String> tags = new TreeSet<>();
 
@@ -24,7 +24,7 @@ public class RepoTags implements JkFormattable<RepoTags> {
     public static RepoTags of(String... tags) {
         List<String> tagList = new ArrayList<>();
         for (String tag : tags) {
-            List<String> tlist = JkStrings.splitList(tag.replaceAll("[\\s,;|]", ",").trim(), ",", true);
+            List<String> tlist = JkStrings.splitList(tag.replaceAll("[\\s,;|]", ","), ",", true);
             tlist.removeIf(StringUtils::isBlank);
             tagList.addAll(tlist);
         }

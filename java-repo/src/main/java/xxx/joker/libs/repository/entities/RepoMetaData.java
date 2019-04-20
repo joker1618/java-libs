@@ -12,7 +12,7 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 public class RepoMetaData implements JkFormattable {
 
     private static final String SEP_FIELD = "=";
-    private static final String SEP_ELEMS = ";;";
+    private static final String SEP_ELEMS = ";";
 
     private Map<String, String> metadata = new LinkedHashMap<>();
 

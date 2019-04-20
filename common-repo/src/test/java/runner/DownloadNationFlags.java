@@ -19,11 +19,16 @@ import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 import static xxx.joker.service.commonRepo.config.Configs.*;
 
-public class GetNationFlags extends AbstractRunner {
+/**
+ * FIRST RUN: 6m 17s
+ * RE-CREATE DB: 58s
+ * RE-CREATE ALL: 1m 1s
+ */
+public class DownloadNationFlags extends AbstractRunner {
 
     @Test
     public void getAllNationFlags() {
-        String html = dhtml.getHtml("https://en.wikipedia.org/wiki/List_of_sovereign_states");
+        String html = getHtml("https://en.wikipedia.org/wiki/List_of_sovereign_states");
 
         JkTag tableTag = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"List_of_states\">", "<table class=\"sortable wikitable");
         List<JkTag> trList = tableTag.findChildren("tbody tr");
@@ -62,17 +67,17 @@ public class GetNationFlags extends AbstractRunner {
 
             JkNation nation = model.getOrAdd(new JkNation(nationName));
             nation.setCode(code);
+
             if(nation.getFlagIcon() == null) {
-                Pair<Boolean, Path> dwRes = dwTemp.downloadResource(nationName, iconUrl);
-                String iconName = fixResourceName(nationName, iconUrl);
-                RepoResource iconURI = model.addResource(dwRes.getValue(), iconName, "icon flag");
-                nation.setFlagIcon(iconURI);
+                Pair<Boolean, Path> dwRes = downloadResource(iconUrl);
+                RepoResource iconResource = model.addResource(dwRes.getValue(), nationName, "icon flag");
+                nation.setFlagIcon(iconResource);
                 strInfo += " icon";
             }
 
             if(nation.getFlagImage() == null) {
                 String nationPageUrl = createWikiUrl(a);
-                JkTag vcard = JkScanners.parseHtmlTag(dhtml.getHtml(nationPageUrl), "table", "<table class=\"infobox geography vcard\"");
+                JkTag vcard = JkScanners.parseHtmlTag(getHtml(nationPageUrl), "table", "<table class=\"infobox geography vcard\"");
                 List<JkTag> vcardRows = vcard.findChildren("tbody tr");
 
                 for (JkTag row : vcardRows) {
@@ -81,12 +86,11 @@ public class GetNationFlags extends AbstractRunner {
                         strInfo += " image";
 
                         String flagPageUrl = createWikiUrl(alist.get(0));
-                        JkTag imgTag = JkScanners.parseHtmlTag(dhtml.getHtml(flagPageUrl), "img", "<div class=\"fullImageLink\"");
+                        JkTag imgTag = JkScanners.parseHtmlTag(getHtml(flagPageUrl), "img", "<div class=\"fullImageLink\"");
                         String imageUrl = createImageUrl(imgTag);
 
-                        Pair<Boolean, Path> dwRes = dwTemp.downloadResource(nationName, imageUrl);
-                        String imageName = fixResourceName(nationName, imageUrl);
-                        RepoResource imageURI = model.addResource(dwRes.getValue(), imageName, "image flag");
+                        Pair<Boolean, Path> dwRes = downloadResource(imageUrl);
+                        RepoResource imageURI = model.addResource(dwRes.getValue(), nationName, "image flag");
                         nation.setFlagImage(imageURI);
 
                         break;
@@ -95,6 +99,7 @@ public class GetNationFlags extends AbstractRunner {
             }
 
             display(strInfo);
+//            break;
         }
 
         model.commit();
@@ -103,8 +108,7 @@ public class GetNationFlags extends AbstractRunner {
     private Map<String,String> getAllCountryCodes() {
         Map<String,String> map = new HashMap<>();
 
-        JkDownloader dhtml = new JkDownloader(HTML_FOLDER);
-        String html = dhtml.getHtml("https://en.wikipedia.org/wiki/List_of_IOC_country_codes");
+        String html = super.getHtml("https://en.wikipedia.org/wiki/List_of_IOC_country_codes");
 
         JkTag tableTag = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Current_NOCs\">", "<table class=\"wikitable sortable");
         List<JkTag> trList = tableTag.findChildren("tbody tr");
@@ -116,7 +120,7 @@ public class GetNationFlags extends AbstractRunner {
                 String imgUrl = createImageUrl(tr.getChild(1).findChild("img", "span a img"));
 
                 String mapKey = imgUrl.substring(0, imgUrl.lastIndexOf("/"));
-                mapKey = mapKey.replaceAll(".*Flag_of_", "").replaceAll("\\.svg$", "");
+                mapKey = mapKey.replaceAll("^.*Flag_of_|\\.svg$", "");
                 map.put(mapKey, countryCode);
             }
         }

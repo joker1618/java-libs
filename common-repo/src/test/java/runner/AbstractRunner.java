@@ -18,8 +18,12 @@ abstract class AbstractRunner {
 
     protected JkCommonRepo model = JkCommonRepoImpl.getInstance();
 
-    protected JkDownloader dhtml = new JkDownloader(HTML_FOLDER);
-    protected JkDownloader dwTemp = new JkDownloader(TMP_FOLDER);
+    private JkDownloader dhtml = new JkDownloader(HTML_FOLDER);
+    private JkDownloader dwTemp = new JkDownloader(TMP_FOLDER);
+
+    protected String getHtml(String resUrl) {
+        return dhtml.getHtml(resUrl);
+    }
 
     protected Pair<Boolean, Path> downloadResource(String resUrl) {
         String fname = JkEncryption.getMD5(resUrl) + "." + JkFiles.getExtension(resUrl);

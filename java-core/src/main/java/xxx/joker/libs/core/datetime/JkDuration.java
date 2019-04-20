@@ -19,6 +19,9 @@ public class JkDuration implements JkFormattable {
     private int seconds;
     private int milli;
 
+    public JkDuration() {
+
+    }
     private JkDuration(long totalMillis) {
         init(totalMillis);
     }

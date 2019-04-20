@@ -11,6 +11,9 @@ public class JkDateTime implements Comparable<JkDateTime>, JkFormattable<JkDateT
 
     private LocalDateTime ldt;
 
+    public JkDateTime() {
+
+    }
     private JkDateTime(LocalDateTime ldt) {
         init(ldt);
     }

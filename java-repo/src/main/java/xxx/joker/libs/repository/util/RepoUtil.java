@@ -13,6 +13,7 @@ import xxx.joker.libs.repository.design.RepoEntity;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -67,6 +68,8 @@ public class RepoUtil {
                         } else if(JkReflection.isInstanceOf(fval.getClass(), RepoEntity.class)) {
                             sb.append(((RepoEntity)fval).strShort());
                         } else if(JkReflection.isInstanceOf(fval.getClass(), JkFormattable.class)) {
+                            sb.append(((JkFormattable)fval).format());
+                        } else if(fval.getClass() == Path.class) {
                             sb.append(((JkFormattable)fval).format());
                         } else {
                             sb.append(fval);

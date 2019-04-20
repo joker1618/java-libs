@@ -10,6 +10,7 @@ import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.media.JkImage;
 import xxx.joker.libs.core.media.JkMedia;
 import xxx.joker.libs.core.runtimes.JkRuntime;
+import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.config.RepoConfig;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.entities.*;
@@ -40,14 +41,19 @@ public class RepoManager {
 
     public RepoManager(String encryptionPwd, Path dbFolder, String dbName, String... pkgsToScan) {
         JkTimer timer = new JkTimer();
+
+        List<String> toScan = JkConvert.toList(pkgsToScan);
+        toScan.add("xxx.joker.libs.repository.entities");
+
         if(StringUtils.isNotBlank(encryptionPwd)) {
-            this.repoDao = new RepoDAOEncrypted(dbFolder, dbName, scanPackage(pkgsToScan), encryptionPwd);
+            this.repoDao = new RepoDAOEncrypted(dbFolder, dbName, scanPackage(toScan), encryptionPwd);
         } else {
-            this.repoDao = new RepoDAO(dbFolder, dbName, scanPackage(pkgsToScan));
+            this.repoDao = new RepoDAO(dbFolder, dbName, scanPackage(toScan));
         }
         this.repoLock = new ReentrantReadWriteLock(true);
         this.repoHandler = new RepoHandler(repoDao.readRepoData(), repoLock);
         this.resourcesFolder = RepoConfig.getResourcesFolder(dbFolder, dbName);
+
         LOG.info("Initialized repo [{}, {}] in {}", dbFolder, dbName, timer.toStringElapsed());
     }
 
@@ -146,15 +152,15 @@ public class RepoManager {
         return uri;
     }
 
-    private List<ClazzWrapper> scanPackage(String... pkgsToScan) {
+    private List<ClazzWrapper> scanPackage(Collection<String> pkgsToScan) {
         Set<Class<?>> classes = new HashSet<>();
-        Arrays.stream(pkgsToScan).forEach(pkg -> {
+
+        pkgsToScan.forEach(pkg -> {
             LOG.debug("Scanning package: {}", pkg);
             classes.addAll(JkRuntime.findClasses(pkg));
         });
 
         classes.removeIf(c -> c.getSuperclass() != RepoEntity.class);
-        classes.add(RepoProperty.class);
         if(LOG.isDebugEnabled()) {
             classes.forEach(c -> LOG.debug("Found entity: {}", c.getName()));
         }

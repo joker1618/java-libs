@@ -27,9 +27,10 @@ public class JkCommonRepoImpl extends JkRepoFile implements JkCommonRepo {
         }
         return instance;
     }
-    
-//    public JkNation getNation(String nationName) {
-//        Set<JkNation> ds = getDataSet(JkNation.class);
-//        JkNation unique = JkStreams.findUnique(ds, e -> e.getName().equals(nationName));
-//    }
+
+    @Override
+    public JkNation getNation(String nationName) {
+        return get(JkNation.class, n -> n.getName().equalsIgnoreCase(nationName));
+    }
+
 }
