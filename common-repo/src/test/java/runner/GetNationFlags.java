@@ -19,7 +19,7 @@ import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 import static xxx.joker.service.commonRepo.config.Configs.*;
 
-public class XXX_GetNationFlags extends AbstractRunner {
+public class GetNationFlags extends AbstractRunner {
 
     @Test
     public void getAllNationFlags() {
@@ -65,7 +65,7 @@ public class XXX_GetNationFlags extends AbstractRunner {
             if(nation.getFlagIcon() == null) {
                 Pair<Boolean, Path> dwRes = dwTemp.downloadResource(nationName, iconUrl);
                 String iconName = fixResourceName(nationName, iconUrl);
-                RepoResource iconURI = model.saveResource(dwRes.getValue(), iconName, "icon flag");
+                RepoResource iconURI = model.addResource(dwRes.getValue(), iconName, "icon flag");
                 nation.setFlagIcon(iconURI);
                 strInfo += " icon";
             }
@@ -86,7 +86,7 @@ public class XXX_GetNationFlags extends AbstractRunner {
 
                         Pair<Boolean, Path> dwRes = dwTemp.downloadResource(nationName, imageUrl);
                         String imageName = fixResourceName(nationName, imageUrl);
-                        RepoResource imageURI = model.saveResource(dwRes.getValue(), imageName, "image flag");
+                        RepoResource imageURI = model.addResource(dwRes.getValue(), imageName, "image flag");
                         nation.setFlagImage(imageURI);
 
                         break;
@@ -96,8 +96,6 @@ public class XXX_GetNationFlags extends AbstractRunner {
 
             display(strInfo);
         }
-
-        display("Nation flags downloaded {}", c);
 
         model.commit();
     }

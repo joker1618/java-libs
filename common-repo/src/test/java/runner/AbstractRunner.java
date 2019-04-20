@@ -22,7 +22,8 @@ abstract class AbstractRunner {
     protected JkDownloader dwTemp = new JkDownloader(TMP_FOLDER);
 
     protected Pair<Boolean, Path> downloadResource(String resUrl) {
-        return dwTemp.downloadResource(JkEncryption.getMD5(resUrl), resUrl);
+        String fname = JkEncryption.getMD5(resUrl) + "." + JkFiles.getExtension(resUrl);
+        return dwTemp.downloadResource(fname, resUrl);
     }
 
     protected String fixResourceName(String fn, String url) {
