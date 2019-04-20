@@ -6,7 +6,7 @@ import xxx.joker.libs.repository.design.RepoField;
 import java.nio.file.Path;
 import java.util.Set;
 
-public class RepoURIer extends RepoEntity {
+public class RepoUri extends RepoEntity {
 
     @RepoField
     private Path path;
@@ -15,7 +15,7 @@ public class RepoURIer extends RepoEntity {
     @RepoField
     private RepoMetaData repoMetaData;
 
-    public RepoURIer() {
+    public RepoUri() {
     }
 
 

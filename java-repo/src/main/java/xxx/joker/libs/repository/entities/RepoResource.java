@@ -10,7 +10,7 @@ public class RepoResource extends RepoEntity {
     @RepoField
     private String name;
     @RepoField
-    private RepoURIer repoURI;
+    private RepoUri repoURI;
     @RepoField
     private Set<String> tags;
 
