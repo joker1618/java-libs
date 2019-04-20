@@ -17,14 +17,19 @@ public class RepoMetaData implements JkFormattable {
     private Map<String, String> metadata = new LinkedHashMap<>();
 
     public enum Attrib {
-        FILE_SIZE,
-        FILE_TYPE,
         WIDTH,
         HEIGHT
     }
 
     public RepoMetaData() {
 
+    }
+
+    public void addMetaData(Attrib mdKey, String mdValue) {
+        metadata.put(mdKey.name(), mdValue);
+    }
+    public void addMetaData(String mdKey, String mdValue) {
+        metadata.put(mdKey,  mdValue);
     }
 
 
@@ -42,6 +47,7 @@ public class RepoMetaData implements JkFormattable {
 
     @Override
     public RepoMetaData parse(String str) {
+        metadata.clear();
         for (String el : JkStrings.splitArr(str, SEP_ELEMS)) {
             String[] split = JkStrings.splitArr(el, SEP_FIELD);
             metadata.put(split[0], split[1]);

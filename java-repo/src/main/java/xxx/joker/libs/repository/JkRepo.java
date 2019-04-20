@@ -36,6 +36,7 @@ public interface JkRepo {
     String delProperty(String propKey);
 
     RepoResource getResource(String resName, String... tags);
-    RepoResource saveResource(Path sourcePath, String resName, String... tags);
+    RepoResource addResource(Path sourcePath, String resName, String... tags);
+    
 
 }

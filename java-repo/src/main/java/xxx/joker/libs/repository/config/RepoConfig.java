@@ -14,11 +14,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static xxx.joker.libs.core.utils.JkStrings.strf;
+
 public class RepoConfig {
 
 //    public static final long MIN_SIZE_FOR_COMPACT_IDS = 1_000_000_000;
-
-    public static final String RESOURCE_FOLDER = "resources";
 
     public static class Separator {
         public static final String SEP_FIELD = "|";
@@ -29,6 +29,10 @@ public class RepoConfig {
         public static final String PH_TAB = "@_TAB_@";
         public static final String PH_NEWLINE = "@_LF_@";
         public static final String PH_NULL = "@_NUL_@";
+    }
+
+    public static Path getResourcesFolder(Path dbFolder, String dbName) {
+        return dbFolder.resolve(strf("{}.resources", dbName));
     }
 
     public static boolean isValidType(FieldWrapper fieldWrapper) {
@@ -46,7 +50,8 @@ public class RepoConfig {
 
     private static final List<Class<?>> CUSTOM_FIELDS = Arrays.asList(
             RepoEntity.class,
-            JkFormattable.class
+            JkFormattable.class,
+            Enum.class
     );
 
     private static final List<Class<?>> ALLOWED_FIELDS = Arrays.asList(
@@ -70,7 +75,4 @@ public class RepoConfig {
             Set.class
     );
 
-    private static final List<String> IMAGE_EXTENSIONS = Arrays.asList(
-            "gif", "jpeg", "jpg", "png", "tif", "tiff", "jif", "jfif"
-    );
 }

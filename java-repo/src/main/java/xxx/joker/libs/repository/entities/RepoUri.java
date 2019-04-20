@@ -4,7 +4,6 @@ import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoField;
 
 import java.nio.file.Path;
-import java.util.Set;
 
 public class RepoUri extends RepoEntity {
 
@@ -13,7 +12,9 @@ public class RepoUri extends RepoEntity {
     @RepoField
     private String md5;
     @RepoField
-    private RepoMetaData repoMetaData;
+    private RepoUriType type;
+    @RepoField
+    private RepoMetaData metaData;
 
     public RepoUri() {
     }
@@ -21,7 +22,7 @@ public class RepoUri extends RepoEntity {
 
     @Override
     public String getPrimaryKey() {
-        return md5;
+        return "uri:" + getMd5();
     }
 
     public Path getPath() {
@@ -32,12 +33,12 @@ public class RepoUri extends RepoEntity {
         this.path = path;
     }
 
-    public RepoMetaData getRepoMetaData() {
-        return repoMetaData;
+    public RepoMetaData getMetaData() {
+        return metaData;
     }
 
-    public void setRepoMetaData(RepoMetaData repoMetaData) {
-        this.repoMetaData = repoMetaData;
+    public void setMetaData(RepoMetaData metaData) {
+        this.metaData = metaData;
     }
 
     public String getMd5() {
@@ -48,4 +49,11 @@ public class RepoUri extends RepoEntity {
         this.md5 = md5;
     }
 
+    public RepoUriType getType() {
+        return type;
+    }
+
+    public void setType(RepoUriType type) {
+        this.type = type;
+    }
 }

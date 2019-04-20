@@ -1,16 +1,46 @@
 package various;
 
 import org.junit.Test;
+import xxx.joker.libs.core.runtimes.JkReflection;
+import xxx.joker.libs.repository.entities.RepoUriType;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class Misc {
+
+    @Test
+    public void tenum() {
+        Class<?> clazz = RepoUriType.class;
+        Object ruto = Enum.valueOf((Class)clazz, "IMAGE");
+        display("{}",ruto);
+        RepoUriType rut = (RepoUriType) Enum.valueOf((Class)clazz, "IMAGE");
+        display(rut.name());
+        display("{}", JkReflection.isInstanceOf(clazz, Enum.class));
+
+        String s = "fe%%de/r/ico,l  a;ma:don na";
+        display("{}\n{}", s, s.replaceAll("[/%,;:\\s]", "_"));
+//
+//        Collection<Integer> coll = Collections.emptyList();
+//        display(coll.getClass().getName());
+//        display(coll.getClass().getTypeName());
+//        display(((ParameterizedType) coll.getClass()
+//                .getGenericSuperclass()).toString());
+//        display(((ParameterizedType) coll.getClass()
+//                .getGenericSuperclass()).getActualTypeArguments()[0].getTypeName());
+//        Class genclazz = (Class) ((ParameterizedType) coll.getClass()
+//                .getGenericSuperclass()).getActualTypeArguments()[0];
+//        display(genclazz.getName());
+    }
 
     @Test
     public void t22t() {

@@ -1,4 +1,48 @@
 package xxx.joker.libs.repository.entities;
 
-public class RepoUriType {
+import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.tests.JkTests;
+import xxx.joker.libs.core.utils.JkConvert;
+
+import java.nio.file.Path;
+import java.util.List;
+
+public enum RepoUriType {
+
+    IMAGE("gif", "jpeg", "jpg", "png", "tif", "tiff", "jif", "jfif"),
+    MUSIC("mp3"),
+    VIDEO("mp4", "avi", "mpeg", "mpg"),
+    HTML("html", "xml"),
+    TEXT("txt", "csv"),
+    OTHER
+    ;
+
+    private List<String> extensions;
+
+    RepoUriType(String... extensions) {
+        this.extensions = JkConvert.toList(extensions);
+    }
+
+    public static RepoUriType fromExtension(Path path) {
+        return fromExtension(path.toString());
+    }
+    public static RepoUriType fromExtension(String fname) {
+        String ext = fname.contains(".") ? JkFiles.getExtension(fname) : fname;
+        for (RepoUriType rut : values()) {
+            if(JkTests.containsIgnoreCase(rut.extensions, ext)) {
+                return rut;
+            }
+        }
+        return OTHER;
+    }
+
+    public static RepoUriType valueOfIgnoreCase(String name) {
+        for (RepoUriType rut : values()) {
+            if(rut.name().equalsIgnoreCase(name)) {
+                return rut;
+            }
+        }
+        return null;
+    }
+
 }

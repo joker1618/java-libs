@@ -162,6 +162,8 @@ public class FieldWrapper {
             toRet = (String) value;
         } else if (JkReflection.isInstanceOf(fclazz, JkFormattable.class)) {
             toRet = ((JkFormattable)value).format();
+        } else if (JkReflection.isInstanceOf(fclazz, Enum.class)) {
+            toRet = ((Enum)value).name();
         } else {
             throw new RepoError("Object formatting not implemented for: class = {}, value = {}", fclazz, value);
         }
@@ -261,6 +263,8 @@ public class FieldWrapper {
         } else if (JkReflection.isInstanceOf(fclazz, JkFormattable.class)) {
             o = JkReflection.createInstanceSafe(fclazz);
             ((JkFormattable) o).parse(unesc);
+        } else if (JkReflection.isInstanceOf(fclazz, Enum.class)) {
+            o = Enum.valueOf((Class)fclazz, unesc);
         } else if (isString) {
             o = unesc;
         } else {

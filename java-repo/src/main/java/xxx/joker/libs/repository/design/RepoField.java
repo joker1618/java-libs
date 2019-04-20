@@ -21,6 +21,8 @@ import java.lang.annotation.Target;
  * 	LocalDateTime.class
  * 	String.class
  *
+ * 	Enum.class
+ *
  * 	? extends JkFormattable
  * 	? extends RepoEntity
  *

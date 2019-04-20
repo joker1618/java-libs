@@ -5,10 +5,13 @@ import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.format.JkOutput;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
+import xxx.joker.libs.core.tests.JkTests;
 import xxx.joker.libs.core.types.JkFormattable;
+import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.repository.design.RepoEntity;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,19 +21,32 @@ public class RepoUtil {
 
     /**
      *  // todo put method in core libs
-     * @param fieldNames string in the form 'nation|date|...' or 'nation date ...'.
-     *                   Keywords allowed: eid, epk, etm
+     * @param fieldsToDisplay strings in the form 'nation date ...'.
+     *                        Keywords allowed: eid, epk, etm
      * @return
      */
-    public static String formatEntities(Collection<? extends RepoEntity> entities, String fieldNames) {
+    public static String formatEntities(Collection<? extends RepoEntity> entities, String... fieldsToDisplay) {
         try {
-            String hsep = fieldNames.contains("|") ? "|" : " ";
-            List<String> split = JkStrings.splitList(fieldNames, hsep);
+            List<String> fieldNames = getFieldNames(fieldsToDisplay);
             List<String> lines = new ArrayList<>();
+
             for (RepoEntity e : entities) {
                 StringBuilder sb = new StringBuilder();
-                for (String fname : split) {
+
+                if(fieldNames.isEmpty()) {
+                    fieldNames.add("epk");
+                    // retrieve all fields recursively
+                    Class<?> sourceClazz = e.getClass();
+                    while(sourceClazz != null) {
+                        List<String> fnames = JkStreams.map(JkConvert.toList(sourceClazz.getDeclaredFields()), Field::getName);
+                        fieldNames.addAll(fnames);
+                        sourceClazz = sourceClazz.getSuperclass();
+                    }
+                }
+
+                for (String fname : fieldNames) {
                     if (sb.length() > 0) sb.append("|");
+
                     if (StringUtils.equalsAnyIgnoreCase(fname, "eid", "entityID")) {
                         Object fval = JkReflection.getFieldValue(e, "entityID");
                         if(fval == null)  sb.append("NULL");
@@ -59,9 +75,13 @@ public class RepoUtil {
                 }
                 lines.add(sb.toString());
             }
-            String header = JkStreams.join(split, "|", RepoUtil::createStringHeader);
-            lines.add(0, header);
-            return JkOutput.columnsView(lines, 2);
+
+            if(!fieldNames.isEmpty()) {
+                String header = JkStreams.join(fieldNames, "|", RepoUtil::createStringHeader);
+                lines.add(0, header);
+            }
+
+            return JkOutput.columnsView(lines);
 
         } catch (Exception ex) {
             throw new JkRuntimeException(ex);
@@ -86,4 +106,13 @@ public class RepoUtil {
         return res.toUpperCase();
     }
 
+    private static List<String> getFieldNames(String... fieldNames) {
+        List<String> toRet = new ArrayList<>();
+        for (String fstr : fieldNames) {
+            String trimmed = fstr.replaceAll(" +", " ").trim();
+            List<String> tlist = JkStrings.splitList(trimmed, " ");
+            toRet.addAll(tlist);
+        }
+        return toRet;
+    }
 }

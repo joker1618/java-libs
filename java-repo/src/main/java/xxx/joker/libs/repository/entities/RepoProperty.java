@@ -19,7 +19,7 @@ public class RepoProperty extends RepoEntity {
     
     @Override
     public String getPrimaryKey() {
-        return getKey().toLowerCase();
+        return "property:" + getKey().toLowerCase();
     }
 
     public String getKey() {

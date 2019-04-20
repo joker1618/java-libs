@@ -9,6 +9,7 @@ import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.engine.RepoManager;
 import xxx.joker.libs.repository.entities.RepoProperty;
 import xxx.joker.libs.repository.entities.RepoResource;
+import xxx.joker.libs.repository.entities.RepoTags;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public abstract class JkRepoFile implements JkRepo {
     protected JkRepoFile(Path dbFolder, String dbName, String... pkgsToScan) {
         this(null, dbFolder, dbName, pkgsToScan);
     }
+
     protected JkRepoFile(String encryptionPwd, Path dbFolder, String dbName, String... pkgsToScan) {
         this.repoManager = new RepoManager(encryptionPwd, dbFolder, dbName, pkgsToScan);
     }
@@ -37,13 +39,13 @@ public abstract class JkRepoFile implements JkRepo {
     }
 
     @Override
-    public  <T extends RepoEntity> Map<Class<T>, Set<T>> getDataSets() {
+    public <T extends RepoEntity> Map<Class<T>, Set<T>> getDataSets() {
         return repoManager.getDataSets();
     }
 
     @Override
     public <T extends RepoEntity> Set<T> getDataSet(Class<T> entityClazz) {
-        return (Set<T>) repoManager.getDataSet(entityClazz);
+        return repoManager.getDataSet(entityClazz);
     }
 
     @Override
@@ -54,7 +56,7 @@ public abstract class JkRepoFile implements JkRepo {
 
     @Override
     @SafeVarargs
-    public final <K,T extends RepoEntity> Map<K,T> getDataMap(Class<T> entityClazz, Function<T, K> keyMapper, Predicate<T>... filters) {
+    public final <K, T extends RepoEntity> Map<K, T> getDataMap(Class<T> entityClazz, Function<T, K> keyMapper, Predicate<T>... filters) {
         return JkStreams.toMapSingle(getDataSet(entityClazz), keyMapper, e -> e, filters);
     }
 
@@ -67,7 +69,7 @@ public abstract class JkRepoFile implements JkRepo {
     @Override
     public <T extends RepoEntity> T getOrAdd(T entity) {
         T found = get(entity);
-        if(found == null) {
+        if (found == null) {
             add(entity);
             found = entity;
         }
@@ -116,7 +118,7 @@ public abstract class JkRepoFile implements JkRepo {
     public String setProperty(String propKey, String propValue) {
         RepoProperty prop = retrieveProperty(propKey);
         String oldValue = prop == null ? null : prop.getValue();
-        if(prop != null) {
+        if (prop != null) {
             prop.setValue(propValue);
         } else {
             prop = new RepoProperty(propKey, propValue);
@@ -128,7 +130,7 @@ public abstract class JkRepoFile implements JkRepo {
     @Override
     public String delProperty(String propKey) {
         RepoProperty prop = retrieveProperty(propKey);
-        if(prop != null) {
+        if (prop != null) {
             getDataSet(RepoProperty.class).remove(prop);
         }
         return prop == null ? null : prop.getValue();
@@ -140,26 +142,12 @@ public abstract class JkRepoFile implements JkRepo {
 
     @Override
     public RepoResource getResource(String resName, String... tags) {
-        //todo impl
-        return null;
+        return repoManager.getResource(resName, RepoTags.of(tags));
     }
 
     @Override
-    public RepoResource saveResource(Path sourcePath, String resName, String... tags) {
-        //todo impl
-        return null;
+    public RepoResource addResource(Path sourcePath, String resName, String... tags) {
+        return repoManager.addResource(sourcePath, resName, RepoTags.of(tags));
     }
 
-    private List<String> getTagList(String... tags) {
-        List<String> toRet = new ArrayList<>();
-        for (String tag : tags) {
-            List<String> tlist = JkStrings.splitList(tag.replaceAll(" +", " ").trim(), " ");
-            for (String t : tlist) {
-                if(!JkTests.containsIgnoreCase(toRet, t)) {
-                    toRet.add(t);
-                }
-            }
-        }
-        return toRet;
-    }
 }

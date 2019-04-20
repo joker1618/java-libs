@@ -363,6 +363,9 @@ public class JkFiles {
 
 
 	/* COPY-MOVE methods */
+	public static void copyFile(Path sourcePath, Path targetPath) {
+		copyFile1(sourcePath, targetPath, true, false);
+	}
 	public static void copyFile(Path sourcePath, Path targetPath, boolean overwrite) {
 		copyFile1(sourcePath, targetPath, overwrite, false);
 	}
@@ -420,6 +423,9 @@ public class JkFiles {
 		}
 	}
 
+	public static void moveFile(Path sourcePath, Path targetPath) {
+		moveFile1(sourcePath, targetPath, true, false);
+	}
 	public static void moveFile(Path sourcePath, Path targetPath, boolean overwrite) {
 		moveFile1(sourcePath, targetPath, overwrite, false);
 	}
@@ -514,21 +520,19 @@ public class JkFiles {
 		return safePath(Paths.get(targetPath));
 	}
 	public static Path safePath(Path targetPath) {
-		Path newPath = targetPath;
+		if(!Files.exists(targetPath)) {
+			return targetPath;
+		}
 
-		if(Files.exists(targetPath)) {
-			String fname = getFileName(targetPath);
-			String fext = getExtension(targetPath);
-			if(fext != null)	fext = "." + fext;
-			else				fext = "";
-			Path fparent = getParent(targetPath);
+		String fname = getFileName(targetPath);
+		String fext = getExtension(targetPath);
+		if(fext != null)	fext = "." + fext;
+		else				fext = "";
+		Path fparent = getParent(targetPath);
 
-			Path tempPath = null;
-			for(int i = 1; tempPath == null || Files.exists(tempPath); i++) {
-				tempPath = fparent.resolve(strf("%s.%d%s", fname, i, fext));
-			}
-
-			newPath = tempPath;
+		Path newPath = null;
+		for(int i = 1; newPath == null || Files.exists(newPath); i++) {
+			newPath = fparent.resolve(strf("%s.%02d%s", fname, i, fext));
 		}
 
 		return newPath;

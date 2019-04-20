@@ -33,7 +33,7 @@ public class JkDownloader {
 
     public List<String> getHtmlLines(String url) {
         try {
-            String fname = url.replace("/", "_").replace(":", "").replaceAll(" +", "");
+            String fname = url.replaceAll("[/%,;:\\s]", "_");
             fname += ".html";
 
             Path htmlPath = folder.resolve(fname);
