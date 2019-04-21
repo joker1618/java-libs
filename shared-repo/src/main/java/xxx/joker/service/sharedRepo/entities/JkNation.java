@@ -1,4 +1,4 @@
-package xxx.joker.service.commonRepo.entities;
+package xxx.joker.service.sharedRepo.entities;
 
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoField;

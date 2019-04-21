@@ -4,9 +4,9 @@ import org.junit.Test;
 import xxx.joker.libs.repository.entities.RepoResource;
 import xxx.joker.libs.repository.entities.RepoUri;
 import xxx.joker.libs.repository.util.RepoUtil;
-import xxx.joker.service.commonRepo.JkCommonRepo;
-import xxx.joker.service.commonRepo.JkCommonRepoImpl;
-import xxx.joker.service.commonRepo.entities.JkNation;
+import xxx.joker.service.sharedRepo.JkSharedRepo;
+import xxx.joker.service.sharedRepo.JkSharedRepoImpl;
+import xxx.joker.service.sharedRepo.entities.JkNation;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,7 +19,7 @@ import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class PrintNations {
 
-    JkCommonRepo model = JkCommonRepoImpl.getInstance();
+    JkSharedRepo model = JkSharedRepoImpl.getInstance();
 
     @Test
     public void printNations() {

@@ -24,7 +24,7 @@
         <module>java-repo</module>
         <module>java-excel</module>
         <module>formula1</module>
-        <module>common-repo</module>
+        <module>shared-repo</module>
     </modules>
 
     <packaging>pom</packaging>

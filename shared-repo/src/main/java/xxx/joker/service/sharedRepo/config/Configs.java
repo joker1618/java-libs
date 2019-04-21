@@ -1,4 +1,4 @@
-package xxx.joker.service.commonRepo.config;
+package xxx.joker.service.sharedRepo.config;
 
 import xxx.joker.libs.core.runtimes.JkEnvironment;
 

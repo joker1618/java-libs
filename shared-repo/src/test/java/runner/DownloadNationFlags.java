@@ -6,9 +6,8 @@ import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.scanners.JkScanners;
 import xxx.joker.libs.core.scanners.JkTag;
 import xxx.joker.libs.core.utils.JkStrings;
-import xxx.joker.libs.core.web.JkDownloader;
 import xxx.joker.libs.repository.entities.RepoResource;
-import xxx.joker.service.commonRepo.entities.JkNation;
+import xxx.joker.service.sharedRepo.entities.JkNation;
 
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -17,7 +16,6 @@ import java.util.Map;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
-import static xxx.joker.service.commonRepo.config.Configs.*;
 
 /**
  * FIRST RUN: 6m 17s

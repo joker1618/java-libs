@@ -133,9 +133,9 @@ public abstract class AWikiParser implements WikiParser {
 
     private String fixNation(String nation) {
         if(nation.contains("Melbourne"))  return "Melbourne";
-        if(nation.equals("Texas"))  return "United States";
-        if(nation.equals("People's Republic of China"))  return "China";
-        if(nation.equals("Quebec Canada"))  return "Canada";
+        if(nation.contains("Texas"))  return "United States";
+        if(nation.contains("China"))  return "China";
+        if(nation.contains("Canada"))  return "Canada";
         if(nation.equals("Lombardy"))  return "Italy";
         if(nation.equals("England"))  return "United Kingdom";
         return nation;
