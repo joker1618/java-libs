@@ -3,7 +3,7 @@ package xxx.joker.apps.formula1.dataCreator.parsers;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.apps.formula1.dataCreator.common.F1Const;
+import xxx.joker.apps.formula1.common.F1Const;
 import xxx.joker.apps.formula1.dataCreator.model.F1Model;
 import xxx.joker.apps.formula1.dataCreator.model.F1ModelImpl;
 import xxx.joker.apps.formula1.dataCreator.model.F1ResourceManager;

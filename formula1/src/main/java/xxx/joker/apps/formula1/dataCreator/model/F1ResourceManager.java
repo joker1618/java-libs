@@ -3,7 +3,7 @@ package xxx.joker.apps.formula1.dataCreator.model;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.apps.formula1.dataCreator.common.F1Const;
+import xxx.joker.apps.formula1.common.F1Const;
 import xxx.joker.apps.formula1.fxlibs.JxImage;
 import xxx.joker.apps.formula1.dataCreator.model.entities.F1Driver;
 import xxx.joker.apps.formula1.dataCreator.model.entities.F1GranPrix;

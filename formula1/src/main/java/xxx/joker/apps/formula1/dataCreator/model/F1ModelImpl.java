@@ -2,10 +2,9 @@ package xxx.joker.apps.formula1.dataCreator.model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.apps.formula1.dataCreator.common.F1Const;
+import xxx.joker.apps.formula1.common.F1Const;
 import xxx.joker.apps.formula1.dataCreator.model.beans.F1Season;
 import xxx.joker.apps.formula1.dataCreator.model.beans.F1SeasonResult;
-import xxx.joker.apps.formula1.dataCreator.model.entities.*;
 import xxx.joker.apps.formula1.dataCreator.model.entities.*;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.repository.JkRepoFile;

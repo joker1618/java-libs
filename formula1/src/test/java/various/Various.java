@@ -2,7 +2,7 @@ package various;
 
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.junit.Test;
-import xxx.joker.apps.formula1.dataCreator.common.F1Const;
+import xxx.joker.apps.formula1.common.F1Const;
 import xxx.joker.apps.formula1.dataCreator.model.F1ModelImpl;
 import xxx.joker.apps.formula1.dataCreator.model.entities.F1Race;
 import xxx.joker.libs.core.datetime.JkTimer;

@@ -1,7 +1,7 @@
 package xxx.joker.apps.formula1.dataCreator.model.managers;
 
 import javafx.scene.image.Image;
-import xxx.joker.apps.formula1.dataCreator.common.F1Const;
+import xxx.joker.apps.formula1.common.F1Const;
 import xxx.joker.apps.formula1.dataCreator.model.entities.F1Driver;
 import xxx.joker.apps.formula1.dataCreator.model.entities.F1GranPrix;
 import xxx.joker.libs.core.files.JkFiles;

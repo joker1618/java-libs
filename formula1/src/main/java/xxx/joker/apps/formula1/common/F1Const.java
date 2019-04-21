@@ -1,4 +1,4 @@
-package xxx.joker.apps.formula1.dataCreator.common;
+package xxx.joker.apps.formula1.common;
 
 import xxx.joker.libs.core.runtimes.JkEnvironment;
 

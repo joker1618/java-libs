@@ -11,7 +11,7 @@ import xxx.joker.libs.core.web.JkDownloader;
 
 import java.util.List;
 
-import static xxx.joker.apps.formula1.dataCreator.common.F1Const.*;
+import static xxx.joker.apps.formula1.common.F1Const.*;
 import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
