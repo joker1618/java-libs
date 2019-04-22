@@ -4,17 +4,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.exception.JkRuntimeException;
+import xxx.joker.libs.core.files.JkEncryption;
 import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
-
-import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class JkDownloader {
 
@@ -52,7 +49,13 @@ public class JkDownloader {
         }
     }
 
-    public Pair<Boolean, Path> downloadResource(String outFileName, String url) {
+    public Pair<Boolean, Path> downloadResource(String url) {
+        String md5 = JkEncryption.getMD5(url);
+        String ext = JkFiles.getExtension(url);
+        String fname = md5 + (ext.isEmpty() ? "" : "."+ext);
+        return downloadResource(url, fname);
+    }
+    public Pair<Boolean, Path> downloadResource(String url, String outFileName) {
         Path outPath = folder.resolve(outFileName);
         boolean isDw = false;
         if(!Files.exists(outPath)) {

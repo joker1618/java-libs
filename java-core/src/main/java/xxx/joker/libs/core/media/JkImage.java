@@ -22,34 +22,6 @@ public class JkImage implements JkFormattable {
 
     }
 
-    public Path getPath() {
-        return path;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public double getRatio() {
-        return  (double) width / height;
-    }
-
-    public void setPath(Path path) {
-        this.path = path;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
     @Override
     public String format() {
         return strf("{}{}{}{}{}", JkEnvironment.relativizeAppsPath(path), FIELD_SEP, width, FIELD_SEP, height);
@@ -63,4 +35,27 @@ public class JkImage implements JkFormattable {
         setHeight(Integer.valueOf(split[2]));
         return this;
     }
+
+    public Path getPath() {
+        return path;
+    }
+    public int getWidth() {
+        return width;
+    }
+    public int getHeight() {
+        return height;
+    }
+    public double getRatio() {
+        return  (double) width / height;
+    }
+    public void setPath(Path path) {
+        this.path = path;
+    }
+    public void setWidth(int width) {
+        this.width = width;
+    }
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
 }

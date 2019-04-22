@@ -26,17 +26,7 @@ abstract class AbstractRunner {
     }
 
     protected Pair<Boolean, Path> downloadResource(String resUrl) {
-        String fname = JkEncryption.getMD5(resUrl) + "." + JkFiles.getExtension(resUrl);
-        return dwTemp.downloadResource(fname, resUrl);
-    }
-
-    protected String fixResourceName(String fn, String url) {
-        String finalFname = fn;
-        String ext = JkFiles.getExtension(url);
-        if(!ext.isEmpty() && !finalFname.endsWith("." + ext)) {
-            finalFname += "." + ext;
-        }
-        return finalFname;
+        return dwTemp.downloadResource(resUrl);
     }
 
     protected String createWikiUrl(String wikiSubPath) {
