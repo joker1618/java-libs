@@ -12,7 +12,7 @@ public class RepoTags implements JkFormattable<RepoTags> {
 
     private static final String SEP = "-";
 
-    private TreeSet<String> tags = new TreeSet<>();
+    private TreeSet<String> tags = new TreeSet<>(Comparator.comparing(String::toLowerCase));
 
     public RepoTags() {
 

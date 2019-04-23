@@ -6,7 +6,7 @@ import java.nio.file.Path;
 
 public class F1Const {
 
-    public static final Path BASE_FOLDER = JkEnvironment.getAppsFolder().resolve("formula1");
+    public static final Path BASE_FOLDER = JkEnvironment.getAppsFolder().resolve("formula1ex");
 
     public static final Path HTML_FOLDER = BASE_FOLDER.resolve("html");
 

@@ -46,9 +46,9 @@ public class RepoManager {
         toScan.add("xxx.joker.libs.repository.entities");
 
         if(StringUtils.isNotBlank(encryptionPwd)) {
-            this.repoDao = new RepoDAOEncrypted(dbFolder, dbName, scanPackage(toScan), encryptionPwd);
+            this.repoDao = new RepoDAOEncrypted(dbFolder, dbName, scanPackages(toScan), encryptionPwd);
         } else {
-            this.repoDao = new RepoDAO(dbFolder, dbName, scanPackage(toScan));
+            this.repoDao = new RepoDAO(dbFolder, dbName, scanPackages(toScan));
         }
         this.repoLock = new ReentrantReadWriteLock(true);
         this.repoHandler = new RepoHandler(repoDao.readRepoData(), repoLock);
@@ -152,7 +152,7 @@ public class RepoManager {
         return uri;
     }
 
-    private List<ClazzWrapper> scanPackage(Collection<String> pkgsToScan) {
+    private List<ClazzWrapper> scanPackages(Collection<String> pkgsToScan) {
         Set<Class<?>> classes = new HashSet<>();
 
         pkgsToScan.forEach(pkg -> {

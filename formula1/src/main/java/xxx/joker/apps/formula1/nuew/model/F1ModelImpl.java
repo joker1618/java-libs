@@ -3,12 +3,14 @@ package xxx.joker.apps.formula1.nuew.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.apps.formula1.nuew.common.F1Const;
-import xxx.joker.apps.formula1.nuew.model.entities.F1Driver;
-import xxx.joker.apps.formula1.nuew.model.entities.F1GranPrix;
+import xxx.joker.apps.formula1.nuew.model.entities.*;
+import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.repository.JkRepoFile;
 import xxx.joker.libs.repository.entities.RepoResource;
 
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Set;
 
 public class F1ModelImpl extends JkRepoFile implements F1Model {
 
@@ -30,6 +32,11 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
     }
 
     @Override
+    public RepoResource getDriverCover(F1Driver driver) {
+        return getResource(driver.getPrimaryKey(), "driver cover");
+    }
+
+    @Override
     public RepoResource saveDriverCover(Path imgPath, F1Driver driver) {
         return addResource(imgPath, driver.getPrimaryKey(), "driver cover");
     }
@@ -39,64 +46,55 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
         return addResource(imgPath, gp.getPrimaryKey(), "gp trackMap");
     }
 
-//    @Override
-//    public F1Team getTeam(String teamName) {
-//        return JkStreams.findUnique(getTeams(), t -> t.getTeamName().equals(teamName));
-//    }
-//
-//    @Override
-//    public Set<F1Team> getTeams() {
-//        return getDataSet(F1Team.class);
-//    }
-//
-//    @Override
-//    public F1Driver getDriver(String driverName) {
-//        return JkStreams.findUnique(getDrivers(), d -> d.getFullName().equals(driverName));
-//    }
-//
-//    @Override
-//    public Set<F1Driver> getDrivers() {
-//        return getDataSet(F1Driver.class);
-//    }
-//
-//    @Override
-//    public Set<F1Entrant> getEntrants() {
-//        return getDataSet(F1Entrant.class);
-//    }
-//    @Override
-//    public List<F1Entrant> getEntrants(int year) {
-//        return JkStreams.filter(getEntrants(), e -> e.getYear() == year);
-//    }
-//
+    @Override
+    public F1Team getTeam(String teamName) {
+        return JkStreams.findUnique(getTeams(), t -> t.getTeamName().equals(teamName));
+    }
+
+    @Override
+    public Set<F1Team> getTeams() {
+        return getDataSet(F1Team.class);
+    }
+
+    @Override
+    public F1Driver getDriver(String driverName) {
+        return JkStreams.findUnique(getDrivers(), d -> d.getFullName().equals(driverName));
+    }
+
+    @Override
+    public Set<F1Driver> getDrivers() {
+        return getDataSet(F1Driver.class);
+    }
+
+    @Override
+    public Set<F1Entrant> getEntrants() {
+        return getDataSet(F1Entrant.class);
+    }
+    @Override
+    public List<F1Entrant> getEntrants(int year) {
+        return getDataList(F1Entrant.class, e -> e.getYear() == year);
+    }
+
 //    @Override
 //    public Set<F1GranPrix> getGranPrixs() {
 //        return getDataSet(F1GranPrix.class);
 //    }
-//
-//    @Override
-//    public List<F1GranPrix> getGranPrixs(int year) {
-//        return JkStreams.filter(getGranPrixs(), gp -> gp.getYear() == year);
-//    }
-//
-//    @Override
-//    public Set<F1Circuit> getCircuits() {
-//        return getDataSet(F1Circuit.class);
-//    }
-//
-//    @Override
-//    public F1Circuit getCircuit(String city, String nation) {
-//        for (F1Circuit circuit : getCircuits()) {
-//            String cc = circuit.getCity();
-//            String nn = circuit.getNation();
-//            boolean rc = city.equals(cc);
-//            boolean rn = nation.equals(nn);
-//            if(rc && rn) {
-//                return circuit;
-//            }
-//        }
-//        return JkStreams.findUnique(getCircuits(), c -> city.equals(c.getCity()) && nation.equals(c.getNation()));
-//    }
-//
+
+    @Override
+    public List<F1GranPrix> getGranPrixs(int year) {
+        return getDataList(F1GranPrix.class, e -> e.getYear() == year);
+    }
+
+    @Override
+    public Set<F1Circuit> getCircuits() {
+        return getDataSet(F1Circuit.class);
+    }
+
+    @Override
+    public F1Circuit getCircuit(String city, String nation) {
+        return JkStreams.findUnique(getCircuits(), c -> city.equals(c.getCity()) && nation.equals(c.getNation()));
+    }
+
 //    @Override
 //    public void deleteData(int year) {
 //        List<RepoEntity> list = new ArrayList<>();
