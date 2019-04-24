@@ -10,16 +10,15 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.apps.formula1.old.dataCreator.model.beans.F1Season;
 import xxx.joker.apps.formula1.old.dataCreator.model.F1Model;
 import xxx.joker.apps.formula1.old.dataCreator.model.F1ModelImpl;
+import xxx.joker.apps.formula1.old.dataCreator.model.beans.F1Season;
 import xxx.joker.apps.formula1.old.dataCreator.model.entities.F1GranPrix;
 import xxx.joker.libs.core.files.JkFiles;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class YearView extends BorderPane {

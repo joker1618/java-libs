@@ -9,8 +9,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import static xxx.joker.libs.core.utils.JkConsole.display;
-
 public class JxImage {
 
     private Path path;

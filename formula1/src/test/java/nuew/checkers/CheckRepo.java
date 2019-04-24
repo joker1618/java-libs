@@ -3,7 +3,6 @@ package nuew.checkers;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-import com.sun.org.apache.xml.internal.security.keys.content.DEREncodedKeyValue;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,9 +12,7 @@ import xxx.joker.apps.formula1.nuew.model.F1ModelChecker;
 import xxx.joker.apps.formula1.nuew.model.F1ModelImpl;
 import xxx.joker.apps.formula1.nuew.model.entities.*;
 import xxx.joker.apps.formula1.nuew.webParser.WikiParser;
-import xxx.joker.libs.core.format.JkOutput;
 import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.repository.design.RepoEntity;
 
 import java.util.*;

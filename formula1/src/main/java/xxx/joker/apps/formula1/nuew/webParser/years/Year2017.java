@@ -6,7 +6,6 @@ import xxx.joker.apps.formula1.nuew.model.fields.F1FastLap;
 import xxx.joker.apps.formula1.nuew.webParser.AWikiParser;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.scanners.JkScanners;
 import xxx.joker.libs.core.scanners.JkTag;
@@ -14,7 +13,6 @@ import xxx.joker.libs.core.scanners.JkTextScanner;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

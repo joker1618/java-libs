@@ -22,8 +22,8 @@ import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import static xxx.joker.libs.repository.entities.RepoMetaData.Attrib;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
+import static xxx.joker.libs.repository.entities.RepoMetaData.Attrib;
 
 public class RepoManager {
 

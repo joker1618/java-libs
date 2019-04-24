@@ -13,7 +13,6 @@ import xxx.joker.libs.core.scanners.JkTextScanner;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.core.utils.JkStruct;
-import xxx.joker.libs.repository.util.RepoUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -21,8 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class Year2016 extends AWikiParser  {
 

@@ -4,13 +4,9 @@ import org.junit.Test;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.repository.entities.RepoUriType;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

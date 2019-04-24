@@ -12,8 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static xxx.joker.libs.core.utils.JkConsole.display;
-
 public class ResourceManager {
 
     private static final Map<F1GranPrix, Image> trackMaps = new HashMap<>();

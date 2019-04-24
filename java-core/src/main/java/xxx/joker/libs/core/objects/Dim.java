@@ -1,6 +1,5 @@
 package xxx.joker.libs.core.objects;
 
-import org.omg.CORBA.PUBLIC_MEMBER;
 import xxx.joker.libs.core.utils.JkStrings;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;

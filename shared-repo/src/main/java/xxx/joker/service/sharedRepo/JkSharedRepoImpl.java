@@ -7,7 +7,8 @@ import xxx.joker.service.sharedRepo.entities.JkNation;
 
 import java.nio.file.Path;
 
-import static xxx.joker.service.sharedRepo.config.Configs.*;
+import static xxx.joker.service.sharedRepo.config.Configs.DB_FOLDER;
+import static xxx.joker.service.sharedRepo.config.Configs.DB_NAME;
 
 public class JkSharedRepoImpl extends JkRepoFile implements JkSharedRepo {
 

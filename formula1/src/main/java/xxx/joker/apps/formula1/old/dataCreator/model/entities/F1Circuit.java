@@ -3,8 +3,6 @@ package xxx.joker.apps.formula1.old.dataCreator.model.entities;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoField;
 
-import java.time.LocalDate;
-
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class F1Circuit extends RepoEntity {

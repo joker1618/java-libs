@@ -2,14 +2,9 @@ package nuew.crawlers;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import xxx.joker.apps.formula1.nuew.common.F1Const;
 import xxx.joker.apps.formula1.nuew.model.F1ModelImpl;
 import xxx.joker.apps.formula1.nuew.webParser.WikiParser;
 import xxx.joker.libs.core.datetime.JkTimer;
-import xxx.joker.libs.core.files.JkFiles;
-import xxx.joker.service.sharedRepo.JkSharedRepo;
-import xxx.joker.service.sharedRepo.JkSharedRepoImpl;
-import xxx.joker.service.sharedRepo.entities.JkNation;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 

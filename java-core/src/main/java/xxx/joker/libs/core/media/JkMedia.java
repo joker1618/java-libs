@@ -1,7 +1,6 @@
 package xxx.joker.libs.core.media;
 
 import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.objects.Dim;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

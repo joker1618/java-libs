@@ -6,7 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
-import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class Misc {
 

@@ -4,10 +4,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.apps.formula1.old.common.F1Const;
-import xxx.joker.apps.formula1.old.fxlibs.JxImage;
 import xxx.joker.apps.formula1.old.dataCreator.model.entities.F1Driver;
 import xxx.joker.apps.formula1.old.dataCreator.model.entities.F1GranPrix;
 import xxx.joker.apps.formula1.old.dataCreator.model.entities.F1Resource;
+import xxx.joker.apps.formula1.old.fxlibs.JxImage;
 import xxx.joker.libs.core.web.JkDownloader;
 
 import java.nio.file.Path;

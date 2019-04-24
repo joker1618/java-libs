@@ -2,17 +2,15 @@ package xxx.joker.apps.formula1.old.dataCreator.parsers.years;
 
 import org.apache.commons.lang3.StringUtils;
 import xxx.joker.apps.formula1.old.dataCreator.model.entities.*;
-import xxx.joker.apps.formula1.old.dataCreator.model.entities.*;
 import xxx.joker.apps.formula1.old.dataCreator.model.fields.F1FastLap;
 import xxx.joker.apps.formula1.old.dataCreator.parsers.AWikiParser;
-import xxx.joker.libs.core.scanners.JkScanners;
-import xxx.joker.libs.core.scanners.JkTag;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.core.scanners.JkScanners;
+import xxx.joker.libs.core.scanners.JkTag;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.core.utils.JkStruct;
-
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -20,8 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class Year2013 extends AWikiParser {
 

@@ -2,15 +2,17 @@ package xxx.joker.apps.formula1.old.gui.yearView;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.apps.formula1.old.dataCreator.model.F1Model;
+import xxx.joker.apps.formula1.old.dataCreator.model.F1ModelImpl;
 import xxx.joker.apps.formula1.old.dataCreator.model.entities.F1Circuit;
 import xxx.joker.apps.formula1.old.dataCreator.model.entities.F1Driver;
 import xxx.joker.apps.formula1.old.dataCreator.model.entities.F1Team;
 import xxx.joker.apps.formula1.old.fxlibs.X_FxTable;
-import xxx.joker.apps.formula1.old.dataCreator.model.F1Model;
-import xxx.joker.apps.formula1.old.dataCreator.model.F1ModelImpl;
 
 import java.util.Set;
 

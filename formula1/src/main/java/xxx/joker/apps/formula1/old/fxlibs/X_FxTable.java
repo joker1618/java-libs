@@ -3,10 +3,7 @@ package xxx.joker.apps.formula1.old.fxlibs;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
-import xxx.joker.libs.core.files.JkFiles;
 
-import java.nio.file.Path;
 import java.util.function.Function;
 
 public class X_FxTable {

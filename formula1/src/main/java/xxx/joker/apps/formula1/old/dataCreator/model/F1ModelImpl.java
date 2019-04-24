@@ -6,14 +6,11 @@ import xxx.joker.apps.formula1.old.common.F1Const;
 import xxx.joker.apps.formula1.old.dataCreator.model.beans.F1Season;
 import xxx.joker.apps.formula1.old.dataCreator.model.beans.F1SeasonResult;
 import xxx.joker.apps.formula1.old.dataCreator.model.entities.*;
-import xxx.joker.apps.formula1.old.dataCreator.model.entities.*;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.repository.JkRepoFile;
 import xxx.joker.libs.repository.design.RepoEntity;
 
 import java.util.*;
-
-import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class F1ModelImpl extends JkRepoFile implements F1Model {
 

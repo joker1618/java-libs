@@ -13,7 +13,6 @@ import xxx.joker.libs.core.lambdas.JkStreams;
 import java.util.ArrayList;
 import java.util.List;
 
-import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class F1Formatter {

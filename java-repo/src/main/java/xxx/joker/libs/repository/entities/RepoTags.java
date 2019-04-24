@@ -2,7 +2,6 @@ package xxx.joker.libs.repository.entities;
 
 import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.tests.JkTests;
 import xxx.joker.libs.core.types.JkFormattable;
 import xxx.joker.libs.core.utils.JkStrings;
 

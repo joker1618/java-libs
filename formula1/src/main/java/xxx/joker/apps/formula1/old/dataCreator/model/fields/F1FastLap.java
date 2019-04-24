@@ -1,8 +1,8 @@
 package xxx.joker.apps.formula1.old.dataCreator.model.fields;
 
 import xxx.joker.libs.core.datetime.JkDuration;
-import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.core.types.JkFormattable;
+import xxx.joker.libs.core.utils.JkStrings;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 

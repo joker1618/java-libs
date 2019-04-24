@@ -3,22 +3,20 @@ package xxx.joker.apps.formula1.old.gui;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.scenicview.ScenicView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.apps.formula1.old.gui.yearView.YearView;
 import xxx.joker.apps.formula1.old.dataCreator.model.F1Model;
 import xxx.joker.apps.formula1.old.dataCreator.model.F1ModelImpl;
+import xxx.joker.apps.formula1.old.gui.yearView.YearView;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class Formula1GUI extends Application {
 

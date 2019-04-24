@@ -3,8 +3,6 @@ package xxx.joker.libs.repository.entities;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoField;
 
-import java.util.Set;
-
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class RepoResource extends RepoEntity {

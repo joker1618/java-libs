@@ -6,19 +6,17 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import xxx.joker.apps.formula1.old.fxlibs.JxImage;
-import xxx.joker.apps.formula1.old.fxlibs.X_FxTable;
 import xxx.joker.apps.formula1.old.dataCreator.model.F1ResourceManager;
 import xxx.joker.apps.formula1.old.dataCreator.model.F1Resources;
 import xxx.joker.apps.formula1.old.dataCreator.model.beans.F1Season;
 import xxx.joker.apps.formula1.old.dataCreator.model.beans.F1SeasonResult;
 import xxx.joker.apps.formula1.old.dataCreator.model.entities.F1GranPrix;
 import xxx.joker.apps.formula1.old.dataCreator.model.entities.F1Race;
+import xxx.joker.apps.formula1.old.fxlibs.JxImage;
+import xxx.joker.apps.formula1.old.fxlibs.X_FxTable;
 
 import java.util.Comparator;
 import java.util.List;
-
-import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class ResultsPane extends BorderPane {
 

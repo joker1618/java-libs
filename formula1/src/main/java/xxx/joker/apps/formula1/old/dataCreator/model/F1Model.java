@@ -2,7 +2,6 @@ package xxx.joker.apps.formula1.old.dataCreator.model;
 
 import xxx.joker.apps.formula1.old.dataCreator.model.beans.F1Season;
 import xxx.joker.apps.formula1.old.dataCreator.model.entities.*;
-import xxx.joker.apps.formula1.old.dataCreator.model.entities.*;
 import xxx.joker.libs.repository.JkRepo;
 
 import java.util.List;

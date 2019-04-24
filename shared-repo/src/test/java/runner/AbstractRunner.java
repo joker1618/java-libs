@@ -1,8 +1,6 @@
 package runner;
 
 import org.apache.commons.lang3.tuple.Pair;
-import xxx.joker.libs.core.files.JkEncryption;
-import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.scanners.JkTag;
 import xxx.joker.libs.core.web.JkDownloader;
 import xxx.joker.service.sharedRepo.JkSharedRepo;
