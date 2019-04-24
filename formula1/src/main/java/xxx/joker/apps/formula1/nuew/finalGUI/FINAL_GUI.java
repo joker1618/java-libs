@@ -1,4 +1,4 @@
-package xxx.joker.apps.formula1.old.finalGUI;
+package xxx.joker.apps.formula1.nuew.finalGUI;
 
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 import org.scenicview.ScenicView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.apps.formula1.old.finalGUI.views.RootView;
+import xxx.joker.apps.formula1.nuew.finalGUI.views.RootView;
 
 public class FINAL_GUI extends Application {
 

@@ -1,4 +1,4 @@
-package xxx.joker.apps.formula1.old.finalGUI.views;
+package xxx.joker.apps.formula1.nuew.finalGUI.views;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -7,9 +7,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.apps.formula1.nuew.finalGUI.views.types.HomeView;
 import xxx.joker.apps.formula1.old.dataCreator.model.F1Model;
 import xxx.joker.apps.formula1.old.dataCreator.model.F1ModelImpl;
-import xxx.joker.apps.formula1.old.finalGUI.views.types.HomeView;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package xxx.joker.apps.formula1.old.finalGUI.views;
+package xxx.joker.apps.formula1.nuew.finalGUI.views;
 
 import javafx.scene.layout.BorderPane;
 import org.slf4j.Logger;
