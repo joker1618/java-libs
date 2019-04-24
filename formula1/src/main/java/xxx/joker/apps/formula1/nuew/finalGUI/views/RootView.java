@@ -8,8 +8,8 @@ import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.apps.formula1.nuew.finalGUI.views.types.HomeView;
-import xxx.joker.apps.formula1.old.dataCreator.model.F1Model;
-import xxx.joker.apps.formula1.old.dataCreator.model.F1ModelImpl;
+import xxx.joker.apps.formula1.nuew.model.F1Model;
+import xxx.joker.apps.formula1.nuew.model.F1ModelImpl;
 
 import java.util.HashMap;
 import java.util.Map;

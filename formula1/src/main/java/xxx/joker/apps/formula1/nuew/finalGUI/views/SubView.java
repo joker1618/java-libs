@@ -3,8 +3,8 @@ package xxx.joker.apps.formula1.nuew.finalGUI.views;
 import javafx.scene.layout.BorderPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.apps.formula1.old.dataCreator.model.F1Model;
-import xxx.joker.apps.formula1.old.dataCreator.model.F1ModelImpl;
+import xxx.joker.apps.formula1.nuew.model.F1Model;
+import xxx.joker.apps.formula1.nuew.model.F1ModelImpl;
 
 public abstract class SubView extends BorderPane {
 
