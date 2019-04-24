@@ -6,12 +6,15 @@ import xxx.joker.apps.formula1.nuew.model.fields.F1FastLap;
 import xxx.joker.apps.formula1.nuew.webParser.AWikiParser;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.exception.JkRuntimeException;
+import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.scanners.JkScanners;
 import xxx.joker.libs.core.scanners.JkTag;
+import xxx.joker.libs.core.scanners.JkTextScanner;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -19,23 +22,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Year2018 extends AWikiParser  {
+public class Year2017 extends AWikiParser  {
 
 
-    public Year2018() {
-        super(2018);
+    public Year2017() {
+        super(2017);
     }
 
     @Override
     protected void parseEntrants(String html) {
-        JkTag tableEntrants = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Entries\">", "<table class=\"wikitable sortable\"");
+        JkTag tableEntrants = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Teams_and_drivers\">", "<table class=\"wikitable sortable");
         JkTag tbody = tableEntrants.getChild("tbody");
 
         for (JkTag tr : tbody.getChildren("tr")) {
             List<JkTag> tdList = tr.getChildren("td");
             if(tdList.size() >= 8) {
                 JkTag tagTeamName = tdList.get(1).findChild("b a");
-                F1Team team = retrieveTeam2018(tagTeamName, true);
+                F1Team team = retrieveTeam(tagTeamName.getText(), true);
                 if(StringUtils.isBlank(team.getNation())) {
                     JkTag img = tdList.get(0).findFirstTag("img");
                     team.setNation(img.getAttribute("alt"));
@@ -43,6 +46,9 @@ public class Year2018 extends AWikiParser  {
                 }
 
                 String engine = tdList.get(3).getText();
+                if(StringUtils.isBlank(engine)) {
+                    engine = tdList.get(3).getChild("span").getText();
+                }
 
                 String stmp = tdList.get(4).getHtmlTag().replaceAll("^<td(.*?)>", "").replace("</td>", "").replaceAll("<br[ ]?/>", "-");
                 List<Integer> carNums = JkStreams.map(JkStrings.splitList(stmp, "-", true), Integer::valueOf);
@@ -83,8 +89,14 @@ public class Year2018 extends AWikiParser  {
 
     @Override
     protected List<String> getGpUrls(String html) {
-        JkTag tableEntrants = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Grands_Prix\">", "<table class=\"wikitable sortable\"");
-        JkTag tbody = tableEntrants.getChild("tbody");
+        JkTextScanner ts = JkScanners.getTextScanner(html);
+        ts.startAfter("<span class=\"mw-headline\" id=\"Grands_Prix\">");
+
+        JkTag tbody = JkScanners.parseHtmlTag(ts.toString(), "table", "<table class=\"wikitable\"").getChild("tbody");
+        while(tbody.getChild(0).getChildren("th").size() != 7 || !tbody.getChild(0).getChild(6).getTextFlat().equals("Report")) {
+            ts.startAfter("</table");
+            tbody = JkScanners.parseHtmlTag(ts.toString(), "table", "<table class=\"wikitable\"").getChild("tbody");
+        }
 
         List<String> urls = new ArrayList<>();
         for (JkTag tr : tbody.getChildren("tr")) {
@@ -228,7 +240,7 @@ public class Year2018 extends AWikiParser  {
                     throw new JkRuntimeException(tdDriver.getHtmlTag());
                 }
                 JkTag ttag = tr.getChild(3).findChild("a", "span a");
-                F1Team team = retrieveTeam2018(ttag, false);
+                F1Team team = retrieveTeam(ttag.getText(), false);
                 q.setEntrant(getEntrant(year, driver, team));
 
                 q.getTimes().add(parseDuration(tr.getChild(4).getTextFlat()));
@@ -261,6 +273,10 @@ public class Year2018 extends AWikiParser  {
                 r.setRetired(JkConvert.toInt(tr.getChild(0).getText()) == null);
 
                 int carNum = Integer.parseInt(tr.getChild(1).getText());
+                if(gp.getNum() == 17 && carNum == 39) {
+                    // error on wikipedia
+                    carNum = 28;
+                }
                 F1Qualify q = qualifyMap.get(carNum);
                 r.setEntrant(q.getEntrant());
 

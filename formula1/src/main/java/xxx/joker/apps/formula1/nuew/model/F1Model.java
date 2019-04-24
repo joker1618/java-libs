@@ -33,6 +33,6 @@ public interface F1Model extends JkRepo {
 //    void deleteData(int year);
 //
 //    F1Season getSeason(int year);
-//
-//    List<Integer> getAvailableYears();
+
+    List<Integer> getAvailableYears();
 }

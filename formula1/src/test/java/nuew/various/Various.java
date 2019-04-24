@@ -1,4 +1,4 @@
-package old.various;
+package nuew.various;
 
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.junit.Test;

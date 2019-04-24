@@ -9,6 +9,7 @@ import xxx.joker.libs.repository.JkRepoFile;
 import xxx.joker.libs.repository.entities.RepoResource;
 
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -141,16 +142,16 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
 //
 //        return season;
 //    }
-//
-//    @Override
-//    public List<Integer> getAvailableYears() {
-//        return JkStreams.mapFilterSortUniq(
-//                getEntrants(),
-//                F1Entrant::getYear,
-//                f -> true,
-//                Comparator.reverseOrder()
-//        );
-//    }
+
+    @Override
+    public List<Integer> getAvailableYears() {
+        return JkStreams.mapFilterSortUniq(
+                getEntrants(),
+                F1Entrant::getYear,
+                f -> true,
+                Comparator.reverseOrder()
+        );
+    }
 
 
 }

@@ -22,9 +22,17 @@ public class CheckRepo {
     F1Model model = F1ModelImpl.getInstance();
     
     @Test
-    public void doYearChecks() {
-        int year = 2018;
+    public void doAllYearChecks() {
+        model.getAvailableYears().forEach(this::doYearChecks);
+    }
 
+    @Test
+    public void doYearChecks() {
+        int year = 2017;
+        doYearChecks(year);
+    }
+
+    private void doYearChecks(int year) {
         checkEntrants(year);
         checkTeams();
         checkDrivers();
@@ -32,7 +40,7 @@ public class CheckRepo {
         checkGranPrix(year);
         checkPoints(year);
     }
-    
+
     private void checkEntrants(int year) {
         List<F1Entrant> entrants = model.getEntrants(year);
         Map<F1Entrant, List<String>> entrantErrors = F1ModelChecker.checkNullEmptyFields(entrants);

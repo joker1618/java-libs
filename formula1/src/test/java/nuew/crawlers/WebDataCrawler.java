@@ -7,6 +7,9 @@ import xxx.joker.apps.formula1.nuew.model.F1ModelImpl;
 import xxx.joker.apps.formula1.nuew.webParser.WikiParser;
 import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.service.sharedRepo.JkSharedRepo;
+import xxx.joker.service.sharedRepo.JkSharedRepoImpl;
+import xxx.joker.service.sharedRepo.entities.JkNation;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
@@ -19,7 +22,7 @@ public class WebDataCrawler {
 
     @Test
     public void runYear() {
-        int year = 2018;
+        int year = 2017;
         JkTimer timer = new JkTimer();
 
         runYear(year);
@@ -31,7 +34,7 @@ public class WebDataCrawler {
 
     @Test
     public void runRange() {
-        int ystart = 2018;
+        int ystart = 2017;
         int yend = 2018;
 
         JkTimer timer = new JkTimer();
