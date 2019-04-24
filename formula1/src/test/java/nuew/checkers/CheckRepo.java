@@ -39,7 +39,7 @@ public class CheckRepo {
 
     @Test
     public void doYearChecks() {
-        int year = 2015;
+        int year = 2012;
         doYearChecks(year);
     }
 

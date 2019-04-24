@@ -17,7 +17,7 @@ public class WebDataCrawler {
 
     @Test
     public void runYear() {
-        int year = 2013;
+        int year = 2012;
         JkTimer timer = new JkTimer();
 
         runYear(year);
