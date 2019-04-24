@@ -8,12 +8,14 @@ import xxx.joker.apps.formula1.nuew.common.F1Const;
 import xxx.joker.apps.formula1.nuew.model.F1Model;
 import xxx.joker.apps.formula1.nuew.model.F1ModelImpl;
 import xxx.joker.apps.formula1.nuew.model.entities.*;
+import xxx.joker.apps.formula1.nuew.model.fields.F1FastLap;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.scanners.JkHtmlChars;
 import xxx.joker.libs.core.scanners.JkScanners;
 import xxx.joker.libs.core.scanners.JkTag;
+import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.core.web.JkDownloader;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.service.sharedRepo.JkSharedRepo;
@@ -22,6 +24,7 @@ import xxx.joker.service.sharedRepo.entities.JkNation;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +58,6 @@ public abstract class AWikiParser implements WikiParser {
     protected abstract Map<String, Integer> getExpectedDriverPoints(String html);
     protected abstract Map<String, Integer> getExpectedTeamPoints(String html);
 
-    protected abstract void parseGpDetails(String html, F1GranPrix gp);
     protected abstract void parseQualify(String html, F1GranPrix gp);
     protected abstract void parseRace(String html, F1GranPrix gp);
 
@@ -254,6 +256,78 @@ public abstract class AWikiParser implements WikiParser {
         driver.setCity(strCity);
     }
 
+    protected void parseGpDetails(String html, F1GranPrix gp) {
+        JkTag tableGp = JkScanners.parseHtmlTag(html, "table", "<table class=\"infobox vevent\"");
+        JkTag tbody = tableGp.getChild("tbody");
+
+        F1FastLap fastLap = new F1FastLap();
+        int seeker = 0;
+
+        for (JkTag tr : tbody.getChildren("tr")) {
+            if(seeker == 0) {
+                // find track map image
+                if(tr.getChildren().size() == 1) {
+                    JkTag aTag = tr.getChild(0).getChild("a");
+                    if(aTag != null && aTag.getChild("img") != null) {
+                        downloadTrackMap(gp, aTag);
+                        seeker++;
+                    }
+                }
+
+            } else if(seeker == 1) {
+                if(tr.getChildren().size() == 2) {
+                    if(tr.getChild(0).getText().equals("Location")) {
+                        String allText = tr.getChild(1).getHtmlTag().replaceAll("<br[^<]*?>", ",").replaceAll(",[ ]*?,", ",").replaceAll("<[^<]*?>", "");
+                        List<String> list = JkStrings.splitList(allText, ",", true);
+                        String nation = null;
+                        String city = null;
+                        if(list.size() > 1) {
+                            nation = list.get(list.size() - 1);
+                            city = JkStreams.join(list.subList(1, list.size() - 1), ", ");
+                        } else if(list.get(0).equals("Circuit de Monaco")) {
+                            nation = "Monaco";
+                            city = "Monte Carlo";
+                        }
+                        F1Circuit f1Circuit = retrieveCircuit(city, nation, true);
+                        gp.setCircuit(f1Circuit);
+                        checkNation(f1Circuit, f1Circuit.getNation());
+                    } else if(tr.getChild(0).getText().equals("Course length")) {
+                        String lenStr = tr.getChild(1).getText().replaceAll("[ ]*km.*", "").trim();
+                        gp.setLapLength(Double.parseDouble(lenStr));
+                    } else if(tr.getChild(0).getText().equals("Distance")) {
+                        String numStr = tr.getChild(1).getText().replaceAll("[ ]*laps.*", "").trim();
+                        gp.setNumLapsRace(Integer.parseInt(numStr));
+                    } else if(tr.getChild(0).getText().equals("Date")) {
+                        String attrValue = tr.getChild(1).getChild("span").getAttribute("title");
+                        if(attrValue == null) {
+                            attrValue = tr.getChild(1).findChild("span span").getText();
+                        }
+                        LocalDate date = LocalDate.parse(attrValue, DateTimeFormatter.ISO_LOCAL_DATE);
+                        gp.setDate(date);
+                    }
+                } else if(tr.getChildren().size() == 1) {
+                    if(tr.getChild(0).getTextFlat().equalsIgnoreCase("Fastest lap")) {
+                        seeker++;
+                    }
+                }
+
+            } else if(seeker == 2) {
+                if(tr.getChild(0).getText().equals("Driver")) {
+                    F1Driver d = retrieveDriver(tr.findChild("td span a").getAttribute("title"), false);
+                    if(d == null) {
+                        d = retrieveDriver(tr.findChild("td a").getAttribute("title"), false);
+                    }
+                    fastLap.setDriverPK(d.getPrimaryKey());
+
+                } else if(tr.getChild(0).getText().equals("Time")) {
+                    String txt = tr.findChild("td").getText().replaceAll(" .*", "");
+                    fastLap.setLapTime(parseDuration(txt));
+                    gp.setFastLap(fastLap);
+                    break;
+                }
+            }
+        }
+    }
 
 
     private String createWikiUrl(String wikiSubPath) {

@@ -43,6 +43,11 @@ public class ShowData {
     }
 
     @Test
+    public void doShowCircuits() {
+        display(RepoUtil.formatEntities(model.getCircuits()));
+    }
+
+    @Test
     public void doShowTeams() {
         display(RepoUtil.formatEntities(model.getTeams()));
     }
