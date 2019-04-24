@@ -13,6 +13,8 @@ public class F1Race extends RepoEntity {
     @RepoField
     private Integer pos;
     @RepoField
+    private Integer startGrid;
+    @RepoField
     private F1Entrant entrant;
     @RepoField
     private Integer laps;
@@ -53,6 +55,18 @@ public class F1Race extends RepoEntity {
 
     public void setPos(Integer pos) {
         this.pos = pos;
+    }
+
+    public Integer getStartGrid() {
+        return startGrid;
+    }
+
+    public void setStartGrid(Integer startGrid) {
+        this.startGrid = startGrid;
+    }
+
+    public Boolean getRetired() {
+        return retired;
     }
 
     public Integer getLaps() {

@@ -79,13 +79,6 @@ public class Year2017 extends AWikiParser  {
             }
         }
     }
-    private F1Team retrieveTeam2018(JkTag tag, boolean createIfMissing) {
-        String teamName = tag.getText();
-        if(teamName.equals("Force India")) {
-            teamName = tag.getAttribute("title");
-        }
-        return super.retrieveTeam(teamName, createIfMissing);
-    }
 
     @Override
     protected List<String> getGpUrls(String html) {
@@ -140,7 +133,7 @@ public class Year2017 extends AWikiParser  {
         for (JkTag tr : tbody.getChildren("tr")) {
             if(tr.getChildren("th").size() == 2) {
                 JkTag teamTag = tr.getChild(1).findChild("a", "span a");
-                F1Team team = retrieveTeam2018(teamTag, false);
+                F1Team team = retrieveTeam(teamTag.getText(), false);
                 String spoints = tr.getChildren("th").get(1).getText();
                 spoints = spoints.replaceAll(".*\\(|\\).*", "");
                 map.put(team.getTeamName(), Integer.parseInt(spoints));
@@ -278,6 +271,7 @@ public class Year2017 extends AWikiParser  {
                     carNum = 28;
                 }
                 F1Qualify q = qualifyMap.get(carNum);
+                r.setStartGrid(q.getFinalGrid());
                 r.setEntrant(q.getEntrant());
 
                 r.setLaps(Integer.parseInt(tr.getChild(4).getText()));

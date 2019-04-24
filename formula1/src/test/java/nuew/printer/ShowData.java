@@ -1,6 +1,7 @@
 package nuew.printer;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import xxx.joker.apps.formula1.nuew.model.F1Model;
 import xxx.joker.apps.formula1.nuew.model.F1ModelImpl;
@@ -25,11 +26,17 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 public class ShowData {
 
     F1Model model = F1ModelImpl.getInstance();
+    static int defYear = -1;
+
+    @BeforeClass
+    public static void beforeClazz() {
+        defYear = 2016;
+    }
 
     @Test
     public void doShowEntrants() {
         int year = 2018;
-        List<F1Entrant> entrants = model.getEntrants(year);
+        List<F1Entrant> entrants = model.getEntrants(defYear == -1 ? year : defYear);
         display(RepoUtil.formatEntities(entrants));
     }
 
@@ -44,9 +51,27 @@ public class ShowData {
     }
 
     @Test
+    public void doShowGranPrixs() {
+        int year = 2018;
+        List<F1GranPrix> gpList = model.getGranPrixs(defYear == -1 ? year : defYear);
+        display(RepoUtil.formatEntities(gpList));
+    }
+
+    @Test
+    public void doShowQualifiesRaces() {
+        int year = 2018;
+        List<F1GranPrix> gpList = model.getGranPrixs(defYear == -1 ? year : defYear);
+        for (F1GranPrix gp : gpList) {
+            display(RepoUtil.formatEntities(gp.getQualifies()));
+            display(RepoUtil.formatEntities(gp.getRaces()));
+        }
+
+    }
+
+    @Test
     public void showCheckPoints() {
         int year = 2018;
-        checkPoints(year);
+        checkPoints(defYear == -1 ? year : defYear);
     }
     public void checkPoints(int year) {
         List<F1GranPrix> gp = model.getGranPrixs(year);

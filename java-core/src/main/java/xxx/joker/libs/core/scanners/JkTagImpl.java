@@ -7,6 +7,8 @@ import xxx.joker.libs.core.utils.JkStrings;
 
 import java.util.*;
 
+import static xxx.joker.libs.core.utils.JkStrings.strf;
+
 class JkTagImpl implements JkTag {
 
     // The root tag has null parent, but has the html set
@@ -206,10 +208,19 @@ class JkTagImpl implements JkTag {
         return JkHtmlChars.fixDirtyChars(str).trim();
     }
 
-
     @Override
     public String getTextFlat() {
         return getHtmlTag().replaceAll("<[^<]*?>", "").trim();
+    }
+
+    @Override
+    public String toString() {
+        String str = tagName;
+        if(!attributes.isEmpty()) {
+            String join = JkStreams.join(attributes.entrySet(), ", ", a -> a.getKey() + "=" + a.getValue());
+            str = strf("{}  [{}]", str, join);
+        }
+        return str;
     }
 
     private String getFullHtml() {
