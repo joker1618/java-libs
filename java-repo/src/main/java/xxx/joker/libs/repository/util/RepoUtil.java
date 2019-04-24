@@ -21,7 +21,6 @@ import java.util.List;
 public class RepoUtil {
 
     /**
-     *  // todo put method in core libs
      * @param fieldsToDisplay strings in the form 'nation date ...'.
      *                        Keywords allowed: eid, epk, etm
      * @return
