@@ -193,7 +193,6 @@ public abstract class AWikiParser implements WikiParser {
         return JkStreams.findUnique(model.getEntrants(year), e -> e.getDriver().equals(driver), e -> e.getTeam().equals(team));
     }
 
-
     protected JkDuration parseDuration(String str) {
         String s = str;
         int idx = str.lastIndexOf(".");

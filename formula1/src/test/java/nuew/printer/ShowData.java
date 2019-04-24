@@ -12,6 +12,7 @@ import xxx.joker.apps.formula1.nuew.webParser.WikiParser;
 import xxx.joker.libs.core.format.JkOutput;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
+import xxx.joker.libs.core.utils.JkStruct;
 import xxx.joker.libs.repository.util.RepoUtil;
 
 import java.util.ArrayList;
@@ -30,11 +31,12 @@ public class ShowData {
 
     @BeforeClass
     public static void beforeClazz() {
-        defYear = 2016;
+//        defYear = 2015;
+        defYear = JkStruct.getLastElem(F1ModelImpl.getInstance().getAvailableYears());
     }
 
     @Test
-    public void doShowEntrants() {
+    public void singleEntrants() {
         int year = 2018;
         List<F1Entrant> entrants = model.getEntrants(defYear == -1 ? year : defYear);
         display(RepoUtil.formatEntities(entrants));
@@ -51,25 +53,38 @@ public class ShowData {
     }
 
     @Test
-    public void doShowGranPrixs() {
+    public void allGranPrixs() {
+        model.getAvailableYears().forEach(year -> {
+            List<F1GranPrix> gpList = model.getGranPrixs(year);
+            display(RepoUtil.formatEntities(gpList));
+        });
+    }
+    @Test
+    public void singleGranPrixs() {
         int year = 2018;
         List<F1GranPrix> gpList = model.getGranPrixs(defYear == -1 ? year : defYear);
         display(RepoUtil.formatEntities(gpList));
     }
 
     @Test
-    public void doShowQualifiesRaces() {
+    public void singleQualifiesRaces() {
         int year = 2018;
         List<F1GranPrix> gpList = model.getGranPrixs(defYear == -1 ? year : defYear);
         for (F1GranPrix gp : gpList) {
             display(RepoUtil.formatEntities(gp.getQualifies()));
             display(RepoUtil.formatEntities(gp.getRaces()));
         }
-
+//        F1GranPrix gp = gpList.get(0);
+//        display(RepoUtil.formatEntities(gp.getQualifies()));
+//        display(RepoUtil.formatEntities(gp.getRaces()));
     }
 
     @Test
-    public void showCheckPoints() {
+    public void allCheckPoints() {
+        model.getAvailableYears().forEach(this::checkPoints);
+    }
+    @Test
+    public void singleCheckPoints() {
         int year = 2018;
         checkPoints(defYear == -1 ? year : defYear);
     }

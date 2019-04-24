@@ -42,7 +42,7 @@ public class CheckRepo {
 
     @Test
     public void doYearChecks() {
-        int year = 2016;
+        int year = 2015;
         doYearChecks(year);
     }
 
@@ -92,6 +92,12 @@ public class CheckRepo {
         List<F1GranPrix> gpList = model.getGranPrixs(year);
         Map<F1GranPrix, List<String>> gpErrors = F1ModelChecker.checkNullEmptyFields(gpList);
         printRes("GRAN PRIX", gpErrors);
+
+        gpList.forEach(gp -> {
+            if(model.getGpTrackMap(gp) == null) {
+                display("No track map for {}", gp);
+            }
+        });
     }
 
     private void checkPoints(int year) {
@@ -127,11 +133,9 @@ public class CheckRepo {
 
     private void checkRaces(int year) {
         List<F1Race> rList = JkStreams.flatMap(model.getGranPrixs(year), F1GranPrix::getRaces);
-
         Map<F1Race, List<String>> rErrors = F1ModelChecker.checkNullEmptyFields(rList);
         rErrors.values().forEach(c -> c.remove("time"));
         rErrors.entrySet().removeIf(e -> e.getValue().isEmpty());
-
         printRes("RACES", rErrors);
     }
 

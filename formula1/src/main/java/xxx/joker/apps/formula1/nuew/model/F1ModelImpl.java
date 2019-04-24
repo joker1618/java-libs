@@ -43,6 +43,11 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
     }
 
     @Override
+    public RepoResource getGpTrackMap(F1GranPrix gp) {
+        return getResource(gp.getPrimaryKey(), "gp trackMap");
+    }
+
+    @Override
     public RepoResource saveGpTrackMap(Path imgPath, F1GranPrix gp) {
         return addResource(imgPath, gp.getPrimaryKey(), "gp trackMap");
     }

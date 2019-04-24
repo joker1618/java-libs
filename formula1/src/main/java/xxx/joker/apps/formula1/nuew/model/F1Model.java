@@ -13,6 +13,7 @@ public interface F1Model extends JkRepo {
 
     RepoResource getDriverCover(F1Driver driver);
     RepoResource saveDriverCover(Path imgPath, F1Driver driver);
+    RepoResource getGpTrackMap(F1GranPrix gp);
     RepoResource saveGpTrackMap(Path imgPath, F1GranPrix gp);
 
     F1Team getTeam(String teamName);

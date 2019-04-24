@@ -10,7 +10,8 @@
     </appender>
 
 
-    <root level="debug">
+    <!--<root level="trace">-->
+    <root level="info">
         <appender-ref ref="STDOUT"/>
     </root>
 
