@@ -11,6 +11,8 @@ import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
+import xxx.joker.libs.core.utils.JkStruct;
+
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -149,7 +151,7 @@ public class Year2016 extends AWikiParser {
             if(tr.getChildren("th").size() == 1) {
                 JkTag teamTag = tr.getChild(1).findChild("a", "span a");
                 F1Team team = retrieveTeam(teamTag.getText(), false);
-                String spoints = JkStreams.getLastElem(tr.getChildren("td")).getChild("b").getText();
+                String spoints = JkStruct.getLastElem(tr.getChildren("td")).getChild("b").getText();
                 spoints = spoints.replaceAll(".*\\(", "").replaceAll("\\).*", "");
                 int points = Integer.parseInt(spoints);
                 map.put(team.getTeamName(), points);

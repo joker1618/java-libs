@@ -26,37 +26,6 @@ public class JkEncryption {
     }
 
     /* FILE ENCRYPTION */
-//    public static byte[] encryptBytes(byte[] source, String password) {
-//        try {
-//            Cipher cipher = makeCipher(password, true);
-//
-//            byte blockSize = 8;
-//            int paddedCount = blockSize - source.length % blockSize;
-//            byte[] bytes = JkBytes.mergeArrays(source, new byte[paddedCount]);
-//
-//            return cipher.doFinal(bytes);
-//
-//        } catch (GeneralSecurityException ex) {
-//            throw new JkRuntimeException(ex);
-//        }
-//    }
-//    public static byte[] decryptBytes(byte[] source, String password) {
-//        try {
-//            Cipher cipher = makeCipher(password, false);
-//
-//            byte[] decData = cipher.doFinal(source);
-//            byte padCount = decData[decData.length - 1];
-//            if (padCount >= 1 && padCount <= 8) {
-//                decData = Arrays.copyOfRange(decData, 0, decData.length - padCount);
-//            }
-//
-//            return decData;
-//
-//        } catch (GeneralSecurityException ex) {
-//            throw new JkRuntimeException(ex);
-//        }
-//    }
-
     public static void encryptFile(Path inputPath, Path outputPath, String password) {
         try {
             Cipher cipher = makeCipher(getMD5(password), true);

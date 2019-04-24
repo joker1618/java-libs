@@ -10,6 +10,7 @@ import xxx.joker.libs.argsparser.design.descriptors.CParam;
 import xxx.joker.libs.argsparser.exceptions.DesignError;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
+import xxx.joker.libs.core.utils.JkStruct;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -106,7 +107,7 @@ class ParserCmds {
     }
 
     private void checkOptionsUniqueness(CmdWrapper cmd) {
-        List<COption> dups = JkStreams.getDuplicates(cmd.getOptions(), Comparator.comparing(COption::getArgName));
+        List<COption> dups = JkStruct.getDuplicates(cmd.getOptions(), Comparator.comparing(COption::getArgName));
         if (!dups.isEmpty()) {
             List<String> dupNames = JkStreams.map(dups, COption::getArgName);
             throw new DesignError(cmdsClass, "command {}: options {} duplicated", cmd.getCmdName(), dupNames);

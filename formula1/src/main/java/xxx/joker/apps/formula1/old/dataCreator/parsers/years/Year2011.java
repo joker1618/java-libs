@@ -11,6 +11,7 @@ import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
+import xxx.joker.libs.core.utils.JkStruct;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -194,7 +195,7 @@ public class Year2011 extends AWikiParser {
             if(tr.getChildren("th").size() == 2) {
                 JkTag dTag = tr.getChild(1).findChild("a", "span a");
                 F1Driver driver = retrieveDriver(dTag.getText(), false);
-                String spoints = JkStreams.getLastElem(tr.getChildren()).getText();
+                String spoints = JkStruct.getLastElem(tr.getChildren()).getText();
                 int points = Integer.parseInt(spoints);
                 map.put(driver.getFullName(), points);
             }
@@ -214,7 +215,7 @@ public class Year2011 extends AWikiParser {
             if(tr.getChildren("th").size() <= 2 && tr.getChild(0).getTagName().equals("th")) {
                 JkTag teamTag = tr.getChild(1).findChild("a", "span a");
                 F1Team team = retrieveTeam(teamTag.getText(), false);
-                JkTag last = JkStreams.getLastElem(tr.getChildren());
+                JkTag last = JkStruct.getLastElem(tr.getChildren());
                 String spoints = last.getTagName().equals("th") ? last.getText() : last.getChild("b").getText();
                 spoints = spoints.replaceAll(".*\\(", "").replaceAll("\\).*", "");
                 int points = Integer.parseInt(spoints);
