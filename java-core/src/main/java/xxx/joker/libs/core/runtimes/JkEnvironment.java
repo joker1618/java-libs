@@ -30,6 +30,10 @@ public class JkEnvironment {
         return (Path) cacheMap.get(APPS_FOLDER_KEY);
     }
 
+    public static Path getAppsTempFolder() {
+        return getAppsFolder().resolve(".tmp");
+    }
+
     public static Path relativizeAppsPath(String sourcePath) {
         return relativizeAppsPath(Paths.get(sourcePath));
     }
