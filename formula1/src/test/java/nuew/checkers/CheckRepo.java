@@ -14,6 +14,7 @@ import xxx.joker.apps.formula1.nuew.model.entities.*;
 import xxx.joker.apps.formula1.nuew.webParser.WikiParser;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.core.utils.JkStruct;
 import xxx.joker.libs.repository.design.RepoEntity;
 
 import java.util.*;
@@ -40,7 +41,8 @@ public class CheckRepo {
 
     @Test
     public void doYearChecks() {
-        int year = 2012;
+        int year = JkStruct.getLastElem(model.getAvailableYears());
+//        int year = 2012;
         doYearChecks(year);
     }
 
@@ -131,6 +133,39 @@ public class CheckRepo {
         List<F1Qualify> qList = JkStreams.flatMap(model.getGranPrixs(year), F1GranPrix::getQualifies);
         Map<F1Qualify, List<String>> qErrors = F1ModelChecker.checkNullEmptyFields(qList);
         printRes("QUALIFIES", qErrors);
+
+        int numRounds = model.getGranPrixs(year).get(0).getQualifies().get(0).getTimes().size();
+        model.getGranPrixs(year).forEach(gp -> {
+            List<F1Qualify> qlist = gp.getQualifies();
+            F1Qualify winner = qlist.get(0);
+            int wrounds = JkStreams.filter(winner.getTimes(), Objects::nonNull).size();
+            int expectedRounds;
+            if(gp.getPrimaryKey().equals("gp-2015-16")) {
+                expectedRounds = 2;
+            } else {
+                expectedRounds = numRounds;
+            }
+            if(expectedRounds != wrounds || !checkQualTimes(winner)) {
+                display("Invalid winner qualify times {}", winner);
+            }
+            JkStreams.filter(qlist, q -> !checkQualTimes(q)).forEach(q -> display("Invalid qualify times {}", q));
+        });
+    }
+    private boolean checkQualTimes(F1Qualify qual) {
+        int min = 1000 * 60;
+        int max = 1000 * 60 * 3;
+        boolean foundNull = false;
+        for (JkDuration time : qual.getTimes()) {
+            if(time != null && (time.toMillis() < min || time.toMillis() > max)) {
+                return false;
+            }
+            if(foundNull && time != null) {
+                return false;
+            } else if(time == null) {
+                foundNull = true;
+            }
+        }
+        return true;
     }
 
     private void checkRaces(int year) {
@@ -143,8 +178,9 @@ public class CheckRepo {
         model.getGranPrixs(year).forEach(gp -> {
             List<F1Race> races = gp.getRaces();
             F1Race winnerRace = races.get(0);
-            if(winnerRace.getTime() == null) {
-                display("No winner time {}", winnerRace);
+            JkDuration wtime = winnerRace.getTime();
+            if(wtime == null || !checkRaceTime(winnerRace)) {
+                display("Wrong winner time {}", winnerRace);
             }
             Integer numLaps = winnerRace.getLaps();
             if(numLaps == null || numLaps <= 0) {
@@ -153,11 +189,26 @@ public class CheckRepo {
             races.forEach(r -> {
                 if(!r.isRetired() && r.getTime() == null && r.getLaps() == numLaps) {
                     display("Invalid race time {}", r);
-                } else if(r.getTime() != null && r.getLaps() < numLaps) {
+                }
+                if(r.getTime() != null && r.getLaps() < numLaps) {
                     display("Invalid race laps {}", r);
+                }
+                if(r.getTime() != null && !checkRaceTime(r)) {
+                    display("Invalid race time range {}", r);
                 }
             });
         });
+    }
+    private boolean checkRaceTime(F1Race race) {
+        int min = 1000 * 60 * 60;
+        int max = 1000 * 60 * 60 * 3;
+        if(race.getGpPK().equals("gp-2016-20")) {
+            max += 1000 * 60 * 3;
+        } else if(race.getGpPK().equals("gp-2011-07")) {
+            max += 1000 * 60 * 60;
+            max += 1000 * 60 * 6;
+        }
+        return !(race.getTime().toMillis() < min || race.getTime().toMillis() > max);
     }
 
     private void printRes(String label, Map<? extends RepoEntity, List<String>> mapErr) {

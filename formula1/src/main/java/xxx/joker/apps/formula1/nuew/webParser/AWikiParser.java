@@ -194,6 +194,9 @@ public abstract class AWikiParser implements WikiParser {
     protected F1Entrant getEntrant(int year, F1Driver driver, F1Team team) {
         return JkStreams.findUnique(model.getEntrants(year), e -> e.getDriver().equals(driver), e -> e.getTeam().equals(team));
     }
+    protected F1Entrant getEntrant(int year, F1Driver driver, int carNo, F1Team team) {
+        return JkStreams.findUnique(model.getEntrants(year), e -> e.getDriver().equals(driver), e -> e.getCarNo() == carNo, e -> e.getTeam().equals(team));
+    }
 
     protected JkDuration parseDuration(String str) {
         String s = str;

@@ -20,7 +20,7 @@ public class F1Entrant extends RepoEntity {
 
     @Override
     public String getPrimaryKey() {
-        return strf("entrant-{}-{}-{}", year, team.getTeamName(), driver.getFullName());
+        return strf("entrant-{}-{}-{}-{}", year, team.getTeamName(), driver.getFullName(), carNo);
     }
 
     public Integer getYear() {
