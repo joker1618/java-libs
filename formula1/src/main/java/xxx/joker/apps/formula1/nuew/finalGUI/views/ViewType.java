@@ -5,6 +5,11 @@ public enum ViewType {
     HOME,
     DRIVERS,
     TEAMS,
-    CIRCUITS
+    CIRCUITS,
+
+    YEAR_SUMMARY,
+    YEAR_ENTRANTS,
+    YEAR_RESULTS,
+    YEAR_GRAN_PRIX,
 
 }

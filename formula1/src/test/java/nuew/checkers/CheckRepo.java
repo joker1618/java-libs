@@ -12,6 +12,7 @@ import xxx.joker.apps.formula1.nuew.model.F1ModelChecker;
 import xxx.joker.apps.formula1.nuew.model.F1ModelImpl;
 import xxx.joker.apps.formula1.nuew.model.entities.*;
 import xxx.joker.apps.formula1.nuew.webParser.WikiParser;
+import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.repository.design.RepoEntity;
 
@@ -48,7 +49,7 @@ public class CheckRepo {
         checkEntrants(year);
         checkTeams();
         checkDrivers();
-        checkCicuits();
+        checkCircuits();
         checkGranPrix(year);
         checkQualifies(year);
         checkRaces(year);
@@ -79,7 +80,7 @@ public class CheckRepo {
         printRes("TEAMS", teamsError);
     }
 
-    private void checkCicuits() {
+    private void checkCircuits() {
         Set<F1Circuit> circuits = model.getCircuits();
         Map<F1Circuit, List<String>> circuitsError = F1ModelChecker.checkNullEmptyFields(circuits);
         printRes("CIRCUITS", circuitsError);
@@ -93,6 +94,10 @@ public class CheckRepo {
         gpList.forEach(gp -> {
             if(model.getGpTrackMap(gp) == null) {
                 display("No track map for {}", gp);
+            }
+            JkDuration fastTime = gp.getFastLap().getLapTime();
+            if(fastTime == null || fastTime.toMillis() < (1000*60) || fastTime.toMillis() > (1000*60*3)) {
+                display("Invalid fast lap time {}", gp);
             }
         });
     }
@@ -134,6 +139,25 @@ public class CheckRepo {
         rErrors.values().forEach(c -> c.remove("time"));
         rErrors.entrySet().removeIf(e -> e.getValue().isEmpty());
         printRes("RACES", rErrors);
+
+        model.getGranPrixs(year).forEach(gp -> {
+            List<F1Race> races = gp.getRaces();
+            F1Race winnerRace = races.get(0);
+            if(winnerRace.getTime() == null) {
+                display("No winner time {}", winnerRace);
+            }
+            Integer numLaps = winnerRace.getLaps();
+            if(numLaps == null || numLaps <= 0) {
+                display("Invalid winner num laps {}", winnerRace);
+            }
+            races.forEach(r -> {
+                if(!r.isRetired() && r.getTime() == null && r.getLaps() == numLaps) {
+                    display("Invalid race time {}", r);
+                } else if(r.getTime() != null && r.getLaps() < numLaps) {
+                    display("Invalid race laps {}", r);
+                }
+            });
+        });
     }
 
     private void printRes(String label, Map<? extends RepoEntity, List<String>> mapErr) {
