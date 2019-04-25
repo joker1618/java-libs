@@ -1,20 +1,17 @@
-package xxx.joker.libs.javafx;
+package xxx.joker.apps.formula1.fxlibs;
 
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
-import xxx.joker.libs.core.ToAnalyze;
-import xxx.joker.libs.core.utils.JkStreams;
+import xxx.joker.libs.core.lambdas.JkStreams;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
-@ToAnalyze
 @Deprecated
-public class JkFxButtonBuilder {
+public class X_JkFxButtonBuilder {
 
-    @ToAnalyze
     @Deprecated
     public enum JkButtonType { ADD, DELETE, UPDATE }
 
@@ -26,56 +23,56 @@ public class JkFxButtonBuilder {
     private int borderWidth = 0;
     private Color borderColor = Color.BLACK;
 
-    public JkFxButtonBuilder() {
+    public X_JkFxButtonBuilder() {
     }
 
-    public JkFxButtonBuilder setWidth(int width) {
+    public X_JkFxButtonBuilder setWidth(int width) {
         this.width = width;
 		return this;
     }
 
-    public JkFxButtonBuilder setHeight(int height) {
+    public X_JkFxButtonBuilder setHeight(int height) {
         this.height = height;
         return this;
     }
 
-    public JkFxButtonBuilder setSize(int width, int height) {
+    public X_JkFxButtonBuilder setSize(int width, int height) {
         this.width = width;
         this.height = height;
         return this;
     }
 
-    public JkFxButtonBuilder setResizable(boolean resizable) {
+    public X_JkFxButtonBuilder setResizable(boolean resizable) {
         this.resizable = resizable;
 		return this;
     }
 
-    public JkFxButtonBuilder setPadding(int padding) {
+    public X_JkFxButtonBuilder setPadding(int padding) {
         this.padding = padding;
 		return this;
     }
 
-    public JkFxButtonBuilder setBackgroundColor(Color backgroundColor) {
+    public X_JkFxButtonBuilder setBackgroundColor(Color backgroundColor) {
         this.backgroundColor = backgroundColor;
         return this;
     }
 
-    public JkFxButtonBuilder setBackgroundTrasparent() {
+    public X_JkFxButtonBuilder setBackgroundTrasparent() {
         this.backgroundColor = Color.TRANSPARENT;
         return this;
     }
 
-    public JkFxButtonBuilder setBorderWidth(int borderWidth) {
+    public X_JkFxButtonBuilder setBorderWidth(int borderWidth) {
         this.borderWidth = borderWidth;
 		return this;
     }
 
-    public JkFxButtonBuilder setBorderColor(Color borderColor) {
+    public X_JkFxButtonBuilder setBorderColor(Color borderColor) {
         this.borderColor = borderColor;
 		return this;
     }
 
-    public JkFxButtonBuilder setBorder(int borderWidth, Color borderColor) {
+    public X_JkFxButtonBuilder setBorder(int borderWidth, Color borderColor) {
         this.borderWidth = borderWidth;
         this.borderColor = borderColor;
 		return this;
@@ -86,9 +83,9 @@ public class JkFxButtonBuilder {
 
         String iconURL;
         switch (buttonType) {
-            case ADD:       iconURL = "/icon/add.png";      break;
-            case UPDATE:    iconURL = "/icon/update.png";   break;
-            case DELETE:    iconURL = "/icon/delete.png";   break;
+            case ADD:       iconURL = "/fxicons/add.png";      break;
+            case UPDATE:    iconURL = "/fxicons/update.png";   break;
+            case DELETE:    iconURL = "/fxicons/delete.png";   break;
             default:        iconURL = "";   break;
         }
         if(!iconURL.isEmpty()) {

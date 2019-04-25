@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
+@Deprecated
 public class X_FxUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(X_FxUtil.class);

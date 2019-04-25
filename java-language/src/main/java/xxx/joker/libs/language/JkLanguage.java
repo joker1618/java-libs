@@ -31,11 +31,9 @@ public enum JkLanguage {
 	}
 
 	public static JkLanguage getByLabel(String label) {
-		if(StringUtils.isNotBlank(label)) {
-			for (JkLanguage lan : values()) {
-				if (label.equalsIgnoreCase(lan.label)) {
-					return lan;
-				}
+		for (JkLanguage lan : values()) {
+			if (lan.getLabel().equalsIgnoreCase(label)) {
+				return lan;
 			}
 		}
 		return null;
