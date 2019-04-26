@@ -18,7 +18,7 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class RepoConfig {
 
-//    public static final long MIN_SIZE_FOR_COMPACT_IDS = 1_000_000_000;
+    public static final String REPO_SEQ_PROP = "config.sequence.value";
 
     public static class Separator {
         public static final String SEP_FIELD = "|";

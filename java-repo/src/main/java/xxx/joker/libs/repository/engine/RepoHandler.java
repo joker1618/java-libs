@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
+import xxx.joker.libs.repository.config.RepoConfig;
 import xxx.joker.libs.repository.design.RepoEntity;
+import xxx.joker.libs.repository.entities.RepoProperty;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -26,7 +28,6 @@ class RepoHandler {
 
     private Map<Class<?>, HandlerDataSet> handlers;
     private TreeMap<Long, RepoEntity> dataByID;
-    private Map<Class<?>, List<Class<?>>> referenceMap;
     private final AtomicLong sequenceValue;
 
     RepoHandler(List<RepoDTO> dtoList, ReadWriteLock repoLock) {
@@ -34,7 +35,6 @@ class RepoHandler {
 
         this.handlers = new HashMap<>();
         this.dataByID = new TreeMap<>();
-        this.referenceMap = new HashMap<>();
         this.sequenceValue = new AtomicLong(0L);
 
         initRepoHandler(dtoList);
@@ -58,49 +58,16 @@ class RepoHandler {
             dataByID.values().forEach(e -> setDependencies(e, fkMap.get(e.getEntityID())));
             dataByID.values().forEach(this::initRepoFields);
             // Set sequence value
-            sequenceValue.set(1L + getMaxUsedID());
         }
 
         for(RepoDTO dto : dtoList) {
             handlers.put(dto.getEClazz(), new HandlerDataSet(dto.getEntities()));
         }
 
+        RepoProperty prop = getSequenceProperty();
+        sequenceValue.set(JkConvert.toLong(prop.getValue()));
+
         LOG.debug("Repo handler initialized in {}", timer.toStringElapsed());
-    }
-
-//    /**
-//     *     Fix IDs if at least 1/2 is unused, and if the max ID is greater than RepoConfig.MIN_SIZE_FOR_COMPACT_IDS
-//     *     todo test
-//     */
-//    private boolean compactEntityIDs() {
-//        boolean changed = false;
-//
-//        long maxUsedID = getMaxUsedID();
-//        if(maxUsedID > RepoConfig.MIN_SIZE_FOR_COMPACT_IDS) {
-//            if(dataByID.size() < (maxUsedID / 2)) {
-//                List<Long> idList = JkConvert.toList(dataByID.keySet());
-//                long pos = 0;
-//                for (int i = 0; i < idList.size(); i++) {
-//                    Long uid = idList.get(i);
-//                    if(uid > pos) {
-//                        RepoEntity e = dataByID.remove(uid);
-//                        ClazzWrapper.setEntityID(e, pos);
-//                        dataByID.put(pos, e);
-//                        changed = true;
-//                    }
-//                    pos++;
-//                }
-//                if(changed) {
-//                    sequenceValue.set(1L + getMaxUsedID());
-//                }
-//            }
-//        }
-//
-//        return changed;
-//    }
-
-    private long getMaxUsedID() {
-        return dataByID.keySet().stream().mapToLong(l -> l).max().orElse(-1);
     }
 
     private void initRepoFields(RepoEntity e) {
@@ -169,6 +136,11 @@ class RepoHandler {
     public List<RepoDTO> getRepoEntityDTOs() {
         List<RepoDTO> dtoList = new ArrayList<>();
 
+        RepoProperty prop = getSequenceProperty();
+        synchronized (sequenceValue) {
+            prop.setValue(String.valueOf(sequenceValue.get()));
+        }
+
         handlers.forEach((c,h) -> {
             RepoDTO dto = new RepoDTO(c);
             dtoList.add(dto);
@@ -181,6 +153,17 @@ class RepoHandler {
         });
 
         return dtoList;
+    }
+    private RepoProperty getSequenceProperty() {
+        Set<RepoEntity> ds = getDataSet(RepoProperty.class);
+        RepoProperty prop = (RepoProperty) JkStreams.findUnique(ds, e -> ((RepoProperty) e).getKey().equals(RepoConfig.REPO_SEQ_PROP));
+        if(prop == null) {
+            prop = new RepoProperty(RepoConfig.REPO_SEQ_PROP, "");
+            ds.add(prop);
+            Long seqval = 1 + JkStreams.reverseOrder(dataByID.keySet()).get(0);
+            prop.setValue(String.valueOf(seqval));
+        }
+        return prop;
     }
 
     private boolean addEntity(RepoEntity toAdd) {
@@ -392,11 +375,6 @@ class RepoHandler {
                     boolean res = false;
                     for (RepoEntity todel : all) {
                         res |= removeEntity(todel);
-                    }
-                    if(res) {
-                        synchronized (sequenceValue) {
-                            sequenceValue.set(1L + getMaxUsedID());
-                        }
                     }
                     return res;
                 }
