@@ -1,10 +1,14 @@
 .menuBox .button {
     -fx-alignment: CENTER;
-    -fx-pref-width: 100;
-    -fx-pref-height: 40;
+    -fx-min-width: 100;
+    -fx-min-height: 40;
 }
 
 .yearBox {
     -fx-alignment: CENTER;
     -fx-border-color: RED;
+}
+.yearBox .button {
+    -fx-min-height: 30;
+    -fx-max-height: 30;
 }

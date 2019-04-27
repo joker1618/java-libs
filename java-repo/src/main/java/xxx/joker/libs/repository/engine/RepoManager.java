@@ -139,8 +139,8 @@ public class RepoManager {
         RepoMetaData md = new RepoMetaData();
         if(uriType == RepoUriType.IMAGE) {
             JkImage img = JkMedia.parseImage(outPath);
-            md.addMetaData(Attrib.WIDTH, String.valueOf(img.getWidth()));
-            md.addMetaData(Attrib.HEIGHT, String.valueOf(img.getHeight()));
+            md.add(Attrib.WIDTH, String.valueOf(img.getWidth()));
+            md.add(Attrib.HEIGHT, String.valueOf(img.getHeight()));
         }
 
         RepoUri uri = new RepoUri();

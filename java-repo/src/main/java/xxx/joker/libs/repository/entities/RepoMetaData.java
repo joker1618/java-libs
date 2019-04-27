@@ -25,13 +25,16 @@ public class RepoMetaData implements JkFormattable {
 
     }
 
-    public void addMetaData(Attrib mdKey, String mdValue) {
+    public void add(Attrib mdKey, String mdValue) {
         metadata.put(mdKey.name(), mdValue);
     }
-    public void addMetaData(String mdKey, String mdValue) {
+    public void add(String mdKey, String mdValue) {
         metadata.put(mdKey,  mdValue);
     }
 
+    public String get(Attrib mdKey) {
+        return metadata.get(mdKey.name());
+    }
 
     @Override
     public String format() {

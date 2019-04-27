@@ -1,4 +1,4 @@
-package xxx.joker.apps.formula1.finalGUI;
+package xxx.joker.apps.formula1.fxgui;
 
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -8,10 +8,11 @@ import javafx.stage.Stage;
 import org.scenicview.ScenicView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.apps.formula1.fxgui.fxview.RootPane;
 
-public class FINAL_GUI extends Application {
+public class F1FxLauncher extends Application {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FINAL_GUI.class);
+    private static final Logger LOG = LoggerFactory.getLogger(F1FxLauncher.class);
     private static boolean scenicView;
 
     @Override
@@ -36,7 +37,7 @@ public class FINAL_GUI extends Application {
 //        rootPane.heightProperty().addListener(o -> LOG.debug("height {}", o));
 
         scene.getStylesheets().add(getClass().getResource("/css/common.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("/css/RootPane.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/css/tableView.css").toExternalForm());
     }
 
 

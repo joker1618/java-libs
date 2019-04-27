@@ -1,10 +1,10 @@
-package xxx.joker.apps.formula1.finalGUI.panes.yearPane;
+package xxx.joker.apps.formula1.fxgui.fxview.panes.yearPane;
 
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.apps.formula1.finalGUI.SubPane;
+import xxx.joker.apps.formula1.fxgui.fxview.SubPane;
 import xxx.joker.apps.formula1.fxlibs.JfxTable;
 import xxx.joker.apps.formula1.model.entities.F1Driver;
 import xxx.joker.apps.formula1.model.entities.F1Entrant;

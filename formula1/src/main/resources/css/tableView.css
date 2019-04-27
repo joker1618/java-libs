@@ -1,0 +1,13 @@
+.f1-table-main .table-row-cell {
+    -fx-min-height: 30;
+}
+
+.f1-table-main-caption-box {
+    -fx-alignment: CENTER;
+    -fx-padding: 0 0 10 0;
+}
+.f1-table-main-caption-box .label {
+    -fx-font-size: 20;
+    -fx-text-fill: WHITE;
+    -fx-font-weight: BOLD;
+}

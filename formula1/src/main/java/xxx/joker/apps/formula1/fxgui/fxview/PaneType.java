@@ -1,4 +1,4 @@
-package xxx.joker.apps.formula1.finalGUI;
+package xxx.joker.apps.formula1.fxgui.fxview;
 
 public enum PaneType {
 

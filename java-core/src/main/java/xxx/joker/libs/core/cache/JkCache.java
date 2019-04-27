@@ -12,10 +12,10 @@ public class JkCache<K, V> {
         cacheMap = new HashMap<>();
     }
 
-    public V get(K key) {
+    public synchronized V get(K key) {
         return get(key, null);
     }
-    
+
     public synchronized V get(K key, Supplier<V> creator) {
         V value = cacheMap.get(key);
         if(value == null && creator != null) {
@@ -24,4 +24,5 @@ public class JkCache<K, V> {
         }
         return value;
     }
+
 }

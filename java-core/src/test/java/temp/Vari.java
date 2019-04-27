@@ -8,6 +8,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,28 +19,33 @@ import static xxx.joker.libs.core.utils.JkConsole.display;
 public class Vari {
 
     @Test
-    public void provaas() throws IOException, ParseException {
-        String str = "primo.secondo.mp3";
-        display(str.replaceAll("\\.[^\\.]*$", ""));
+    public void provaas() throws Exception {
+        SyncClazz sc = new SyncClazz();
+        List<Thread> threadList = new ArrayList<>();
+        Random random = new Random(System.currentTimeMillis());
+        threadList.add(new Thread(() -> {
+            for(int i = 0; i < 10; i++) {
+//                random.nextBoolean()
+                display("AAA  callGet {}", sc.callGet());
+            }
+            display("AAA end");
+        }));
+        threadList.add(new Thread(() -> {
+            for(int i = 0; i < 10; i++) {
+//                random.nextBoolean()
+                display("ZZZ  callGet {}", sc.callGet());
+            }
+            display("ZZZ end");
+        }));
+
+        threadList.forEach(Thread::start);
+
+        for (Thread thread : threadList) {
+            thread.join();
+        }
+
+        display("END MAIN");
     }
-
-    @Test
-    public void prova12() throws IOException, ParseException {
-        Path root = Paths.get("C:\\Users\\f.barbano\\Desktop\\music");
-
-        display("\nMAX DEPTH = 0");
-        Files.find(root, 0, (p,a)->true).forEach(p -> display("  {}", p));
-
-        display("\nMAX DEPTH = 1");
-        Files.find(root, 1, (p,a)->true).forEach(p -> display("  {}", p));
-
-        display("\nMAX DEPTH = 2");
-        Files.find(root, 2, (p,a)->true).forEach(p -> display("  {}", p));
-
-
-        display("%s: %d%n%d", "fed", 3, 22);
-    }
-
 
     @Test
     public void prova() throws IOException, ParseException {
@@ -51,26 +59,18 @@ public class Vari {
 
     }
 
-    @Test
-    public void prova2() throws IOException {
+    private class SyncClazz {
 
-        String txt = "<input type=\"text\"value=\"fede\"/>";
-        String txt2 = "<input type=\"text\"value=\"fede\">";
+        private int num = 10;
 
-//        txt = txt.replaceAll("<!--(.*?)-->", "");
+        public synchronized int callGet() {
+            return get();
+        }
 
-        Pattern tagPattern = Pattern.compile("<(.*?) ");
-        Matcher matcher = tagPattern.matcher(txt);
-        matcher.find();
-        display(matcher.group(1)+"*");
-        display(matcher.toMatchResult().group(1)+"*");
-
-        tagPattern = Pattern.compile("<(.*)>");
-        matcher = tagPattern.matcher(txt);
-        matcher.find();
-        display(matcher.group(1));
-        matcher = tagPattern.matcher(txt2);
-        matcher.find();
-        display(matcher.group(1));
+        public synchronized int get() {
+            return num;
+        }
     }
 }
+
+

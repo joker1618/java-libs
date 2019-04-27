@@ -1,5 +1,7 @@
 package xxx.joker.libs.core.media;
 
+import javafx.scene.image.Image;
+import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.runtimes.JkEnvironment;
 import xxx.joker.libs.core.types.JkFormattable;
 import xxx.joker.libs.core.utils.JkStrings;
@@ -17,6 +19,8 @@ public class JkImage implements JkFormattable {
     private int width;
     private int height;
 
+    private Image fxImage;
+
     public JkImage() {
 
     }
@@ -33,6 +37,13 @@ public class JkImage implements JkFormattable {
         setWidth(Integer.valueOf(split[1]));
         setHeight(Integer.valueOf(split[2]));
         return this;
+    }
+
+    public Image toFxImage() {
+        if(fxImage == null) {
+            fxImage = new Image(JkFiles.toURL(path));
+        }
+        return fxImage;
     }
 
     public Path getPath() {

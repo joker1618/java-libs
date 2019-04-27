@@ -1,9 +1,9 @@
-package xxx.joker.apps.formula1.finalGUI.panes.yearPane;
+package xxx.joker.apps.formula1.fxgui.fxview.panes.yearPane;
 
 import javafx.scene.control.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.apps.formula1.finalGUI.SubPane;
+import xxx.joker.apps.formula1.fxgui.fxview.SubPane;
 
 public class YearSummaryPane extends SubPane {
 

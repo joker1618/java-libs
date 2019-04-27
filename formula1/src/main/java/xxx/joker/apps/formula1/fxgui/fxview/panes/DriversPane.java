@@ -1,9 +1,9 @@
-package xxx.joker.apps.formula1.finalGUI.panes;
+package xxx.joker.apps.formula1.fxgui.fxview.panes;
 
 import javafx.scene.control.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.apps.formula1.finalGUI.SubPane;
+import xxx.joker.apps.formula1.fxgui.fxview.SubPane;
 
 public class DriversPane extends SubPane {
 
