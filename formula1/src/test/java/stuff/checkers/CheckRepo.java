@@ -14,6 +14,7 @@ import xxx.joker.apps.formula1.model.entities.*;
 import xxx.joker.apps.formula1.webParser.WikiParser;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.core.tests.JkTests;
 import xxx.joker.libs.core.utils.JkStruct;
 import xxx.joker.libs.repository.design.RepoEntity;
 
@@ -136,6 +137,10 @@ public class CheckRepo {
 
         int numRounds = model.getNumQualifyRounds(year);
         model.getGranPrixs(year).forEach(gp -> {
+            if(gp.getYear() == 2003 && JkTests.equalsAny(gp.getNum(), 15, 16)) {
+                return;
+            }
+
             List<F1Qualify> qlist = gp.getQualifies();
             F1Qualify winner = qlist.get(0);
             int wrounds = JkStreams.filter(winner.getTimes(), Objects::nonNull).size();

@@ -7,19 +7,20 @@ import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.scanners.JkScanners;
 import xxx.joker.libs.core.scanners.JkTag;
+import xxx.joker.libs.core.tests.JkTests;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStruct;
-import xxx.joker.libs.repository.util.RepoUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static xxx.joker.libs.core.utils.JkConsole.display;
-
-public class Year2008 extends AWikiParser {
+public class Year2003 extends AWikiParser {
 
 
-    public Year2008() {
-        super(2008);
+    public Year2003() {
+        super(2003);
     }
 
     @Override
@@ -31,7 +32,37 @@ public class Year2008 extends AWikiParser {
         for (JkTag tr : tbody.getChildren("tr")) {
             List<JkTag> tdList = tr.getChildren("td");
 
-            if(tdList.size() == tr.getChildren().size() && tdList.size() == 3) {
+            if(tdList.size() == tr.getChildren().size() && tdList.size() == 2) {
+                JkTag spanTag;
+                JkTag aTag;
+                JkTag chTag = tr.getChild(0).getChild("span");
+                if(chTag.getAttribute("class").equals("nowrap")) {
+                    spanTag = chTag.getChild("span");
+                    aTag = chTag.getChild("a");
+                } else  {
+                    spanTag = chTag;
+                    aTag = tr.getChild(0).getChild("a");
+                }
+
+                F1Driver d = retrieveDriver(aTag.getAttribute("title"), true);
+                if(StringUtils.isBlank(d.getNation())) {
+                    JkTag img = spanTag.findFirstTag("img");
+                    d.setNation(fixNation(img.getAttribute("alt")));
+                    checkNation(d, d.getNation());
+                    parseDriverPage(d, aTag);
+                }
+
+                F1Entrant e = new F1Entrant();
+                e.setYear(year);
+                e.setTeam(previous.getTeam());
+                e.setEngine(previous.getEngine());
+                e.setCarNo(previous.getCarNo());
+                e.setDriver(d);
+                model.add(e);
+
+                previous = e;
+
+            } else if(tdList.size() == tr.getChildren().size() && tdList.size() == 3) {
                 int carNum = Integer.valueOf(tr.getChild(0).getText());
 
                 JkTag spanTag;
@@ -48,7 +79,7 @@ public class Year2008 extends AWikiParser {
                 F1Driver d = retrieveDriver(aTag.getAttribute("title"), true);
                 if(StringUtils.isBlank(d.getNation())) {
                     JkTag img = spanTag.findFirstTag("img");
-                    d.setNation(img.getAttribute("alt"));
+                    d.setNation(fixNation(img.getAttribute("alt")));
                     checkNation(d, d.getNation());
                     parseDriverPage(d, aTag);
                 }
@@ -63,12 +94,12 @@ public class Year2008 extends AWikiParser {
 
                 previous = e;
 
-            } else if(tdList.size() == 6) {
-                JkTag tagTeamName = tr.getChild(1).findChild("a");
+            } else if(tdList.size() >= 6) {
+                JkTag tagTeamName = tr.getChild(1).findChild("a", "span a");
                 F1Team team = retrieveTeam(tagTeamName.getText(), true);
                 if(StringUtils.isBlank(team.getNation())) {
                     JkTag img = tr.getChild(0).findFirstTag("img");
-                    team.setNation(img.getAttribute("alt"));
+                    team.setNation(fixNation(img.getAttribute("alt")));
                     checkNation(team, team.getNation());
                 }
 
@@ -77,23 +108,23 @@ public class Year2008 extends AWikiParser {
                     engine = tr.getChild(3).getChild("span").getText();
                 }
 
-                int carNum = Integer.valueOf(tr.getChild(4).getText());
+                int carNum = Integer.valueOf(tr.getChild(5).getText());
 
                 JkTag spanTag;
                 JkTag aTag;
-                JkTag chTag = tr.getChild(5).getChild("span");
+                JkTag chTag = tr.getChild(6).getChild("span");
                 if(chTag.getAttribute("class").equals("nowrap")) {
                     spanTag = chTag.getChild("span");
                     aTag = chTag.getChild("a");
                 } else  {
                     spanTag = chTag;
-                    aTag = tr.getChild(5).getChild("a");
+                    aTag = tr.getChild(6).getChild("a");
                 }
 
                 F1Driver d = retrieveDriver(aTag.getAttribute("title"), true);
                 if(StringUtils.isBlank(d.getNation())) {
                     JkTag img = spanTag.findFirstTag("img");
-                    d.setNation(img.getAttribute("alt"));
+                    d.setNation(fixNation(img.getAttribute("alt")));
                     checkNation(d, d.getNation());
                     parseDriverPage(d, aTag);
                 }
@@ -109,6 +140,12 @@ public class Year2008 extends AWikiParser {
                 previous = e;
             }
         }
+
+//        List<F1Entrant> elist = model.getEntrants(year);
+//        System.out.println(elist.size()+"");
+//        System.out.println(RepoUtil.formatEntities(elist));
+//        System.exit(1);
+
     }
 
     @Override
@@ -137,10 +174,10 @@ public class Year2008 extends AWikiParser {
         JkTag tbody = tableEntrants.getChild("tbody");
 
         for (JkTag tr : tbody.getChildren("tr")) {
-            if(tr.getChildren("th").size() == 2) {
+            if(tr.getChildren("th").size() == 1 && tr.getChildren().get(0).getTagName().equals("th")) {
                 JkTag dTag = tr.getChild(1).findChild("a", "span a");
                 F1Driver driver = retrieveDriver(dTag.getText(), false);
-                String spoints = JkStruct.getLastElem(tr.getChildren()).getText();
+                String spoints = JkStruct.getLastElem(tr.getChildren()).getChild("b").getText();
                 double points = Double.parseDouble(spoints);
                 map.put(driver.getFullName(), points);
             }
@@ -157,11 +194,10 @@ public class Year2008 extends AWikiParser {
         JkTag tbody = tableEntrants.getChild("tbody");
 
         for (JkTag tr : tbody.getChildren("tr")) {
-            if(tr.getChildren("th").size() <= 2 && !tr.getChildren("td").isEmpty() && tr.getChild(0).getTagName().equals("th")) {
+            if(tr.getChildren("th").size() == 1 && tr.getChildren().get(0).getTagName().equals("th")) {
                 JkTag teamTag = tr.getChild(1).findChild("a", "span a");
                 F1Team team = retrieveTeam(teamTag.getText(), false);
-                JkTag last = JkStruct.getLastElem(tr.getChildren());
-                String spoints = last.getTagName().equals("th") ? last.getText() : last.getChild("b").getText();
+                String spoints = JkStruct.getLastElem(tr.getChildren()).getChild("b").getText();
                 spoints = spoints.replaceAll(".*\\(|\\).*", "");
                 map.put(team.getTeamName(), Double.parseDouble(spoints));
             }
@@ -172,37 +208,38 @@ public class Year2008 extends AWikiParser {
 
     @Override
     protected void parseQualify(String html, F1GranPrix gp) {
+        if(JkTests.equalsAny(gp.getNum(), 15, 16))   return;
+
         JkTag tableQualify = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Qualifying_2\">", "<table class=\"wikitable");
         if(tableQualify == null) {
             tableQualify = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Qualifying\">", "<table class=\"wikitable");
         }
+
         JkTag tbody = tableQualify.getChild("tbody");
 
         int pos = 1;
 
         for (JkTag tr : tbody.getChildren("tr")) {
+            int thNum = tr.getChildren("th").size();
             int tdNum = tr.getChildren("td").size();
-            if(tr.getChildren("th").size() == 1 && (tdNum >= 6 && tdNum <= 8)) {
+
+            if(tdNum >= 5) {
                 F1Qualify q = new F1Qualify();
                 q.setGpPK(gp.getPrimaryKey());
                 q.setPos(pos++);
                 gp.getQualifies().add(q);
 
                 int carNo = Integer.parseInt(tr.getChild(1).getText().replace("‡", ""));
-                F1Driver d = retrieveDriver(tr.getChild(2).findChild("a").getText(), false);
-                JkTag ttag = tr.getChild(3).findChild("a", "span a");
-                F1Team team = retrieveTeam(ttag.getText(), false);
+                F1Driver d = retrieveDriver(tr.getChild(2).findChild("a", "b a").getText(), false);
+                JkTag ttag = tr.getChild(3).findChild("a", "span a", "b a");
+                F1Team team = retrieveTeam(ttag.getText().replaceAll("-$", ""), false);
                 q.setEntrant(getEntrant(year, d, carNo, team));
 
-                int counter = 4;
-                q.getTimes().add(getQualTime(tr.getChild(counter)));
-                counter++;
-                q.getTimes().add(getQualTime(tr.getChild(counter)));
-                counter++;
-                q.getTimes().add(getQualTime(tr.getChild(counter)));
-                counter++;
+                List<JkTag> allChilds = tr.getChildren();
+                JkTag chTime = allChilds.get(allChilds.size() - 2);
+                q.getTimes().add(getQualTime(chTime));
 
-                q.setFinalGrid(JkConvert.toInt(tr.getChild(counter).getText(), -1));
+                q.setFinalGrid(q.getPos());
             }
         }
 
@@ -228,12 +265,20 @@ public class Year2008 extends AWikiParser {
         }
         JkTag tbody = tableRace.getChild("tbody");
 
+//        if(gp.getNum() == 2) {
+//            List<F1Qualify> elist = gp.getQualifies();
+//            System.out.println(elist.size() + "");
+//            System.out.println(RepoUtil.formatEntities(elist));
+//            System.exit(1);
+//        }
+
         Map<Integer, F1Qualify> qualifyMap = JkStreams.toMapSingle(gp.getQualifies(), q -> q.getEntrant().getCarNo());
         int pos = 1;
 
         for (JkTag tr : tbody.getChildren("tr")) {
             int tdNum = tr.getChildren("td").size();
-            if(tr.getChildren("th").size() == 1 && (tdNum == 7 || tdNum == 8)) {
+            int thNum = tr.getChildren("th").size();
+            if(thNum == 1 && tdNum == 7) {
                 F1Race r = new F1Race();
                 r.setGpPK(gp.getPrimaryKey());
                 r.setPos(pos++);
@@ -242,23 +287,29 @@ public class Year2008 extends AWikiParser {
                 r.setRetired(JkConvert.toInt(tr.getChild(0).getText()) == null);
 
                 int carNum = Integer.parseInt(tr.getChild(1).getText().replace("‡", ""));
-                F1Qualify q = qualifyMap.get(carNum);
-                r.setStartGrid(q.getFinalGrid());
-                r.setEntrant(q.getEntrant());
+                if(gp.getQualifies().isEmpty()) {
+                    F1Driver d = retrieveDriver(tr.getChild(2).findChild("a", "b a").getText(), false);
+                    JkTag ttag = tr.getChild(3).findChild("a", "b a");
+                    F1Team team = retrieveTeam(ttag.getText().replaceAll("-$", ""), false);
+                    r.setEntrant(getEntrant(year, d, carNum, team));
+                    r.setStartGrid(Integer.parseInt(tr.getChild(6).getText()));
+                } else {
+                    F1Qualify q = qualifyMap.get(carNum);
+                    r.setEntrant(q.getEntrant());
+                    r.setStartGrid(q.getFinalGrid());
+                }
 
-                int counter = tdNum == 7 ? 4 : 5;
+                String stmp = tr.getChild(4).getText();
+                r.setLaps(stmp.isEmpty() ? 0 : Integer.parseInt(stmp));
 
-                r.setLaps(Integer.parseInt(tr.getChild(counter++).getText()));
-
-                r.setTime(parseDuration(tr.getChild(counter++).getText()));
+                r.setTime(parseDuration(tr.getChild(5).getText().replace("/Accident", "")));
                 if(gp.getRaces().size() > 1 && r.getTime() != null) {
                     F1Race firstRace = gp.getRaces().get(0);
                     JkDuration ft = firstRace.getTime().plus(r.getTime());
                     r.setTime(ft);
                 }
 
-                counter++;
-                JkTag lastChild = tr.getChild(counter);
+                JkTag lastChild = tr.getChild(7);
                 if(lastChild.getChild("b") == null) {
                     r.setPoints(JkConvert.toDouble(lastChild.getText(), 0d));
                 } else {

@@ -185,5 +185,13 @@ public class JkTests {
     }
 
 
+    public static boolean equalsAny(int num, int... expectedNums) {
+        for (int exp : expectedNums) {
+            if(exp == num) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

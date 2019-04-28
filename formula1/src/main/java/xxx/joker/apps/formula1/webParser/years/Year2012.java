@@ -353,9 +353,6 @@ public class Year2012 extends AWikiParser {
                 int counter = tdNum == 7 ? 4 : 5;
 
                 r.setLaps(Integer.parseInt(tr.getChild(counter++).getText()));
-                if(gp.getNumLapsRace() == null) {
-                    gp.setNumLapsRace(r.getLaps());
-                }
 
                 r.setTime(parseDuration(tr.getChild(counter++).getText()));
                 if(gp.getRaces().size() > 1 && r.getTime() != null) {

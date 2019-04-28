@@ -92,6 +92,28 @@ public abstract class AWikiParser implements WikiParser {
                 display(gp.getCircuit().getNation());
                 parseQualify(html, gp);
                 parseRace(html, gp);
+
+                if(gp.getNumLapsRace() == null) {
+                    gp.setNumLapsRace(gp.getRaces().get(0).getLaps());
+                }
+                if(gp.getQualifies().isEmpty()) {
+                    for(int index = 0; index < gp.getRaces().size(); index++) {
+                        F1Race r = gp.getRaces().get(index);
+                        F1Qualify q = new F1Qualify();
+                        q.setGpPK(gp.getPrimaryKey());
+                        q.setPos(r.getStartGrid());
+                        q.setFinalGrid(r.getStartGrid());
+                        q.setEntrant(r.getEntrant());
+                        gp.getQualifies().add(q);
+                        if(i > 0) {
+                            int numRounds = Math.max(model.getNumQualifyRounds(year), 0);
+                            for(int nr = 0; nr < numRounds; nr++) {
+                                q.getTimes().add(null);
+                            }
+                        }
+                    }
+                }
+
 //                if(i == 0) break;
 //                break;
             }

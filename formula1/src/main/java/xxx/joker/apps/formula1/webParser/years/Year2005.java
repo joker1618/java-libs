@@ -310,9 +310,6 @@ public class Year2005 extends AWikiParser {
                 int counter = 4;
 
                 r.setLaps(Integer.parseInt(tr.getChild(counter).getText()));
-                if(gp.getNumLapsRace() == null) {
-                    gp.setNumLapsRace(r.getLaps());
-                }
                 counter++;
 
                 r.setTime(parseDuration(tr.getChild(counter).getText()));
