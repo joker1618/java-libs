@@ -129,6 +129,7 @@ public abstract class AWikiParser implements WikiParser {
     }
 
     private String fixNation(String nation) {
+        if(nation.contains("Monte Carlo"))  return "Monaco";
         if(nation.contains("Melbourne"))  return "Melbourne";
         if(nation.contains("Indiana"))  return "United States";
         if(nation.contains("Texas"))  return "United States";
@@ -147,7 +148,7 @@ public abstract class AWikiParser implements WikiParser {
         if(city.contains("Sepang"))  return "Sepang";
         if(city.contains("Mexico City"))  return "Mexico City";
         if(city.contains("Abu Dhabi"))  return "Abu Dhabi";
-        if(city.contains("Monte Carlo"))  return "Monte Carlo";
+        if(StringUtils.containsAny(city, "Circuit de Monaco", "Monte Carlo"))  return "Monte Carlo";
         if(city.contains("Sochi"))  return "Sochi";
         if(StringUtils.containsAny(city, "Montmel", "Valencia"))  return "Barcelona";
         if(city.contains("Stavelot"))  return "Spa";
@@ -174,6 +175,9 @@ public abstract class AWikiParser implements WikiParser {
             case "Scuderia Toro Rosso":     return "Toro Rosso";
             case "Red Bull Racing":         return "Red Bull";
             case "McLaren-Mercedes":        return "McLaren";
+            case "Spyker MF1":
+            case "MF1":
+                return "Midland F1";
             default:    return teamName;
         }
     }
@@ -212,11 +216,18 @@ public abstract class AWikiParser implements WikiParser {
     }
 
     protected JkDuration parseDuration(String str) {
-        String s = str;
+        String s;
         int idx = str.lastIndexOf(".");
         if(idx != -1) {
-            String stmp = s.substring(0, idx).replace(".", ":");
-            s = stmp + s.substring(idx);
+            s = str.substring(0, idx).replace(".", ":");
+            s += str.substring(idx);
+        } else {
+            int idx2 = str.lastIndexOf(":");
+            if(idx2 != -1) {
+                s = str.substring(0, idx2) + "." + str.substring(idx2);
+            } else {
+                s = str;
+            }
         }
         return JkDuration.of(s);
     }
@@ -297,9 +308,12 @@ public abstract class AWikiParser implements WikiParser {
                         List<String> list = JkStrings.splitList(allText, ",", true);
                         String nation = null;
                         String city = null;
-                        if(list.size() > 1) {
+                        if(list.size() > 2) {
                             nation = list.get(list.size() - 1);
                             city = JkStreams.join(list.subList(1, list.size() - 1), ", ");
+                        } else if(list.size() == 2) {
+                            nation = list.get(1);
+                            city = list.get(0);
                         } else if(list.get(0).equals("Circuit de Monaco")) {
                             nation = "Monaco";
                             city = "Monte Carlo";
@@ -333,8 +347,11 @@ public abstract class AWikiParser implements WikiParser {
             } else if(seeker == 2) {
                 if(tr.getChild(0).getText().equals("Driver")) {
                     F1Driver d = retrieveDriver(tr.findChild("td span a").getAttribute("title"), false);
-                    if(d == null) {
+                    if(d == null && tr.findChild("td a") != null) {
                         d = retrieveDriver(tr.findChild("td a").getAttribute("title"), false);
+                    }
+                    if(d == null) {
+                        d = retrieveDriver(tr.findChild("td").getText(), false);
                     }
                     fastLap.setDriverPK(d.getPrimaryKey());
 

@@ -14,16 +14,8 @@ public class FxNation {
 
     public FxNation(JkNation nation) {
         this.nation = nation;
-        this.flagImage = fromRepoUri(nation.getFlagImage().getRepoURI());
-        this.flagIcon = fromRepoUri(nation.getFlagIcon().getRepoURI());
-    }
-
-    private JkImage fromRepoUri(RepoUri repoUri) {
-        JkImage img = new JkImage();
-        img.setPath(repoUri.getPath());
-        img.setWidth(Integer.parseInt(repoUri.getMetaData().get(RepoMetaData.Attrib.WIDTH)));
-        img.setHeight(Integer.parseInt(repoUri.getMetaData().get(RepoMetaData.Attrib.HEIGHT)));
-        return img;
+        this.flagImage = nation.getFlagImage().getRepoURI().toJkImage();
+        this.flagIcon = nation.getFlagIcon().getRepoURI().toJkImage();
     }
 
     public String getName() {

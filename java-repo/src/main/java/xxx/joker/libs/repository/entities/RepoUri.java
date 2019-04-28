@@ -27,6 +27,16 @@ public class RepoUri extends RepoEntity {
         return "uri:" + getMd5();
     }
 
+    public JkImage toJkImage() {
+        if(type != RepoUriType.IMAGE)   return null;
+        JkImage img = new JkImage();
+        img.setPath(getPath());
+        img.setWidth(Integer.parseInt(getMetaData().get(RepoMetaData.Attrib.WIDTH)));
+        img.setHeight(Integer.parseInt(getMetaData().get(RepoMetaData.Attrib.HEIGHT)));
+        return img;
+    }
+
+
     public Path getPath() {
         return path;
     }

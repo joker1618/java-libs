@@ -69,6 +69,13 @@ class JkTagImpl implements JkTag {
     }
 
     @Override
+    public boolean hasChildren(String childName, String... attributes) {
+        List<JkTag> chlist = getChildren(childName);
+        chlist.removeIf(ch -> !ch.matchAttributes(attributes));
+        return !chlist.isEmpty();
+    }
+
+    @Override
     public boolean isAutoClosed() {
         return autoClosed;
     }
@@ -88,18 +95,9 @@ class JkTagImpl implements JkTag {
     }
 
     @Override
-    public JkTag getChild(String tagName) {
-        List<JkTag> children = getChildren(tagName);
-        return children.isEmpty() ? null : children.get(0);
-    }
-
-    @Override
     public JkTag getChild(String tagName, String... attributes) {
         List<JkTag> children = getChildren(tagName);
-        for (String attribute : attributes) {
-            String[] split = JkStrings.splitArr(attribute, "=", true);
-            children.removeIf(t -> !t.matchAttribute(split[0], split[1]));
-        }
+        children.removeIf(ch -> !ch.matchAttributes(attributes));
         return children.isEmpty() ? null : children.get(0);
     }
 

@@ -14,12 +14,13 @@ public interface JkTag {
     boolean matchAttribute(String attrName, String attrValue);
     boolean matchAttributes(String... attribs);
 
+    boolean hasChildren(String childName, String... attributes);
+
     boolean isAutoClosed();
 
     String getTagName();
 
     JkTag getChild(int childNum, int... subNums);
-    JkTag getChild(String tagName);
     JkTag getChild(String tagName, String... attributes);
     List<JkTag> getChildren();
     List<JkTag> getChildren(String... tagNames);

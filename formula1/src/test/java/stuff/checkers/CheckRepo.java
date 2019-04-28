@@ -114,7 +114,7 @@ public class CheckRepo {
         Map<String, List<F1Race>> byTeam = JkStreams.toMap(races, r -> r.getEntrant().getTeam().getTeamName());
         boolean tres = checkPoints(byTeam, WikiParser.getParser(year).getExpectedTeamPoints());
 
-        display("{}   CHECK POINT", (!tres || !dres ? "KO" : "OK"));
+        display("{}   CHECK POINT", (!tres || !dres ? "--KO--" : "OK"));
     }
     private boolean checkPoints(Map<String, List<F1Race>> raceMap, Map<String, Double> expected) {
         List<Pair<String,Double>> list = new ArrayList<>();
@@ -134,7 +134,7 @@ public class CheckRepo {
         Map<F1Qualify, List<String>> qErrors = F1ModelChecker.checkNullEmptyFields(qList);
         printRes("QUALIFIES", qErrors);
 
-        int numRounds = model.getGranPrixs(year).get(0).getQualifies().get(0).getTimes().size();
+        int numRounds = model.getNumQualifyRounds(year);
         model.getGranPrixs(year).forEach(gp -> {
             List<F1Qualify> qlist = gp.getQualifies();
             F1Qualify winner = qlist.get(0);
