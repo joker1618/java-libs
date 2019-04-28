@@ -154,6 +154,11 @@ public class CheckRepo {
     private boolean checkQualTimes(F1Qualify qual) {
         int min = 1000 * 60;
         int max = 1000 * 60 * 3;
+
+        if(qual.getGpPK().matches("^gp-2005-0[123]")) {
+            max += 1000 * 60;
+        }
+
         boolean foundNull = false;
         for (JkDuration time : qual.getTimes()) {
             if(time != null && (time.toMillis() < min || time.toMillis() > max)) {

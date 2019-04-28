@@ -80,6 +80,7 @@ public abstract class AWikiParser implements WikiParser {
 
 
         List<String> gpUrls = getGpUrls(getMainPageHtml());
+//        gpUrls.forEach(u -> display(u));
 //        System.exit(1);
 
         for (int i = 0; i < gpUrls.size(); i++) {
@@ -128,21 +129,24 @@ public abstract class AWikiParser implements WikiParser {
         return circuit;
     }
 
-    private String fixNation(String nation) {
+    protected String fixNation(String nation) {
+        if(nation.contains("Ireland"))  return "Ireland";
         if(nation.contains("Monte Carlo"))  return "Monaco";
-        if(nation.contains("Melbourne"))  return "Melbourne";
         if(nation.contains("Indiana"))  return "United States";
         if(nation.contains("Texas"))  return "United States";
         if(nation.contains("China"))  return "China";
         if(nation.contains("Canada"))  return "Canada";
-        if(nation.equals("Lombardy"))  return "Italy";
-        if(nation.equals("England"))  return "United Kingdom";
+        if(nation.contains("Lombardy"))  return "Italy";
+        if(nation.contains("England"))  return "United Kingdom";
         return nation;
     }
     private String fixCity(String city) {
         if(StringUtils.containsAny(city, "Mogyoród", "Budapest"))  return "Mogyoród";
-        if(city.contains("Austin"))  return "Austin";
-        if(city.contains("Montreal"))  return "Montreal";
+        if(city.contains("Melbourne"))  return "Melbourne";
+        if(city.contains("Austin"))     return "Austin";
+        if(city.contains("Imola"))     return "Imola";
+        if(city.contains("Monza"))     return "Monza";
+        if(city.contains("Montreal"))   return "Montreal";
         if(city.contains("Oyama"))  return "Oyama";
         if(city.contains("Suzuka"))  return "Suzuka";
         if(city.contains("Sepang"))  return "Sepang";
@@ -196,8 +200,9 @@ public abstract class AWikiParser implements WikiParser {
         dn = dn.replace("(racing driver)", "").trim();
         switch (dn) {
             case "Nelson Piquet, Jr.":  return "Nelson Piquet Jr.";
-            default:    return dn;
+            case "Juan-Pablo Montoya":  return "Juan Pablo Montoya";
         }
+        return dn;
     }
 
     protected void checkNation(RepoEntity e, String nation) {
@@ -320,6 +325,9 @@ public abstract class AWikiParser implements WikiParser {
                         } else if(list.get(0).equals("Silverstone Circuit")) {
                             nation = "United Kingdom";
                             city = "Silverstone";
+                        } else if(list.get(0).equals("Circuit de Spa-Francorchamps")) {
+                            nation = "Belgium";
+                            city = "Spa";
                         }
                         F1Circuit f1Circuit = retrieveCircuit(city, nation, true);
                         gp.setCircuit(f1Circuit);
