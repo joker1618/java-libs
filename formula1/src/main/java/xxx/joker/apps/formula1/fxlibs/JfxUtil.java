@@ -26,8 +26,12 @@ public class JfxUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(JfxUtil.class);
 
+	public static ImageView createImageView(int fitWidth, int fitHeight) {
+		return createImageView(null, fitWidth, fitHeight);
+	}
 	public static ImageView createImageView(Image image, int fitWidth, int fitHeight) {
-		ImageView imageView = new ImageView(image);
+		ImageView imageView = new ImageView();
+		if(image != null)	imageView.setImage(image);
 		imageView.setFitWidth(fitWidth);
 		imageView.setFitHeight(fitHeight);
 		imageView.setPreserveRatio(true);

@@ -99,8 +99,8 @@ public class Year2017 extends AWikiParser  {
     }
 
     @Override
-    protected Map<String, Integer> getExpectedDriverPoints(String html) {
-        Map<String, Integer> map = new HashMap<>();
+    protected Map<String, Double> getExpectedDriverPoints(String html) {
+        Map<String, Double> map = new HashMap<>();
 
         JkTag tableEntrants = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"World_Drivers'_Championship_standings\">", "<table class=\"wikitable\"");
         JkTag tbody = tableEntrants.getChild("tbody");
@@ -110,7 +110,7 @@ public class Year2017 extends AWikiParser  {
                 JkTag dTag = tr.getChild(1).findChild("a", "span a");
                 F1Driver driver = retrieveDriver(dTag.getText(), false);
                 String spoints = tr.getChildren("th").get(1).getText();
-                int points = Integer.parseInt(spoints);
+                double points = Double.parseDouble(spoints);
                 map.put(driver.getFullName(), points);
             }
         }
@@ -119,8 +119,8 @@ public class Year2017 extends AWikiParser  {
     }
 
     @Override
-    protected Map<String, Integer> getExpectedTeamPoints(String html) {
-        Map<String, Integer> map = new HashMap<>();
+    protected Map<String, Double> getExpectedTeamPoints(String html) {
+        Map<String, Double> map = new HashMap<>();
 
         JkTag tableEntrants = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"World_Constructors'_Championship_standings\">", "<table class=\"wikitable\"");
         JkTag tbody = tableEntrants.getChild("tbody");
@@ -131,7 +131,7 @@ public class Year2017 extends AWikiParser  {
                 F1Team team = retrieveTeam(teamTag.getText(), false);
                 String spoints = tr.getChildren("th").get(1).getText();
                 spoints = spoints.replaceAll(".*\\(|\\).*", "");
-                map.put(team.getTeamName(), Integer.parseInt(spoints));
+                map.put(team.getTeamName(), Double.parseDouble(spoints));
             }
         }
 
@@ -211,7 +211,7 @@ public class Year2017 extends AWikiParser  {
                     r.setTime(ft);
                 }
 
-                r.setPoints(JkConvert.toInt(tr.getChild(7).getTextFlat(), 0));
+                r.setPoints(JkConvert.toDouble(tr.getChild(7).getTextFlat(), 0d));
             }
         }
     }

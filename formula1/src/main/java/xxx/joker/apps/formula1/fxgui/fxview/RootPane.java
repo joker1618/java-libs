@@ -104,8 +104,7 @@ public class RootPane extends BorderPane {
                     setText(null);
                 } else {
                     FxNation fnat = guiModel.getNation(item.getCircuit().getNation());
-                    ImageView iv = JfxUtil.createImageView(fnat.getFlagIcon().toFxImage(), 45, 28);
-                    setGraphic(iv);
+                    setGraphic(JfxUtil.createImageView(fnat.getFlagIcon().toFxImage(), 45, 28));
                     setText(fnat.getCode());
                 }
             }
@@ -146,7 +145,6 @@ public class RootPane extends BorderPane {
         }
 
         SubPane pane = cachePanes.get(paneType, subPane);
-
         setCenter(pane);
     }
 }

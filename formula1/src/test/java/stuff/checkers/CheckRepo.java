@@ -116,13 +116,13 @@ public class CheckRepo {
 
         display("{}   CHECK POINT", (!tres || !dres ? "KO" : "OK"));
     }
-    private boolean checkPoints(Map<String, List<F1Race>> raceMap, Map<String, Integer> expected) {
-        List<Pair<String,Integer>> list = new ArrayList<>();
-        raceMap.forEach((k,v) -> list.add(Pair.of(k, v.stream().mapToInt(F1Race::getPoints).sum())));
-        List<Pair<String, Integer>> sorted = JkStreams.reverseOrder(list, Comparator.comparingInt(Pair::getValue));
-        for (Pair<String, Integer> pair : sorted) {
-            Integer exp = expected.get(pair.getKey());
-            if(exp.intValue() != pair.getValue()) {
+    private boolean checkPoints(Map<String, List<F1Race>> raceMap, Map<String, Double> expected) {
+        List<Pair<String,Double>> list = new ArrayList<>();
+        raceMap.forEach((k,v) -> list.add(Pair.of(k, v.stream().mapToDouble(F1Race::getPoints).sum())));
+        List<Pair<String, Double>> sorted = JkStreams.reverseOrder(list, Comparator.comparingDouble(Pair::getValue));
+        for (Pair<String, Double> pair : sorted) {
+            Double exp = expected.get(pair.getKey());
+            if(exp.doubleValue() != pair.getValue()) {
                 return false;
             }
         }
@@ -207,6 +207,9 @@ public class CheckRepo {
         } else if(race.getGpPK().equals("gp-2011-07")) {
             max += 1000 * 60 * 60;
             max += 1000 * 60 * 6;
+        } else if(race.getGpPK().equals("gp-2009-02")) {
+            min = 1000 * 60 * 55;
+            max = 1000 * 60 * 60;
         }
         return !(race.getTime().toMillis() < min || race.getTime().toMillis() > max);
     }

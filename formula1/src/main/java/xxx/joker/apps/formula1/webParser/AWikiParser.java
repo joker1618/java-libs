@@ -55,8 +55,8 @@ public abstract class AWikiParser implements WikiParser {
      */
     protected abstract void parseEntrants(String html);
     protected abstract List<String> getGpUrls(String html);
-    protected abstract Map<String, Integer> getExpectedDriverPoints(String html);
-    protected abstract Map<String, Integer> getExpectedTeamPoints(String html);
+    protected abstract Map<String, Double> getExpectedDriverPoints(String html);
+    protected abstract Map<String, Double> getExpectedTeamPoints(String html);
 
     protected abstract void parseQualify(String html, F1GranPrix gp);
     protected abstract void parseRace(String html, F1GranPrix gp);
@@ -80,6 +80,8 @@ public abstract class AWikiParser implements WikiParser {
 
 
         List<String> gpUrls = getGpUrls(getMainPageHtml());
+//        System.exit(1);
+
         for (int i = 0; i < gpUrls.size(); i++) {
 //            display(""+i);
             String html = dwHtml.getHtml(createWikiUrl(gpUrls.get(i)));
@@ -96,13 +98,13 @@ public abstract class AWikiParser implements WikiParser {
     }
 
     @Override
-    public Map<String, Integer> getExpectedDriverPoints() {
+    public Map<String, Double> getExpectedDriverPoints() {
         return getExpectedDriverPoints(getMainPageHtml());
 
     }
 
     @Override
-    public Map<String, Integer> getExpectedTeamPoints() {
+    public Map<String, Double> getExpectedTeamPoints() {
         return getExpectedTeamPoints(getMainPageHtml());
     }
 
@@ -128,6 +130,7 @@ public abstract class AWikiParser implements WikiParser {
 
     private String fixNation(String nation) {
         if(nation.contains("Melbourne"))  return "Melbourne";
+        if(nation.contains("Indiana"))  return "United States";
         if(nation.contains("Texas"))  return "United States";
         if(nation.contains("China"))  return "China";
         if(nation.contains("Canada"))  return "Canada";
@@ -166,21 +169,29 @@ public abstract class AWikiParser implements WikiParser {
     }
     private String fixTeamName(String teamName) {
         switch (teamName) {
-            case "Scuderia Toro Rosso": return "Toro Rosso";
-            case "Red Bull Racing":     return "Red Bull";
+            case "Scuderia Toro Rosso":     return "Toro Rosso";
+            case "Red Bull Racing":         return "Red Bull";
+            case "McLaren-Mercedes":        return "McLaren";
             default:    return teamName;
         }
     }
 
     protected F1Driver retrieveDriver(String driverName, boolean createIfMissing) {
-        String dname = JkHtmlChars.fixDirtyChars(driverName);
-        dname = dname.replace("(racing driver)", "").trim();
+        String dname = fixDriverName(driverName);
         F1Driver driver = model.getDriver(dname);
         if(driver == null && createIfMissing) {
             driver = new F1Driver(dname);
             model.getDrivers().add(driver);
         }
         return driver;
+    }
+    private String fixDriverName(String driverName) {
+        String dn = JkHtmlChars.fixDirtyChars(driverName);
+        dn = dn.replace("(racing driver)", "").trim();
+        switch (dn) {
+            case "Nelson Piquet, Jr.":  return "Nelson Piquet Jr.";
+            default:    return dn;
+        }
     }
 
     protected void checkNation(RepoEntity e, String nation) {
@@ -290,6 +301,9 @@ public abstract class AWikiParser implements WikiParser {
                         } else if(list.get(0).equals("Circuit de Monaco")) {
                             nation = "Monaco";
                             city = "Monte Carlo";
+                        } else if(list.get(0).equals("Silverstone Circuit")) {
+                            nation = "United Kingdom";
+                            city = "Silverstone";
                         }
                         F1Circuit f1Circuit = retrieveCircuit(city, nation, true);
                         gp.setCircuit(f1Circuit);

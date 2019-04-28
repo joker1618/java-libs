@@ -12,8 +12,11 @@ import org.slf4j.LoggerFactory;
 import xxx.joker.apps.formula1.fxgui.fxmodel.FxNation;
 import xxx.joker.apps.formula1.fxgui.fxview.SubPane;
 import xxx.joker.apps.formula1.fxlibs.JfxTable;
+import xxx.joker.apps.formula1.fxlibs.JfxUtil;
 import xxx.joker.apps.formula1.model.entities.F1Circuit;
 import xxx.joker.libs.core.media.JkImage;
+
+import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class CircuitsPane extends SubPane {
 
@@ -61,12 +64,7 @@ public class CircuitsPane extends SubPane {
         bp.getStyleClass().addAll("pad10");
         bp.getStyleClass().add("bgYellow");
 
-        ImageView ivFlag = new ImageView();
-        double ivW = 150d;
-        double ivH = 100d;
-        ivFlag.setFitWidth(150d);
-        ivFlag.setFitHeight(100d);
-        ivFlag.setPreserveRatio(true);
+        ImageView ivFlag = JfxUtil.createImageView(150, 100);
         Label lblTitle = new Label();
         HBox topBox = new HBox(ivFlag, lblTitle);
         topBox.getStyleClass().addAll("pad10", "spacing10");
@@ -78,6 +76,7 @@ public class CircuitsPane extends SubPane {
                 FxNation fxNation = guiModel.getNation(n.getNation());
                 JkImage flag = fxNation.getFlagImage();
                 ivFlag.setImage(flag.toFxImage());
+                lblTitle.setText(strf("{} - {}", fxNation.getName(), n.getCity()));
             }
         });
 

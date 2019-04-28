@@ -214,6 +214,11 @@ class JkTagImpl implements JkTag {
     }
 
     @Override
+    public JkTag cloneTag() {
+        return JkScanners.parseHtmlTag(getHtmlTag(), getTagName());
+    }
+
+    @Override
     public String toString() {
         String str = tagName;
         if(!attributes.isEmpty()) {

@@ -104,15 +104,15 @@ public class ShowData {
         printList(year, "TEAM", byTeam, WikiParser.getParser(year).getExpectedTeamPoints());
     }
 
-    public void printList(int year, String label, Map<String, List<F1Race>> raceMap, Map<String, Integer> expected) {
-        List<Pair<String,Integer>> list = new ArrayList<>();
-        raceMap.forEach((k,v) -> list.add(Pair.of(k, v.stream().mapToInt(F1Race::getPoints).sum())));
-        List<Pair<String, Integer>> sorted = JkStreams.reverseOrder(list, Comparator.comparingInt(Pair::getValue));
+    public void printList(int year, String label, Map<String, List<F1Race>> raceMap, Map<String, Double> expected) {
+        List<Pair<String,Double>> list = new ArrayList<>();
+        raceMap.forEach((k,v) -> list.add(Pair.of(k, v.stream().mapToDouble(F1Race::getPoints).sum())));
+        List<Pair<String, Double>> sorted = JkStreams.reverseOrder(list, Comparator.comparingDouble(Pair::getValue));
         List<String> lines = new ArrayList<>();
         lines.add(label+"|EXPECTED||COMPUTED");
-        for (Pair<String, Integer> pair : sorted) {
-            Integer exp = expected.get(pair.getKey());
-            String line = strf("{}|{}|{}|{}", pair.getKey(), exp, exp.intValue() == pair.getValue() ? "" : "<>", pair.getValue());
+        for (Pair<String, Double> pair : sorted) {
+            Double exp = expected.get(pair.getKey());
+            String line = strf("{}|{}|{}|{}", pair.getKey(), exp, exp.doubleValue() == pair.getValue() ? "" : "<>", pair.getValue());
             lines.add(line);
         }
         display("{} POINT CHECK {}\n{}", label, year, JkStrings.leftPadLines(JkOutput.columnsView(lines, "|", 2), " ", 2));

@@ -23,7 +23,7 @@ public class F1Race extends RepoEntity {
     @RepoField
     private JkDuration time;
     @RepoField
-    private Integer points;
+    private Double points;
 
     public F1Race() {
     }
@@ -85,11 +85,11 @@ public class F1Race extends RepoEntity {
         this.retired = retired;
     }
 
-    public Integer getPoints() {
+    public Double getPoints() {
         return points;
     }
 
-    public void setPoints(Integer points) {
+    public void setPoints(Double points) {
         this.points = points;
     }
 

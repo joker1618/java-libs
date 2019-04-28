@@ -37,4 +37,6 @@ public interface JkTag {
     String getHtmlTag();
     String getText();
     String getTextFlat();
+
+    JkTag cloneTag();
 }

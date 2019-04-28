@@ -170,8 +170,8 @@ public class Year2012 extends AWikiParser {
     }
 
     @Override
-    protected Map<String, Integer> getExpectedDriverPoints(String html) {
-        Map<String, Integer> map = new HashMap<>();
+    protected Map<String, Double> getExpectedDriverPoints(String html) {
+        Map<String, Double> map = new HashMap<>();
 
         JkTag tableEntrants = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"World_Drivers'_Championship_standings\">"
                 , "<table class=\"wikitable\"", "<table>", "<table class=\"wikitable\"");
@@ -182,7 +182,7 @@ public class Year2012 extends AWikiParser {
                 JkTag dTag = tr.getChild(1).findChild("a", "span a");
                 F1Driver driver = retrieveDriver(dTag.getText(), false);
                 String spoints = JkStruct.getLastElem(tr.getChildren()).getText();
-                int points = Integer.parseInt(spoints);
+                double points = Double.parseDouble(spoints);
                 map.put(driver.getFullName(), points);
             }
         }
@@ -191,8 +191,8 @@ public class Year2012 extends AWikiParser {
     }
 
     @Override
-    protected Map<String, Integer> getExpectedTeamPoints(String html) {
-        Map<String, Integer> map = new HashMap<>();
+    protected Map<String, Double> getExpectedTeamPoints(String html) {
+        Map<String, Double> map = new HashMap<>();
 
         JkTag tableEntrants = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"World_Constructors'_Championship_standings\">", "<table class=\"wikitable\"");
         JkTag tbody = tableEntrants.getChild("tbody");
@@ -204,8 +204,7 @@ public class Year2012 extends AWikiParser {
                 JkTag last = JkStruct.getLastElem(tr.getChildren());
                 String spoints = last.getTagName().equals("th") ? last.getText() : last.getChild("b").getText();
                 spoints = spoints.replaceAll(".*\\(|\\).*", "");
-                int points = Integer.parseInt(spoints);
-                map.put(team.getTeamName(), points);
+                map.put(team.getTeamName(), Double.parseDouble(spoints));
             }
         }
 
@@ -366,7 +365,7 @@ public class Year2012 extends AWikiParser {
                 }
 
                 counter++;
-                r.setPoints(JkConvert.toInt(tr.getChild(counter).getTextFlat(), 0));
+                r.setPoints(JkConvert.toDouble(tr.getChild(counter).getTextFlat(), 0d));
             }
         }
     }
