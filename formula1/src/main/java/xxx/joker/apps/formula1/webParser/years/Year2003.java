@@ -239,7 +239,6 @@ public class Year2003 extends AWikiParser {
                 JkTag chTime = allChilds.get(allChilds.size() - 2);
                 q.getTimes().add(getQualTime(chTime));
 
-                q.setFinalGrid(q.getPos());
             }
         }
 
@@ -272,6 +271,12 @@ public class Year2003 extends AWikiParser {
 //            System.exit(1);
 //        }
 
+        List<JkTag> thList = tbody.getChild(0).getChildren();
+        Map<String, Integer> posMap = new HashMap<>();
+        for(int i = 0; i < thList.size(); i++) {
+            posMap.put(thList.get(i).getTextFlat(), i);
+        }
+
         Map<Integer, F1Qualify> qualifyMap = JkStreams.toMapSingle(gp.getQualifies(), q -> q.getEntrant().getCarNo());
         int pos = 1;
 
@@ -286,36 +291,36 @@ public class Year2003 extends AWikiParser {
 
                 r.setRetired(JkConvert.toInt(tr.getChild(0).getText()) == null);
 
-                int carNum = Integer.parseInt(tr.getChild(1).getText().replace("‡", ""));
+                r.setStartGrid(JkConvert.toInt(tr.getChild(posMap.get("Grid")).getText(), -1));
+
+                int carNum = Integer.parseInt(tr.getChild(posMap.get("No")).getText().replace("‡", ""));
                 if(gp.getQualifies().isEmpty()) {
-                    F1Driver d = retrieveDriver(tr.getChild(2).findChild("a", "b a").getText(), false);
-                    JkTag ttag = tr.getChild(3).findChild("a", "b a");
+                    F1Driver d = retrieveDriver(tr.getChild(posMap.get("Driver")).findChild("a", "b a").getText(), false);
+                    JkTag ttag = tr.getChild(posMap.get("Constructor")).findChild("a", "b a");
                     F1Team team = retrieveTeam(ttag.getText().replaceAll("-$", ""), false);
                     r.setEntrant(getEntrant(year, d, carNum, team));
-                    r.setStartGrid(Integer.parseInt(tr.getChild(6).getText()));
                 } else {
                     F1Qualify q = qualifyMap.get(carNum);
                     r.setEntrant(q.getEntrant());
-                    r.setStartGrid(q.getFinalGrid());
+                    q.setFinalGrid(r.getStartGrid());
                 }
 
-                String stmp = tr.getChild(4).getText();
+                String stmp = tr.getChild(posMap.get("Laps")).getText();
                 r.setLaps(stmp.isEmpty() ? 0 : Integer.parseInt(stmp));
 
-                r.setTime(parseDuration(tr.getChild(5).getText().replace("/Accident", "")));
+                r.setTime(parseDuration(tr.getChild(posMap.get("Time/Retired")).getText().replace("/Accident", "")));
                 if(gp.getRaces().size() > 1 && r.getTime() != null) {
                     F1Race firstRace = gp.getRaces().get(0);
                     JkDuration ft = firstRace.getTime().plus(r.getTime());
                     r.setTime(ft);
                 }
 
-                JkTag lastChild = tr.getChild(7);
+                JkTag lastChild = tr.getChild(posMap.get("Points"));
                 if(lastChild.getChild("b") == null) {
                     r.setPoints(JkConvert.toDouble(lastChild.getText(), 0d));
                 } else {
                     r.setPoints(JkConvert.toDouble(lastChild.getChild("b").getText(), 0d));
                 }
-
             }
         }
 

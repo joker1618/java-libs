@@ -160,6 +160,7 @@ public abstract class AWikiParser implements WikiParser {
         if(nation.contains("Canada"))  return "Canada";
         if(nation.contains("Lombardy"))  return "Italy";
         if(nation.contains("England"))  return "United Kingdom";
+        if(nation.contains("Wallonia"))  return "Belgium";
         return nation;
     }
     private String fixCity(String city) {
@@ -177,7 +178,7 @@ public abstract class AWikiParser implements WikiParser {
         if(StringUtils.containsAny(city, "Circuit de Monaco", "Monte Carlo"))  return "Monte Carlo";
         if(city.contains("Sochi"))  return "Sochi";
         if(StringUtils.containsAny(city, "Montmel", "Valencia"))  return "Barcelona";
-        if(city.contains("Stavelot"))  return "Spa";
+        if(StringUtils.containsAny(city, "Stavelot"))  return "Spa";
         if(city.contains("Le Castellet"))  return "Le Castellet";
         if(city.contains("Spielberg"))  return "Spielberg";
         if(StringUtils.containsAny(city, "Nürburg", "Hockenheim"))  return "Hockenheim";
@@ -284,12 +285,16 @@ public abstract class AWikiParser implements WikiParser {
         }
 
         // Driver cover
-        String url = createWikiUrl(aTag.getAttribute("href"));
-        String dhtml = dwHtml.getHtml(url);
-        JkTag imgTag = JkScanners.parseHtmlTag(dhtml, "img", "<div class=\"fullImageLink\"", "<a", "<img");
-        String imgUrl = createResourceUrl(imgTag);
-        Pair<Boolean, Path> dwRes = dwTemp.downloadResource(imgUrl);
-        model.saveDriverCover(dwRes.getValue(), driver);
+        if(aTag != null) {
+            String url = createWikiUrl(aTag.getAttribute("href"));
+            String dhtml = dwHtml.getHtml(url);
+            JkTag imgTag = JkScanners.parseHtmlTag(dhtml, "img", "<div class=\"fullImageLink\"", "<a", "<img");
+            String imgUrl = createResourceUrl(imgTag);
+            Pair<Boolean, Path> dwRes = dwTemp.downloadResource(imgUrl);
+            model.saveDriverCover(dwRes.getValue(), driver);
+        } else {
+            rowNum = 0;
+        }
 
         // Driver details
         JkTag rowBorn = null;

@@ -37,6 +37,9 @@ public class CheckRepo {
     
     @Test
     public void doAllYearChecks() {
+        checkTeams();
+        checkDrivers();
+        checkCircuits();
         model.getAvailableYears().forEach(this::doYearChecks);
     }
 
@@ -44,15 +47,15 @@ public class CheckRepo {
     public void doYearChecks() {
         int year = JkStruct.getLastElem(model.getAvailableYears());
 //        int year = 2012;
+        checkTeams();
+        checkDrivers();
+        checkCircuits();
         doYearChecks(year);
     }
 
     private void doYearChecks(int year) {
         display("CHECK YEAR {}", year);
         checkEntrants(year);
-        checkTeams();
-        checkDrivers();
-        checkCircuits();
         checkGranPrix(year);
         checkQualifies(year);
         checkRaces(year);
