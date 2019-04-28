@@ -161,10 +161,12 @@ public abstract class AWikiParser implements WikiParser {
         if(nation.contains("Lombardy"))  return "Italy";
         if(nation.contains("England"))  return "United Kingdom";
         if(nation.contains("Wallonia"))  return "Belgium";
+        if(nation.contains("Sepang"))  return "Malaysia";
         return nation;
     }
     private String fixCity(String city) {
-        if(StringUtils.containsAny(city, "Mogyoród", "Budapest"))  return "Mogyoród";
+        if(city.contains("Mogyoród") || city.contains("Budapest"))  return "Mogyoród";
+        if(city.contains("Magny-Cours"))  return "Magny-Cours";
         if(city.contains("Melbourne"))  return "Melbourne";
         if(city.contains("Austin"))     return "Austin";
         if(city.contains("Imola"))     return "Imola";
@@ -175,13 +177,13 @@ public abstract class AWikiParser implements WikiParser {
         if(city.contains("Sepang"))  return "Sepang";
         if(city.contains("Mexico City"))  return "Mexico City";
         if(city.contains("Abu Dhabi"))  return "Abu Dhabi";
-        if(StringUtils.containsAny(city, "Circuit de Monaco", "Monte Carlo"))  return "Monte Carlo";
+        if(city.contains("Circuit de Monaco") || city.contains("Monte Carlo") || city.contains("Monte-Carlo"))  return "Monte Carlo";
+        if(city.contains("Montmel") || city.contains("Valencia"))  return "Barcelona";
         if(city.contains("Sochi"))  return "Sochi";
-        if(StringUtils.containsAny(city, "Montmel", "Valencia"))  return "Barcelona";
-        if(StringUtils.containsAny(city, "Stavelot"))  return "Spa";
+        if(city.contains("Stavelot"))  return "Spa";
         if(city.contains("Le Castellet"))  return "Le Castellet";
         if(city.contains("Spielberg"))  return "Spielberg";
-        if(StringUtils.containsAny(city, "Nürburg", "Hockenheim"))  return "Hockenheim";
+        if(city.contains("Nürburg") || city.contains("Hockenheim") || city.contains("Baden-Württemberg"))  return "Hockenheim";
         if(city.contains("Northamptonshire"))  return "Silverstone";
         if(city.contains("South Jeolla"))  return "Yeongam";
         if(city.contains("Uttar Pradesh"))  return "Uttar Pradesh";
@@ -252,7 +254,7 @@ public abstract class AWikiParser implements WikiParser {
         } else {
             int idx2 = str.lastIndexOf(":");
             if(idx2 != -1) {
-                s = str.substring(0, idx2) + "." + str.substring(idx2);
+                s = str.substring(0, idx2) + "." + str.substring(idx2+1);
             } else {
                 s = str;
             }
