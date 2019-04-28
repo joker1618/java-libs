@@ -25,15 +25,13 @@ public interface F1Model extends JkRepo {
     Set<F1Entrant> getEntrants();
     List<F1Entrant> getEntrants(int year);
 
-//    Set<F1GranPrix> getGranPrixs();
+    Set<F1GranPrix> getGranPrixs();
     List<F1GranPrix> getGranPrixs(int year);
 
     Set<F1Circuit> getCircuits();
     F1Circuit getCircuit(String city, String nation);
-//
-//    void deleteData(int year);
-//
-//    F1Season getSeason(int year);
 
     List<Integer> getAvailableYears();
+
+    int getNumQualifyRounds(int year);
 }

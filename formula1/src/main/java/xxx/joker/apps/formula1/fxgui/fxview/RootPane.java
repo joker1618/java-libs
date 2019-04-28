@@ -41,8 +41,8 @@ public class RootPane extends BorderPane {
     public RootPane() {
         setLeft(createLeftMenu());
 
-//        changeSubView(PaneType.HOME);
-        changeSubView(PaneType.CIRCUITS);
+        changeSubView(PaneType.HOME);
+//        changeSubView(PaneType.CIRCUITS);
 
         getStyleClass().add("bgRed");
         getStylesheets().add(getClass().getResource("/css/RootPane.css").toExternalForm());

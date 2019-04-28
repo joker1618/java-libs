@@ -29,7 +29,7 @@ public class WebDataCrawler {
 
     @Test
     public void runRange() {
-        int ystart = 2008;
+        int ystart = 2007;
         int yend = 2018;
 
         JkTimer timer = new JkTimer();

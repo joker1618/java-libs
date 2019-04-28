@@ -81,10 +81,10 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
         return getDataList(F1Entrant.class, e -> e.getYear() == year);
     }
 
-//    @Override
-//    public Set<F1GranPrix> getGranPrixs() {
-//        return getDataSet(F1GranPrix.class);
-//    }
+    @Override
+    public Set<F1GranPrix> getGranPrixs() {
+        return getDataSet(F1GranPrix.class);
+    }
 
     @Override
     public List<F1GranPrix> getGranPrixs(int year) {
@@ -101,53 +101,6 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
         return JkStreams.findUnique(getCircuits(), c -> city.equals(c.getCity()) && nation.equals(c.getNation()));
     }
 
-//    @Override
-//    public void deleteData(int year) {
-//        List<RepoEntity> list = new ArrayList<>();
-//        list.addAll(getEntrants(year));
-//        for (F1GranPrix gp : getGranPrixs(year)) {
-//            list.addAll(gp.getQualifies());
-//            list.addAll(gp.getRaces());
-//            list.add(gp);
-//        }
-//        for (RepoEntity entity : list) {
-//            super.remove(entity);
-//        }
-//    }
-//
-//    @Override
-//    public F1Season getSeason(int year) {
-//        F1Season season = seasonMap.get(year);
-//
-//        if(season == null) {
-//            List<F1GranPrix> gpList = getGranPrixs(year);
-//            List<F1Entrant> entrants = getEntrants(year);
-//
-//            List<F1SeasonResult> results = new ArrayList<>();
-//            entrants.stream().map(F1Entrant::getDriver).distinct().forEach(d -> {
-//                F1SeasonResult res = new F1SeasonResult();
-//                res.setDriver(d);
-//                gpList.forEach(gp -> {
-//                    F1Race race = JkStreams.findUnique(gp.getRaces(), r -> r.getEntrant().getDriver().equals(d));
-//                    if(race != null) {
-//                        res.getPoints().put(gp, race);
-//                    }
-//                });
-//                res.setTotPoints(JkStreams.sumInt(res.getPoints().values(), F1Race::getPoints));
-//                results.add(res);
-//            });
-//            Collections.sort(results);
-//
-//            season = new F1Season(year);
-//            season.setEntrants(entrants);
-//            season.setGpList(gpList);
-//            season.setResults(results);
-//            seasonMap.put(year, season);
-//        }
-//
-//        return season;
-//    }
-
     @Override
     public List<Integer> getAvailableYears() {
         return JkStreams.mapFilterSortUniq(
@@ -156,6 +109,17 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
                 f -> true,
                 Comparator.reverseOrder()
         );
+    }
+
+    @Override
+    public int getNumQualifyRounds(int year) {
+        List<F1GranPrix> gps = getGranPrixs(year);
+        if(gps.isEmpty())   return -1;
+
+        List<F1Qualify> qual = gps.get(0).getQualifies();
+        if(qual.isEmpty())   return -1;
+
+        return qual.get(0).getTimes().size();
     }
 
 

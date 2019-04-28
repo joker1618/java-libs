@@ -139,8 +139,10 @@ public abstract class AWikiParser implements WikiParser {
         return nation;
     }
     private String fixCity(String city) {
+        if(StringUtils.containsAny(city, "Mogyoród", "Budapest"))  return "Mogyoród";
         if(city.contains("Austin"))  return "Austin";
         if(city.contains("Montreal"))  return "Montreal";
+        if(city.contains("Oyama"))  return "Oyama";
         if(city.contains("Suzuka"))  return "Suzuka";
         if(city.contains("Sepang"))  return "Sepang";
         if(city.contains("Mexico City"))  return "Mexico City";
