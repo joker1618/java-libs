@@ -29,6 +29,9 @@ public class JkOutput {
 	public static String columnsView(String lines) {
 		return columnsView(lines, DEF_SEP, DEF_DISTANCE, false);
 	}
+	public static String columnsView(String lines, boolean hasHeader) {
+		return columnsView(lines, DEF_SEP, DEF_DISTANCE, hasHeader);
+	}
 	public static String columnsView(String lines, int colsDistance) {
 		return columnsView(lines, DEF_SEP, colsDistance, false);
 	}
@@ -51,6 +54,9 @@ public class JkOutput {
 
 	public static String columnsView(List<String> lines) {
 		return columnsView(lines, DEF_SEP, DEF_DISTANCE, false);
+	}
+	public static String columnsView(List<String> lines, boolean hasHeader) {
+		return columnsView(lines, DEF_SEP, DEF_DISTANCE, hasHeader);
 	}
 	public static String columnsView(List<String> lines, int colsDistance) {
 		return columnsView(lines, DEF_SEP, colsDistance, false);

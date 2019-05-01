@@ -1,7 +1,6 @@
 package xxx.joker.apps.formula1.fxgui.fxview;
 
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -10,22 +9,21 @@ import org.slf4j.LoggerFactory;
 import xxx.joker.apps.formula1.fxgui.fxmodel.F1GuiModel;
 import xxx.joker.apps.formula1.fxgui.fxmodel.F1GuiModelImpl;
 import xxx.joker.apps.formula1.fxgui.fxmodel.FxNation;
-import xxx.joker.apps.formula1.fxgui.fxmodel.SeasonView;
 import xxx.joker.apps.formula1.fxgui.fxview.panes.CircuitsPane;
 import xxx.joker.apps.formula1.fxgui.fxview.panes.DriversPane;
 import xxx.joker.apps.formula1.fxgui.fxview.panes.HomePane;
 import xxx.joker.apps.formula1.fxgui.fxview.panes.TeamsPane;
 import xxx.joker.apps.formula1.fxgui.fxview.panes.yearPane.YearEntrantsPane;
+import xxx.joker.apps.formula1.fxgui.fxview.panes.yearPane.YearGpPane;
 import xxx.joker.apps.formula1.fxgui.fxview.panes.yearPane.YearResultsPane;
 import xxx.joker.apps.formula1.fxgui.fxview.panes.yearPane.YearSummaryPane;
 import xxx.joker.apps.formula1.fxlibs.JfxUtil;
 import xxx.joker.apps.formula1.model.F1Model;
 import xxx.joker.apps.formula1.model.F1ModelImpl;
-import xxx.joker.apps.formula1.model.entities.F1Circuit;
 import xxx.joker.apps.formula1.model.entities.F1GranPrix;
 import xxx.joker.libs.core.cache.JkCache;
 
-import java.util.function.Supplier;
+import java.util.List;
 
 public class RootPane extends BorderPane {
 
@@ -39,9 +37,11 @@ public class RootPane extends BorderPane {
 
 
     public RootPane() {
+        createSubPanes();
+
         setLeft(createLeftMenu());
 
-        changeSubView(PaneType.HOME);
+//        changeSubView(PaneType.HOME);
 //        changeSubView(PaneType.CIRCUITS);
 
         getStyleClass().add("bgRed");
@@ -77,9 +77,7 @@ public class RootPane extends BorderPane {
         ComboBox<Integer> comboSelYear = new ComboBox<>();
         yearBox.getChildren().add(comboSelYear);
         comboSelYear.getItems().setAll(model.getAvailableYears());
-        comboSelYear.getSelectionModel().selectedItemProperty().addListener((obs,o,n) -> {
-            if(n != null && n != o)     guiModel.setSelectedYear(n);
-        });
+        comboSelYear.getSelectionModel().selectedItemProperty().addListener((obs,o,n) -> guiModel.setSelectedYear(n));
 
         btn = new Button("SUMMARY");
         btn.setOnAction(e -> changeSubView(PaneType.YEAR_SUMMARY));
@@ -109,42 +107,36 @@ public class RootPane extends BorderPane {
                 }
             }
         });
-        guiModel.addYearChangeAction(n -> gpListView.getItems().setAll(model.getGranPrixs(n)));
+        gpListView.getSelectionModel().selectedItemProperty().addListener((obs,o,n) -> {
+            guiModel.setSelectedGranPrix(n);
+            changeSubView(PaneType.YEAR_GRAN_PRIX);
+        });
+        guiModel.addChangeActionYear(n -> {
+            List<F1GranPrix> gps = model.getGranPrixs(n);
+            gpListView.getItems().setAll(gps);
+            guiModel.setSelectedGranPrix(gps.get(0));
+        });
 
-        comboSelYear.getSelectionModel().select(0);
+        comboSelYear.getSelectionModel().selectFirst();
 
 //        menuBox.heightProperty().addListener(o -> LOG.debug("height {}", o));
 
         return menuBox;
     }
 
-    private void changeSubView(PaneType paneType) {
-        Supplier<SubPane> subPane = null;
-        switch (paneType) {
-            case HOME:
-                subPane = HomePane::new;
-                break;
-            case DRIVERS:
-                subPane = DriversPane::new;
-                break;
-            case TEAMS:
-                subPane = TeamsPane::new;
-                break;
-            case CIRCUITS:
-                subPane = CircuitsPane::new;
-                break;
-            case YEAR_SUMMARY:
-                subPane = YearSummaryPane::new;
-                break;
-            case YEAR_ENTRANTS:
-                subPane = YearEntrantsPane::new;
-                break;
-            case YEAR_RESULTS:
-                subPane = YearResultsPane::new;
-                break;
-        }
+    private void createSubPanes() {
+        cachePanes.add(PaneType.HOME, new HomePane());
+        cachePanes.add(PaneType.DRIVERS, new DriversPane());
+        cachePanes.add(PaneType.TEAMS, new TeamsPane());
+        cachePanes.add(PaneType.CIRCUITS, new CircuitsPane());
+        cachePanes.add(PaneType.YEAR_SUMMARY, new YearSummaryPane());
+        cachePanes.add(PaneType.YEAR_ENTRANTS, new YearEntrantsPane());
+        cachePanes.add(PaneType.YEAR_RESULTS, new YearResultsPane());
+        cachePanes.add(PaneType.YEAR_GRAN_PRIX, new YearGpPane());
+    }
 
-        SubPane pane = cachePanes.get(paneType, subPane);
+    private void changeSubView(PaneType paneType) {
+        SubPane pane = cachePanes.get(paneType);
         setCenter(pane);
     }
 }

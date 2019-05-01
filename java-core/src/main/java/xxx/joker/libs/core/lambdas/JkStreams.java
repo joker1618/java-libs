@@ -197,6 +197,12 @@ public class JkStreams {
 	public static <T> int sumInt(Collection<T> coll, Function<T, Integer> mapper) {
 		return coll.stream().mapToInt(mapper::apply).sum();
 	}
+	public static long sumLong(Collection<Long> longColl) {
+		return longColl.stream().mapToLong(e -> e).sum();
+	}
+	public static <T> long sumLong(Collection<T> coll, Function<T, Long> mapper) {
+		return coll.stream().mapToLong(mapper::apply).sum();
+	}
 	public static double sumDouble(Collection<Double> doubleColl) {
 		return doubleColl.stream().mapToDouble(e -> e).sum();
 	}

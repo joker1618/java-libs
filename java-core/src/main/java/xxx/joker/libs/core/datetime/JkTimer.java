@@ -38,6 +38,10 @@ public class JkTimer {
         }
     }
 
+    public boolean isStopped() {
+        return endTm != -1L;
+    }
+
     public String toStringElapsed() {
         return JkDuration.toStringElapsed(elapsed());
     }

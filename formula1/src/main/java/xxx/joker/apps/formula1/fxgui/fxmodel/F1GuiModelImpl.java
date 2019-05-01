@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import xxx.joker.apps.formula1.model.F1Model;
 import xxx.joker.apps.formula1.model.F1ModelImpl;
+import xxx.joker.apps.formula1.model.entities.F1GranPrix;
 import xxx.joker.libs.core.cache.JkCache;
 import xxx.joker.service.sharedRepo.JkSharedRepo;
 import xxx.joker.service.sharedRepo.JkSharedRepoImpl;
@@ -22,6 +23,7 @@ public class F1GuiModelImpl implements F1GuiModel {
     private JkCache<Integer, SeasonView> cacheYears = new JkCache<>();
 
     private SimpleIntegerProperty selectedYear = new SimpleIntegerProperty();
+    private SimpleObjectProperty<F1GranPrix> selectedGranPrix = new SimpleObjectProperty<>();
 
 
     private F1GuiModelImpl() {
@@ -43,7 +45,17 @@ public class F1GuiModelImpl implements F1GuiModel {
     }
 
     @Override
-    public void addYearChangeAction(Consumer<Integer> action) {
-        selectedYear.addListener((obs,o,n) -> action.accept(n.intValue()));
+    public void addChangeActionYear(Consumer<Integer> action) {
+        selectedYear.addListener((obs,o,n) -> { if(n != null && n != o) action.accept(n.intValue()); });
+    }
+
+    @Override
+    public void setSelectedGranPrix(F1GranPrix gp) {
+        selectedGranPrix.set(gp);
+    }
+
+    @Override
+    public void addChangeActionGranPrix(Consumer<F1GranPrix> action) {
+        selectedGranPrix.addListener((obs,o,n) -> { if(n != null && n != o) action.accept(n); });
     }
 }

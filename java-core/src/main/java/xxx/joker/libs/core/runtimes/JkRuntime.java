@@ -6,6 +6,7 @@ import xxx.joker.libs.core.utils.JkStrings;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -85,4 +86,7 @@ public class JkRuntime {
         return classes;
     }
 
+    public static long getJvmStartTime() {
+        return ManagementFactory.getRuntimeMXBean().getStartTime();
+    }
 }

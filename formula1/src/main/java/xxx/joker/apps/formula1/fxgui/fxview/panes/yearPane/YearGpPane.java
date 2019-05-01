@@ -1,32 +1,38 @@
 package xxx.joker.apps.formula1.fxgui.fxview.panes.yearPane;
 
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.apps.formula1.fxgui.fxview.SubPane;
 import xxx.joker.apps.formula1.fxlibs.JfxTable;
 import xxx.joker.apps.formula1.model.entities.F1Driver;
 import xxx.joker.apps.formula1.model.entities.F1Entrant;
+import xxx.joker.apps.formula1.model.entities.F1Qualify;
 import xxx.joker.apps.formula1.model.entities.F1Team;
 
-public class YearEntrantsPane extends SubPane {
+public class YearGpPane extends SubPane {
 
-    private static final Logger LOG = LoggerFactory.getLogger(YearEntrantsPane.class);
+    private static final Logger LOG = LoggerFactory.getLogger(YearGpPane.class);
 
     private TableView<F1Entrant> tableEntrants;
 
-    public YearEntrantsPane() {
+    public YearGpPane() {
         getStyleClass().add("bgGrey");
 
-        tableEntrants = createTableEntrants();
-        setCenter(tableEntrants);
+//        TabPane tp = new TabPane();
+//        Tab tab1 = new Tab("fe");
+//        tp.getTabs().setAll(tab1);
+//        setCenter(tp);
 
-        guiModel.addChangeActionYear(year -> tableEntrants.getItems().setAll(model.getEntrants(year)));
+//        tableEntrants = createTableEntrants();
+//        setCenter(tableEntrants);
+//
+        guiModel.addChangeActionGranPrix(gp -> tab1.setContent(new HBox(new Label(gp.getPrimaryKey()))));
     }
 
-    private TableView<F1Entrant> createTableEntrants() {
-        TableColumn<F1Entrant, F1Team> colTeam = JfxTable.createColumn("TEAM", "team", F1Team::getTeamName);
+    private TableView<F1Qualify> createTableQualify() {
+        TableColumn<F1Qualify, Integer> colPos = JfxTable.createColumn("TEAM", "team", F1Team::getTeamName);
         TableColumn<F1Entrant, Integer> colCarNo = JfxTable.createColumn("CAR", "carNo");
         TableColumn<F1Entrant, F1Driver> colDriver = JfxTable.createColumn("DRIVER", "driver", F1Driver::getFullName);
 
