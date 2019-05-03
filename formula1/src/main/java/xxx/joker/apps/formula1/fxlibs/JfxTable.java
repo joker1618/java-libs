@@ -1,10 +1,13 @@
 package xxx.joker.apps.formula1.fxlibs;
 
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.Text;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
 
@@ -54,11 +57,54 @@ public class JfxTable {
         });
     }
 
+
+
+    public static void autoResizeColumns(TableView<?> table, boolean reserveScrollSpace) {
+        double tablePrefWidth = 2d + (reserveScrollSpace ? 17d : 0d);
+
+        //Set the right policy
+        table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        for (TableColumn<?, ?> column : table.getColumns()) {
+            //Minimal width = columnheader
+            Text t = new Text( column.getText() );
+            double max = t.getLayoutBounds().getWidth();
+            for ( int i = 0; i < table.getItems().size(); i++ ) {
+                //cell must not be empty
+                if ( column.getCellData( i ) != null ) {
+                    t = new Text( column.getCellData( i ).toString() );
+                    double calcwidth = t.getLayoutBounds().getWidth();
+                    if ( calcwidth > max ) {
+                        max = calcwidth;
+                    }
+                }
+            }
+            // add extra space
+            double wcol = max + 30d;
+            tablePrefWidth += wcol;
+            column.setPrefWidth(wcol);
+        }
+
+        table.setPrefWidth(tablePrefWidth);
+    }
+
+    /**
+     * @param widthsStr "0.2:2 0.1 0.25:2" (dove :X indica il numero di colonne, 1 default)
+     */
+    public static void setColPercWidth(TableView<?> tableView, String widthsStr, boolean reserveScrollSpace) {
+        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        DoubleBinding wprop = tableView.widthProperty().subtract(2d + (reserveScrollSpace ? 17d : 0d));
+        List<Double> percs = parseWidths(widthsStr);
+        for(int i = 0; i < percs.size(); i++) {
+            tableView.getColumns().get(i).prefWidthProperty().bind(wprop.multiply(percs.get(i)));
+        }
+    }
+
     /**
      * @param widthsStr "12:3 45 7:8" (dove :X indica il numero di colonne, 1 default)
      */
     public static void setFixedWidth(TableView<?> tableView, String widthsStr, boolean reserveScrollSpace) {
-        tableView.getColumns().forEach(col -> col.setResizable(false));
+//        tableView.getColumns().forEach(col -> col.setResizable(false));
+        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
         List<Double> widths = parseWidths(widthsStr);
         for(int i = 0; i < widths.size(); i++) {
@@ -67,7 +113,7 @@ public class JfxTable {
 
         double wsum = JkStreams.sumDouble(widths);
         double tableWidth = wsum + 2 + (reserveScrollSpace ? 17 : 0);
-        tableView.setMinWidth(tableWidth);
+        tableView.setPrefWidth(tableWidth);
     }
     private static List<Double> parseWidths(String widthsStr) {
         List<Double> widths = new ArrayList<>();

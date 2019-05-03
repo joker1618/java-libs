@@ -76,6 +76,7 @@ public class F1ModelImpl extends JkRepoFile implements F1Model {
     public Set<F1Entrant> getEntrants() {
         return getDataSet(F1Entrant.class);
     }
+
     @Override
     public List<F1Entrant> getEntrants(int year) {
         return getDataList(F1Entrant.class, e -> e.getYear() == year);

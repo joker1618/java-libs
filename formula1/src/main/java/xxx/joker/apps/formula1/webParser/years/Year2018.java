@@ -8,6 +8,7 @@ import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.scanners.JkScanners;
 import xxx.joker.libs.core.scanners.JkTag;
+import xxx.joker.libs.core.tests.JkTests;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class Year2018 extends AWikiParser {
 
@@ -39,8 +42,6 @@ public class Year2018 extends AWikiParser {
                     checkNation(team, team.getNation());
                 }
 
-                String engine = tdList.get(3).getText();
-
                 String stmp = tdList.get(4).getHtmlTag().replaceAll("^<td(.*?)>", "").replace("</td>", "").replaceAll("<br[ ]?/>", "-");
                 List<Integer> carNums = JkStreams.map(JkStrings.splitList(stmp, "-", true), Integer::valueOf);
 
@@ -62,7 +63,6 @@ public class Year2018 extends AWikiParser {
                     F1Entrant e = new F1Entrant();
                     e.setYear(year);
                     e.setTeam(team);
-                    e.setEngine(engine);
                     e.setCarNo(carNums.get(c));
                     e.setDriver(drivers.get(c));
                     model.getEntrants().add(e);
@@ -188,7 +188,8 @@ public class Year2018 extends AWikiParser {
                 r.setPos(pos++);
                 gp.getRaces().add(r);
 
-                r.setRetired(JkConvert.toInt(tr.getChild(0).getText()) == null);
+                String outcome = tr.getChild(0).getText().replaceAll("[†|‡]", "").trim();
+                r.setOutcome(F1Race.F1RaceOutcome.byLabel(outcome));
 
                 int carNum = Integer.parseInt(tr.getChild(1).getText());
                 F1Qualify q = qualifyMap.get(carNum);

@@ -53,8 +53,8 @@ public class CheckRepo {
         doYearChecks(year);
     }
 
-    private void doYearChecks(int year) {
-        display("CHECK YEAR {}", year);
+    public void doYearChecks(int year) {
+        display("###  CHECK YEAR {}", year);
         checkEntrants(year);
         checkGranPrix(year);
         checkQualifies(year);
@@ -68,7 +68,7 @@ public class CheckRepo {
         printRes("ENTRANTS", entrantErrors);
     }
 
-    private void checkDrivers() {
+    public void checkDrivers() {
         Set<F1Driver> drivers = model.getDrivers();
         Map<F1Driver, List<String>> driversError = F1ModelChecker.checkNullEmptyFields(drivers);
         printRes("DRIVERS", driversError);
@@ -80,13 +80,13 @@ public class CheckRepo {
         }
     }
 
-    private void checkTeams() {
+    public void checkTeams() {
         Set<F1Team> teams = model.getTeams();
         Map<F1Team, List<String>> teamsError = F1ModelChecker.checkNullEmptyFields(teams);
         printRes("TEAMS", teamsError);
     }
 
-    private void checkCircuits() {
+    public void checkCircuits() {
         Set<F1Circuit> circuits = model.getCircuits();
         Map<F1Circuit, List<String>> circuitsError = F1ModelChecker.checkNullEmptyFields(circuits);
         printRes("CIRCUITS", circuitsError);
@@ -200,9 +200,6 @@ public class CheckRepo {
                 display("Invalid winner num laps {}", winnerRace);
             }
             races.forEach(r -> {
-                if(!r.isRetired() && r.getTime() == null && r.getLaps() == numLaps) {
-                    display("Invalid race time {}", r);
-                }
                 if(r.getTime() != null && r.getLaps() < numLaps) {
                     display("Invalid race laps {}", r);
                 }

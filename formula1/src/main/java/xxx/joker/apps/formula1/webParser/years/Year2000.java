@@ -55,7 +55,6 @@ public class Year2000 extends AWikiParser {
                 F1Entrant e = new F1Entrant();
                 e.setYear(year);
                 e.setTeam(previous.getTeam());
-                e.setEngine(previous.getEngine());
                 e.setCarNo(previous.getCarNo());
                 e.setDriver(d);
                 model.add(e);
@@ -87,7 +86,6 @@ public class Year2000 extends AWikiParser {
                 F1Entrant e = new F1Entrant();
                 e.setYear(year);
                 e.setTeam(previous.getTeam());
-                e.setEngine(previous.getEngine());
                 e.setCarNo(carNum);
                 e.setDriver(d);
                 model.add(e);
@@ -101,11 +99,6 @@ public class Year2000 extends AWikiParser {
                     JkTag img = tr.getChild(0).findFirstTag("img");
                     team.setNation(fixNation(img.getAttribute("alt")));
                     checkNation(team, team.getNation());
-                }
-
-                String engine = tr.getChild(3).getText();
-                if(StringUtils.isBlank(engine)) {
-                    engine = tr.getChild(3).getChild("span").getText();
                 }
 
                 int carNum = Integer.valueOf(tr.getChild(5).getText());
@@ -132,8 +125,7 @@ public class Year2000 extends AWikiParser {
                 F1Entrant e = new F1Entrant();
                 e.setYear(year);
                 e.setTeam(team);
-                e.setEngine(engine);
-                e.setCarNo(carNum);
+                                e.setCarNo(carNum);
                 e.setDriver(d);
                 model.add(e);
 
@@ -153,11 +145,19 @@ public class Year2000 extends AWikiParser {
         JkTag tableEntrants = JkScanners.parseHtmlTag(html, "table", "<span class=\"mw-headline\" id=\"Grands_Prix\">", "<table class=\"wikitable");
         JkTag tbody = tableEntrants.getChild("tbody");
 
+        List<JkTag> thList = tbody.getChild(0).getChildren();
+        Map<String, Integer> posMap = new HashMap<>();
+        for(int i = 0; i < thList.size(); i++) {
+            posMap.put(thList.get(i).getTextFlat(), i);
+        }
+
         List<String> urls = new ArrayList<>();
         for (JkTag tr : tbody.getChildren("tr")) {
-            List<JkTag> tdList = tr.getChildren("td");
-            if(tdList.size() == 6) {
-                JkTag a = tdList.get(5).getChild("a");
+            List<JkTag> chlist = tr.getChildren();
+            int tdNum = tr.getChildren("td").size();
+            int thNum = tr.getChildren("th").size();
+            if(thNum == 1 && tdNum == posMap.size() - 1 && chlist.size() == posMap.size()) {
+                JkTag a = chlist.get(posMap.get("Report")).getChild("a");
                 urls.add(a.getAttribute("href"));
             }
         }
@@ -301,7 +301,9 @@ public class Year2000 extends AWikiParser {
                 r.setPos(pos++);
                 gp.getRaces().add(r);
 
-                r.setRetired(JkConvert.toInt(tr.getChild(0).getText()) == null);
+                String outcome = tr.getChild(0).getText().replaceAll("[†|‡]", "").trim();
+				r.setOutcome(F1Race.F1RaceOutcome.byLabel(outcome));
+
 
                 int carNum = Integer.parseInt(tr.getChild(posMap.get("No")).getText().replace("‡", ""));
 

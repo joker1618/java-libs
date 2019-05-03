@@ -1,6 +1,7 @@
 package xxx.joker.apps.formula1.model.entities;
 
 import xxx.joker.libs.core.datetime.JkDuration;
+import xxx.joker.libs.core.tests.JkTests;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoField;
 
@@ -19,7 +20,7 @@ public class F1Race extends RepoEntity {
     @RepoField
     private Integer laps;
     @RepoField
-    private Boolean retired;
+    private F1RaceOutcome outcome;
     @RepoField
     private JkDuration time;
     @RepoField
@@ -65,10 +66,6 @@ public class F1Race extends RepoEntity {
         this.startGrid = startGrid;
     }
 
-    public Boolean getRetired() {
-        return retired;
-    }
-
     public Integer getLaps() {
         return laps;
     }
@@ -77,12 +74,12 @@ public class F1Race extends RepoEntity {
         this.laps = laps;
     }
 
-    public Boolean isRetired() {
-        return retired;
+    public F1RaceOutcome getOutcome() {
+        return outcome;
     }
 
-    public void setRetired(Boolean retired) {
-        this.retired = retired;
+    public void setOutcome(F1RaceOutcome outcome) {
+        this.outcome = outcome;
     }
 
     public Double getPoints() {
@@ -99,5 +96,41 @@ public class F1Race extends RepoEntity {
 
     public void setTime(JkDuration time) {
         this.time = time;
+    }
+
+    public enum F1RaceOutcome {
+        EXCLUDED("EX"),
+        NOT_QUALIFIED("DNQ"),
+        NOT_CLASSIFIABLE("NC"),
+        DISQUALIFIED("DSQ"),
+        RETIRED("Ret"),
+        NOT_STARTED("DNS"),
+        FINISHED
+        ;
+
+        private String label;
+
+        F1RaceOutcome() {
+            label = "";
+        }
+
+        F1RaceOutcome(String label) {
+            this.label = label;
+        }
+
+        public static F1RaceOutcome byLabel(String label) {
+            if(JkTests.isInt(label))    return FINISHED;
+
+            for (F1RaceOutcome ro : values()) {
+                if(label.equalsIgnoreCase(ro.label)) {
+                    return ro;
+                }
+            }
+            return null;
+        }
+
+        public String getLabel() {
+            return label;
+        }
     }
 }

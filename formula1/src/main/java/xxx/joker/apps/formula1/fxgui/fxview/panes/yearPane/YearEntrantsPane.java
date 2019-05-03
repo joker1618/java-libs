@@ -2,6 +2,7 @@ package xxx.joker.apps.formula1.fxgui.fxview.panes.yearPane;
 
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.HBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.apps.formula1.fxgui.fxview.SubPane;
@@ -20,7 +21,8 @@ public class YearEntrantsPane extends SubPane {
         getStyleClass().add("bgGrey");
 
         tableEntrants = createTableEntrants();
-        setCenter(tableEntrants);
+//        setCenter(tableEntrants);
+        setCenter(new HBox(tableEntrants));
 
         guiModel.addChangeActionYear(year -> tableEntrants.getItems().setAll(model.getEntrants(year)));
     }
@@ -32,6 +34,9 @@ public class YearEntrantsPane extends SubPane {
 
         TableView<F1Entrant> tv = new TableView<>();
         tv.getColumns().addAll(colTeam, colCarNo, colDriver);
+
+        JfxTable.setFixedWidth(tv, "200 100 200", true);
+
         return tv;
     }
 }

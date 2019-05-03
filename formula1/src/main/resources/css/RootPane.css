@@ -1,14 +1,40 @@
-.menuBox .button {
+.rootMenu {
+    -fx-background-color: #202020;
+    -fx-padding: 30;
+    -fx-alignment: TOP-CENTER;
+}
+
+
+.rootMenu > * {
     -fx-alignment: CENTER;
+    -fx-spacing: 20;
+}
+
+.rootMenu .globalBox {
+    -fx-padding: 0 0 20 0;
+}
+.rootMenu .globalBox .button {
     -fx-min-width: 100;
     -fx-min-height: 40;
 }
 
-.yearBox {
-    -fx-alignment: CENTER;
+.rootMenu .yearBox{
+    -fx-padding: 20 0 0 0;
     -fx-border-color: RED;
+    -fx-border-width: 1 0 0 0;
 }
-.yearBox .button {
+.rootMenu .yearBox .button {
+    -fx-min-width: 100;
     -fx-min-height: 30;
     -fx-max-height: 30;
+}
+.rootMenu .gpList {
+    -fx-pref-width: 150;
+    -fx-pref-height: 600;
+}
+.rootMenu .gpList .iconBox {
+    -fx-min-width: 50;
+    -fx-max-width: 50;
+    -fx-min-height: 30;
+    -fx-alignment: CENTER;
 }

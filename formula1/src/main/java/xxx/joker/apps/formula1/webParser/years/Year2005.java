@@ -55,7 +55,6 @@ public class Year2005 extends AWikiParser {
                 F1Entrant e = new F1Entrant();
                 e.setYear(year);
                 e.setTeam(previous.getTeam());
-                e.setEngine(previous.getEngine());
                 e.setCarNo(previous.getCarNo());
                 e.setDriver(d);
                 model.add(e);
@@ -87,7 +86,6 @@ public class Year2005 extends AWikiParser {
                 F1Entrant e = new F1Entrant();
                 e.setYear(year);
                 e.setTeam(previous.getTeam());
-                e.setEngine(previous.getEngine());
                 e.setCarNo(carNum);
                 e.setDriver(d);
                 model.add(e);
@@ -101,11 +99,6 @@ public class Year2005 extends AWikiParser {
                     JkTag img = tr.getChild(0).findFirstTag("img");
                     team.setNation(fixNation(img.getAttribute("alt")));
                     checkNation(team, team.getNation());
-                }
-
-                String engine = tr.getChild(3).getText();
-                if(StringUtils.isBlank(engine)) {
-                    engine = tr.getChild(3).getChild("span").getText();
                 }
 
                 int carNum = Integer.valueOf(tr.getChild(5).getText());
@@ -132,8 +125,7 @@ public class Year2005 extends AWikiParser {
                 F1Entrant e = new F1Entrant();
                 e.setYear(year);
                 e.setTeam(team);
-                e.setEngine(engine);
-                e.setCarNo(carNum);
+                                e.setCarNo(carNum);
                 e.setDriver(d);
                 model.add(e);
 
@@ -302,7 +294,9 @@ public class Year2005 extends AWikiParser {
                 r.setPos(pos++);
                 gp.getRaces().add(r);
 
-                r.setRetired(JkConvert.toInt(tr.getChild(0).getText()) == null);
+                String outcome = tr.getChild(0).getText().replaceAll("[†|‡]", "").trim();
+				r.setOutcome(F1Race.F1RaceOutcome.byLabel(outcome));
+
 
                 int carNum = Integer.parseInt(tr.getChild(posMap.get("No")).getText().replace("‡", ""));
                 F1Qualify q = qualifyMap.get(carNum);

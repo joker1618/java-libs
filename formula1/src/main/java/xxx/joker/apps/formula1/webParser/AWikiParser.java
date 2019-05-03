@@ -10,6 +10,7 @@ import xxx.joker.apps.formula1.model.F1ModelImpl;
 import xxx.joker.apps.formula1.model.entities.*;
 import xxx.joker.apps.formula1.model.fields.F1FastLap;
 import xxx.joker.libs.core.datetime.JkDuration;
+import xxx.joker.libs.core.debug.JkDebug;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.scanners.JkHtmlChars;
@@ -63,10 +64,10 @@ public abstract class AWikiParser implements WikiParser {
 
     @Override
     public void parse() {
+        JkDebug.startTimer("Parse entrant");
         parseEntrants(getMainPageHtml());
-
-//        parseDriverPages();
-//        if(1==1)    return;
+        JkDebug.stopTimer("Parse entrant");
+//       if(1==1)    return;
 
 //        Map<String, Integer> expDriverMap = getExpectedDriverPoints(dwHtml.getHtml(mainPageUrl));
 //        List<Map.Entry<String, Integer>> entriesDriverMap = JkStreams.sorted(expDriverMap.entrySet(), Comparator.comparing(Map.Entry::getValue));
@@ -88,10 +89,18 @@ public abstract class AWikiParser implements WikiParser {
             String html = dwHtml.getHtml(createWikiUrl(gpUrls.get(i)));
             F1GranPrix gp = new F1GranPrix(year, i + 1);
             if(model.add(gp)) {
+                JkDebug.startTimer("Parse GP details");
                 parseGpDetails(html, gp);
-                display(gp.getCircuit().getNation());
+                JkDebug.stopTimer("Parse GP details");
+
+//                display(gp.getCircuit().getNation());
+                JkDebug.startTimer("Parse qualifies");
                 parseQualify(html, gp);
+                JkDebug.stopTimer("Parse qualifies");
+
+                JkDebug.startTimer("Parse races");
                 parseRace(html, gp);
+                JkDebug.stopTimer("Parse races");
 
                 if(gp.getNumLapsRace() == null) {
                     gp.setNumLapsRace(gp.getRaces().get(0).getLaps());
@@ -224,6 +233,7 @@ public abstract class AWikiParser implements WikiParser {
         String dn = JkHtmlChars.fixDirtyChars(driverName);
         dn = dn.replace("(racing driver)", "").trim();
         switch (dn) {
+            case "Alessandro Zanardi":  return "Alex Zanardi";
             case "Nelson Piquet, Jr.":  return "Nelson Piquet Jr.";
             case "Juan-Pablo Montoya":  return "Juan Pablo Montoya";
         }

@@ -34,4 +34,5 @@ public interface F1Model extends JkRepo {
     List<Integer> getAvailableYears();
 
     int getNumQualifyRounds(int year);
+
 }

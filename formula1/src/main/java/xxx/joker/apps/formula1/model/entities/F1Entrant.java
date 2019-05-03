@@ -12,8 +12,6 @@ public class F1Entrant extends RepoEntity {
     @RepoField
     private F1Team team;
     @RepoField
-    private String engine;
-    @RepoField
     private Integer carNo;
     @RepoField
     private F1Driver driver;
@@ -37,14 +35,6 @@ public class F1Entrant extends RepoEntity {
 
     public void setTeam(F1Team team) {
         this.team = team;
-    }
-
-    public String getEngine() {
-        return engine;
-    }
-
-    public void setEngine(String engine) {
-        this.engine = engine;
     }
 
     public Integer getCarNo() {

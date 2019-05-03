@@ -23,6 +23,9 @@ public class JkDebug {
     private static final List<DTimer> tclose = new ArrayList<>();
 
 
+    public static long startTimer(int stepNum) {
+        return startTimer(strf("STEP {}", stepNum));
+    }
     public static long startTimer(String label) {
         synchronized (topen) {
             long id = idSeq.getAndIncrement();
@@ -31,6 +34,9 @@ public class JkDebug {
         }
     }
 
+    public static void stopTimer(int stepNum) {
+        stopTimer(strf("STEP {}", stepNum));
+    }
     public static void stopTimer(long id) {
         synchronized (topen) {
             DTimer dt = topen.remove(id);
@@ -38,7 +44,6 @@ public class JkDebug {
             tclose.add(dt);
         }
     }
-
     /**
      * Close the last timer with the same label
      */
@@ -54,6 +59,9 @@ public class JkDebug {
         }
     }
 
+    public static void displayTimes() {
+        displayTimes(true);
+    }
     public static void displayTimes(boolean showTotJvmTime) {
         synchronized (topen) {
             Long totMilli = 0L;
@@ -83,8 +91,8 @@ public class JkDebug {
                     JkDuration durEach = JkDuration.of(each);
                     str += strf("|{}|{}", dtList.size(), durEach.toStringElapsed());
                     if(totMilli > 0L) {
-                        int perc = (int)(100d * each / totMilli);
-                        str += strf("|%3s%%", perc);
+                        double perc2 = 100d * each / totMilli;
+                        str += strf("|%6s%%", strf("%.2f", perc2));
                     }
                 }
 
@@ -92,7 +100,7 @@ public class JkDebug {
             }
 
             if(showTotJvmTime) {
-                lines.add(strf("Total time|{}", JkDuration.toStringElapsed(totMilli)));
+                lines.add(strf("TOTAL|{}", JkDuration.toStringElapsed(totMilli)));
             }
 
             String header = "LABEL|TIME";
@@ -105,7 +113,7 @@ public class JkDebug {
             lines.add(0, header);
 
             display("###  DEBUG TIMES  ###");
-            display(JkOutput.columnsView(lines));
+            display(JkOutput.columnsView(lines, true));
         }
 
 

@@ -40,11 +40,6 @@ public class Year2016 extends AWikiParser {
                     checkNation(team, team.getNation());
                 }
 
-                String engine = tr.getChild(3).getText();
-                if(StringUtils.isBlank(engine)) {
-                    engine = tr.getChild(3).getChild("span").getText();
-                }
-
                 String stmp = tr.getChild(4).getHtmlTag().replaceAll("^<td(.*?)>", "").replace("</td>", "").replaceAll("<br[ ]?/>", "-");
                 List<Integer> carNums = JkStreams.map(JkStrings.splitList(stmp, "-", true), Integer::valueOf);
 
@@ -77,7 +72,6 @@ public class Year2016 extends AWikiParser {
                     F1Entrant e = new F1Entrant();
                     e.setYear(year);
                     e.setTeam(team);
-                    e.setEngine(engine);
                     e.setCarNo(carNums.get(c));
                     e.setDriver(drivers.get(c));
                     model.getEntrants().add(e);
@@ -202,7 +196,9 @@ public class Year2016 extends AWikiParser {
                 r.setPos(pos++);
                 gp.getRaces().add(r);
 
-                r.setRetired(JkConvert.toInt(tr.getChild(0).getText()) == null);
+                String outcome = tr.getChild(0).getText().replaceAll("[†|‡]", "").trim();
+				r.setOutcome(F1Race.F1RaceOutcome.byLabel(outcome));
+
 
                 int carNum = Integer.parseInt(tr.getChild(1).getText());
                 F1Qualify q = qualifyMap.get(carNum);

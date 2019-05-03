@@ -1,3 +1,9 @@
+* {
+   -bg-color: CYAN;
+   -text-color: #99ccff;
+}
+
+
 .centered   { -fx-alignment: CENTER }
 .hcenter    { -fx-alignment: TOP-CENTER }
 

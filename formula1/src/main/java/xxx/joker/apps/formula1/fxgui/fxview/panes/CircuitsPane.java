@@ -39,12 +39,12 @@ public class CircuitsPane extends SubPane {
         tableCircuits.getStyleClass().add("f1-table-main");
         tableCircuits.getColumns().addAll(colNation, colCity);
         tableCircuits.getItems().addAll(model.getCircuits());
-        JfxTable.setFixedWidth(tableCircuits, "200 150", true);
-//        tableCircuits.getSelectionModel().selectedItemProperty().addListener((obs,o,n) -> {
-//            if(n == null) {
-//                tableCircuits.getSelectionModel().select(o);
-//            }
-//        });
+
+//        JfxTable.setFixedWidth(tableCircuits, "200 150", true);
+
+//        JfxTable.setColPercWidth(tableCircuits, "0.6 0.4", true);
+//        tableCircuits.setPrefWidth(417d);
+
 
         Label caption = new Label("CIRCUIT LIST");
         HBox boxCaption = new HBox(caption);
@@ -54,7 +54,10 @@ public class CircuitsPane extends SubPane {
         bp.getStyleClass().addAll("pad10");
         bp.getStyleClass().add("bgBlue");
         bp.setTop(boxCaption);
-        bp.setCenter(tableCircuits);
+//        bp.setCenter(tableCircuits);
+
+        JfxTable.autoResizeColumns(tableCircuits, true);
+        bp.setCenter(new HBox(tableCircuits));
 
         return bp;
     }

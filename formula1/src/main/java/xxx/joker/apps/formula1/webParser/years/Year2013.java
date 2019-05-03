@@ -54,7 +54,6 @@ public class Year2013 extends AWikiParser {
                 F1Entrant e = new F1Entrant();
                 e.setYear(year);
                 e.setTeam(previous.getTeam());
-                e.setEngine(previous.getEngine());
                 e.setCarNo(previous.getCarNo());
                 e.setDriver(d);
                 model.add(e);
@@ -84,7 +83,6 @@ public class Year2013 extends AWikiParser {
                 F1Entrant e = new F1Entrant();
                 e.setYear(year);
                 e.setTeam(previous.getTeam());
-                e.setEngine(previous.getEngine());
                 e.setCarNo(carNum);
                 e.setDriver(d);
                 model.add(e);
@@ -97,14 +95,6 @@ public class Year2013 extends AWikiParser {
                     JkTag img = tr.getChild(0).findFirstTag("img");
                     team.setNation(img.getAttribute("alt"));
                     checkNation(team, team.getNation());
-                }
-
-                String engine = tr.getChild(3).getText();
-                if(StringUtils.isBlank(engine)) {
-                    engine = tr.getChild(3).getChild("span").getText();
-                }
-                if(engine.equals("Renault EnergyF1-2014")) {
-                    engine = "Renault Energy F1-2014";
                 }
 
                 int carNum = Integer.valueOf(tr.getChild(4).getText());
@@ -131,8 +121,7 @@ public class Year2013 extends AWikiParser {
                 F1Entrant e = new F1Entrant();
                 e.setYear(year);
                 e.setTeam(team);
-                e.setEngine(engine);
-                e.setCarNo(carNum);
+                                e.setCarNo(carNum);
                 e.setDriver(d);
                 model.add(e);
 
@@ -252,7 +241,9 @@ public class Year2013 extends AWikiParser {
                 r.setPos(pos++);
                 gp.getRaces().add(r);
 
-                r.setRetired(JkConvert.toInt(tr.getChild(0).getText()) == null);
+                String outcome = tr.getChild(0).getText().replaceAll("[†|‡]", "").trim();
+				r.setOutcome(F1Race.F1RaceOutcome.byLabel(outcome));
+
 
                 int carNum = Integer.parseInt(tr.getChild(1).getText());
                 F1Qualify q = qualifyMap.get(carNum);

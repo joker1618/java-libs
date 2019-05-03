@@ -2,6 +2,7 @@ package xxx.joker.apps.formula1.fxgui.fxview;
 
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ public class RootPane extends BorderPane {
 
 //        changeSubView(PaneType.HOME);
 //        changeSubView(PaneType.CIRCUITS);
+        changeSubView(PaneType.YEAR_ENTRANTS);
 
         getStyleClass().add("bgRed");
         getStylesheets().add(getClass().getResource("/css/RootPane.css").toExternalForm());
@@ -51,27 +53,30 @@ public class RootPane extends BorderPane {
 
     private Pane createLeftMenu() {
         VBox menuBox = new VBox();
-        menuBox.getStyleClass().addAll("menuBox", "spacing10", "pad10", "hcenter");
-        menuBox.getStyleClass().add("bgGreen");
+        menuBox.getStyleClass().add("rootMenu");
+
+        VBox globalBox = new VBox();
+        menuBox.getChildren().add(globalBox);
+        globalBox.getStyleClass().add("globalBox");
 
         Button btn = new Button("HOME");
         btn.setOnAction(e -> changeSubView(PaneType.HOME));
-        menuBox.getChildren().add(btn);
+        globalBox.getChildren().add(btn);
 
         btn = new Button("DRIVERS");
         btn.setOnAction(e -> changeSubView(PaneType.DRIVERS));
-        menuBox.getChildren().add(btn);
+        globalBox.getChildren().add(btn);
 
         btn = new Button("TEAMS");
         btn.setOnAction(e -> changeSubView(PaneType.TEAMS));
-        menuBox.getChildren().add(btn);
+        globalBox.getChildren().add(btn);
 
         btn = new Button("CIRCUITS");
         btn.setOnAction(e -> changeSubView(PaneType.CIRCUITS));
-        menuBox.getChildren().add(btn);
+        globalBox.getChildren().add(btn);
 
         VBox yearBox = new VBox();
-        yearBox.getStyleClass().addAll("yearBox", "spacing10", "pad10", "hcenter");
+        yearBox.getStyleClass().addAll("yearBox");
         menuBox.getChildren().add(yearBox);
 
         ComboBox<Integer> comboSelYear = new ComboBox<>();
@@ -92,6 +97,7 @@ public class RootPane extends BorderPane {
         yearBox.getChildren().add(btn);
 
         ListView<F1GranPrix> gpListView = new ListView<>();
+        gpListView.getStyleClass().addAll("gpList");
         yearBox.getChildren().add(gpListView);
         gpListView.setCellFactory(param -> new ListCell<F1GranPrix>() {
             @Override
@@ -102,7 +108,9 @@ public class RootPane extends BorderPane {
                     setText(null);
                 } else {
                     FxNation fnat = guiModel.getNation(item.getCircuit().getNation());
-                    setGraphic(JfxUtil.createImageView(fnat.getFlagIcon().toFxImage(), 45, 28));
+                    HBox iconBox = new HBox(JfxUtil.createImageView(fnat.getFlagIcon().toFxImage(), 45, 28));
+                    iconBox.getStyleClass().addAll("iconBox");
+                    setGraphic(iconBox);
                     setText(fnat.getCode());
                 }
             }
