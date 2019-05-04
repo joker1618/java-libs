@@ -3,9 +3,8 @@ package xxx.joker.apps.formula1.fxlibs;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import xxx.joker.libs.core.lambdas.JkStreams;
@@ -13,6 +12,7 @@ import xxx.joker.libs.core.utils.JkStrings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 public class JfxTable {
@@ -60,7 +60,7 @@ public class JfxTable {
 
 
     public static void autoResizeColumns(TableView<?> table, boolean reserveScrollSpace) {
-        double tablePrefWidth = 2d + (reserveScrollSpace ? 17d : 0d);
+        double tablePrefWidth = 2d + (reserveScrollSpace ? 22d : 0d);
 
         //Set the right policy
         table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
@@ -71,7 +71,7 @@ public class JfxTable {
             for ( int i = 0; i < table.getItems().size(); i++ ) {
                 //cell must not be empty
                 if ( column.getCellData( i ) != null ) {
-                    t = new Text( column.getCellData( i ).toString() );
+                    t = new Text( column.getCellData( i ).toString());
                     double calcwidth = t.getLayoutBounds().getWidth();
                     if ( calcwidth > max ) {
                         max = calcwidth;
@@ -84,7 +84,7 @@ public class JfxTable {
             column.setPrefWidth(wcol);
         }
 
-        table.setMinWidth(tablePrefWidth);
+        table.setPrefWidth(tablePrefWidth);
     }
 
     /**

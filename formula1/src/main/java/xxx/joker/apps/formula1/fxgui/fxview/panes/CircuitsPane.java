@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.apps.formula1.fxgui.fxmodel.FxNation;
 import xxx.joker.apps.formula1.fxgui.fxview.SubPane;
+import xxx.joker.apps.formula1.fxgui.fxview.snippets.TableChooseBox;
 import xxx.joker.apps.formula1.fxlibs.JfxTable;
 import xxx.joker.apps.formula1.fxlibs.JfxUtil;
 import xxx.joker.apps.formula1.model.entities.F1Circuit;
@@ -28,25 +29,26 @@ public class CircuitsPane extends SubPane {
 
     private static final Logger LOG = LoggerFactory.getLogger(CircuitsPane.class);
 
-    private TableView<F1Circuit> tableCircuits;
     private SimpleObjectProperty<F1Circuit> selectedCircuit = new SimpleObjectProperty<>();
 
     public CircuitsPane() {
-        setLeft(createCircuitsPane());
+        TableChooseBox circuitsBox = createCircuitsPane();
+        setLeft(circuitsBox);
+
         setCenter(createInfoPane());
 
         getStyleClass().add("circuitsPane");
         getStylesheets().add(getClass().getResource("/css/CircuitsPane.css").toExternalForm());
 
-        tableCircuits.getSelectionModel().selectFirst();
+        circuitsBox.getTableView().getSelectionModel().selectFirst();
     }
 
-    private Pane createCircuitsPane() {
+    private TableChooseBox createCircuitsPane() {
         TableColumn<F1Circuit, String> colNation = JfxTable.createColumn("NATION", "nation");
         TableColumn<F1Circuit, String> colCity = JfxTable.createColumn("CITY", "city");
 
-        tableCircuits = new TableView<>();
-        tableCircuits.getStyleClass().add("tableChoose");
+        TableView<F1Circuit> tableCircuits = new TableView<>();
+//        tableCircuits.getStyleClass().add("tableChoose");
         tableCircuits.getColumns().addAll(colNation, colCity);
         tableCircuits.getItems().addAll(model.getCircuits());
 
@@ -63,6 +65,8 @@ public class CircuitsPane extends SubPane {
             }
         });
 
+        return new TableChooseBox("CIRCUITS", tableCircuits);
+
 //        tableCircuits.setRowFactory(tv -> {
 //            TableRow<F1Circuit> row = new TableRow<>();
 //            row.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
@@ -74,22 +78,22 @@ public class CircuitsPane extends SubPane {
 //            return row ;
 //        });
 
-        Label caption = new Label("CIRCUITS");
-        HBox boxCaption = new HBox(caption);
-        boxCaption.getStyleClass().addAll("tableChooseCaption");
-
-        BorderPane bp = new BorderPane();
-//        bp.getStyleClass().addAll("pad10");
-//        bp.getStyleClass().add("bgBlue");
-        bp.setTop(boxCaption);
-//        bp.setCenter(tableCircuits);
-
-        JfxTable.autoResizeColumns(tableCircuits, true);
-        HBox tbox = new HBox(tableCircuits);
-        tbox.getStyleClass().add("tableChooseBox");
-        bp.setCenter(tbox);
-
-        return bp;
+//        Label caption = new Label("CIRCUITS");
+//        HBox boxCaption = new HBox(caption);
+//        boxCaption.getStyleClass().addAll("tableChooseCaption");
+//
+//        BorderPane bp = new BorderPane();
+////        bp.getStyleClass().addAll("pad10");
+////        bp.getStyleClass().add("bgBlue");
+//        bp.setTop(boxCaption);
+////        bp.setCenter(tableCircuits);
+//
+//        JfxTable.autoResizeColumns(tableCircuits, true);
+//        HBox tbox = new HBox(tableCircuits);
+//        tbox.getStyleClass().add("tableChooseBox");
+//        bp.setCenter(tbox);
+//
+//        return bp;
     }
 
     private Pane createInfoPane() {

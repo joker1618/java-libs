@@ -23,4 +23,5 @@ public abstract class SubPane extends BorderPane {
     protected SubPane() {
         getStyleClass().add("centralPane");
     }
+
 }

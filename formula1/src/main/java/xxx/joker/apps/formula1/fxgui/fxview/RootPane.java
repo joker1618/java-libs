@@ -1,5 +1,6 @@
 package xxx.joker.apps.formula1.fxgui.fxview;
 
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -38,7 +39,8 @@ public class RootPane extends BorderPane {
     private F1Model model = F1ModelImpl.getInstance();
     protected F1GuiModel guiModel = F1GuiModelImpl.getInstance();
 
-    public JkCache<PaneType, SubPane> cachePanes = new JkCache<>();
+    private JkCache<PaneType, SubPane> cachePanes = new JkCache<>();
+    private SimpleObjectProperty<PaneType> showedPane = new SimpleObjectProperty<>();
 
 
     public RootPane() {
@@ -47,11 +49,13 @@ public class RootPane extends BorderPane {
         setLeft(createLeftMenu());
 
         getStyleClass().add("rootPane");
+        
+        showedPane.addListener((obs,o,n) -> setCenter(cachePanes.get(n)));
 
 
-//        changeSubView(PaneType.HOME);
-        changeSubView(PaneType.CIRCUITS);
-//        changeSubView(PaneType.YEAR_ENTRANTS);
+//        showedPane.set(PaneType.HOME);
+        showedPane.set(PaneType.CIRCUITS);
+//        showedPane.set(PaneType.YEAR_ENTRANTS);
 
 //        getStyleClass().add("bgRed");
         getStylesheets().add(getClass().getResource("/css/RootPane.css").toExternalForm());
@@ -69,19 +73,19 @@ public class RootPane extends BorderPane {
         globalBox.getStyleClass().add("globalBox");
 
         Button btn = new Button("HOME");
-        btn.setOnAction(e -> changeSubView(PaneType.HOME));
+        btn.setOnAction(e -> showedPane.set(PaneType.HOME));
         globalBox.getChildren().add(btn);
 
         btn = new Button("DRIVERS");
-        btn.setOnAction(e -> changeSubView(PaneType.DRIVERS));
+        btn.setOnAction(e -> showedPane.set(PaneType.DRIVERS));
         globalBox.getChildren().add(btn);
 
         btn = new Button("TEAMS");
-        btn.setOnAction(e -> changeSubView(PaneType.TEAMS));
+        btn.setOnAction(e -> showedPane.set(PaneType.TEAMS));
         globalBox.getChildren().add(btn);
 
         btn = new Button("CIRCUITS");
-        btn.setOnAction(e -> changeSubView(PaneType.CIRCUITS));
+        btn.setOnAction(e -> showedPane.set(PaneType.CIRCUITS));
         globalBox.getChildren().add(btn);
 
         VBox yearBox = new VBox();
@@ -94,15 +98,15 @@ public class RootPane extends BorderPane {
         comboSelYear.getSelectionModel().selectedItemProperty().addListener((obs,o,n) -> guiModel.setSelectedYear(n));
 
         btn = new Button("SUMMARY");
-        btn.setOnAction(e -> changeSubView(PaneType.YEAR_SUMMARY));
+        btn.setOnAction(e -> showedPane.set(PaneType.YEAR_SUMMARY));
         yearBox.getChildren().add(btn);
 
         btn = new Button("ENTRANTS");
-        btn.setOnAction(e -> changeSubView(PaneType.YEAR_ENTRANTS));
+        btn.setOnAction(e -> showedPane.set(PaneType.YEAR_ENTRANTS));
         yearBox.getChildren().add(btn);
 
         btn = new Button("RESULTS");
-        btn.setOnAction(e -> changeSubView(PaneType.YEAR_RESULTS));
+        btn.setOnAction(e -> showedPane.set(PaneType.YEAR_RESULTS));
         yearBox.getChildren().add(btn);
 
         ListView<F1GranPrix> gpListView = new ListView<>();
@@ -133,7 +137,7 @@ public class RootPane extends BorderPane {
         gpListView.getSelectionModel().selectedItemProperty().addListener((obs,o,n) -> {
             if(n != null && n != o) {
                 guiModel.setSelectedGranPrix(n);
-                changeSubView(PaneType.YEAR_GRAN_PRIX);
+                showedPane.set(PaneType.YEAR_GRAN_PRIX);
             } else if(n == null && o != null) {
                 gpListView.getSelectionModel().select(o);
             }
@@ -160,8 +164,4 @@ public class RootPane extends BorderPane {
         cachePanes.add(PaneType.YEAR_GRAN_PRIX, new YearGpPane());
     }
 
-    private void changeSubView(PaneType paneType) {
-        SubPane pane = cachePanes.get(paneType);
-        setCenter(pane);
-    }
 }

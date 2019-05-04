@@ -1,19 +1,9 @@
 
-.tableChoose .table-row-cell {
-    -fx-pref-height: 35;
-}
-.tableChoose .table-cell {
-    -fx-alignment: CENTER-LEFT;
-}
-
-
 .tableChooseCaption {
     -fx-alignment: CENTER;
     -fx-padding: 20;
     -fx-border-color: -darkBlue;
     -fx-border-width: 1;
-}
-.tableChooseCaption  {
     -fx-font-family: "Times New Roman";
     -fx-font-size: 22;
     -fx-text-fill: -darkBlue;
@@ -26,15 +16,20 @@
     -fx-border-width: 0 1 1 1;
 }
 
+.tableChoose .table-row-cell {
+    -fx-pref-height: 35;
+}
 .tableChoose .table-row-cell:even {
     -fx-background-color: -lightBlue;
 }
 
-/* Selected row */
-/* Selected row */
+.tableChoose .table-cell {
+    -fx-alignment: CENTER-LEFT;
+}
+.tableChoose .table-cell.centered {
+    -fx-alignment: CENTER;
+}
 
-
-/* Selected row when table not focused */
 .tableChoose .table-row-cell:filled:focused:selected,
 .tableChoose:row-selection .table-row-cell:filled:hover,
 .tableChoose:row-selection .table-row-cell:filled:focused:hover,

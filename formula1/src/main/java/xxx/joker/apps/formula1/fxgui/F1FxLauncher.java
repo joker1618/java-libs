@@ -26,7 +26,8 @@ public class F1FxLauncher extends Application {
 
         // Create scene
         Group root = new Group();
-        Scene scene = new Scene(root, 600, 500);
+        Scene scene = new Scene(root);
+//        Scene scene = new Scene(root, 600, 500);
         scene.setRoot(rootPane);
 
         // Show stage
@@ -45,7 +46,7 @@ public class F1FxLauncher extends Application {
 //        rootPane.heightProperty().addListener(o -> LOG.debug("height {}", o));
 
         scene.getStylesheets().add(getClass().getResource("/css/common.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("/css/tableView.css").toExternalForm());
+//        scene.getStylesheets().add(getClass().getResource("/css/tableView.css").toExternalForm());
     }
 
 

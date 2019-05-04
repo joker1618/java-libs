@@ -1,5 +1,5 @@
 .rootPane {
-    -darkBlue: #00001a;
+    -darkBlue: #000033;
     -lightBlue: #ccffff;
     -fx-font-family: "Calibri";
     -fx-font-size: 18;
@@ -51,7 +51,15 @@
 }
 
 .rootMenu .gpList .list-cell:even {
-    -fx-background-color: -lightBlue;
+    -fx-background-color: #adebad;
+}
+.rootMenu .gpList .list-cell:filled:focused:selected,
+.rootMenu .gpList .list-cell:filled:hover,
+.rootMenu .gpList .list-cell:filled:focused:hover,
+.rootMenu .gpList .list-cell:filled:focused {
+    -fx-background-color: #0a290a;
+    -fx-background: -fx-accent;
+    -fx-text-fill: WHITE;
 }
 
 .centralPane {
