@@ -23,31 +23,8 @@
         <module>args-parser</module>
         <module>java-repo</module>
         <module>java-excel</module>
-        <module>formula1</module>
-        <module>shared-repo</module>
     </modules>
 
     <packaging>pom</packaging>
 
-    <dependencies>
-        <!-- SLF4J -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
-        </dependency>
-        <!-- Logback -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>1.2.3</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 </project>
