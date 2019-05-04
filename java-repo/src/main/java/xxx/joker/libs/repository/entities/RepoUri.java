@@ -3,7 +3,6 @@ package xxx.joker.libs.repository.entities;
 import xxx.joker.libs.core.media.JkImage;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoField;
-import xxx.joker.libs.repository.exceptions.RepoError;
 
 import java.nio.file.Path;
 
