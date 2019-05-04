@@ -1,13 +1,45 @@
-.f1-table-main .table-row-cell {
-    -fx-min-height: 30;
+
+.tableChoose .table-row-cell {
+    -fx-pref-height: 35;
+}
+.tableChoose .table-cell {
+    -fx-alignment: CENTER-LEFT;
 }
 
-.f1-table-main-caption-box {
+
+.tableChooseCaption {
     -fx-alignment: CENTER;
-    -fx-padding: 0 0 10 0;
+    -fx-padding: 20;
+    -fx-border-color: -darkBlue;
+    -fx-border-width: 1;
 }
-.f1-table-main-caption-box .label {
-    -fx-font-size: 20;
-    -fx-text-fill: WHITE;
+.tableChooseCaption  {
+    -fx-font-family: "Times New Roman";
+    -fx-font-size: 22;
+    -fx-text-fill: -darkBlue;
     -fx-font-weight: BOLD;
+}
+
+.tableChooseBox {
+    -fx-padding: 20;
+    -fx-border-color: -darkBlue;
+    -fx-border-width: 0 1 1 1;
+}
+
+.tableChoose .table-row-cell:even {
+    -fx-background-color: -lightBlue;
+}
+
+/* Selected row */
+/* Selected row */
+
+
+/* Selected row when table not focused */
+.tableChoose .table-row-cell:filled:focused:selected,
+.tableChoose:row-selection .table-row-cell:filled:hover,
+.tableChoose:row-selection .table-row-cell:filled:focused:hover,
+.tableChoose:row-selection .table-row-cell:filled:focused {
+    -fx-background-color: -darkBlue;
+    -fx-background: -fx-accent;
+    -fx-text-fill: WHITE;
 }

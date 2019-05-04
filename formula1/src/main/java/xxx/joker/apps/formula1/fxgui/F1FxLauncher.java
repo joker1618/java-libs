@@ -8,7 +8,12 @@ import javafx.stage.Stage;
 import org.scenicview.ScenicView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.apps.formula1.fxgui.fxview.PaneType;
 import xxx.joker.apps.formula1.fxgui.fxview.RootPane;
+
+import java.util.logging.Level;
+
+import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class F1FxLauncher extends Application {
 
@@ -17,7 +22,7 @@ public class F1FxLauncher extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        BorderPane rootPane = new RootPane();
+        RootPane rootPane = new RootPane();
 
         // Create scene
         Group root = new Group();
@@ -26,9 +31,12 @@ public class F1FxLauncher extends Application {
 
         // Show stage
         primaryStage.setScene(scene);
-        primaryStage.sizeToScene();
-//        primaryStage.setMaximized(true);
+//        primaryStage.sizeToScene();
+        primaryStage.setMaximized(true);
+
+//        primaryStage.setResizable(false);
         primaryStage.show();
+
 
         if(scenicView) {
             ScenicView.show(scene);

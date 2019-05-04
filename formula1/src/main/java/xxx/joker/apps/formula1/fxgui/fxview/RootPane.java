@@ -1,6 +1,7 @@
 package xxx.joker.apps.formula1.fxgui.fxview;
 
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -21,10 +22,13 @@ import xxx.joker.apps.formula1.fxgui.fxview.panes.yearPane.YearSummaryPane;
 import xxx.joker.apps.formula1.fxlibs.JfxUtil;
 import xxx.joker.apps.formula1.model.F1Model;
 import xxx.joker.apps.formula1.model.F1ModelImpl;
+import xxx.joker.apps.formula1.model.entities.F1Circuit;
 import xxx.joker.apps.formula1.model.entities.F1GranPrix;
 import xxx.joker.libs.core.cache.JkCache;
 
 import java.util.List;
+
+import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class RootPane extends BorderPane {
 
@@ -34,7 +38,7 @@ public class RootPane extends BorderPane {
     private F1Model model = F1ModelImpl.getInstance();
     protected F1GuiModel guiModel = F1GuiModelImpl.getInstance();
 
-    private JkCache<PaneType, SubPane> cachePanes = new JkCache<>();
+    public JkCache<PaneType, SubPane> cachePanes = new JkCache<>();
 
 
     public RootPane() {
@@ -42,12 +46,17 @@ public class RootPane extends BorderPane {
 
         setLeft(createLeftMenu());
 
-//        changeSubView(PaneType.HOME);
-//        changeSubView(PaneType.CIRCUITS);
-        changeSubView(PaneType.YEAR_ENTRANTS);
+        getStyleClass().add("rootPane");
 
-        getStyleClass().add("bgRed");
+
+//        changeSubView(PaneType.HOME);
+        changeSubView(PaneType.CIRCUITS);
+//        changeSubView(PaneType.YEAR_ENTRANTS);
+
+//        getStyleClass().add("bgRed");
         getStylesheets().add(getClass().getResource("/css/RootPane.css").toExternalForm());
+
+
 //        getLeft().getStyleClass().add("bgGreen");
     }
 
@@ -102,6 +111,12 @@ public class RootPane extends BorderPane {
         gpListView.setCellFactory(param -> new ListCell<F1GranPrix>() {
             @Override
             protected void updateItem(F1GranPrix item, boolean empty) {
+//                addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
+//                        if (e.isControlDown()) {
+//                            display("consumed");
+//                            e.consume();
+//                        }
+//                    });
                 super.updateItem(item, empty);
                 if(item == null || empty) {
                     setGraphic(null);
@@ -116,8 +131,12 @@ public class RootPane extends BorderPane {
             }
         });
         gpListView.getSelectionModel().selectedItemProperty().addListener((obs,o,n) -> {
-            guiModel.setSelectedGranPrix(n);
-            changeSubView(PaneType.YEAR_GRAN_PRIX);
+            if(n != null && n != o) {
+                guiModel.setSelectedGranPrix(n);
+                changeSubView(PaneType.YEAR_GRAN_PRIX);
+            } else if(n == null && o != null) {
+                gpListView.getSelectionModel().select(o);
+            }
         });
         guiModel.addChangeActionYear(n -> {
             List<F1GranPrix> gps = model.getGranPrixs(n);
@@ -126,8 +145,6 @@ public class RootPane extends BorderPane {
         });
 
         comboSelYear.getSelectionModel().selectFirst();
-
-//        menuBox.heightProperty().addListener(o -> LOG.debug("height {}", o));
 
         return menuBox;
     }

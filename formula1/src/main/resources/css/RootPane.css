@@ -1,32 +1,39 @@
+.rootPane {
+    -darkBlue: #00001a;
+    -lightBlue: #ccffff;
+    -fx-font-family: "Calibri";
+    -fx-font-size: 18;
+}
+
 .rootMenu {
     -fx-background-color: #202020;
     -fx-padding: 30;
     -fx-alignment: TOP-CENTER;
 }
 
-
 .rootMenu > * {
     -fx-alignment: CENTER;
-    -fx-spacing: 20;
 }
 
 .rootMenu .globalBox {
     -fx-padding: 0 0 20 0;
+    -fx-spacing: 20;
 }
 .rootMenu .globalBox .button {
-    -fx-min-width: 100;
-    -fx-min-height: 40;
+    -fx-min-width: 120;
+    -fx-min-height: 50;
 }
 
-.rootMenu .yearBox{
+.rootMenu .yearBox {
     -fx-padding: 20 0 0 0;
     -fx-border-color: RED;
     -fx-border-width: 1 0 0 0;
+    -fx-spacing: 15;
 }
 .rootMenu .yearBox .button {
-    -fx-min-width: 100;
-    -fx-min-height: 30;
-    -fx-max-height: 30;
+    -fx-min-width: 120;
+    -fx-min-height: 40;
+    -fx-max-height: 40;
 }
 .rootMenu .gpList {
     -fx-pref-width: 150;
@@ -37,4 +44,18 @@
     -fx-max-width: 50;
     -fx-min-height: 30;
     -fx-alignment: CENTER;
+}
+
+.rootMenu .gpList .list-cell {
+    -fx-pref-height: 50;
+}
+
+.rootMenu .gpList .list-cell:even {
+    -fx-background-color: -lightBlue;
+}
+
+.centralPane {
+    -fx-padding: 30;
+    -fx-spacing: 40;
+    -fx-background-color: #ffffb3;
 }

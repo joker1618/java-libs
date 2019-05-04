@@ -1,9 +1,14 @@
 package xxx.joker.apps.formula1.fxgui.fxview.panes;
 
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -16,6 +21,7 @@ import xxx.joker.apps.formula1.fxlibs.JfxUtil;
 import xxx.joker.apps.formula1.model.entities.F1Circuit;
 import xxx.joker.libs.core.media.JkImage;
 
+import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class CircuitsPane extends SubPane {
@@ -23,12 +29,16 @@ public class CircuitsPane extends SubPane {
     private static final Logger LOG = LoggerFactory.getLogger(CircuitsPane.class);
 
     private TableView<F1Circuit> tableCircuits;
+    private SimpleObjectProperty<F1Circuit> selectedCircuit = new SimpleObjectProperty<>();
 
     public CircuitsPane() {
-        getStyleClass().add("bgOrange");
-
         setLeft(createCircuitsPane());
         setCenter(createInfoPane());
+
+        getStyleClass().add("circuitsPane");
+        getStylesheets().add(getClass().getResource("/css/CircuitsPane.css").toExternalForm());
+
+        tableCircuits.getSelectionModel().selectFirst();
     }
 
     private Pane createCircuitsPane() {
@@ -36,7 +46,7 @@ public class CircuitsPane extends SubPane {
         TableColumn<F1Circuit, String> colCity = JfxTable.createColumn("CITY", "city");
 
         tableCircuits = new TableView<>();
-        tableCircuits.getStyleClass().add("f1-table-main");
+        tableCircuits.getStyleClass().add("tableChoose");
         tableCircuits.getColumns().addAll(colNation, colCity);
         tableCircuits.getItems().addAll(model.getCircuits());
 
@@ -45,36 +55,56 @@ public class CircuitsPane extends SubPane {
 //        JfxTable.setColPercWidth(tableCircuits, "0.6 0.4", true);
 //        tableCircuits.setPrefWidth(417d);
 
+        tableCircuits.getSelectionModel().selectedItemProperty().addListener((obs,o,n) -> {
+            if(n != null && n != o) {
+                selectedCircuit.set(n);
+//            } else if(n == null && o != null) {
+//                tableCircuits.getSelectionModel().select(o);
+            }
+        });
 
-        Label caption = new Label("CIRCUIT LIST");
+//        tableCircuits.setRowFactory(tv -> {
+//            TableRow<F1Circuit> row = new TableRow<>();
+//            row.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
+//                if (e.isControlDown()) {
+//                    display("consumed");
+//                    e.consume();
+//                }
+//            });
+//            return row ;
+//        });
+
+        Label caption = new Label("CIRCUITS");
         HBox boxCaption = new HBox(caption);
-        boxCaption.getStyleClass().addAll("f1-table-main-caption-box");
+        boxCaption.getStyleClass().addAll("tableChooseCaption");
 
         BorderPane bp = new BorderPane();
-        bp.getStyleClass().addAll("pad10");
-        bp.getStyleClass().add("bgBlue");
+//        bp.getStyleClass().addAll("pad10");
+//        bp.getStyleClass().add("bgBlue");
         bp.setTop(boxCaption);
 //        bp.setCenter(tableCircuits);
 
         JfxTable.autoResizeColumns(tableCircuits, true);
-        bp.setCenter(new HBox(tableCircuits));
+        HBox tbox = new HBox(tableCircuits);
+        tbox.getStyleClass().add("tableChooseBox");
+        bp.setCenter(tbox);
 
         return bp;
     }
 
     private Pane createInfoPane() {
         BorderPane bp = new BorderPane();
-        bp.getStyleClass().addAll("pad10");
-        bp.getStyleClass().add("bgYellow");
+//        bp.getStyleClass().addAll("pad10");
+        bp.getStyleClass().add("infoPane");
 
         ImageView ivFlag = JfxUtil.createImageView(150, 100);
         Label lblTitle = new Label();
         HBox topBox = new HBox(ivFlag, lblTitle);
-        topBox.getStyleClass().addAll("pad10", "spacing10");
-        topBox.getStyleClass().addAll("bgGrey");
+//        topBox.getStyleClass().addAll("pad10", "spacing10");
+//        topBox.getStyleClass().addAll("bgGrey");
         bp.setTop(topBox);
 
-        tableCircuits.getSelectionModel().selectedItemProperty().addListener((obs,o,n) -> {
+        selectedCircuit.addListener((obs,o,n) -> {
             if(n != null && n != o) {
                 FxNation fxNation = guiModel.getNation(n.getNation());
                 JkImage flag = fxNation.getFlagImage();
@@ -82,6 +112,8 @@ public class CircuitsPane extends SubPane {
                 lblTitle.setText(strf("{} - {}", fxNation.getName(), n.getCity()));
             }
         });
+
+        BorderPane.setMargin(bp, new Insets(0d, 0d, 0d, 40d));
 
         return bp;
     }

@@ -56,6 +56,10 @@ public class F1GuiModelImpl implements F1GuiModel {
 
     @Override
     public void addChangeActionGranPrix(Consumer<F1GranPrix> action) {
-        selectedGranPrix.addListener((obs,o,n) -> { if(n != null && n != o) action.accept(n); });
+        selectedGranPrix.addListener((obs,o,n) -> {
+            if(n != null && n != o) {
+                action.accept(n);
+            }
+        });
     }
 }

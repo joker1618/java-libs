@@ -20,4 +20,7 @@ public abstract class SubPane extends BorderPane {
     protected JkSharedRepo sharedRepo = JkSharedRepoImpl.getInstance();
     protected F1GuiModel guiModel = F1GuiModelImpl.getInstance();
 
+    protected SubPane() {
+        getStyleClass().add("centralPane");
+    }
 }

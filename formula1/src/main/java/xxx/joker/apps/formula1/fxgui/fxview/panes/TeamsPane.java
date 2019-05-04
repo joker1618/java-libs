@@ -4,6 +4,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,28 +17,36 @@ public class TeamsPane extends SubPane {
 
     private static final Logger LOG = LoggerFactory.getLogger(TeamsPane.class);
 
-    private TableView<F1Team> tableTeams;
 
     public TeamsPane() {
-        getStyleClass().add("bgCyan");
+        getStyleClass().add("teamsPane");
 
-        tableTeams = createTableTeams();
-        tableTeams.getItems().addAll(model.getTeams());
-
-        BorderPane bp = new BorderPane();
-        bp.getStyleClass().add("pad10");
-        bp.getStyleClass().add("bgBlack");
-        bp.setCenter(tableTeams);
-
-        setLeft(bp);
+        setLeft(createTableTeams());
     }
 
-    private TableView<F1Team> createTableTeams() {
+    private BorderPane createTableTeams() {
         TableColumn<F1Team, String> colName = JfxTable.createColumn("TEAM", "teamName");
         TableColumn<F1Team, String> colNation = JfxTable.createColumn("NATION", "nation");
-        TableView<F1Team> tv = new TableView<>();
-        tv.getColumns().addAll(colName, colNation);
-        JfxTable.setFixedWidth(tv, "250 150", true);
-        return tv;
+        TableView<F1Team> tableTeams = new TableView<>();
+        tableTeams.getStyleClass().addAll("tableChoose");
+        tableTeams.getColumns().addAll(colName, colNation);
+        tableTeams.getItems().addAll(model.getTeams());
+
+        Label caption = new Label("TEAMS");
+        HBox boxCaption = new HBox(caption);
+        boxCaption.getStyleClass().addAll("tableChooseCaption");
+
+        BorderPane bp = new BorderPane();
+//        bp.getStyleClass().addAll("pad10");
+//        bp.getStyleClass().add("bgBlue");
+        bp.setTop(boxCaption);
+//        bp.setCenter(tableCircuits);
+
+        JfxTable.autoResizeColumns(tableTeams, true);
+        HBox tbox = new HBox(tableTeams);
+        tbox.getStyleClass().add("tableChooseBox");
+        bp.setCenter(tbox);
+
+        return bp;
     }
 }

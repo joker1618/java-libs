@@ -84,7 +84,7 @@ public class JfxTable {
             column.setPrefWidth(wcol);
         }
 
-        table.setPrefWidth(tablePrefWidth);
+        table.setMinWidth(tablePrefWidth);
     }
 
     /**
