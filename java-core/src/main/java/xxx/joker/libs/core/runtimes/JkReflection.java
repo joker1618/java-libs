@@ -14,14 +14,14 @@ import java.util.*;
 
 public class JkReflection {
 
-	public static <T> T createInstanceSafe(String clazzName) {
+	public static <T> T createInstance(String clazzName) {
 		try {
-			return (T) createInstanceSafe(Class.forName(clazzName));
+			return (T) createInstance(Class.forName(clazzName));
 		} catch (Exception e) {
 			throw new JkRuntimeException(e);
 		}
 	}
-	public static <T> T createInstanceSafe(Class<T> clazz) {
+	public static <T> T createInstance(Class<T> clazz) {
 		try {
 			return clazz.newInstance();
 		} catch (Exception e) {
@@ -244,5 +244,13 @@ public class JkReflection {
 			toRet.addAll(tlist);
 		}
 		return toRet;
+	}
+
+	public static Class<?> classForName(String className) {
+		try {
+			return Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			throw new JkRuntimeException(e, "Class not found for name: {}", className);
+		}
 	}
 }

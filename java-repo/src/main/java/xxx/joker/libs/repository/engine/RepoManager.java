@@ -35,21 +35,31 @@ public class RepoManager {
     private Path resourcesFolder;
 
 
-    public RepoManager(Path dbFolder, String dbName, String... pkgsToScan) {
-        this(null, dbFolder, dbName, pkgsToScan);
+    public RepoManager(Path dbFolder, String dbName, Collection<Class<?>> classes) {
+        this(null, dbFolder, dbName, classes);
     }
 
-    public RepoManager(String encryptionPwd, Path dbFolder, String dbName, String... pkgsToScan) {
+    public RepoManager(String encryptionPwd, Path dbFolder, String dbName, Collection<Class<?>> classes) {
+        initRepoManager(dbFolder, dbName, classes, encryptionPwd);
+    }
+
+    private void initRepoManager(Path dbFolder, String dbName, Collection<Class<?>> entityClasses, String encryptionPwd) {
         JkTimer timer = new JkTimer();
 
-        List<String> toScan = JkConvert.toList(pkgsToScan);
-        toScan.add("xxx.joker.libs.repository.entities");
+        List<Class<?>> ecList = JkConvert.toList(entityClasses);
+        ecList.addAll(getCommonEntityClasses());
 
-        if(StringUtils.isNotBlank(encryptionPwd)) {
-            this.repoDao = new RepoDAOEncrypted(dbFolder, dbName, scanPackages(toScan), encryptionPwd);
-        } else {
-            this.repoDao = new RepoDAO(dbFolder, dbName, scanPackages(toScan));
+        if(LOG.isDebugEnabled()) {
+            ecList.forEach(c -> LOG.debug("Repo entity class: {}", c.getName()));
         }
+
+        List<ClazzWrapper> cwList = JkStreams.map(ecList, ClazzWrapper::get);
+        if(StringUtils.isNotBlank(encryptionPwd)) {
+            this.repoDao = new RepoDAOEncrypted(dbFolder, dbName, cwList, encryptionPwd);
+        } else {
+            this.repoDao = new RepoDAO(dbFolder, dbName, cwList);
+        }
+
         this.repoLock = new ReentrantReadWriteLock(true);
         this.repoHandler = new RepoHandler(repoDao.readRepoData(), repoLock);
         this.resourcesFolder = RepoConfig.getResourcesFolder(dbFolder, dbName);
@@ -152,19 +162,18 @@ public class RepoManager {
         return uri;
     }
 
-    private List<ClazzWrapper> scanPackages(Collection<String> pkgsToScan) {
-        Set<Class<?>> classes = new HashSet<>();
+    private List<Class<?>> getCommonEntityClasses() {
+        List<Class<?>> classes = new ArrayList<>();
 
-        pkgsToScan.forEach(pkg -> {
-            LOG.debug("Scanning package: {}", pkg);
-            classes.addAll(JkRuntime.findClasses(pkg));
-        });
-
-        classes.removeIf(c -> c.getSuperclass() != RepoEntity.class);
-        if(LOG.isDebugEnabled()) {
-            classes.forEach(c -> LOG.debug("Found entity: {}", c.getName()));
+        try {
+            classes.add(Class.forName("xxx.joker.libs.repository.entities.RepoProperty"));
+            classes.add(Class.forName("xxx.joker.libs.repository.entities.RepoResource"));
+            classes.add(Class.forName("xxx.joker.libs.repository.entities.RepoUri"));
+        } catch (ClassNotFoundException ex) {
+            throw new RepoError(ex);
         }
-        return JkStreams.map(classes, ClazzWrapper::get);
+
+        return classes;
     }
 
 }

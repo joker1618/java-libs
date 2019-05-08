@@ -24,13 +24,8 @@ public class JkRuntime {
     public static List<Class<?>> findClasses(String packageName) {
         try {
             File launcherPath = JkFiles.getLauncherPath(JkReflection.class).toFile();
-            boolean isLaunchedFromMavenRepo = JkStrings.matchRegExp(".*[/\\\\]{1}.m2[/\\\\]{1}repository[/\\\\]{1}.*", launcherPath.getPath());
-            List<Class<?>> classes;
-            if (launcherPath.isDirectory() || isLaunchedFromMavenRepo) {
-                classes = getClassesFromClassLoader(packageName);
-            } else {
-                classes = getClassesFromJar(launcherPath, packageName);
-            }
+            List<Class<?>> classes = getClassesFromClassLoader(packageName);
+            classes.addAll(getClassesFromJar(launcherPath, packageName));
             return classes;
 
         } catch (Exception ex) {

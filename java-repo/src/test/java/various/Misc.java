@@ -47,19 +47,21 @@ public class Misc {
     }
 
     @Test
-    public void tte() {
-        String s = "fe<zio<mimmo>>as>";
-        Pattern pattern = Pattern.compile("<([^<]*?)>");
-        display("{}: {}", s, Arrays.toString(pattern.split(s)));
+    public void tte() throws ClassNotFoundException {
 
-        Pattern pattern2 = Pattern.compile("(<[^<]*?>)");
-        display("{}: {}", s, Arrays.toString(pattern2.split(s)));
-        Matcher m = pattern2.matcher(s);
-        m.find();
-        display("{}: {}", s, m.groupCount());
-        display("{}: {}", s, m.group(1));
-        display("{}: {}", s, m.start());
-        display("{}: {}", s, m.end());
+        display("{}", Class.forName("java.lang.String"));
+//        String s = "fe<zio<mimmo>>as>";
+//        Pattern pattern = Pattern.compile("<([^<]*?)>");
+//        display("{}: {}", s, Arrays.toString(pattern.split(s)));
+//
+//        Pattern pattern2 = Pattern.compile("(<[^<]*?>)");
+//        display("{}: {}", s, Arrays.toString(pattern2.split(s)));
+//        Matcher m = pattern2.matcher(s);
+//        m.find();
+//        display("{}: {}", s, m.groupCount());
+//        display("{}: {}", s, m.group(1));
+//        display("{}: {}", s, m.start());
+//        display("{}: {}", s, m.end());
     }
 
     @Test

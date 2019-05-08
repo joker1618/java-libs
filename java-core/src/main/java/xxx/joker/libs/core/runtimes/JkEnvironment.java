@@ -1,5 +1,6 @@
 package xxx.joker.libs.core.runtimes;
 
+import xxx.joker.libs.core.cache.JkCache;
 import xxx.joker.libs.core.utils.JkConvert;
 
 import java.nio.file.Path;
@@ -14,7 +15,7 @@ public class JkEnvironment {
 
     private static final Path APPS_FOLDER_DEFAULT = getHomeFolder().resolve(".appsFolder");
 
-    private static final Map<String, Object> cacheMap = new HashMap<>();
+    private static JkCache<String, Object> cacheMap = new JkCache<>();
 
 
     public static Path getHomeFolder() {
@@ -22,10 +23,10 @@ public class JkEnvironment {
     }
 
     public static Path getAppsFolder() {
-        if(!cacheMap.containsKey(APPS_FOLDER_KEY)) {
+        if(!cacheMap.contains(APPS_FOLDER_KEY)) {
             String val = System.getProperty(APPS_FOLDER_KEY);
             Path p = val == null ? APPS_FOLDER_DEFAULT : Paths.get(JkConvert.unixToWinPath(val));
-            cacheMap.put(APPS_FOLDER_KEY, p);
+            cacheMap.add(APPS_FOLDER_KEY, p);
         }
         return (Path) cacheMap.get(APPS_FOLDER_KEY);
     }

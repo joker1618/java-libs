@@ -3,6 +3,8 @@ package xxx.joker.libs.repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.core.runtimes.JkRuntime;
+import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.engine.RepoManager;
 import xxx.joker.libs.repository.entities.RepoProperty;
@@ -10,9 +12,7 @@ import xxx.joker.libs.repository.entities.RepoResource;
 import xxx.joker.libs.repository.entities.RepoTags;
 
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -26,9 +26,18 @@ public abstract class JkRepoFile implements JkRepo {
         this(null, dbFolder, dbName, pkgsToScan);
     }
 
-    protected JkRepoFile(String encryptionPwd, Path dbFolder, String dbName, String... pkgsToScan) {
-        this.repoManager = new RepoManager(encryptionPwd, dbFolder, dbName, pkgsToScan);
+    protected JkRepoFile(Path dbFolder, String dbName, Collection<Class<?>> classes) {
+        this(null, dbFolder, dbName, classes);
     }
+
+    protected JkRepoFile(String encryptionPwd, Path dbFolder, String dbName, String... pkgsToScan) {
+        this.repoManager = new RepoManager(encryptionPwd, dbFolder, dbName, scanPackages(pkgsToScan));
+    }
+
+    protected JkRepoFile(String encryptionPwd, Path dbFolder, String dbName, Collection<Class<?>> classes) {
+        this.repoManager = new RepoManager(encryptionPwd, dbFolder, dbName, classes);
+    }
+
 
     @Override
     public Set<RepoProperty> getProperties() {
@@ -152,5 +161,16 @@ public abstract class JkRepoFile implements JkRepo {
     public RepoResource addResource(Path sourcePath, String resName, String... tags) {
         return repoManager.addResource(sourcePath, resName, RepoTags.of(tags));
     }
+
+    private List<Class<?>> scanPackages(String[] pkgsArr) {
+        Set<Class<?>> classes = new HashSet<>();
+
+        List<String> pkgsToScan = JkConvert.toList(pkgsArr);
+        pkgsToScan.forEach(pkg -> classes.addAll(JkRuntime.findClasses(pkg)));
+        classes.removeIf(c -> c.getSuperclass() != RepoEntity.class);
+
+        return JkConvert.toList(classes);
+    }
+
 
 }

@@ -261,7 +261,7 @@ public class FieldWrapper {
         } else if (isOfType(fclazz, LocalDateTime.class)) {
             o = LocalDateTime.parse(unesc, DTF_DATETIME);
         } else if (JkReflection.isInstanceOf(fclazz, JkFormattable.class)) {
-            o = JkReflection.createInstanceSafe(fclazz);
+            o = JkReflection.createInstance(fclazz);
             ((JkFormattable) o).parse(unesc);
         } else if (JkReflection.isInstanceOf(fclazz, Enum.class)) {
             o = Enum.valueOf((Class)fclazz, unesc);

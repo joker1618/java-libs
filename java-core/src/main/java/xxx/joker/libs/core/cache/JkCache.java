@@ -29,4 +29,8 @@ public class JkCache<K, V> {
         cacheMap.put(key, value);
     }
 
+    public synchronized boolean contains(K key) {
+        return cacheMap.containsKey(key);
+    }
+
 }

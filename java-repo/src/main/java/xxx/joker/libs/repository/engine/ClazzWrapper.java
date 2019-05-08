@@ -56,7 +56,7 @@ class ClazzWrapper {
     }
 
     public RepoEntity parseEntity(Map<String, String> strValues) {
-        RepoEntity instance = (RepoEntity) JkReflection.createInstanceSafe(eClazz);
+        RepoEntity instance = (RepoEntity) JkReflection.createInstance(eClazz);
         for(String mapFName : strValues.keySet()) {
             FieldWrapper cf = fieldsByName.get(mapFName);
             if(cf != null) {
