@@ -1,0 +1,1 @@
+mvn install:install-file -Dfile=scenicview-8.7.0.jar -DgroupId=3rdParty.org -DartifactId=scenicview -Dversion=8.7.0 -Dpackaging=jar
