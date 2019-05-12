@@ -60,4 +60,8 @@ public abstract class RepoEntity implements IRepoEntity<RepoEntity> {
         return ToStringBuilder.reflectionToString(this, sstyle);
     }
 
+    @Override
+    public void setCreationTm(JkDateTime creationTm) {
+        this.creationTm = creationTm;
+    }
 }

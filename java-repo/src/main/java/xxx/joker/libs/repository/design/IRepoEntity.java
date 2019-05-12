@@ -14,4 +14,5 @@ interface IRepoEntity<T> extends Comparable<T> {
     String strFull();
     String strFull(ToStringStyle sstyle);
 
+    void setCreationTm(JkDateTime creationTm);
 }

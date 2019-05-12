@@ -1,9 +1,12 @@
 package temp;
 
 import org.junit.Test;
+import xxx.joker.libs.core.datetime.JkDateTime;
 import xxx.joker.libs.core.datetime.JkDuration;
+import xxx.joker.libs.core.files.JkFiles;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +16,11 @@ import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class Vari {
 
+    @Test
+    public void provedaas() throws Exception {
+        JkDateTime dt = JkFiles.getLastModifiedTime(Paths.get("C:\\Users\\fede\\IdeaProjects\\LIBS\\java-libs\\java-core\\src\\main\\java\\xxx\\joker\\libs\\core\\tests\\JkTests.java"));
+        display(dt.toString());
+    }
     @Test
     public void provaas() throws Exception {
         SyncClazz sc = new SyncClazz();

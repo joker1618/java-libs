@@ -1,6 +1,7 @@
 package xxx.joker.libs.core.files;
 
 import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.core.datetime.JkDateTime;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkBytes;
@@ -12,6 +13,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
+import java.nio.file.attribute.FileTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -544,6 +546,15 @@ public class JkFiles {
 			return toPath(uri);
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	public static JkDateTime getLastModifiedTime(Path source) {
+		try {
+			FileTime ftime = Files.getLastModifiedTime(source);
+			return JkDateTime.of(ftime.toMillis());
+		} catch (IOException ex) {
+			throw new JkRuntimeException(ex);
 		}
 	}
 

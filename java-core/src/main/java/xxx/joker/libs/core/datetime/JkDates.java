@@ -12,7 +12,7 @@ import java.util.List;
 public class JkDates {
 
     public static final DateTimeFormatter FMT_AOD = DateTimeFormatter.ofPattern("yyyyMMdd");
-    public static final DateTimeFormatter FMT_AODT = DateTimeFormatter.ofPattern("yyyyMMdd");
+    public static final DateTimeFormatter FMT_AODT = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
 
     /* PARSER */
     public static LocalDate toDate(String str, String pattern) {

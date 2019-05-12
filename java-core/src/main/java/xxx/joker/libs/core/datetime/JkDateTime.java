@@ -62,6 +62,9 @@ public class JkDateTime implements Comparable<JkDateTime>, JkFormattable<JkDateT
     public String format(String pattern) {
         return ldt.format(DateTimeFormatter.ofPattern(pattern));
     }
+    public String format(DateTimeFormatter dtf) {
+        return ldt.format(dtf);
+    }
 
     @Override
     public JkDateTime parse(String str) {
