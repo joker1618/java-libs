@@ -106,9 +106,12 @@ public class JkOutput {
 
 	// Number formatters
 	public static NumberFormat getNumberFmtEN(int numFractionDigits) {
+		return getNumberFmtEN(numFractionDigits, numFractionDigits);
+	}
+	public static NumberFormat getNumberFmtEN(int minFractionDigits, int maxFractionDigits) {
 		NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
-		nf.setMinimumFractionDigits(numFractionDigits);
-		nf.setMaximumFractionDigits(numFractionDigits);
+		nf.setMinimumFractionDigits(minFractionDigits);
+		nf.setMaximumFractionDigits(maxFractionDigits);
 		return nf;
 	}
 
