@@ -9,12 +9,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JkGIT {
+public class JkGit {
 
     private Path gitFolder;
     private String gitUrl;
 
-    public JkGIT(Path gitFolder, String gitUrl) {
+    public JkGit(Path gitFolder, String gitUrl) {
         this.gitFolder = gitFolder;
         this.gitUrl = gitUrl;
     }
