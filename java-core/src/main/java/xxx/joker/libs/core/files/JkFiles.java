@@ -367,10 +367,6 @@ public class JkFiles {
 
 
 	/* COPY-MOVE methods */
-	public static void copyNew(Path sourcePath, Path targetPath) {
-		copy1(sourcePath, targetPath, true, false);
-		JkFiles.setLastModifiedTime(targetPath, LocalDateTime.now());
-	}
 	public static void copy(Path sourcePath, Path targetPath) {
 		copy1(sourcePath, targetPath, true, false);
 	}
