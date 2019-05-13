@@ -1,6 +1,7 @@
 package xxx.joker.libs.core.adapter;
 
 import xxx.joker.libs.core.exception.JkRuntimeException;
+import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
 
 import java.io.BufferedReader;
@@ -55,6 +56,18 @@ public class JkProcess {
         } catch(Throwable t) {
             throw new JkRuntimeException(t);
         }
+    }
+
+    public String toStringFull() {
+        String str = "";
+        str += strf("Command: {}\nExit code: {}\n", command, exitCode);
+        if(!getErrorLines().isEmpty()) {
+            str += JkStreams.join(JkStrings.leftPadLines(getErrorLines(), "error>  ", 1));
+        }
+        if(!getOutputLines().isEmpty()) {
+            str += JkStreams.join(JkStrings.leftPadLines(getOutputLines(), "output> ", 1));
+        }
+        return str;
     }
 
     private static class StreamGobbler extends Thread {
