@@ -6,6 +6,8 @@ import xxx.joker.libs.core.files.JkFiles;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JkGIT {
 
@@ -33,10 +35,12 @@ public class JkGIT {
         return JkProcess.execute(gitFolder, "git pull");
     }
 
-    public void commitAndPush(String commitMex) {
-        JkProcess.execute(gitFolder, "git add --all");
-        JkProcess.execute(gitFolder, "git commit -m {}", commitMex);
-        JkProcess.execute(gitFolder, "git push");
+    public List<JkProcess> commitAndPush(String commitMex) {
+        List<JkProcess> resList = new ArrayList<>();
+        resList.add(JkProcess.execute(gitFolder, "git add --all"));
+        resList.add(JkProcess.execute(gitFolder, "git commit -m {}", commitMex));
+        resList.add(JkProcess.execute(gitFolder, "git push"));
+        return resList;
     }
 
 }
