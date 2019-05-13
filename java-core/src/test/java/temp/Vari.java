@@ -6,6 +6,7 @@ import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.files.JkFiles;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -16,6 +17,14 @@ import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class Vari {
 
+    @Test
+    public void provacopy() throws Exception {
+        Path source = Paths.get("C:\\Users\\fede\\Desktop\\tmp.sh");
+        Path target = JkFiles.getParent(source).resolve("Copy_" + source.getFileName().toString());
+        JkFiles.copyNew(source, target);
+        display("Source: {}", JkFiles.getLastModifiedTime(source));
+        display("Target: {}", JkFiles.getLastModifiedTime(target));
+    }
     @Test
     public void provedaas() throws Exception {
         JkDateTime dt = JkFiles.getLastModifiedTime(Paths.get("C:\\Users\\fede\\IdeaProjects\\LIBS\\java-libs\\java-core\\src\\main\\java\\xxx\\joker\\libs\\core\\tests\\JkTests.java"));

@@ -43,7 +43,7 @@ public class TestJkFiles {
     public void copySingleFile() {
         Path inputPath = Paths.get("C:\\Users\\f.barbano\\Desktop\\moveTest\\sec\\back.jpg");
         Path outputPath = Paths.get("C:\\Users\\f.barbano\\Desktop\\moveTest\\de\\fedeBackCopy.jpg");
-        JkFiles.copyFile(inputPath, outputPath, true);
+        JkFiles.copy(inputPath, outputPath, true);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class TestJkFiles {
         Path inputPath = Paths.get("C:\\Users\\f.barbano\\Desktop\\from");
         Path outputPath = Paths.get("C:\\Users\\f.barbano\\Desktop\\to");
         JkTimer timer = new JkTimer();
-        JkFiles.copyFile(inputPath, outputPath, true);
+        JkFiles.copy(inputPath, outputPath, true);
         display("Copy completed in {}", JkDuration.toStringElapsed(timer.elapsed()));
     }
 
@@ -66,7 +66,7 @@ public class TestJkFiles {
     public void copyFolder() {
         Path inputPath = Paths.get("C:\\Users\\f.barbano\\Desktop\\moveTest\\sec");
         Path outputPath = Paths.get("C:\\Users\\f.barbano\\Desktop\\moveTest\\fe\\dio");
-        JkFiles.copyFile(inputPath, outputPath, true);
+        JkFiles.copy(inputPath, outputPath, true);
     }
 
 

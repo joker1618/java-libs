@@ -9,7 +9,6 @@ import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.media.JkImage;
 import xxx.joker.libs.core.media.JkMedia;
-import xxx.joker.libs.core.runtimes.JkRuntime;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.config.RepoConfig;
 import xxx.joker.libs.repository.design.RepoEntity;
@@ -141,7 +140,7 @@ public class RepoManager {
             if(sourcePath.startsWith(resourcesFolder)) {
                 JkFiles.moveFile(sourcePath, outPath);
             } else {
-                JkFiles.copyFile(sourcePath, outPath);
+                JkFiles.copy(sourcePath, outPath);
             }
             LOG.info("Added new file to resources: {}", sourcePath);
         }

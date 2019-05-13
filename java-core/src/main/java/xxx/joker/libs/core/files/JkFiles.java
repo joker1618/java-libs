@@ -14,6 +14,8 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.FileTime;
+import java.nio.file.attribute.PosixFilePermission;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -365,16 +367,20 @@ public class JkFiles {
 
 
 	/* COPY-MOVE methods */
-	public static void copyFile(Path sourcePath, Path targetPath) {
-		copyFile1(sourcePath, targetPath, true, false);
+	public static void copyNew(Path sourcePath, Path targetPath) {
+		copy1(sourcePath, targetPath, true, false);
+		JkFiles.setLastModifiedTime(targetPath, LocalDateTime.now());
 	}
-	public static void copyFile(Path sourcePath, Path targetPath, boolean overwrite) {
-		copyFile1(sourcePath, targetPath, overwrite, false);
+	public static void copy(Path sourcePath, Path targetPath) {
+		copy1(sourcePath, targetPath, true, false);
 	}
-	public static Path copyFileSafely(Path sourcePath, Path targetPath) {
-		return copyFile1(sourcePath, targetPath, false, true);
+	public static void copy(Path sourcePath, Path targetPath, boolean overwrite) {
+		copy1(sourcePath, targetPath, overwrite, false);
 	}
-	private static Path copyFile1(Path sourcePath, Path targetPath, boolean overwrite, boolean safePath) {
+	public static Path copySafe(Path sourcePath, Path targetPath) {
+		return copy1(sourcePath, targetPath, false, true);
+	}
+	private static Path copy1(Path sourcePath, Path targetPath, boolean overwrite, boolean safePath) {
 		try {
 			if (!Files.exists(sourcePath)) {
 				throw new FileNotFoundException(strf("Source file [%s] not exists!", sourcePath));
@@ -553,6 +559,15 @@ public class JkFiles {
 		try {
 			FileTime ftime = Files.getLastModifiedTime(source);
 			return JkDateTime.of(ftime.toMillis());
+		} catch (IOException ex) {
+			throw new JkRuntimeException(ex);
+		}
+	}
+	public static void setLastModifiedTime(Path source, LocalDateTime ldt) {
+		try {
+			long totalMillis = JkDateTime.of(ldt).getTotalMillis();
+			FileTime ftime = FileTime.fromMillis(totalMillis);
+			Files.setLastModifiedTime(source, ftime);
 		} catch (IOException ex) {
 			throw new JkRuntimeException(ex);
 		}
