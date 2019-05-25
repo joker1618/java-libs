@@ -17,6 +17,9 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class JkConsole {
 
+	public static void display(Object o) {
+		display("{}", o);
+	}
 	public static void display(String mexFormat, Object... params) {
 		out.println(strf(mexFormat, params));
 		out.flush();
