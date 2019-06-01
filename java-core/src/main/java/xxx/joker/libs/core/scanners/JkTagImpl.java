@@ -1,7 +1,7 @@
 package xxx.joker.libs.core.scanners;
 
 import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.objects.Range;
+import xxx.joker.libs.core.objects.JkRange;
 import xxx.joker.libs.core.tests.JkTests;
 import xxx.joker.libs.core.utils.JkStrings;
 
@@ -177,8 +177,8 @@ class JkTagImpl implements JkTag {
     }
 
     @Override
-    public Range getRange() {
-        return Range.ofBounds(startPos, endPos);
+    public JkRange getRange() {
+        return JkRange.ofBounds(startPos, endPos);
     }
 
     @Override
@@ -190,10 +190,10 @@ class JkTagImpl implements JkTag {
     public String getText() {
         StringBuilder sb = new StringBuilder();
         if(!children.isEmpty()) {
-            List<Range> chRanges = JkStreams.map(children, ch -> ch.getRange().shiftStart(-1 * startPos));
+            List<JkRange> chRanges = JkStreams.map(children, ch -> ch.getRange().shiftStart(-1 * startPos));
             String htag = getHtmlTag();
             int start = 0;
-            for (Range r : chRanges) {
+            for (JkRange r : chRanges) {
                 sb.append(htag, start, r.getStart());
                 start = r.getEnd();
             }

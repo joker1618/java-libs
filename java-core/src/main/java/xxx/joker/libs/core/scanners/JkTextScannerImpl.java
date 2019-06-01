@@ -1,7 +1,7 @@
 package xxx.joker.libs.core.scanners;
 
 import org.apache.commons.lang3.StringUtils;
-import xxx.joker.libs.core.objects.Range;
+import xxx.joker.libs.core.objects.JkRange;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 
@@ -119,7 +119,7 @@ class JkTextScannerImpl implements JkTextScanner {
     }
 
     @Override
-    public String nextString(Range range) {
+    public String nextString(JkRange range) {
         return nextString(range.getStart(), range.getLength());
     }
 

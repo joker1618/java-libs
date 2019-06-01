@@ -3,7 +3,7 @@ package xxx.joker.libs.excel;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellReference;
-import xxx.joker.libs.core.objects.Area;
+import xxx.joker.libs.core.objects.JkArea;
 
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -41,7 +41,7 @@ public interface JkSheet {
     void setValues(int rowNum, int colNum, List<?> values, CellStyle cellStyle);
 
     void setStyle(int rowNum, int colNum, CellStyle cellStyle);
-    void setStyle(Area area, CellStyle cellStyle);
+    void setStyle(JkArea area, CellStyle cellStyle);
 
     int getColWidth(int colNum);
     void setColWidth(int colNum, int points);

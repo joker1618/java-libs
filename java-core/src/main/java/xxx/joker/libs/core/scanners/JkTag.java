@@ -1,6 +1,6 @@
 package xxx.joker.libs.core.scanners;
 
-import xxx.joker.libs.core.objects.Range;
+import xxx.joker.libs.core.objects.JkRange;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +33,7 @@ public interface JkTag {
 
     List<JkTag> findAllTags(String tagName, String... attributes);
 
-    Range getRange();
+    JkRange getRange();
 
     String getHtmlTag();
     String getText();

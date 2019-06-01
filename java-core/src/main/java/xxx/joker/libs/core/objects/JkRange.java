@@ -2,21 +2,21 @@ package xxx.joker.libs.core.objects;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
-public class Range {
+public class JkRange {
 
     private int start;
     private int end;
 
-    private Range(int start, int end) {
+    private JkRange(int start, int end) {
         this.start = start;
         this.end = end;
     }
 
-    public static Range ofBounds(int start, int end) {
-        return new Range(start, end);
+    public static JkRange ofBounds(int start, int end) {
+        return new JkRange(start, end);
     }
-    public static Range ofLength(int start, int length) {
-        return new Range(start, start + length);
+    public static JkRange ofLength(int start, int length) {
+        return new JkRange(start, start + length);
     }
 
     @Override
@@ -24,8 +24,8 @@ public class Range {
         return strf("{}-{} ({})", start, end, getLength());
     }
 
-    public Range shiftStart(int numShift) {
-        return new Range(start+numShift, end+numShift);
+    public JkRange shiftStart(int numShift) {
+        return new JkRange(start+numShift, end+numShift);
     }
     public int getStart() {
         return start;

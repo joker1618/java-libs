@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 import xxx.joker.libs.core.datetime.JkDateTime;
-import xxx.joker.libs.core.objects.Area;
+import xxx.joker.libs.core.objects.JkArea;
 import xxx.joker.libs.core.utils.JkConvert;
 
 import java.sql.Date;
@@ -221,7 +221,7 @@ abstract class JkAbstractSheet implements JkSheet {
     }
 
     @Override
-    public void setStyle(Area area, CellStyle cellStyle) {
+    public void setStyle(JkArea area, CellStyle cellStyle) {
         for(int r = area.getY(); r < area.getEndY(); r++) {
             for(int c = area.getX(); c < area.getEndX(); c++) {
                 setStyle(r, c, cellStyle);

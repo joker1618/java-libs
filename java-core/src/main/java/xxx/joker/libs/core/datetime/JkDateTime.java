@@ -4,6 +4,7 @@ import xxx.joker.libs.core.types.JkFormattable;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class JkDateTime implements Comparable<JkDateTime>, JkFormattable<JkDateTime> {
 
@@ -75,6 +76,19 @@ public class JkDateTime implements Comparable<JkDateTime>, JkFormattable<JkDateT
     @Override
     public String toString() {
         return format();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JkDateTime that = (JkDateTime) o;
+        return compareTo(that) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ldt);
     }
 
     private void init(LocalDateTime ldt) {

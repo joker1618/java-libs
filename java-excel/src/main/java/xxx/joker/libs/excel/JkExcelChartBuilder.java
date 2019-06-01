@@ -11,7 +11,7 @@ import org.apache.poi.xssf.usermodel.*;
 import org.apache.poi.xssf.usermodel.charts.XSSFChartLegend;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.objects.Area;
+import xxx.joker.libs.core.objects.JkArea;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -90,7 +90,7 @@ public class JkExcelChartBuilder {
         this.dataYStyle = dataYStyle;
     }
 
-    public void drawChart(String chartTitle, Area chartArea) {
+    public void drawChart(String chartTitle, JkArea chartArea) {
         if(serieX == null) {
             throw new JkRuntimeException("X axis not set");
         }
@@ -105,7 +105,7 @@ public class JkExcelChartBuilder {
         XSSFCellStyle styleDataY = getDataYStyle();
 
         // X axis data
-        Area areaX = computeOutputArea(dataCellPos, 0, serieX.getData().size(), dataOrientationVertical);
+        JkArea areaX = computeOutputArea(dataCellPos, 0, serieX.getData().size(), dataOrientationVertical);
         int pos = -1;
         for(int r = areaX.getY(); r < areaX.getEndY(); r++) {
             for(int c = areaX.getX(); c < areaX.getEndX(); c++, pos++) {
@@ -118,9 +118,9 @@ public class JkExcelChartBuilder {
         }
 
         // Series data
-        List<Area> areasY = new ArrayList<>();
+        List<JkArea> areasY = new ArrayList<>();
         for(int i = 0; i < seriesY.size(); i++) {
-            Area areaY = computeOutputArea(dataCellPos, i+1, serieX.getData().size(), dataOrientationVertical);
+            JkArea areaY = computeOutputArea(dataCellPos, i+1, serieX.getData().size(), dataOrientationVertical);
             areasY.add(areaY);
             pos = -1;
             for(int r = areaY.getY(); r < areaY.getEndY(); r++) {
@@ -160,7 +160,7 @@ public class JkExcelChartBuilder {
         ChartDataSource<Number> xds = DataSources.fromNumericCellRange(sheet.getSheet(), convertArea(areaX));
 
         for(int i = 0; i < areasY.size(); i++) {
-            Area areaY = areasY.get(i);
+            JkArea areaY = areasY.get(i);
             LineChartSeries chartSerie = chartData.addSeries(xds, DataSources.fromNumericCellRange(sheet.getSheet(), convertArea(areaY)));
             CellReference cellRef = sheet.createCellReference(areaY.getY(), areaY.getX());
             chartSerie.setTitle(cellRef);
@@ -175,8 +175,8 @@ public class JkExcelChartBuilder {
         lineChart.plot(chartData, new ChartAxis[] { bottomAxis, leftAxis });
     }
 
-    private Area computeOutputArea(CellPos startCellPos, int serieOffset, int dataSize, boolean vertical) {
-        Area area = new Area();
+    private JkArea computeOutputArea(CellPos startCellPos, int serieOffset, int dataSize, boolean vertical) {
+        JkArea area = new JkArea();
         area.setX(startCellPos.getColNum() + (vertical ? serieOffset : 0));
         area.setY(startCellPos.getRowNum() + (vertical ? 0 : serieOffset));
         area.setWidth(1 + (vertical ? 0 : dataSize));
@@ -184,7 +184,7 @@ public class JkExcelChartBuilder {
         return area;
     }
 
-    private CellRangeAddress convertArea(Area area) {
+    private CellRangeAddress convertArea(JkArea area) {
         if(area.getWidth() == 1) {
             return new CellRangeAddress(area.getY() + 1, area.getEndY() - 1, area.getX(), area.getEndX() - 1);
         } else {

@@ -1,6 +1,6 @@
 package xxx.joker.libs.core.scanners;
 
-import xxx.joker.libs.core.objects.Range;
+import xxx.joker.libs.core.objects.JkRange;
 
 public interface JkTextScanner {
 
@@ -27,7 +27,7 @@ public interface JkTextScanner {
     String nextStringUntil(String end);
     String nextString(int start, int offset);
     String nextString(int offset);
-    String nextString(Range range);
+    String nextString(JkRange range);
 
     boolean startWith(String str);
     boolean contains(String str);

@@ -2,7 +2,7 @@ package xxx.joker.libs.core.scanners;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import xxx.joker.libs.core.objects.Range;
+import xxx.joker.libs.core.objects.JkRange;
 
 import java.util.Stack;
 import java.util.regex.Matcher;
@@ -42,7 +42,7 @@ public class JkScanners {
     private static JkTag parseHtml(JkTextScanner scanner) {
         JkTagImpl rootTag = null;
         Stack<JkTagImpl> openedTags = new Stack<>();
-        Range tagRange;
+        JkRange tagRange;
 
         while((tagRange = getNextTagRange(scanner.toString())) != null) {
             String strTag = scanner.nextString(tagRange);
@@ -92,11 +92,11 @@ public class JkScanners {
 
         return rootTag;
     }
-    private static Range getNextTagRange(String html) {
+    private static JkRange getNextTagRange(String html) {
         Pattern pattern = Pattern.compile("(<[^<]*?>)");
         Matcher m = pattern.matcher(html);
         if(!m.find()) return null;
-        return Range.ofBounds(m.start(), m.end());
+        return JkRange.ofBounds(m.start(), m.end());
     }
     // return <tag; true if is a tag open (i.e. <div>), false if is a closing tag (i.e. </div>)>
     // strTag = <...>
