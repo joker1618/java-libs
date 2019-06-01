@@ -2,6 +2,7 @@ package xxx.joker.libs.core.runtimes;
 
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.core.tests.JkTests;
 import xxx.joker.libs.core.types.JkFormattable;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
@@ -87,6 +88,7 @@ public class JkReflection {
 		return toRet;
 	}
 
+
 	public static List<Field> getFieldsByType(Class<?> sourceClass, Class<?> fieldType) {
 		List<Field> toRet = new ArrayList<>();
 		Field[] declaredFields = sourceClass.getDeclaredFields();
@@ -99,7 +101,6 @@ public class JkReflection {
 		}
 		return toRet;
 	}
-
 	public static Field getFieldByName(Class<?> sourceClass, String fieldName) {
 		while(sourceClass != null) {
 			List<Field> declaredFields = Arrays.asList(sourceClass.getDeclaredFields());
@@ -156,6 +157,16 @@ public class JkReflection {
 		return interfaces;
 	}
 
+	private static List<Field> findAllFields(Class<?> clazz) {
+		Class<?> sourceClazz = clazz;
+		List<Field> fields = new ArrayList<>();
+		while(sourceClazz != null) {
+			fields.addAll(JkConvert.toList(sourceClazz.getDeclaredFields()));
+			sourceClazz = sourceClazz.getSuperclass();
+		}
+		return fields;
+	}
+
 	public static Class<?>[] getParametrizedTypes(Class<?> clazz, String fieldName) {
 		try {
 			Field field = clazz.getDeclaredField(fieldName);
@@ -173,84 +184,31 @@ public class JkReflection {
 		return JkStreams.map(Arrays.asList(types), t -> (Class<?>) t).toArray(new Class<?>[0]);
 	}
 
-	public static List<String> formatElems(Collection<?> elems, String... fieldsToDisplay) {
-		try {
-			List<String> fieldNames = getFieldNames(fieldsToDisplay);
-			List<String> lines = new ArrayList<>();
-
-			for (Object e : elems) {
-				StringBuilder sb = new StringBuilder();
-
-				if(fieldNames.isEmpty()) {
-					// retrieve all fields recursively
-					Class<?> sourceClazz = e.getClass();
-					while(sourceClazz != null) {
-						List<String> fnames = JkStreams.map(JkConvert.toList(sourceClazz.getDeclaredFields()), Field::getName);
-						fieldNames.addAll(fnames);
-						sourceClazz = sourceClazz.getSuperclass();
-					}
-				}
-
-				for (String fname : fieldNames) {
-					if (sb.length() > 0) sb.append("|");
-
-					Object fval = JkReflection.getFieldValue(e, fname);
-					if(fval == null) {
-						sb.append("NULL");
-					} else if(JkReflection.isInstanceOf(fval.getClass(), Collection.class)) {
-						sb.append("#" + ((Collection)fval).size());
-					} else if(JkReflection.isInstanceOf(fval.getClass(), JkFormattable.class)) {
-						sb.append(((JkFormattable)fval).format());
-					} else {
-						sb.append(fval);
-					}
-				}
-				lines.add(sb.toString());
-			}
-
-			if(!fieldNames.isEmpty()) {
-				String header = JkStreams.join(fieldNames, "|", JkReflection::createStringHeader);
-				lines.add(0, header);
-			}
-
-			return lines;
-
-		} catch (Exception ex) {
-			throw new JkRuntimeException(ex);
-		}
-	}
-	private static String createStringHeader(String str) {
-		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < str.length(); i++) {
-			char c = str.charAt(i);
-			if(c >= 'A' && c <= 'Z') {
-				if(i > 0) {
-					char o = str.charAt(i-1);
-					if(o >= 'a' && o <= 'z') {
-						sb.append(" ");
-					}
-				}
-			}
-			sb.append(c);
-		}
-		String res = sb.toString().replace("_", " ").replaceAll(" +", " ").trim();
-		return res.toUpperCase();
-	}
-	private static List<String> getFieldNames(String... fieldNames) {
-		List<String> toRet = new ArrayList<>();
-		for (String fstr : fieldNames) {
-			String trimmed = fstr.replaceAll(" +", " ").trim();
-			List<String> tlist = JkStrings.splitList(trimmed, " ");
-			toRet.addAll(tlist);
-		}
-		return toRet;
-	}
-
 	public static Class<?> classForName(String className) {
 		try {
 			return Class.forName(className);
 		} catch (ClassNotFoundException e) {
 			throw new JkRuntimeException(e, "Class not found for name: {}", className);
 		}
+	}
+
+	public static <T> T copyFields(Object source, Class<T> targetClass, String... fieldsToCopy) {
+		Map<String, Field> sourceFieldMap = JkStreams.toMapSingle(findAllFields(source.getClass()), Field::getName);
+		List<Field> targetFields = findAllFields(targetClass);
+
+		if(fieldsToCopy.length > 0) {
+			targetFields.removeIf(tf -> !JkTests.containsIgnoreCase(fieldsToCopy, tf.getName()));
+		}
+
+		T target = createInstance(targetClass);
+		for (Field tf : targetFields) {
+			Field f = sourceFieldMap.get(tf.getName());
+			if(f != null && f.getType() == tf.getType()) {
+				Object sval = getFieldValue(source, f);
+				setFieldValue(target, tf, sval);
+			}
+		}
+
+		return target;
 	}
 }

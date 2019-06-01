@@ -26,12 +26,20 @@ public abstract class JkRepoFile implements JkRepo {
         this(null, dbFolder, dbName, pkgsToScan);
     }
 
+    protected JkRepoFile(Path dbFolder, String dbName, Class<?>... classes) {
+        this(null, dbFolder, dbName, JkConvert.toList(classes));
+    }
+
     protected JkRepoFile(Path dbFolder, String dbName, Collection<Class<?>> classes) {
         this(null, dbFolder, dbName, classes);
     }
 
     protected JkRepoFile(String encryptionPwd, Path dbFolder, String dbName, String... pkgsToScan) {
         this.repoManager = new RepoManager(encryptionPwd, dbFolder, dbName, scanPackages(pkgsToScan));
+    }
+
+    protected JkRepoFile(String encryptionPwd, Path dbFolder, String dbName, Class<?>... classes) {
+        this(encryptionPwd, dbFolder, dbName, JkConvert.toList(classes));
     }
 
     protected JkRepoFile(String encryptionPwd, Path dbFolder, String dbName, Collection<Class<?>> classes) {
