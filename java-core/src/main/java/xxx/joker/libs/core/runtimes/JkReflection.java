@@ -197,7 +197,8 @@ public class JkReflection {
 		List<Field> targetFields = findAllFields(targetClass);
 
 		if(fieldsToCopy.length > 0) {
-			targetFields.removeIf(tf -> !JkTests.containsIgnoreCase(fieldsToCopy, tf.getName()));
+			List<String> fnames = getFieldNames(fieldsToCopy);
+			targetFields.removeIf(tf -> !JkTests.containsIgnoreCase(fnames, tf.getName()));
 		}
 
 		T target = createInstance(targetClass);
@@ -211,4 +212,14 @@ public class JkReflection {
 
 		return target;
 	}
+	private static List<String> getFieldNames(String... fieldNames) {
+		List<String> toRet = new ArrayList<>();
+		for (String fstr : fieldNames) {
+			String trimmed = fstr.replaceAll(" +", " ").trim();
+			List<String> tlist = JkStrings.splitList(trimmed, " ");
+			toRet.addAll(tlist);
+		}
+		return toRet;
+	}
+
 }
