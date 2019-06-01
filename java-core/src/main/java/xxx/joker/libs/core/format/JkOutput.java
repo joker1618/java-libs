@@ -116,7 +116,10 @@ public class JkOutput {
 	}
 
 	// Format objects
-	public static List<String> formatCollection(Collection<?> elems, String... fieldsToDisplay) {
+	public static String formatColl(Collection<?> elems, String... fieldsToDisplay) {
+		return JkStreams.join(formatCollLines(elems, fieldsToDisplay));
+	}
+	public static List<String> formatCollLines(Collection<?> elems, String... fieldsToDisplay) {
 		try {
 			List<String> fieldNames = getFieldNames(fieldsToDisplay);
 			List<String> lines = new ArrayList<>();
