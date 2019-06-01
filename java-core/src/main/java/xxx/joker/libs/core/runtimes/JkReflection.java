@@ -157,7 +157,7 @@ public class JkReflection {
 		return interfaces;
 	}
 
-	private static List<Field> findAllFields(Class<?> clazz) {
+	public static List<Field> findAllFields(Class<?> clazz) {
 		Class<?> sourceClazz = clazz;
 		List<Field> fields = new ArrayList<>();
 		while(sourceClazz != null) {
@@ -192,18 +192,29 @@ public class JkReflection {
 		}
 	}
 
+	/**
+	 *
+	 * @param source
+	 * @param targetClass
+	 * @param fieldsToCopy can be the simple filename, if in both class the name is equals, or like 'id=entityId'
+	 * @param <T>
+	 * @return
+	 */
 	public static <T> T copyFields(Object source, Class<T> targetClass, String... fieldsToCopy) {
 		Map<String, Field> sourceFieldMap = JkStreams.toMapSingle(findAllFields(source.getClass()), Field::getName);
 		List<Field> targetFields = findAllFields(targetClass);
 
+		Map<String, String> fnames;
 		if(fieldsToCopy.length > 0) {
-			List<String> fnames = getFieldNames(fieldsToCopy);
-			targetFields.removeIf(tf -> !JkTests.containsIgnoreCase(fnames, tf.getName()));
+			fnames = getFieldNameMap(fieldsToCopy);
+			targetFields.removeIf(tf -> !JkTests.containsIgnoreCase(fnames.keySet(), tf.getName()));
+		} else {
+			fnames = JkStreams.toMapSingle(targetFields, Field::getName, Field::getName);
 		}
 
 		T target = createInstance(targetClass);
 		for (Field tf : targetFields) {
-			Field f = sourceFieldMap.get(tf.getName());
+			Field f = sourceFieldMap.get(fnames.get(tf.getName()));
 			if(f != null && f.getType() == tf.getType()) {
 				Object sval = getFieldValue(source, f);
 				setFieldValue(target, tf, sval);
@@ -212,12 +223,19 @@ public class JkReflection {
 
 		return target;
 	}
-	private static List<String> getFieldNames(String... fieldNames) {
-		List<String> toRet = new ArrayList<>();
+	private static Map<String, String> getFieldNameMap(String... fieldNames) {
+		Map<String, String> toRet = new LinkedHashMap<>();
 		for (String fstr : fieldNames) {
 			String trimmed = fstr.replaceAll(" +", " ").trim();
 			List<String> tlist = JkStrings.splitList(trimmed, " ");
-			toRet.addAll(tlist);
+			tlist.forEach(t -> {
+				if(!t.contains("=")) {
+					toRet.put(t, t);
+				} else {
+					String[] arr = JkStrings.splitArr(t, "=");
+					toRet.put(arr[1], arr[0]);
+				}
+			});
 		}
 		return toRet;
 	}

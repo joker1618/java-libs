@@ -64,7 +64,7 @@ class RepoHandler {
             handlers.put(dto.getEClazz(), new HandlerDataSet(dto.getEntities()));
         }
 
-        RepoProperty prop = getSequenceProperty();
+        RepoProperty prop = getSequenceValue();
         sequenceValue.set(JkConvert.toLong(prop.getValue()));
 
         LOG.debug("Repo handler initialized in {}", timer.toStringElapsed());
@@ -136,7 +136,7 @@ class RepoHandler {
     public List<RepoDTO> getRepoEntityDTOs() {
         List<RepoDTO> dtoList = new ArrayList<>();
 
-        RepoProperty prop = getSequenceProperty();
+        RepoProperty prop = getSequenceValue();
         synchronized (sequenceValue) {
             prop.setValue(String.valueOf(sequenceValue.get()));
         }
@@ -154,7 +154,7 @@ class RepoHandler {
 
         return dtoList;
     }
-    private RepoProperty getSequenceProperty() {
+    private RepoProperty getSequenceValue() {
         Set<RepoEntity> ds = getDataSet(RepoProperty.class);
         RepoProperty prop = (RepoProperty) JkStreams.findUnique(ds, e -> ((RepoProperty) e).getKey().equals(RepoConfig.REPO_SEQ_PROP));
         if(prop == null) {

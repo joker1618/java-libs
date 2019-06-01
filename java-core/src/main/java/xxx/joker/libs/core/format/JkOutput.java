@@ -125,33 +125,7 @@ public class JkOutput {
 			List<String> lines = new ArrayList<>();
 
 			for (Object e : elems) {
-				StringBuilder sb = new StringBuilder();
-
-				if(fieldNames.isEmpty()) {
-					// retrieve all fields recursively
-					Class<?> sourceClazz = e.getClass();
-					while(sourceClazz != null) {
-						List<String> fnames = JkStreams.map(JkConvert.toList(sourceClazz.getDeclaredFields()), Field::getName);
-						fieldNames.addAll(fnames);
-						sourceClazz = sourceClazz.getSuperclass();
-					}
-				}
-
-				for (String fname : fieldNames) {
-					if (sb.length() > 0) sb.append("|");
-
-					Object fval = JkReflection.getFieldValue(e, fname);
-					if(fval == null) {
-						sb.append("NULL");
-					} else if(JkReflection.isInstanceOf(fval.getClass(), Collection.class)) {
-						sb.append("#" + ((Collection)fval).size());
-					} else if(JkReflection.isInstanceOf(fval.getClass(), JkFormattable.class)) {
-						sb.append(((JkFormattable)fval).format());
-					} else {
-						sb.append(fval);
-					}
-				}
-				lines.add(sb.toString());
+				lines.add(formatObject1(e, fieldNames));
 			}
 
 			if(!fieldNames.isEmpty()) {
@@ -165,6 +139,33 @@ public class JkOutput {
 			throw new JkRuntimeException(ex);
 		}
 	}
+	public static String formatObject(Object o, String... fieldsToDisplay) {
+		return formatObject1(o, getFieldNames(fieldsToDisplay));
+	}
+	private static String formatObject1(Object o, Collection<String> fieldNames) {
+		StringBuilder sb = new StringBuilder();
+
+		if(fieldNames.isEmpty()) {
+			fieldNames.addAll(JkStreams.map(JkReflection.findAllFields(o.getClass()), Field::getName));
+		}
+
+		for (String fname : fieldNames) {
+			if (sb.length() > 0) sb.append("|");
+
+			Object fval = JkReflection.getFieldValue(o, fname);
+			if(fval == null) {
+				sb.append("NULL");
+			} else if(JkReflection.isInstanceOf(fval.getClass(), Collection.class)) {
+				sb.append("#" + ((Collection)fval).size());
+			} else if(JkReflection.isInstanceOf(fval.getClass(), JkFormattable.class)) {
+				sb.append(((JkFormattable)fval).format());
+			} else {
+				sb.append(fval);
+			}
+		}
+		return sb.toString();
+	}
+
 	private static String createStringHeader(String str) {
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < str.length(); i++) {
