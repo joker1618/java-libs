@@ -97,6 +97,10 @@ public class RepoManager {
         return repoHandler.getDataSets();
     }
 
+    public TreeMap<Long, RepoEntity> getDataByID() {
+        return repoHandler.getDataByID();
+    }
+
     public void clearDataSets() {
         repoHandler.clearDataSets();
     }

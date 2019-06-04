@@ -75,6 +75,11 @@ public abstract class JkRepoFile implements JkRepo {
     }
 
     @Override
+    public <T extends RepoEntity> T getById(long id) {
+        return (T) repoManager.getDataByID().get(id);
+    }
+
+    @Override
     public <T extends RepoEntity> T get(Class<T> entityClazz, Predicate<T>... filters) {
         List<T> dataList = getDataList(entityClazz, filters);
         return dataList.size() == 1 ? dataList.get(0) : null;

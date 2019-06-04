@@ -18,6 +18,7 @@ public interface JkRepo {
     <T extends RepoEntity> List<T> getDataList(Class<T> entityClazz, Predicate<T>... filters);
     <K,T extends RepoEntity> Map<K,T> getDataMap(Class<T> entityClazz, Function<T,K> keyMapper, Predicate<T>... filters);
 
+    <T extends RepoEntity> T getById(long id);
     <T extends RepoEntity> T get(Class<T> entityClazz, Predicate<T>... filters);
     <T extends RepoEntity> T get(T entity);
     <T extends RepoEntity> T getOrAdd(T entity);

@@ -45,6 +45,10 @@ class RepoHandler {
         return handler == null ? null : handler.getProxySet();
     }
 
+    public TreeMap<Long, RepoEntity> getDataByID() {
+        return dataByID;
+    }
+
     private void initRepoHandler(List<RepoDTO> dtoList) {
         JkTimer timer = new JkTimer();
         Map<Long, List<RepoFK>> fkMap = new HashMap<>();
