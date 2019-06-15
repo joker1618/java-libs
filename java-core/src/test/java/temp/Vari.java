@@ -21,7 +21,7 @@ public class Vari {
     public void provacopy() throws Exception {
         Path source = Paths.get("C:\\Users\\fede\\Desktop\\tmp.sh");
         Path target = JkFiles.getParent(source).resolve("Copy_" + source.getFileName().toString());
-        JkFiles.copyNew(source, target);
+        JkFiles.copy(source, target);
         display("Source: {}", JkFiles.getLastModifiedTime(source));
         display("Target: {}", JkFiles.getLastModifiedTime(target));
     }
