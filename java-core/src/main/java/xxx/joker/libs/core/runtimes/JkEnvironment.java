@@ -11,7 +11,7 @@ import java.util.Map;
 public class JkEnvironment {
 
     private static final String HOME_FOLDER_KEY = "user.home";
-    private static final String APPS_FOLDER_KEY = "apps.folder";
+    public static final String APPS_FOLDER_KEY = "apps.folder";
 
     private static final Path APPS_FOLDER_DEFAULT = getHomeFolder().resolve(".appsFolder");
 
@@ -29,6 +29,10 @@ public class JkEnvironment {
             cacheMap.add(APPS_FOLDER_KEY, p);
         }
         return (Path) cacheMap.get(APPS_FOLDER_KEY);
+    }
+
+    public static void setAppsFolder(Path folder) {
+        cacheMap.add(APPS_FOLDER_KEY, folder);
     }
 
     public static Path getAppsTempFolder() {

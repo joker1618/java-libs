@@ -223,6 +223,22 @@ public class JkReflection {
 
 		return target;
 	}
+	public static <T> T copyFieldsExclude(Object source, Class<T> targetClass, String... fieldsToExclude) {
+		Map<String, Field> sourceFieldMap = JkStreams.toMapSingle(findAllFields(source.getClass()), Field::getName);
+		Map<String, Field> targetFields = JkStreams.toMapSingle(findAllFields(targetClass), Field::getName);
+		Arrays.stream(fieldsToExclude).forEach(targetFields::remove);
+
+		T target = createInstance(targetClass);
+		for (Field tf : targetFields.values()) {
+			Field f = sourceFieldMap.get(tf.getName());
+			if(f != null && f.getType() == tf.getType()) {
+				Object sval = getFieldValue(source, f);
+				setFieldValue(target, tf, sval);
+			}
+		}
+
+		return target;
+	}
 	private static Map<String, String> getFieldNameMap(String... fieldNames) {
 		Map<String, String> toRet = new LinkedHashMap<>();
 		for (String fstr : fieldNames) {
