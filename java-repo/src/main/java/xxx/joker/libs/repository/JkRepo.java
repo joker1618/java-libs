@@ -19,9 +19,9 @@ public interface JkRepo {
     <K,T extends RepoEntity> Map<K,T> getDataMap(Class<T> entityClazz, Function<T,K> keyMapper, Predicate<T>... filters);
 
     <T extends RepoEntity> T getById(long id);
-    <T extends RepoEntity> T get(Class<T> entityClazz, Predicate<T>... filters);
-    <T extends RepoEntity> T get(T entity);
-    <T extends RepoEntity> T getOrAdd(T entity);
+    <T extends RepoEntity> T getFirst(Class<T> entityClazz, Predicate<T>... filters);
+    <T extends RepoEntity> T getByPk(T entity);
+    <T extends RepoEntity> T getByPkOrAdd(T entity);
 
     <T extends RepoEntity> boolean add(T toAdd);
     <T extends RepoEntity> boolean remove(T toRemove);
