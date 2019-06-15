@@ -39,7 +39,11 @@ class ClazzWrapper {
     public static void setEntityID(RepoEntity e, Long eID) {
         synchronized (CF_ENTITY_ID) {
             CF_ENTITY_ID.setValue(e, eID);
-            CF_CREATION_TIME.setValue(e, eID == null ? null : JkDateTime.now());
+            if(eID == null) {
+                e.setCreationTm(null);
+            } else if(e.getCreationTm() == null) {
+                e.setCreationTm(JkDateTime.now());
+            }
         }
     }
 
