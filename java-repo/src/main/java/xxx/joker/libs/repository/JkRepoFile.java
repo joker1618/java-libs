@@ -20,7 +20,9 @@ public abstract class JkRepoFile implements JkRepo {
 
     private static final Logger LOG = LoggerFactory.getLogger(JkRepoFile.class);
 
-    private final RepoManager repoManager;
+    private RepoManager repoManager;
+
+    protected JkRepoFile() {}
 
     protected JkRepoFile(Path dbFolder, String dbName, String... pkgsToScan) {
         this(null, dbFolder, dbName, pkgsToScan);
@@ -35,7 +37,7 @@ public abstract class JkRepoFile implements JkRepo {
     }
 
     protected JkRepoFile(String encryptionPwd, Path dbFolder, String dbName, String... pkgsToScan) {
-        this.repoManager = new RepoManager(encryptionPwd, dbFolder, dbName, scanPackages(pkgsToScan));
+        initRepo(encryptionPwd, dbFolder, dbName, pkgsToScan);
     }
 
     protected JkRepoFile(String encryptionPwd, Path dbFolder, String dbName, Class<?>... classes) {
@@ -44,6 +46,13 @@ public abstract class JkRepoFile implements JkRepo {
 
     protected JkRepoFile(String encryptionPwd, Path dbFolder, String dbName, Collection<Class<?>> classes) {
         this.repoManager = new RepoManager(encryptionPwd, dbFolder, dbName, classes);
+    }
+
+    protected void initRepo(Path dbFolder, String dbName, String... pkgsToScan) {
+        initRepo(null, dbFolder, dbName, pkgsToScan);
+    }
+    protected void initRepo(String encryptionPwd, Path dbFolder, String dbName, String... pkgsToScan) {
+        this.repoManager = new RepoManager(encryptionPwd, dbFolder, dbName, scanPackages(pkgsToScan));
     }
 
 

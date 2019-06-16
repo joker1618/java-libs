@@ -80,6 +80,7 @@ public class RepoUtil {
             if(!fieldNames.isEmpty()) {
                 String header = JkStreams.join(fieldNames, "|", RepoUtil::createStringHeader);
                 lines.add(0, header);
+                lines.add(0, JkConvert.toList(entities).get(0).getClass().getName());
             }
 
             return JkOutput.columnsView(lines);
