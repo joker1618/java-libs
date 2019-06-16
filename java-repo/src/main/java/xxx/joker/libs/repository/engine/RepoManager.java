@@ -52,7 +52,7 @@ public class RepoManager {
             ecList.forEach(c -> LOG.debug("Repo entity class: {}", c.getName()));
         }
 
-        List<ClazzWrapper> cwList = JkStreams.map(ecList, ClazzWrapper::get);
+        List<ClazzWrapper> cwList = JkStreams.filterMap(ecList, c -> !c.isInterface(), ClazzWrapper::get);
         if(StringUtils.isNotBlank(encryptionPwd)) {
             this.repoDao = new RepoDAOEncrypted(dbFolder, dbName, cwList, encryptionPwd);
         } else {
