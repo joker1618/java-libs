@@ -3,6 +3,7 @@ package xxx.joker.libs.repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.runtimes.JkRuntime;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.design.RepoEntity;
@@ -11,6 +12,7 @@ import xxx.joker.libs.repository.entities.RepoProperty;
 import xxx.joker.libs.repository.entities.RepoResource;
 import xxx.joker.libs.repository.entities.RepoTags;
 
+import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
@@ -189,7 +191,9 @@ public abstract class JkRepoFile implements JkRepo {
 
         List<String> pkgsToScan = JkConvert.toList(pkgsArr);
         pkgsToScan.forEach(pkg -> classes.addAll(JkRuntime.findClasses(pkg)));
-        classes.removeIf(c -> c.getSuperclass() != RepoEntity.class);
+        classes.removeIf(c -> !JkReflection.isInstanceOf(RepoEntity.class));
+        classes.removeIf(c -> Modifier.isAbstract(c.getModifiers()));
+        classes.removeIf(c -> Modifier.isInterface(c.getModifiers()));
 
         return JkConvert.toList(classes);
     }
