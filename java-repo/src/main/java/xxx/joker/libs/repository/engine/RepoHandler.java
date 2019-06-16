@@ -310,6 +310,8 @@ class RepoHandler {
         }
 
         JkStreams.distinct(delList).forEach(clazz -> getDataSet(clazz).clear());
+
+        sequenceValue.set(0L);
     }
 
     private class HandlerDataSet implements InvocationHandler {
