@@ -18,6 +18,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static xxx.joker.libs.core.utils.JkConsole.display;
+
 public abstract class JkRepoFile implements JkRepo {
 
     private static final Logger LOG = LoggerFactory.getLogger(JkRepoFile.class);
@@ -191,7 +193,7 @@ public abstract class JkRepoFile implements JkRepo {
 
         List<String> pkgsToScan = JkConvert.toList(pkgsArr);
         pkgsToScan.forEach(pkg -> classes.addAll(JkRuntime.findClasses(pkg)));
-        classes.removeIf(c -> !JkReflection.isInstanceOf(RepoEntity.class));
+        classes.removeIf(c -> !JkReflection.isInstanceOf(c, RepoEntity.class));
         classes.removeIf(c -> Modifier.isAbstract(c.getModifiers()));
         classes.removeIf(c -> Modifier.isInterface(c.getModifiers()));
 

@@ -74,13 +74,13 @@ public class FieldWrapper {
     }
 
     public boolean isRepoEntity() {
-        return getFieldType().getSuperclass() == RepoEntity.class;
+        return JkReflection.isInstanceOf(getFieldType(), RepoEntity.class);
     }
     public boolean isRepoEntityFlatField() {
         return isRepoEntity() || isRepoEntityCollection();
     }
     public boolean isRepoEntityCollection() {
-        return elemType != null && elemType.getSuperclass() == RepoEntity.class;
+        return elemType != null && JkReflection.isInstanceOf(elemType, RepoEntity.class);
     }
 
     public boolean isList() {
