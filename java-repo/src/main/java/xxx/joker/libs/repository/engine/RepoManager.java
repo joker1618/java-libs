@@ -1,5 +1,6 @@
 package xxx.joker.libs.repository.engine;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.entities.*;
 import xxx.joker.libs.repository.exceptions.RepoError;
 
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -52,7 +54,7 @@ public class RepoManager {
             ecList.forEach(c -> LOG.debug("Repo entity class: {}", c.getName()));
         }
 
-        List<ClazzWrapper> cwList = JkStreams.filterMap(ecList, c -> !c.isInterface(), ClazzWrapper::get);
+        List<ClazzWrapper> cwList = JkStreams.filterMap(ecList, c -> !c.isInterface() && !Modifier.isAbstract(c.getModifiers()), ClazzWrapper::get);
         if(StringUtils.isNotBlank(encryptionPwd)) {
             this.repoDao = new RepoDAOEncrypted(dbFolder, dbName, cwList, encryptionPwd);
         } else {
