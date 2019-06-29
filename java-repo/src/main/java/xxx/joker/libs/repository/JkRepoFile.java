@@ -77,13 +77,13 @@ public abstract class JkRepoFile implements JkRepo {
 
     @Override
     @SafeVarargs
-    public final <T extends RepoEntity> List<T> getDataList(Class<T> entityClazz, Predicate<T>... filters) {
+    public final <T extends RepoEntity> List<T> getList(Class<T> entityClazz, Predicate<T>... filters) {
         return JkStreams.filter(getDataSet(entityClazz), filters);
     }
 
     @Override
     @SafeVarargs
-    public final <K, T extends RepoEntity> Map<K, T> getDataMap(Class<T> entityClazz, Function<T, K> keyMapper, Predicate<T>... filters) {
+    public final <K, T extends RepoEntity> Map<K, T> getMap(Class<T> entityClazz, Function<T, K> keyMapper, Predicate<T>... filters) {
         return JkStreams.toMapSingle(getDataSet(entityClazz), keyMapper, e -> e, filters);
     }
 
@@ -93,8 +93,13 @@ public abstract class JkRepoFile implements JkRepo {
     }
 
     @Override
-    public <T extends RepoEntity> T getFirst(Class<T> entityClazz, Predicate<T>... filters) {
-        List<T> dataList = getDataList(entityClazz, filters);
+    public <T extends RepoEntity> T getById(T entity) {
+        return getById(entity.getEntityID());
+    }
+
+    @Override
+    public <T extends RepoEntity> T get(Class<T> entityClazz, Predicate<T>... filters) {
+        List<T> dataList = getList(entityClazz, filters);
         return dataList.size() == 1 ? dataList.get(0) : null;
     }
 
@@ -126,7 +131,7 @@ public abstract class JkRepoFile implements JkRepo {
     }
 
     @Override
-    public void clearDataSets() {
+    public void clearAll() {
         repoManager.clearDataSets();
     }
 

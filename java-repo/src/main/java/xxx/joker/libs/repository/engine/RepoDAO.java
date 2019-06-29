@@ -165,7 +165,7 @@ class RepoDAO {
         return filePathRepoEntity(clazzWrapper, EXT_DEPS_FILE);
     }
     private Path filePathRepoEntity(ClazzWrapper clazzWrapper, String extension) {
-        String fname = strf("{}#{}#{}.jkrepo", dbName, clazzWrapper.getEClazz().getName(), extension);
+        String fname = strf("{}#{}#jkrepo.{}", dbName, clazzWrapper.getEClazz().getName(), extension);
         return dbFolder.resolve(fname);
     }
 

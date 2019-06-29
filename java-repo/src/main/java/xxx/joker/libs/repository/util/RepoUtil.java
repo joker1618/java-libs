@@ -25,6 +25,10 @@ public class RepoUtil {
      * @return
      */
     public static String formatEntities(Collection<? extends RepoEntity> entities, String... fieldsToDisplay) {
+        return formatEntities(entities, false, fieldsToDisplay);
+    }
+
+    public static String formatEntities(Collection<? extends RepoEntity> entities, boolean showClassName, String... fieldsToDisplay) {
         try {
             List<String> fieldNames = getFieldNames(fieldsToDisplay);
             List<String> lines = new ArrayList<>();
@@ -43,17 +47,19 @@ public class RepoUtil {
                     }
                 }
 
+                JkStreams.map(fieldNames, fn -> fn.replaceAll("^(eid)$", "entityID").replaceAll("^(etm)$", "creationTm"));
+
                 for (String fname : fieldNames) {
                     if (sb.length() > 0) sb.append("|");
 
-                    if (StringUtils.equalsAnyIgnoreCase(fname, "eid", "entityID")) {
+                    if (StringUtils.equalsAnyIgnoreCase(fname, "entityID")) {
                         Object fval = JkReflection.getFieldValue(e, "entityID");
                         if(fval == null)  sb.append("NULL");
                         else              sb.append(fval);
                     } else if (fname.equalsIgnoreCase("epk")) {
                         Method method = e.getClass().getMethod("getPrimaryKey");
                         sb.append((String) method.invoke(e));
-                    } else if (StringUtils.equalsAnyIgnoreCase(fname, "etm", "creationTm")) {
+                    } else if (StringUtils.equalsAnyIgnoreCase(fname, "creationTm")) {
                         Object fval = JkReflection.getFieldValue(e, "creationTm");
                         if(fval == null)  sb.append("NULL");
                         else              sb.append(((JkFormattable)fval).format());
@@ -77,10 +83,12 @@ public class RepoUtil {
                 lines.add(sb.toString());
             }
 
-            if(!fieldNames.isEmpty()) {
-                String header = JkStreams.join(fieldNames, "|", RepoUtil::createStringHeader);
+            if(!entities.isEmpty()) {
+                String header = JkStreams.join(fieldNames, "|");
                 lines.add(0, header);
-                lines.add(0, JkConvert.toList(entities).get(0).getClass().getName());
+                if(showClassName) {
+                    lines.add(0, JkConvert.toList(entities).get(0).getClass().getName());
+                }
             }
 
             return JkOutput.columnsView(lines);
@@ -88,24 +96,6 @@ public class RepoUtil {
         } catch (Exception ex) {
             throw new JkRuntimeException(ex);
         }
-    }
-
-    private static String createStringHeader(String str) {
-        StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < str.length(); i++) {
-            char c = str.charAt(i);
-            if(c >= 'A' && c <= 'Z') {
-                if(i > 0) {
-                    char o = str.charAt(i-1);
-                    if(o >= 'a' && o <= 'z') {
-                        sb.append(" ");
-                    }
-                }
-            }
-            sb.append(c);
-        }
-        String res = sb.toString().replace("_", " ").replaceAll(" +", " ").trim();
-        return res.toUpperCase();
     }
 
     private static List<String> getFieldNames(String... fieldNames) {

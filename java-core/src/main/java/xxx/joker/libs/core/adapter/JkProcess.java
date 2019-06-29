@@ -58,10 +58,13 @@ public class JkProcess {
         }
     }
 
-    public String toStringFull() {
+    public String toStringResult() {
+        return toStringResult(null);
+    }
+    public String toStringResult(Integer successCode) {
         String str = "";
         str += strf("Command: {}\nExit code: {}\n", command, exitCode);
-        if(!getErrorLines().isEmpty()) {
+        if(successCode != null && getExitCode() != successCode) {
             str += JkStreams.join(JkStrings.leftPadLines(getErrorLines(), "error>  ", 1));
         }
         if(!getOutputLines().isEmpty()) {
