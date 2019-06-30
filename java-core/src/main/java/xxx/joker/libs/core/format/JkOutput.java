@@ -12,18 +12,15 @@ import xxx.joker.libs.core.utils.JkStrings;
 
 import java.lang.reflect.Field;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Created by f.barbano on 26/05/2018.
  */
-
 public class JkOutput {
 
 	public static final String DEF_SEP = "|";
+	public static final String PH_NULL = "NULL";
 	public static final int DEF_DISTANCE = 2;
 
 	public static String columnsView(String lines) {
@@ -121,15 +118,15 @@ public class JkOutput {
 	}
 	public static List<String> formatCollLines(Collection<?> elems, String... fieldsToDisplay) {
 		try {
-			List<String> fieldNames = getFieldNames(fieldsToDisplay);
 			List<String> lines = new ArrayList<>();
 
+			List<String> fnames = JkConvert.toList(fieldsToDisplay);
 			for (Object e : elems) {
-				lines.add(formatObject1(e, fieldNames));
+				lines.add(formatObject1(e, fnames));
 			}
 
-			if(!fieldNames.isEmpty()) {
-				String header = JkStreams.join(fieldNames, "|", JkOutput::createStringHeader);
+			if(!lines.isEmpty()) {
+				String header = JkStreams.join(fnames, "|");
 				lines.add(0, header);
 			}
 
@@ -139,8 +136,8 @@ public class JkOutput {
 			throw new JkRuntimeException(ex);
 		}
 	}
-	public static String formatObject(Object o, String... fieldsToDisplay) {
-		return formatObject1(o, getFieldNames(fieldsToDisplay));
+	public static String formatObject(Object o, String... fieldNames) {
+		return formatObject1(o, JkConvert.toList(fieldNames));
 	}
 	private static String formatObject1(Object o, Collection<String> fieldNames) {
 		StringBuilder sb = new StringBuilder();
@@ -154,7 +151,7 @@ public class JkOutput {
 
 			Object fval = JkReflection.getFieldValue(o, fname);
 			if(fval == null) {
-				sb.append("NULL");
+				sb.append(PH_NULL);
 			} else if(JkReflection.isInstanceOf(fval.getClass(), Collection.class)) {
 				sb.append("#" + ((Collection)fval).size());
 			} else if(JkReflection.isInstanceOf(fval.getClass(), JkFormattable.class)) {
@@ -164,33 +161,6 @@ public class JkOutput {
 			}
 		}
 		return sb.toString();
-	}
-
-	private static String createStringHeader(String str) {
-		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < str.length(); i++) {
-			char c = str.charAt(i);
-			if(c >= 'A' && c <= 'Z') {
-				if(i > 0) {
-					char o = str.charAt(i-1);
-					if(o >= 'a' && o <= 'z') {
-						sb.append(" ");
-					}
-				}
-			}
-			sb.append(c);
-		}
-		String res = sb.toString().replace("_", " ").replaceAll(" +", " ").trim();
-		return res.toUpperCase();
-	}
-	private static List<String> getFieldNames(String... fieldNames) {
-		List<String> toRet = new ArrayList<>();
-		for (String fstr : fieldNames) {
-			String trimmed = fstr.replaceAll(" +", " ").trim();
-			List<String> tlist = JkStrings.splitList(trimmed, " ");
-			toRet.addAll(tlist);
-		}
-		return toRet;
 	}
 
 

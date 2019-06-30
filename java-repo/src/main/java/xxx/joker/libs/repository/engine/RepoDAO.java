@@ -36,6 +36,11 @@ class RepoDAO {
         this.clazzWrappers = clazzWrappers;
     }
 
+
+    public Path getDbFolder() {
+        return dbFolder;
+    }
+
     public List<RepoDTO> readRepoData() {
         JkTimer timer = new JkTimer();
         List<RepoDTO> toRet = new ArrayList<>();

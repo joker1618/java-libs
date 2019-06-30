@@ -6,6 +6,7 @@ import xxx.joker.libs.core.tests.JkTests;
 import xxx.joker.libs.core.types.JkFormattable;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
+import xxx.joker.libs.core.utils.JkStruct;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -75,6 +76,10 @@ public class JkReflection {
 		}
 	}
 
+	public static Field getFieldByAnnotation(Class<?> sourceClass, Class<? extends Annotation> annotationClass) {
+		List<Field> toRet = getFieldsByAnnotation(sourceClass, annotationClass);
+		return toRet.isEmpty() ? null : toRet.get(0);
+	}
 	public static List<Field> getFieldsByAnnotation(Class<?> sourceClass, Class<? extends Annotation> annotationClass) {
 		List<Field> toRet = new ArrayList<>();
 		Field[] declaredFields = sourceClass.getDeclaredFields();

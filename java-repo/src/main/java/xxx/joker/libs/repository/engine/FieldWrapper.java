@@ -243,13 +243,13 @@ public class FieldWrapper {
         } else if (isOfType(fclazz, boolean.class, Boolean.class)) {
             o = Boolean.valueOf(unesc);
         } else if (isOfType(fclazz, int.class, Integer.class)) {
-            o = JkConvert.toInt(unesc);
+            o = JkConvert.toInt(unesc, fclazz.isPrimitive() ? 0 : null);
         } else if (isOfType(fclazz, long.class, Long.class)) {
-            o = JkConvert.toLong(unesc);
+            o = JkConvert.toLong(unesc, fclazz.isPrimitive() ? 0L : null);
         } else if (isOfType(fclazz, float.class, Float.class)) {
-            o = JkConvert.toFloat(unesc);
+            o = JkConvert.toFloat(unesc, fclazz.isPrimitive() ? 0f : null);
         } else if (isOfType(fclazz, double.class, Double.class)) {
-            o = JkConvert.toDouble(unesc);
+            o = JkConvert.toDouble(unesc, fclazz.isPrimitive() ? 0d : null);
         } else if (isOfType(fclazz, Path.class)) {
             o = JkEnvironment.toAbsoluteAppsPath(Paths.get(unesc));
         } else if (isOfType(fclazz, File.class)) {

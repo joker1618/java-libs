@@ -54,6 +54,7 @@ public class RepoManager {
             ecList.forEach(c -> LOG.debug("Repo entity class: {}", c.getName()));
         }
 
+        dbFolder = dbFolder.resolve(dbName);
         List<ClazzWrapper> cwList = JkStreams.map(ecList, ClazzWrapper::get);
         if(StringUtils.isNotBlank(encryptionPwd)) {
             this.repoDao = new RepoDAOEncrypted(dbFolder, dbName, cwList, encryptionPwd);
@@ -169,15 +170,9 @@ public class RepoManager {
 
     private List<Class<?>> getCommonEntityClasses() {
         List<Class<?>> classes = new ArrayList<>();
-
-        try {
-            classes.add(Class.forName("xxx.joker.libs.repository.entities.RepoProperty"));
-            classes.add(Class.forName("xxx.joker.libs.repository.entities.RepoResource"));
-            classes.add(Class.forName("xxx.joker.libs.repository.entities.RepoUri"));
-        } catch (ClassNotFoundException ex) {
-            throw new RepoError(ex);
-        }
-
+        classes.add(RepoProperty.class);
+        classes.add(RepoResource.class);
+        classes.add(RepoUri.class);
         return classes;
     }
 

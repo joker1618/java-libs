@@ -11,12 +11,12 @@
     </parent>
 
     <properties>
-        <java.libs.version>2.0</java.libs.version>
+        <java.libs.version>2.0.1-refactor</java.libs.version>
     </properties>
 
     <groupId>xxx.joker.libs</groupId>
     <artifactId>java-libs</artifactId>
-    <version>2.0</version>
+    <version>2.0.1-refactor</version>
 
     <modules>
         <module>java-core</module>

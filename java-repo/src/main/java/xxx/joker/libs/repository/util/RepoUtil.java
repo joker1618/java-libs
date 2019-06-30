@@ -73,8 +73,6 @@ public class RepoUtil {
                             sb.append(((RepoEntity)fval).strShort());
                         } else if(JkReflection.isInstanceOf(fval.getClass(), JkFormattable.class)) {
                             sb.append(((JkFormattable)fval).format());
-                        } else if(fval.getClass() == Path.class) {
-                            sb.append(((JkFormattable)fval).format());
                         } else {
                             sb.append(fval);
                         }

@@ -15,28 +15,18 @@ public class JkEnvironment {
 
     private static final Path APPS_FOLDER_DEFAULT = getHomeFolder().resolve(".appsFolder");
 
-    private static JkCache<String, Object> cacheMap = new JkCache<>();
-
-
     public static Path getHomeFolder() {
         return Paths.get(System.getProperty(HOME_FOLDER_KEY));
     }
 
     public static Path getAppsFolder() {
-        if(!cacheMap.contains(APPS_FOLDER_KEY)) {
-            String val = System.getProperty(APPS_FOLDER_KEY);
-            Path p = val == null ? APPS_FOLDER_DEFAULT : Paths.get(JkConvert.unixToWinPath(val));
-            cacheMap.add(APPS_FOLDER_KEY, p);
-        }
-        return (Path) cacheMap.get(APPS_FOLDER_KEY);
+        String val = System.getProperty(APPS_FOLDER_KEY);
+        Path p = val == null ? APPS_FOLDER_DEFAULT : Paths.get(JkConvert.unixToWinPath(val));
+        return p;
     }
 
     public static void setAppsFolder(Path folder) {
-        cacheMap.add(APPS_FOLDER_KEY, folder);
-    }
-
-    public static Path getAppsTempFolder() {
-        return getAppsFolder().resolve(".tmp");
+        System.setProperty(APPS_FOLDER_KEY, folder.toString());
     }
 
     public static Path relativizeAppsPath(String sourcePath) {

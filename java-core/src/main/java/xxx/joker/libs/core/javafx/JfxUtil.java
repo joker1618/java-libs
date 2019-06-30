@@ -48,7 +48,7 @@ public class JfxUtil {
 			}
 			return (T) tmp;
 
-		} catch (ClassCastException ex) {
+		} catch (Exception ex) {
 			throw new JkRuntimeException(ex);
 		}
 	}

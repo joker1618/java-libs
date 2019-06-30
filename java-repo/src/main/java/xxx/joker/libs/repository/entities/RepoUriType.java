@@ -27,10 +27,12 @@ public enum RepoUriType {
         return fromExtension(path.toString());
     }
     public static RepoUriType fromExtension(String fname) {
-        String ext = fname.contains(".") ? JkFiles.getExtension(fname) : fname;
-        for (RepoUriType rut : values()) {
-            if(JkTests.containsIgnoreCase(rut.extensions, ext)) {
-                return rut;
+        if(fname.contains(".")) {
+            String ext = JkFiles.getExtension(fname);
+            for (RepoUriType rut : values()) {
+                if (JkTests.containsIgnoreCase(rut.extensions, ext)) {
+                    return rut;
+                }
             }
         }
         return OTHER;

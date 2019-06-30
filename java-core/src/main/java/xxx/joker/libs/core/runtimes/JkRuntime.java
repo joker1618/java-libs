@@ -2,11 +2,13 @@ package xxx.joker.libs.core.runtimes;
 
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -23,15 +25,30 @@ public class JkRuntime {
      */
     public static List<Class<?>> findClasses(String packageName) {
         try {
-            File launcherPath = JkFiles.getLauncherPath(JkReflection.class).toFile();
-            List<Class<?>> classes = getClassesFromClassLoader(packageName);
-            classes.addAll(getClassesFromJar(launcherPath, packageName));
+            Field f = ClassLoader.class.getDeclaredField("classes");
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            boolean facc = f.isAccessible();
+            f.setAccessible(true);
+            List<Class<?>> classes =  (List<Class<?>>) f.get(classLoader);
+            f.setAccessible(facc);
+            classes.removeIf(c -> !c.getName().startsWith(packageName));
             return classes;
 
         } catch (Exception ex) {
             throw new JkRuntimeException(ex);
         }
     }
+//    public static List<Class<?>> findClasses(String packageName) {
+//        try {
+//            File launcherPath = JkFiles.getLauncherPath(JkReflection.class).toFile();
+//            List<Class<?>> classes = getClassesFromClassLoader(packageName);
+//            classes.addAll(getClassesFromJar(launcherPath, packageName));
+//            return classes;
+//
+//        } catch (Exception ex) {
+//            throw new JkRuntimeException(ex);
+//        }
+//    }
 
     private static List<Class<?>> getClassesFromClassLoader(String packageName) throws IOException, ClassNotFoundException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();

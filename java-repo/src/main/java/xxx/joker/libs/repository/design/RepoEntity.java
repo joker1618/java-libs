@@ -10,6 +10,7 @@ public abstract class RepoEntity implements IRepoEntity<RepoEntity> {
 
     @RepoEntityID
     protected Long entityID;
+    @RepoEntityCreationTm
     protected JkDateTime creationTm;
 
     @Override

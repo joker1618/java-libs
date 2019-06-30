@@ -21,7 +21,7 @@ class RepoDAOEncrypted extends RepoDAO {
     RepoDAOEncrypted(Path dbFolder, String dbName, List<ClazzWrapper> clazzWrappers, String password) {
         super(dbFolder, dbName, clazzWrappers);
         this.password = password;
-        this.tempFolder = JkEnvironment.getAppsTempFolder().resolve(".repoTemp");
+        this.tempFolder = dbFolder.resolve(".repoTemp");
     }
 
     @Override

@@ -6,6 +6,7 @@ import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.repository.config.RepoConfig;
 import xxx.joker.libs.repository.design.RepoEntity;
+import xxx.joker.libs.repository.design.RepoEntityCreationTm;
 import xxx.joker.libs.repository.design.RepoEntityID;
 import xxx.joker.libs.repository.design.RepoField;
 import xxx.joker.libs.repository.exceptions.RepoError;
@@ -21,9 +22,9 @@ class ClazzWrapper {
     private static final FieldWrapper CF_ENTITY_ID;
     private static final FieldWrapper CF_CREATION_TIME;
     static {
-        Field f = JkReflection.getFieldsByAnnotation(RepoEntity.class, RepoEntityID.class).get(0);
+        Field f = JkReflection.getFieldByAnnotation(RepoEntity.class, RepoEntityID.class);
         CF_ENTITY_ID = new FieldWrapper(f);
-        Field f2 = JkReflection.getFieldByName(RepoEntity.class, "creationTm");
+        Field f2 = JkReflection.getFieldByAnnotation(RepoEntity.class, RepoEntityCreationTm.class);
         CF_CREATION_TIME = new FieldWrapper(f2);
     }
 
