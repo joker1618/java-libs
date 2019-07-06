@@ -21,13 +21,13 @@ public class RepoTags implements JkFormattable<RepoTags> {
     }
 
     public static RepoTags of(String... tags) {
-        List<String> tagList = new ArrayList<>();
+        Set<String> tagSet = new HashSet<>();
         for (String tag : tags) {
             List<String> tlist = JkStrings.splitList(tag.replaceAll("[\\s,;|]", ","), ",", true);
             tlist.removeIf(StringUtils::isBlank);
-            tagList.addAll(tlist);
+            tagSet.addAll(tlist);
         }
-        return new RepoTags(tagList);
+        return new RepoTags(tagSet);
     }
 
     @Override

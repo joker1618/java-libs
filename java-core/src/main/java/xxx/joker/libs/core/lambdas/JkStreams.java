@@ -143,7 +143,7 @@ public class JkStreams {
 
 	public static <V,K> Map<K,List<V>> toMap(Collection<V> source, Function<V,K> keyMapper) {
 		return toMap(source, keyMapper, v -> v);
-	}
+    }
 	@SafeVarargs
 	public static <V,K,T> Map<K,List<T>> toMap(Collection<V> source, Function<V,K> keyMapper, Function<V,T> valueMapper, Predicate<V>... filters) {
         Map<K,List<T>> map = new HashMap<>();

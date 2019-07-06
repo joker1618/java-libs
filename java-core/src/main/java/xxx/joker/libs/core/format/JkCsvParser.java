@@ -1,6 +1,7 @@
 package xxx.joker.libs.core.format;
 
 import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkEnvironment;
 import xxx.joker.libs.core.runtimes.JkReflection;
@@ -21,8 +22,6 @@ import java.util.Map;
 
 public class JkCsvParser {
 
-    private List<String> csvLines = new ArrayList<>();
-
     private List<String> excludes = new ArrayList<>();
     private List<String> toShow = new ArrayList<>();
 
@@ -33,6 +32,9 @@ public class JkCsvParser {
         return new JkCsvParser();
     }
 
+    public <T> List<T> parseCsv(Path csvPath, Class<T> clazz) {
+        return parseCsv(JkFiles.readLines(csvPath), clazz);
+    }
     public <T> List<T> parseCsv(List<String> csvLines, Class<T> clazz) {
         List<T> toRet = new ArrayList<>();
 

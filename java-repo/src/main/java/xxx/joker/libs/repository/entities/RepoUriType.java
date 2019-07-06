@@ -12,7 +12,7 @@ public enum RepoUriType {
     IMAGE("gif", "jpeg", "jpg", "png", "tif", "tiff", "jif", "jfif"),
     MUSIC("mp3"),
     VIDEO("mp4", "avi", "mpeg", "mpg"),
-    HTML("html", "xml"),
+    HTML("html"),
     TEXT("txt", "csv"),
     OTHER
     ;

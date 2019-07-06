@@ -125,10 +125,8 @@ public class JkOutput {
 				lines.add(formatObject1(e, fnames));
 			}
 
-			if(!lines.isEmpty()) {
-				String header = JkStreams.join(fnames, "|");
-				lines.add(0, header);
-			}
+			String header = JkStreams.join(fnames, "|");
+			lines.add(0, header);
 
 			return lines;
 

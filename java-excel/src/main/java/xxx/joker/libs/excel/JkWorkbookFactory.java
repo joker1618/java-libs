@@ -6,24 +6,33 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import xxx.joker.libs.core.exception.JkRuntimeException;
+import xxx.joker.libs.core.files.JkFiles;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileAttribute;
 
 public class JkWorkbookFactory {
 
     public static JkWorkbook create(Path excelPath) {
-        if (!Files.exists(excelPath)) {
-            throw new JkRuntimeException("The excel file does not exists. [%s]", excelPath);
-        } else if (Files.isDirectory(excelPath)) {
+        if (Files.isDirectory(excelPath)) {
             throw new JkRuntimeException("The input path is a folder (must be and excel file). ["+excelPath+"]");
         }
 
         JkExcelType excelType = JkExcelType.fromExtension(excelPath);
         if(excelType == null) {
             throw new JkRuntimeException("File %s is not an excel file", excelPath);
+        }
+
+        if(!Files.exists(excelPath)) {
+            try {
+                Files.createDirectories(JkFiles.getParent(excelPath));
+                Files.createFile(excelPath);
+            } catch(IOException ex) {
+                throw new JkRuntimeException(ex, "Error creating file %s", excelPath);
+            }
         }
 
         try (FileInputStream fis = new FileInputStream(excelPath.toFile())) {

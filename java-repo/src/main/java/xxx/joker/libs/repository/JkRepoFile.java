@@ -32,31 +32,20 @@ public abstract class JkRepoFile implements JkRepo {
         this(null, dbFolder, dbName, pkgsToScan);
     }
 
-    protected JkRepoFile(Path dbFolder, String dbName, Class<?>... classes) {
-        this(null, dbFolder, dbName, JkConvert.toList(classes));
-    }
-
     protected JkRepoFile(Path dbFolder, String dbName, Collection<Class<?>> classes) {
         this(null, dbFolder, dbName, classes);
     }
 
     protected JkRepoFile(String encryptionPwd, Path dbFolder, String dbName, String... pkgsToScan) {
-        initRepo(encryptionPwd, dbFolder, dbName, pkgsToScan);
-    }
-
-    protected JkRepoFile(String encryptionPwd, Path dbFolder, String dbName, Class<?>... classes) {
-        this(encryptionPwd, dbFolder, dbName, JkConvert.toList(classes));
+        initRepo(encryptionPwd, dbFolder, dbName, scanPackages(pkgsToScan));
     }
 
     protected JkRepoFile(String encryptionPwd, Path dbFolder, String dbName, Collection<Class<?>> classes) {
-        this.repoManager = new RepoManager(encryptionPwd, dbFolder, dbName, classes);
+        initRepo(encryptionPwd, dbFolder, dbName, classes);
     }
 
-    protected void initRepo(Path dbFolder, String dbName, String... pkgsToScan) {
-        initRepo(null, dbFolder, dbName, pkgsToScan);
-    }
-    protected void initRepo(String encryptionPwd, Path dbFolder, String dbName, String... pkgsToScan) {
-        this.repoManager = new RepoManager(encryptionPwd, dbFolder, dbName, scanPackages(pkgsToScan));
+    protected void initRepo(String encryptionPwd, Path dbFolder, String dbName, Collection<Class<?>> classes) {
+        this.repoManager = new RepoManager(encryptionPwd, dbFolder, dbName, classes);
     }
 
 
@@ -180,7 +169,7 @@ public abstract class JkRepoFile implements JkRepo {
     }
 
     private RepoProperty retrieveProperty(String propKey) {
-        return JkStreams.findUnique(getDataSet(RepoProperty.class), rp -> rp.getKey().equalsIgnoreCase(propKey));
+        return get((RepoProperty.class), rp -> rp.getKey().equalsIgnoreCase(propKey));
     }
 
     @Override

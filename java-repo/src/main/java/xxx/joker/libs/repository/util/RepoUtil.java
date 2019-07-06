@@ -5,6 +5,7 @@ import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.format.JkOutput;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
+import xxx.joker.libs.core.runtimes.JkRuntime;
 import xxx.joker.libs.core.types.JkFormattable;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
@@ -12,10 +13,9 @@ import xxx.joker.libs.repository.design.RepoEntity;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class RepoUtil {
 
@@ -47,7 +47,7 @@ public class RepoUtil {
                     }
                 }
 
-                JkStreams.map(fieldNames, fn -> fn.replaceAll("^(eid)$", "entityID").replaceAll("^(etm)$", "creationTm"));
+                JkStreams.map(fieldNames, fn -> fn.replaceAll("^eid$", "entityID").replaceAll("^etm$", "creationTm"));
 
                 for (String fname : fieldNames) {
                     if (sb.length() > 0) sb.append("|");
@@ -104,5 +104,17 @@ public class RepoUtil {
             toRet.addAll(tlist);
         }
         return toRet;
+    }
+
+    public List<Class<?>> scanPkgEntities(String... pkgsArr) {
+        Set<Class<?>> classes = new HashSet<>();
+
+        List<String> pkgsToScan = JkConvert.toList(pkgsArr);
+        pkgsToScan.forEach(pkg -> classes.addAll(JkRuntime.findClasses(pkg)));
+        classes.removeIf(c -> !JkReflection.isInstanceOf(c, RepoEntity.class));
+        classes.removeIf(c -> Modifier.isAbstract(c.getModifiers()));
+        classes.removeIf(c -> Modifier.isInterface(c.getModifiers()));
+
+        return JkConvert.toList(classes);
     }
 }
