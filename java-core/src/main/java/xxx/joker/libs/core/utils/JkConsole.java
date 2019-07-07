@@ -6,6 +6,7 @@ import xxx.joker.libs.core.exception.JkRuntimeException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.function.Predicate;
 
 import static java.lang.System.out;
@@ -19,6 +20,9 @@ public class JkConsole {
 
 	public static void display(Object o) {
 		display("{}", o);
+	}
+	public static void displayColl(Collection<?> coll) {
+		coll.forEach(c -> display("{}", c));
 	}
 	public static void display(String mexFormat, Object... params) {
 		out.println(strf(mexFormat, params));

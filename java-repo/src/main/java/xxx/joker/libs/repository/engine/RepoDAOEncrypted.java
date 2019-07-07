@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.files.JkEncryption;
 import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.runtimes.JkEnvironment;
+import xxx.joker.libs.repository.config.RepoCtx;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,13 +16,8 @@ class RepoDAOEncrypted extends RepoDAO {
 
     private static final Logger LOG = LoggerFactory.getLogger(RepoDAOEncrypted.class);
 
-    private final Path tempFolder;
-    private final String password;
-
-    RepoDAOEncrypted(Path dbFolder, String dbName, List<ClazzWrapper> clazzWrappers, String password) {
-        super(dbFolder, dbName, clazzWrappers);
-        this.password = password;
-        this.tempFolder = dbFolder.resolve(".repoTemp");
+    RepoDAOEncrypted(RepoCtx ctx) {
+        super(ctx);
     }
 
     @Override
@@ -29,8 +25,8 @@ class RepoDAOEncrypted extends RepoDAO {
         if(!Files.exists(sourcePath)) {
             return Collections.emptyList();
         } else {
-            Path tmpPath = tempFolder.resolve(sourcePath.getFileName());
-            JkEncryption.decryptFile(sourcePath, tmpPath, password);
+            Path tmpPath = ctx.getTempFolder().resolve(sourcePath.getFileName());
+            JkEncryption.decryptFile(sourcePath, tmpPath, ctx.getEncryptionPwd());
             List<String> lines = JkFiles.readLinesNotBlank(tmpPath);
             JkFiles.delete(tmpPath);
             return lines;
@@ -40,9 +36,9 @@ class RepoDAOEncrypted extends RepoDAO {
 
     @Override
     protected void saveRepoFile(Path outputPath, List<String> lines) {
-        Path tmpPath = tempFolder.resolve(outputPath.getFileName());
+        Path tmpPath = ctx.getTempFolder().resolve(outputPath.getFileName());
         JkFiles.writeFile(tmpPath, lines);
-        JkEncryption.encryptFile(tmpPath, outputPath, password);
+        JkEncryption.encryptFile(tmpPath, outputPath, ctx.getEncryptionPwd());
         JkFiles.delete(tmpPath);
     }
 

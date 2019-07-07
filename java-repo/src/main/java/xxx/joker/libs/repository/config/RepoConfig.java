@@ -31,10 +31,6 @@ public class RepoConfig {
         public static final String PH_NULL = "@_NUL_@";
     }
 
-    public static Path getResourcesFolder(Path dbFolder, String dbName) {
-        return dbFolder.resolve(strf("{}.resources", dbName));
-    }
-
     public static boolean isValidType(FieldWrapper fieldWrapper) {
         Class<?> fieldType = fieldWrapper.getFieldType();
         boolean res = ALLOWED_FIELDS.contains(fieldType);

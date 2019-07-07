@@ -17,7 +17,13 @@ public interface JkWorkbook extends Closeable {
     JkSheet getSheet(String sheetName);
     JkSheet getSheet(String sheetName, boolean createIfMissing);
 
+    JkSheet cloneSheet(int num, String newName);
+    JkSheet cloneSheet(String sheetName, String newName);
+
     JkSheet[] getSheets();
+
+//    JkSheet removeSheet(int sheetNum);
+//    JkSheet removeSheet(String sheetName);
 
     void persist(Path outputPath);
 

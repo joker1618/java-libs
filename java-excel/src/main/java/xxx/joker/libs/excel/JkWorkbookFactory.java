@@ -12,29 +12,32 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileAttribute;
 
 public class JkWorkbookFactory {
 
+    public static JkWorkbook create(Workbook wb) {
+        if(wb instanceof XSSFWorkbook)  return new JkWorkbookXSSF((XSSFWorkbook)wb);
+        return new JkWorkbookHSSF((HSSFWorkbook)wb);
+    }
     public static JkWorkbook create(Path excelPath) {
         if (Files.isDirectory(excelPath)) {
-            throw new JkRuntimeException("The input path is a folder (must be and excel file). ["+excelPath+"]");
+            throw new JkRuntimeException("The input path is a folder (must be and excel file). [" + excelPath + "]");
         }
 
         JkExcelType excelType = JkExcelType.fromExtension(excelPath);
-        if(excelType == null) {
+        if (excelType == null) {
             throw new JkRuntimeException("File %s is not an excel file", excelPath);
         }
 
-        if(!Files.exists(excelPath)) {
+        if (!Files.exists(excelPath)) {
             try {
                 Files.createDirectories(JkFiles.getParent(excelPath));
                 Files.createFile(excelPath);
-            } catch(IOException ex) {
+                return excelType == JkExcelType.HSSF ? new JkWorkbookHSSF() : new JkWorkbookXSSF();
+            } catch (IOException ex) {
                 throw new JkRuntimeException(ex, "Error creating file %s", excelPath);
             }
         }
-
         try (FileInputStream fis = new FileInputStream(excelPath.toFile())) {
             Workbook wb = WorkbookFactory.create(fis);
             return excelType == JkExcelType.HSSF ? new JkWorkbookHSSF((HSSFWorkbook)wb) : new JkWorkbookXSSF((XSSFWorkbook)wb);
@@ -43,5 +46,4 @@ public class JkWorkbookFactory {
             throw new JkRuntimeException(ex, "Error creating workbook from file %s", excelPath);
         }
     }
-
 }

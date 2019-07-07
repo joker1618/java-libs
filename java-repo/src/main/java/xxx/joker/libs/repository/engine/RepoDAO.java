@@ -7,6 +7,7 @@ import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkStrings;
+import xxx.joker.libs.repository.config.RepoCtx;
 import xxx.joker.libs.repository.design.RepoEntity;
 
 import java.nio.file.Files;
@@ -26,26 +27,20 @@ class RepoDAO {
 
     private static final String SEP_DESCR = ":";
 
-    protected Path dbFolder;
-    protected String dbName;
-    protected List<ClazzWrapper> clazzWrappers;
+    protected final RepoCtx ctx;
+//    protected Path dbFolder;
+//    protected String dbName;
+//    protected List<ClazzWrapper> clazzWrappers;
 
-    RepoDAO(Path dbFolder, String dbName, List<ClazzWrapper> clazzWrappers) {
-        this.dbFolder = dbFolder;
-        this.dbName = dbName;
-        this.clazzWrappers = clazzWrappers;
-    }
-
-
-    public Path getDbFolder() {
-        return dbFolder;
+    RepoDAO(RepoCtx ctx) {
+        this.ctx = ctx;
     }
 
     public List<RepoDTO> readRepoData() {
         JkTimer timer = new JkTimer();
         List<RepoDTO> toRet = new ArrayList<>();
 
-        for(ClazzWrapper rc : clazzWrappers) {
+        for(ClazzWrapper rc : ctx.getEClasses().values()) {
             RepoDTO dto = new RepoDTO(rc.getEClazz());
             toRet.add(dto);
 
@@ -73,7 +68,7 @@ class RepoDAO {
             List<String> fkLines = new ArrayList<>();
             List<String> dataLines = new ArrayList<>();
 
-            ClazzWrapper rc = ClazzWrapper.get(dto.getEClazz());
+            ClazzWrapper rc = new ClazzWrapper(dto.getEClazz(), ctx);
 
             formatData.put(filePathDescr(rc), descrList);
             formatData.put(filePathData(rc), dataLines);
@@ -170,8 +165,8 @@ class RepoDAO {
         return filePathRepoEntity(clazzWrapper, EXT_DEPS_FILE);
     }
     private Path filePathRepoEntity(ClazzWrapper clazzWrapper, String extension) {
-        String fname = strf("{}#{}#jkrepo.{}", dbName, clazzWrapper.getEClazz().getName(), extension);
-        return dbFolder.resolve(fname);
+        String fname = strf("{}#{}#jkrepo.{}", ctx.getDbName(), clazzWrapper.getEClazz().getName(), extension);
+        return ctx.getDbFolder().resolve(fname);
     }
 
 }

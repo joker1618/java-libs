@@ -216,6 +216,17 @@ abstract class JkAbstractSheet implements JkSheet {
 
 
     @Override
+    public Cell getCell(int rowNum, int colNum) {
+        return getCell(rowNum, colNum, false);
+    }
+
+    @Override
+    public CellStyle getCellStyle(int rowNum, int colNum) {
+        Cell cell = getCell(rowNum, colNum);
+        return cell == null ? null : cell.getCellStyle();
+    }
+
+    @Override
     public void setStyle(int rowNum, int colNum, CellStyle cellStyle) {
         getCell(rowNum, colNum, true).setCellStyle(cellStyle);
     }

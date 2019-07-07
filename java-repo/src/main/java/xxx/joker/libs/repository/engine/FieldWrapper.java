@@ -8,6 +8,7 @@ import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.types.JkFormattable;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
+import xxx.joker.libs.repository.config.RepoCtx;
 import xxx.joker.libs.repository.design.AllowNullString;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.exceptions.RepoError;
@@ -33,15 +34,16 @@ public class FieldWrapper {
     private static final DateTimeFormatter DTF_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
     private static final DateTimeFormatter DTF_DATETIME = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-
     private final Field field;
+    private final RepoCtx repoCtx;
     // The following fields are used to avoid reflection every time
     private Class<?> fieldType;
     private Class<?> elemType;
     private Set<Class<?>> directives;
 
-    FieldWrapper(Field field) {
+    FieldWrapper(Field field, RepoCtx repoCtx) {
         this.field = field;
+        this.repoCtx = repoCtx;
         this.directives = new HashSet<>();
         init();
     }
@@ -149,7 +151,7 @@ public class FieldWrapper {
         } else if (isOfType(fclazz, boolean.class, Boolean.class)) {
             toRet = ((Boolean) value) ? "true" : "false";
         } else if (isOfType(fclazz, File.class, Path.class)) {
-            toRet = JkEnvironment.relativizeAppsPath(value.toString()).toString();
+            toRet = value.toString();
         } else if (isOfType(fclazz, LocalTime.class)) {
             toRet = DateTimeFormatter.ISO_TIME.format((LocalTime) value);
         } else if (isOfType(fclazz, LocalDate.class)) {
@@ -251,9 +253,9 @@ public class FieldWrapper {
         } else if (isOfType(fclazz, double.class, Double.class)) {
             o = JkConvert.toDouble(unesc, fclazz.isPrimitive() ? 0d : null);
         } else if (isOfType(fclazz, Path.class)) {
-            o = JkEnvironment.toAbsoluteAppsPath(Paths.get(unesc));
+            o = Paths.get(unesc);
         } else if (isOfType(fclazz, File.class)) {
-            o = JkEnvironment.toAbsoluteAppsPath(Paths.get(unesc)).toFile();
+            o = Paths.get(unesc).toFile();
         } else if (isOfType(fclazz, LocalTime.class)) {
             o = LocalTime.parse(unesc, DTF_TIME);
         } else if (isOfType(fclazz, LocalDate.class)) {

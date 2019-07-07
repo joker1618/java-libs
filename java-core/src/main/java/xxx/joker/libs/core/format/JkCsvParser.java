@@ -25,17 +25,18 @@ public class JkCsvParser {
     private List<String> excludes = new ArrayList<>();
     private List<String> toShow = new ArrayList<>();
 
-    public JkCsvParser() {
+    private JkCsvParser() {
 
     }
+
     public static JkCsvParser get() {
         return new JkCsvParser();
     }
 
-    public <T> List<T> parseCsv(Path csvPath, Class<T> clazz) {
+    public static <T> List<T> parseCsv(Path csvPath, Class<T> clazz) {
         return parseCsv(JkFiles.readLines(csvPath), clazz);
     }
-    public <T> List<T> parseCsv(List<String> csvLines, Class<T> clazz) {
+    public static <T> List<T> parseCsv(List<String> csvLines, Class<T> clazz)  {
         List<T> toRet = new ArrayList<>();
 
         if(!csvLines.isEmpty()) {
@@ -55,10 +56,10 @@ public class JkCsvParser {
         }
         return toRet;
     }
-    private boolean isOfType(Field f, Class<?>... classes) {
+    private static boolean isOfType(Field f, Class<?>... classes) {
         return isOfType(f.getType(), classes);
     }
-    private boolean isOfType(Class<?> clazz, Class<?>... classes) {
+    private static boolean isOfType(Class<?> clazz, Class<?>... classes) {
         for(Class<?> c : classes) {
             if(c == clazz) {
                 return true;
@@ -66,7 +67,7 @@ public class JkCsvParser {
         }
         return false;
     }
-    private Object parseSingleValue(String value, Class<?> fclazz) {
+    private static Object parseSingleValue(String value, Class<?> fclazz) {
         Object o = null;
 
         if (value != null && !value.equalsIgnoreCase(JkOutput.PH_NULL)) {

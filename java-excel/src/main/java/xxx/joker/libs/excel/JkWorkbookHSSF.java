@@ -23,7 +23,7 @@ public class JkWorkbookHSSF implements JkWorkbook {
         this(new HSSFWorkbook());
     }
 
-    protected JkWorkbookHSSF(HSSFWorkbook wb) {
+    public JkWorkbookHSSF(HSSFWorkbook wb) {
         this.wb = wb;
         init();
     }
@@ -80,6 +80,23 @@ public class JkWorkbookHSSF implements JkWorkbook {
         }
 
         return toRet;
+    }
+
+    @Override
+    public JkSheet cloneSheet(int num, String newName) {
+        HSSFSheet cloned = wb.cloneSheet(num);
+        int cidx = wb.getSheetIndex(cloned);
+        wb.setSheetName(cidx, newName);
+        return new JkSheetHSSF(cloned);
+    }
+
+    @Override
+    public JkSheet cloneSheet(String sheetName, String newName) {
+        int sidx = wb.getSheetIndex(sheetName);
+        HSSFSheet cloned = wb.cloneSheet(sidx);
+        int cidx = wb.getSheetIndex(cloned);
+        wb.setSheetName(cidx, newName);
+        return new JkSheetHSSF(cloned);
     }
 
     @Override

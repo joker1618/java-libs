@@ -6,6 +6,7 @@ import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.config.RepoConfig;
+import xxx.joker.libs.repository.config.RepoCtx;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.entities.RepoProperty;
 
@@ -24,14 +25,14 @@ class RepoHandler {
     private static final Logger LOG = LoggerFactory.getLogger(RepoHandler.class);
     private static final List<String> WRITE_METHODS = Arrays.asList("add", "addAll", "remove", "removeIf", "removeAll", "clear", "set");
 
-    private final ReadWriteLock repoLock;
+    private final RepoCtx ctx;
 
     private Map<Class<?>, HandlerDataSet> handlers;
     private TreeMap<Long, RepoEntity> dataByID;
     private final AtomicLong sequenceValue;
 
-    RepoHandler(List<RepoDTO> dtoList, ReadWriteLock repoLock) {
-        this.repoLock = repoLock;
+    RepoHandler(List<RepoDTO> dtoList, RepoCtx ctx) {
+        this.ctx = ctx;
 
         this.handlers = new HashMap<>();
         this.dataByID = new TreeMap<>();
@@ -75,7 +76,7 @@ class RepoHandler {
     }
 
     private void initRepoFields(RepoEntity e) {
-        ClazzWrapper rc = ClazzWrapper.get(e);
+        ClazzWrapper rc = ctx.getEClasses().get(e.getClass());
 
         // Apply field directives
         rc.getEntityFields().forEach(ef -> ef.applyDirectives(e));
@@ -122,7 +123,7 @@ class RepoHandler {
 
     private void setDependencies(RepoEntity e, List<RepoFK> fkList) {
         if(fkList != null && !fkList.isEmpty()) {
-            ClazzWrapper rc = ClazzWrapper.get(e);
+            ClazzWrapper rc = ctx.getEClasses().get(e.getClass());
             Map<String, List<Long>> fkMap = JkStreams.toMap(fkList, RepoFK::getFieldName, RepoFK::getDepID);
             fkMap.forEach((k,v) -> {
                 List<RepoEntity> deps = JkStreams.map(v, depID -> dataByID.get(depID));
@@ -180,12 +181,11 @@ class RepoHandler {
         }
 
         synchronized (sequenceValue) {
-            ClazzWrapper.setEntityID(toAdd, sequenceValue.get());
-
+            toAdd.setEntityID(sequenceValue.get());
             if (insColl != null) {
                 boolean added = insColl.add(toAdd);
                 if (!added) {
-                    ClazzWrapper.setEntityID(toAdd, null);
+                    toAdd.setEntityID(null);
                     return false;
                 }
             }
@@ -195,7 +195,7 @@ class RepoHandler {
                 if (insColl != null) {
                     insColl.remove(toAdd);
                 }
-                ClazzWrapper.setEntityID(toAdd, null);
+                toAdd.setEntityID(null);
                 return false;
             }
 
@@ -234,7 +234,7 @@ class RepoHandler {
         }
 
         // Remove where referenced
-        Map<Class<?>, List<FieldWrapper>> refMap = ClazzWrapper.getReferenceFields(toDel.getClass());
+        Map<Class<?>, List<FieldWrapper>> refMap = ctx.getEClasses().get(toDel.getClass()).getReferenceFields();
         refMap.forEach((c,l) -> {
             TreeSet<RepoEntity> eset = handlers.get(c).getEntities();
             l.forEach(fw -> {
@@ -262,7 +262,7 @@ class RepoHandler {
 
     private Map<String, List<RepoEntity>> retrieveDepChilds(RepoEntity e) {
         Map<String, List<RepoEntity>> toRet = new HashMap<>();
-        ClazzWrapper rc = ClazzWrapper.get(e);
+        ClazzWrapper rc = ctx.getEClasses().get(e.getClass());
         for(FieldWrapper cf : rc.getEntityFields()) {
             if(cf.isRepoEntityFlatField()) {
                 Object value = cf.getValue(e);
@@ -290,7 +290,7 @@ class RepoHandler {
         // Remove entities without dependencies before
         List<Class<?>> toDelete = JkConvert.toList(handlers.keySet());
         List<Class<?>> delList = new ArrayList<>();
-        Map<Class<?>, List<Class<?>>> refMap = JkStreams.toMapSingle(toDelete, c -> c, c -> JkConvert.toList(ClazzWrapper.getReferenceFields(c).keySet()));
+        Map<Class<?>, List<Class<?>>> refMap = JkStreams.toMapSingle(toDelete, c -> c, c -> JkConvert.toList(ctx.getEClasses().get(c.getClass()).getReferenceFields().keySet()));
 
         int prev = -1;
         while(!toDelete.isEmpty() && prev != delList.size()) {
@@ -332,7 +332,7 @@ class RepoHandler {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             String methodName = method.getName();
-            Lock actualLock = WRITE_METHODS.contains(methodName) ? repoLock.writeLock() : repoLock.readLock();
+            Lock actualLock = WRITE_METHODS.contains(methodName) ? ctx.getRepoLock().writeLock() : ctx.getRepoLock().readLock();
 
             try {
                 actualLock.lock();
@@ -417,7 +417,7 @@ class RepoHandler {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             String methodName = method.getName();
-            Lock actualLock = WRITE_METHODS.contains(methodName) ? repoLock.writeLock() : repoLock.readLock();
+            Lock actualLock = WRITE_METHODS.contains(methodName) ? ctx.getRepoLock().writeLock() : ctx.getRepoLock().readLock();
 
             try {
                 actualLock.lock();
@@ -462,7 +462,7 @@ class RepoHandler {
                 throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
             String methodName = method.getName();
-            Lock actualLock = WRITE_METHODS.contains(methodName) ? repoLock.writeLock() : repoLock.readLock();
+            Lock actualLock = WRITE_METHODS.contains(methodName) ? ctx.getRepoLock().writeLock() : ctx.getRepoLock().readLock();
 
             try {
                 actualLock.lock();

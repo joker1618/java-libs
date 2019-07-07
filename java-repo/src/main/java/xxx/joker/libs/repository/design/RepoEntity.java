@@ -62,6 +62,11 @@ public abstract class RepoEntity implements IRepoEntity<RepoEntity> {
     }
 
     @Override
+    public void setEntityID(Long entityID) {
+        this.entityID = entityID;
+    }
+
+    @Override
     public void setCreationTm(JkDateTime creationTm) {
         this.creationTm = creationTm;
     }

@@ -1,5 +1,6 @@
 package xxx.joker.libs.excel;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellReference;
@@ -40,6 +41,8 @@ public interface JkSheet {
     void setValues(int rowNum, int colNum, List<?> values);
     void setValues(int rowNum, int colNum, List<?> values, CellStyle cellStyle);
 
+    Cell getCell(int rowNum, int colNum);
+    CellStyle getCellStyle(int rowNum, int colNum);
     void setStyle(int rowNum, int colNum, CellStyle cellStyle);
     void setStyle(JkArea area, CellStyle cellStyle);
 

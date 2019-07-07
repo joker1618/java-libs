@@ -12,6 +12,7 @@ import xxx.joker.libs.core.media.JkImage;
 import xxx.joker.libs.core.media.JkMedia;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.repository.config.RepoConfig;
+import xxx.joker.libs.repository.config.RepoCtx;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.entities.*;
 import xxx.joker.libs.repository.exceptions.RepoError;
@@ -30,65 +31,64 @@ public class RepoManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(RepoManager.class);
 
-    private ReadWriteLock repoLock;
     private RepoDAO repoDao;
     private RepoHandler repoHandler;
-    private Path resourcesFolder;
+
+    private final RepoCtx ctx;
 
 
-    public RepoManager(Path dbFolder, String dbName, Collection<Class<?>> classes) {
-        this(null, dbFolder, dbName, classes);
+    public RepoManager(RepoCtx ctx) {
+        this.ctx = ctx;
     }
+//    public RepoManager(Path dbFolder, String dbName, Collection<Class<?>> classes) {
+//        this(null, dbFolder, dbName, classes);
+//    }
+//
+//    public RepoManager(String encryptionPwd, Path dbFolder, String dbName, Collection<Class<?>> classes) {
+//        initRepoManager(dbFolder, dbName, classes, encryptionPwd);
+//    }
 
-    public RepoManager(String encryptionPwd, Path dbFolder, String dbName, Collection<Class<?>> classes) {
-        initRepoManager(dbFolder, dbName, classes, encryptionPwd);
-    }
-
-    private void initRepoManager(Path dbFolder, String dbName, Collection<Class<?>> entityClasses, String encryptionPwd) {
+    private void initRepoManager() {
         JkTimer timer = new JkTimer();
 
-        List<Class<?>> ecList = JkConvert.toList(entityClasses);
+        List<Class<?>> ecList = JkConvert.toList(ctx.getEClasses().keySet());
         ecList.addAll(getCommonEntityClasses());
 
         if(LOG.isDebugEnabled()) {
             ecList.forEach(c -> LOG.debug("Repo entity class: {}", c.getName()));
         }
 
-        dbFolder = dbFolder.resolve(dbName);
-        List<ClazzWrapper> cwList = JkStreams.map(ecList, ClazzWrapper::get);
-        if(StringUtils.isNotBlank(encryptionPwd)) {
-            this.repoDao = new RepoDAOEncrypted(dbFolder, dbName, cwList, encryptionPwd);
+        if(StringUtils.isNotBlank(ctx.getEncryptionPwd())) {
+            this.repoDao = new RepoDAOEncrypted(ctx);
         } else {
-            this.repoDao = new RepoDAO(dbFolder, dbName, cwList);
+            this.repoDao = new RepoDAO(ctx);
         }
 
-        this.repoLock = new ReentrantReadWriteLock(true);
-        this.repoHandler = new RepoHandler(repoDao.readRepoData(), repoLock);
-        this.resourcesFolder = RepoConfig.getResourcesFolder(dbFolder, dbName);
+        this.repoHandler = new RepoHandler(repoDao.readRepoData(), ctx);
 
-        LOG.info("Initialized repo [{}, {}] in {}", dbFolder, dbName, timer.toStringElapsed());
+        LOG.info("Initialized repo [{}, {}] in {}", ctx.getDbFolder(), ctx.getDbName(), timer.toStringElapsed());
     }
 
     public void rollback() {
         try {
-            repoLock.writeLock().lock();
+            ctx.getRepoLock().writeLock().lock();
             List<RepoDTO> daoDTOs = repoDao.readRepoData();
-            repoHandler = new RepoHandler(daoDTOs, repoLock);
+            repoHandler = new RepoHandler(daoDTOs, ctx);
             LOG.info("Rollback repo completed");
         } finally {
-            repoLock.writeLock().unlock();
+            ctx.getRepoLock().writeLock().unlock();
         }
     }
 
     public void commit() {
         try {
-            repoLock.writeLock().lock();
+            ctx.getRepoLock().writeLock().lock();
             JkTimer timer = new JkTimer();
             List<RepoDTO> handlerDTOs = repoHandler.getRepoEntityDTOs();
             repoDao.saveRepoData(handlerDTOs);
             LOG.info("Committed repo in {}", timer.toStringElapsed());
         } finally {
-            repoLock.writeLock().unlock();
+            ctx.getRepoLock().writeLock().unlock();
         }
     }
 
@@ -142,9 +142,10 @@ public class RepoManager {
         RepoUriType uriType = RepoUriType.fromExtension(sourcePath);
 
         String outName = strf("{}.{}", sourceMd5, JkFiles.getExtension(sourcePath));
-        Path outPath = resourcesFolder.resolve(uriType.name().toLowerCase()).resolve(outName);
+        Path resBase = ctx.getResourcesFolder();
+        Path outPath = resBase.resolve(uriType.name().toLowerCase()).resolve(outName);
         if(!Files.exists(outPath)) {
-            if(sourcePath.startsWith(resourcesFolder)) {
+            if(sourcePath.startsWith(resBase)) {
                 JkFiles.moveFile(sourcePath, outPath);
             } else {
                 JkFiles.copy(sourcePath, outPath);
@@ -162,7 +163,7 @@ public class RepoManager {
         RepoUri uri = new RepoUri();
         uri.setMd5(sourceMd5);
         uri.setType(uriType);
-        uri.setPath(outPath);
+        uri.setPath(resBase.relativize(outPath));
         uri.setMetaData(md);
 
         return uri;

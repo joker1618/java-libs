@@ -6,6 +6,7 @@ import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.runtimes.JkRuntime;
 import xxx.joker.libs.core.utils.JkConvert;
+import xxx.joker.libs.repository.config.RepoCtx;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.engine.RepoManager;
 import xxx.joker.libs.repository.entities.RepoProperty;
@@ -25,27 +26,29 @@ public abstract class JkRepoFile implements JkRepo {
     private static final Logger LOG = LoggerFactory.getLogger(JkRepoFile.class);
 
     private RepoManager repoManager;
+    private RepoCtx ctx;
 
     protected JkRepoFile() {}
 
-    protected JkRepoFile(Path dbFolder, String dbName, String... pkgsToScan) {
-        this(null, dbFolder, dbName, pkgsToScan);
+    protected JkRepoFile(Path repoFolder, String dbName, String... pkgsToScan) {
+        this(null, repoFolder, dbName, pkgsToScan);
     }
 
-    protected JkRepoFile(Path dbFolder, String dbName, Collection<Class<?>> classes) {
-        this(null, dbFolder, dbName, classes);
+    protected JkRepoFile(Path repoFolder, String dbName, Collection<Class<?>> classes) {
+        this(null, repoFolder, dbName, classes);
     }
 
-    protected JkRepoFile(String encryptionPwd, Path dbFolder, String dbName, String... pkgsToScan) {
-        initRepo(encryptionPwd, dbFolder, dbName, scanPackages(pkgsToScan));
+    protected JkRepoFile(String encryptionPwd, Path repoFolder, String dbName, String... pkgsToScan) {
+        initRepo(encryptionPwd, repoFolder, dbName, scanPackages(pkgsToScan));
     }
 
-    protected JkRepoFile(String encryptionPwd, Path dbFolder, String dbName, Collection<Class<?>> classes) {
-        initRepo(encryptionPwd, dbFolder, dbName, classes);
+    protected JkRepoFile(String encryptionPwd, Path repoFolder, String dbName, Collection<Class<?>> classes) {
+        initRepo(encryptionPwd, repoFolder, dbName, classes);
     }
 
-    protected void initRepo(String encryptionPwd, Path dbFolder, String dbName, Collection<Class<?>> classes) {
-        this.repoManager = new RepoManager(encryptionPwd, dbFolder, dbName, classes);
+    protected void initRepo(String encryptionPwd, Path repoFolder, String dbName, Collection<Class<?>> classes) {
+        this.ctx = new RepoCtx(repoFolder, dbName, classes, encryptionPwd);
+        this.repoManager = new RepoManager(ctx);
     }
 
 

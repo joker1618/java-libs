@@ -126,7 +126,10 @@ public class JkStrings {
 	}
 
 	public static String safeTrim(String source) {
-		return StringUtils.isBlank(source) ? "" : source.trim();
+		return safeTrim(source, "");
+	}
+	public static String safeTrim(String source, String _default) {
+		return StringUtils.isBlank(source) ? _default : source.trim();
 	}
 
 	public static boolean matchRegExp(String regex, String source) {

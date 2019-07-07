@@ -5,6 +5,7 @@ import xxx.joker.libs.core.datetime.JkDateTime;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.repository.config.RepoConfig;
+import xxx.joker.libs.repository.config.RepoCtx;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.design.RepoEntityCreationTm;
 import xxx.joker.libs.repository.design.RepoEntityID;
@@ -15,49 +16,25 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-class ClazzWrapper {
+public class ClazzWrapper {
 
-    private static final Map<Class<?>, ClazzWrapper> CACHE = new HashMap<>();
-    private static final Map<Class<?>, Map<Class<?>, List<FieldWrapper>>> REFERENCES = new HashMap<>();
-    private static final FieldWrapper CF_ENTITY_ID;
-    private static final FieldWrapper CF_CREATION_TIME;
-    static {
-        Field f = JkReflection.getFieldByAnnotation(RepoEntity.class, RepoEntityID.class);
-        CF_ENTITY_ID = new FieldWrapper(f);
-        Field f2 = JkReflection.getFieldByAnnotation(RepoEntity.class, RepoEntityCreationTm.class);
-        CF_CREATION_TIME = new FieldWrapper(f2);
-    }
+    private final Map<Class<?>, List<FieldWrapper>> REFERENCES;
 
+    private final RepoCtx ctx;
     private final Class<?> eClazz;
     private Map<String, FieldWrapper> fieldsByName;
 
-    private ClazzWrapper(Class<?> eClazz) {
+    public ClazzWrapper(Class<?> eClazz, RepoCtx ctx) {
         this.eClazz = eClazz;
+        this.ctx = ctx;
         this.fieldsByName = new LinkedHashMap<>();
         initClazz();
-    }
 
-    public static void setEntityID(RepoEntity e, Long eID) {
-        synchronized (CF_ENTITY_ID) {
-            CF_ENTITY_ID.setValue(e, eID);
-            if(eID == null) {
-                e.setCreationTm(null);
-            } else if(e.getCreationTm() == null) {
-                e.setCreationTm(JkDateTime.now());
-            }
-        }
-    }
-
-    public static ClazzWrapper get(RepoEntity e) {
-        return get(e.getClass());
-    }
-    public static synchronized ClazzWrapper get(Class<?> clazz) {
-        ClazzWrapper clazzWrapper = CACHE.get(clazz);
-        if(clazzWrapper == null) {
-            clazzWrapper = new ClazzWrapper(clazz);
-            CACHE.put(clazz, clazzWrapper);
-        }
-        return clazzWrapper;
+        List<FieldWrapper> fwList = ctx.getEClasses().values().stream()
+                .flatMap(cw -> cw.getEntityFields().stream())
+                .filter(fw -> fw.typeOfFlat(getEClazz()))
+                .collect(Collectors.toList());
+        REFERENCES = JkStreams.toMap(fwList, fw -> fw.getField().getDeclaringClass());
     }
 
     public RepoEntity parseEntity(Map<String, String> strValues) {
@@ -85,19 +62,8 @@ class ClazzWrapper {
         return fieldsByName.get(fieldName);
     }
 
-    public static Map<Class<?>, List<FieldWrapper>> getReferenceFields(Class<?> depClazz) {
-        synchronized (REFERENCES) {
-            Map<Class<?>, List<FieldWrapper>> res = REFERENCES.get(depClazz);
-            if(res == null) {
-                List<FieldWrapper> fwList = CACHE.values().stream()
-                        .flatMap(cw -> cw.getEntityFields().stream())
-                        .filter(fw -> fw.typeOfFlat(depClazz))
-                        .collect(Collectors.toList());
-                res = JkStreams.toMap(fwList, fw -> fw.getField().getDeclaringClass());
-                REFERENCES.put(depClazz, res);
-            }
-            return res;
-        }
+    public Map<Class<?>, List<FieldWrapper>> getReferenceFields() {
+        return REFERENCES;
     }
 
     public Class<?> getEClazz() {
@@ -111,12 +77,17 @@ class ClazzWrapper {
             throw new RepoError("No fields annotated with '@{}' found in class {}", RepoField.class.getSimpleName(), eClazz.getSimpleName());
         }
 
+        Field f = JkReflection.getFieldByAnnotation(RepoEntity.class, RepoEntityID.class);
+        FieldWrapper fwID = new FieldWrapper(f, ctx);
+        Field f2 = JkReflection.getFieldByAnnotation(RepoEntity.class, RepoEntityCreationTm.class);
+        FieldWrapper fwTm = new FieldWrapper(f2, ctx);
+
         // Add field 'RepoEntity.entityID'
-        fieldsByName.put(CF_ENTITY_ID.getFieldName(), CF_ENTITY_ID);
+        fieldsByName.put(fwID.getFieldName(), fwID);
         // Add all @RepoField fields
-        fields.forEach(f -> fieldsByName.put(f.getName(), new FieldWrapper(f)));
+        fields.forEach(ff -> fieldsByName.put(ff.getName(), new FieldWrapper(ff, ctx)));
         // Add field 'RepoEntity.creationTm'
-        fieldsByName.put(CF_CREATION_TIME.getFieldName(), CF_CREATION_TIME);
+        fieldsByName.put(fwTm.getFieldName(), fwTm);
 
         // Check field class type
         fieldsByName.forEach((k,v) -> {
@@ -127,3 +98,5 @@ class ClazzWrapper {
     }
 
 }
+
+
