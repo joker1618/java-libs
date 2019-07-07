@@ -1,5 +1,6 @@
 package temp;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import xxx.joker.libs.core.datetime.JkDateTime;
 import xxx.joker.libs.core.datetime.JkDuration;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Random;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
+import static xxx.joker.libs.core.utils.JkConsole.displayColl;
 
 public class Vari {
 
@@ -24,6 +26,12 @@ public class Vari {
         JkFiles.copy(source, target);
         display("Source: {}", JkFiles.getLastModifiedTime(source));
         display("Target: {}", JkFiles.getLastModifiedTime(target));
+    }
+    @Test
+    public void caristr() throws Exception {
+        String str = "fed -pP0\tla.poi";
+        display("W\n{}\n{}", str, str.replaceAll("\\W", "@"));
+        display("W dot\n{}\n{}", str, str.replaceAll("[^\\w.-]", "@"));
     }
     @Test
     public void provedaas() throws Exception {

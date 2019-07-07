@@ -43,4 +43,11 @@ public class JkGit {
         return resList;
     }
 
+    public List<JkProcess> setCommitter(String userName, String userMail) {
+        List<JkProcess> resList = new ArrayList<>();
+        resList.add(JkProcess.execute(gitFolder, "git config user.name \"{}\"", userName));
+        resList.add(JkProcess.execute(gitFolder, "git config user.email \"{}\"", userMail));
+        return resList;
+    }
+
 }

@@ -18,39 +18,40 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 public class JkDebug {
 
     private static final AtomicLong idSeq = new AtomicLong(0L);
-    private static final TreeMap<Long, DTimer> topen = new TreeMap<>();
-    private static final List<DTimer> tclose = new ArrayList<>();
+    private static final TreeMap<Long, DTimer> opened = new TreeMap<>();
+    private static final List<DTimer> closed = new ArrayList<>();
 
 
-    public static long startTimer(int stepNum) {
-        return startTimer(strf("STEP {}", stepNum));
+    public static long startTimerNum(int stepNum) {
+        return startTimer("STEP {}", stepNum);
     }
-    public static long startTimer(String label) {
-        synchronized (topen) {
+    public static long startTimer(String label, Object... params) {
+        synchronized (opened) {
             long id = idSeq.getAndIncrement();
-            topen.put(id, new DTimer(id, label));
+            opened.put(id, new DTimer(id, strf(label, params)));
             return id;
         }
     }
 
-    public static void stopTimer(int stepNum) {
-        stopTimer(strf("STEP {}", stepNum));
+    public static void stopTimerNum(int stepNum) {
+        stopTimer("STEP {}", stepNum);
     }
     public static void stopTimer(long id) {
-        synchronized (topen) {
-            DTimer dt = topen.remove(id);
+        synchronized (opened) {
+            DTimer dt = opened.remove(id);
             dt.getTimer().stop();
-            tclose.add(dt);
+            closed.add(dt);
         }
     }
     /**
      * Close the last timer with the same label
      */
-    public static void stopTimer(String label) {
-        synchronized (topen) {
-            List<Long> decrIDs = JkStreams.reverseOrder(topen.keySet());
+    public static void stopTimer(String label, Object... params) {
+        synchronized (opened) {
+            List<Long> decrIDs = JkStreams.reverseOrder(opened.keySet());
+            String lbl = strf(label, params);
             for(Long id : decrIDs) {
-                if(topen.get(id).getLabel().equals(label)) {
+                if(opened.get(id).getLabel().equals(lbl)) {
                     stopTimer(id);
                     return;
                 }
@@ -62,14 +63,14 @@ public class JkDebug {
         displayTimes(true);
     }
     public static void displayTimes(boolean showTotJvmTime) {
-        synchronized (topen) {
+        synchronized (opened) {
             Long totMilli = 0L;
             if(showTotJvmTime) {
                 totMilli = System.currentTimeMillis() - JkRuntime.getJvmStartTime();
             }
 
-            List<String> orderedLabels = JkStreams.distinct(JkStreams.map(tclose, DTimer::getLabel));
-            Map<String, List<DTimer>> map = JkStreams.toMap(tclose, DTimer::getLabel);
+            List<String> orderedLabels = JkStreams.distinct(JkStreams.map(closed, DTimer::getLabel));
+            Map<String, List<DTimer>> map = JkStreams.toMap(closed, DTimer::getLabel);
 
             boolean multi = false;
             List<String> lines = new ArrayList<>();

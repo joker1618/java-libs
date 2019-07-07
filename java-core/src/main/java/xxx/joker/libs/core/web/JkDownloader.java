@@ -30,8 +30,7 @@ public class JkDownloader {
 
     public List<String> getHtmlLines(String url) {
         try {
-            String fname = url.replaceAll("[/%,;:\\s]", "_");
-            fname += ".html";
+            String fname = createOutName(url) + ".html";
 
             Path htmlPath = folder.resolve(fname);
             List<String> lines;
@@ -50,16 +49,14 @@ public class JkDownloader {
     }
 
     public Pair<Boolean, Path> downloadResource(String url) {
-        String md5 = JkEncryption.getMD5(url);
-        String ext = JkFiles.getExtension(url);
-        String fname = md5 + (ext.isEmpty() ? "" : "."+ext);
+        String fname = createOutName(url);
         return downloadResource(url, fname);
     }
     public Pair<Boolean, Path> downloadResource(String url, String outFileName) {
         Path outPath = folder.resolve(outFileName);
         boolean isDw = false;
         if(!Files.exists(outPath)) {
-            LOG.info("Downloading resource from: {}", url);
+            LOG.info("Downloading resource [{}] to [{}]", url, outPath);
             JkWeb.downloadResource(url, outPath);
             isDw = true;
         }
@@ -68,5 +65,9 @@ public class JkDownloader {
 
     public Path getFolder() {
         return folder;
+    }
+
+    private String createOutName(String url) {
+        return url.replaceFirst("http.?://", "").replaceAll("[^\\w-.]", "_");
     }
 }

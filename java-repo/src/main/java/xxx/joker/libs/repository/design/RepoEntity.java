@@ -14,12 +14,12 @@ public abstract class RepoEntity implements IRepoEntity<RepoEntity> {
     protected JkDateTime creationTm;
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return getPrimaryKey().hashCode();
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RepoEntity other = (RepoEntity) o;
@@ -42,7 +42,7 @@ public abstract class RepoEntity implements IRepoEntity<RepoEntity> {
     }
 
     @Override
-    public int compareTo(RepoEntity o) {
+    public final int compareTo(RepoEntity o) {
         return getPrimaryKey().compareTo(o.getPrimaryKey());
     }
 
@@ -64,6 +64,11 @@ public abstract class RepoEntity implements IRepoEntity<RepoEntity> {
     @Override
     public void setEntityID(Long entityID) {
         this.entityID = entityID;
+    }
+
+     @Override
+    public void setCreationTm() {
+        this.creationTm = JkDateTime.now();
     }
 
     @Override

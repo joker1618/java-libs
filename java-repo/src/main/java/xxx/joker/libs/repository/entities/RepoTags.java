@@ -17,7 +17,8 @@ public class RepoTags implements JkFormattable<RepoTags> {
 
     }
     public RepoTags(Collection<String> tags) {
-        this.tags.addAll(tags);
+        List<String> lowercase = JkStreams.map(tags, String::toLowerCase);
+        this.tags.addAll(lowercase);
     }
 
     public static RepoTags of(String... tags) {

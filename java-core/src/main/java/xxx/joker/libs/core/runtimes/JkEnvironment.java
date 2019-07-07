@@ -25,8 +25,11 @@ public class JkEnvironment {
         return p;
     }
 
+    public static void setAppsFolder(String folderPath) {
+        setAppsFolder(Paths.get(folderPath));
+    }
     public static void setAppsFolder(Path folder) {
-        System.setProperty(APPS_FOLDER_KEY, folder.toString());
+        System.setProperty(APPS_FOLDER_KEY, folder.toAbsolutePath().normalize().toString());
     }
 
 }
