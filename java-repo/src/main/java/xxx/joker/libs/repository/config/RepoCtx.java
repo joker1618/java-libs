@@ -4,8 +4,9 @@ import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.repository.engine.ClazzWrapper;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -50,7 +51,7 @@ public class RepoCtx {
         return repoFolder.resolve(dbName);
     }
    public Path getResourcesFolder() {
-        return getRepoFolder().resolve(strf("{}.resources", dbName));
+        return getDbFolder().resolve(strf("{}.resources", dbName));
     }
 
     public String getDbName() {

@@ -27,13 +27,13 @@ public class JkImage implements JkFormattable {
 
     @Override
     public String format() {
-        return strf("{}{}{}{}{}", JkEnvironment.relativizeAppsPath(path), FIELD_SEP, width, FIELD_SEP, height);
+        return strf("{}{}{}{}{}", path, FIELD_SEP, width, FIELD_SEP, height);
     }
 
     @Override
     public JkImage parse(String str) {
         String[] split = JkStrings.splitArr(str, FIELD_SEP);
-        setPath(JkEnvironment.toAbsoluteAppsPath(split[0]));
+        setPath(Paths.get(split[0]));
         setWidth(Integer.valueOf(split[1]));
         setHeight(Integer.valueOf(split[2]));
         return this;

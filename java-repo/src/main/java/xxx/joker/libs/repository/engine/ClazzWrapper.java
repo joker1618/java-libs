@@ -1,7 +1,6 @@
 package xxx.joker.libs.repository.engine;
 
 import org.apache.commons.lang3.tuple.Pair;
-import xxx.joker.libs.core.datetime.JkDateTime;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.repository.config.RepoConfig;
@@ -13,12 +12,15 @@ import xxx.joker.libs.repository.design.RepoField;
 import xxx.joker.libs.repository.exceptions.RepoError;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ClazzWrapper {
 
-    private final Map<Class<?>, List<FieldWrapper>> REFERENCES;
+    private Map<Class<?>, List<FieldWrapper>> references;
 
     private final RepoCtx ctx;
     private final Class<?> eClazz;
@@ -29,12 +31,6 @@ public class ClazzWrapper {
         this.ctx = ctx;
         this.fieldsByName = new LinkedHashMap<>();
         initClazz();
-
-        List<FieldWrapper> fwList = ctx.getEClasses().values().stream()
-                .flatMap(cw -> cw.getEntityFields().stream())
-                .filter(fw -> fw.typeOfFlat(getEClazz()))
-                .collect(Collectors.toList());
-        REFERENCES = JkStreams.toMap(fwList, fw -> fw.getField().getDeclaringClass());
     }
 
     public RepoEntity parseEntity(Map<String, String> strValues) {
@@ -63,7 +59,14 @@ public class ClazzWrapper {
     }
 
     public Map<Class<?>, List<FieldWrapper>> getReferenceFields() {
-        return REFERENCES;
+        if(references == null) {
+            List<FieldWrapper> fwList = ctx.getEClasses().values().stream()
+                    .flatMap(cw -> cw.getEntityFields().stream())
+                    .filter(fw -> fw.typeOfFlat(getEClazz()))
+                    .collect(Collectors.toList());
+            references = JkStreams.toMap(fwList, fw -> fw.getField().getDeclaringClass());
+        }
+        return references;
     }
 
     public Class<?> getEClazz() {

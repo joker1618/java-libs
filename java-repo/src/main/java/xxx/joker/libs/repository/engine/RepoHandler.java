@@ -2,6 +2,7 @@ package xxx.joker.libs.repository.engine;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.datetime.JkDateTime;
 import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
@@ -17,7 +18,6 @@ import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Predicate;
 
 class RepoHandler {
@@ -200,6 +200,10 @@ class RepoHandler {
             }
 
             sequenceValue.getAndIncrement();
+
+            if(toAdd.getCreationTm() == null) {
+                toAdd.setCreationTm(JkDateTime.now());
+            }
         }
 
         dataByID.put(toAdd.getEntityID(), toAdd);

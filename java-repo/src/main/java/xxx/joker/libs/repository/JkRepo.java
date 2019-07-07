@@ -16,15 +16,15 @@ public interface JkRepo {
     <T extends RepoEntity> Map<Class<T>, Set<T>> getDataSets();
     <T extends RepoEntity> Set<T> getDataSet(Class<T> entityClazz);
     <T extends RepoEntity> List<T> getList(Class<T> entityClazz, Predicate<T>... filters);
-    <K,T extends RepoEntity> Map<K,T> getMap(Class<T> entityClazz, Function<T,K> keyMapper, Predicate<T>... filters);
+    <K,T extends RepoEntity> Map<K,T> getMap(Class<T> entityClazz, Function<T, K> keyMapper, Predicate<T>... filters);
 
     <T extends RepoEntity> T get(Class<T> entityClazz, Predicate<T>... filters);
     <T extends RepoEntity> T getById(long id);
-    <T extends RepoEntity> T getById(T entity);
     <T extends RepoEntity> T getByPk(T entity);
     <T extends RepoEntity> T getByPkOrAdd(T entity);
 
     <T extends RepoEntity> boolean add(T toAdd);
+    <T extends RepoEntity> boolean removeId(long eid);
     <T extends RepoEntity> boolean remove(T toRemove);
 
     void clearAll();
@@ -33,10 +33,10 @@ public interface JkRepo {
     void commit();
 
     Set<RepoProperty> getProperties();
-    String getProperty(String propKey);
-    String getProperty(String propKey, String _default);
-    String setProperty(String propKey, String propValue);
-    String delProperty(String propKey);
+    String getProperty(String key);
+    String getProperty(String key, String _default);
+    String setProperty(String key, String value);
+    String delProperty(String key);
 
     RepoResource getResource(String resName, String... tags);
     RepoResource addResource(Path sourcePath, String resName, String... tags);

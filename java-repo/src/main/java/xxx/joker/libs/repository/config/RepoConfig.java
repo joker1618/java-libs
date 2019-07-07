@@ -14,8 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static xxx.joker.libs.core.utils.JkStrings.strf;
-
 public class RepoConfig {
 
     public static final String REPO_SEQ_PROP = "config.sequence.value";

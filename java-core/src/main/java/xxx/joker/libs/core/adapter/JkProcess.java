@@ -64,12 +64,10 @@ public class JkProcess {
     public String toStringResult(Integer successCode) {
         String str = "";
         str += strf("Command: {}\nExit code: {}\n", command, exitCode);
-        if(successCode != null && getExitCode() != successCode) {
+        if(successCode == null || getExitCode() != successCode) {
             str += JkStreams.join(JkStrings.leftPadLines(getErrorLines(), "error>  ", 1));
         }
-        if(!getOutputLines().isEmpty()) {
-            str += JkStreams.join(JkStrings.leftPadLines(getOutputLines(), "output> ", 1));
-        }
+        str += JkStreams.join(JkStrings.leftPadLines(getOutputLines(), "output> ", 1));
         return str;
     }
 

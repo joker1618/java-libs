@@ -47,9 +47,11 @@ public class JkCsvParser {
                 List<String> line = JkStrings.splitList(csvLines.get(i), JkOutput.DEF_SEP);
                 for(int col = 0; col < fnames.size(); col++) {
                     Field f = fmap.get(fnames.get(col));
-                    String strVal = line.get(col);
-                    Object value = parseSingleValue(strVal, f.getType());
-                    JkReflection.setFieldValue(elem, f, value);
+                    if(f != null) {
+                        String strVal = line.get(col);
+                        Object value = parseSingleValue(strVal, f.getType());
+                        JkReflection.setFieldValue(elem, f, value);
+                    }
                 }
                 toRet.add(elem);
             }

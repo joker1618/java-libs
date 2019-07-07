@@ -1,6 +1,5 @@
 package xxx.joker.libs.repository.engine;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,18 +10,14 @@ import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.media.JkImage;
 import xxx.joker.libs.core.media.JkMedia;
 import xxx.joker.libs.core.utils.JkConvert;
-import xxx.joker.libs.repository.config.RepoConfig;
 import xxx.joker.libs.repository.config.RepoCtx;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.entities.*;
 import xxx.joker.libs.repository.exceptions.RepoError;
 
-import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 import static xxx.joker.libs.repository.entities.RepoMetaData.Attrib;
@@ -39,6 +34,7 @@ public class RepoManager {
 
     public RepoManager(RepoCtx ctx) {
         this.ctx = ctx;
+        initRepoManager();
     }
 //    public RepoManager(Path dbFolder, String dbName, Collection<Class<?>> classes) {
 //        this(null, dbFolder, dbName, classes);
@@ -51,11 +47,11 @@ public class RepoManager {
     private void initRepoManager() {
         JkTimer timer = new JkTimer();
 
-        List<Class<?>> ecList = JkConvert.toList(ctx.getEClasses().keySet());
-        ecList.addAll(getCommonEntityClasses());
+        Map<Class<?>, ClazzWrapper> cwMap = ctx.getEClasses();
+        getCommonEntityClasses().forEach(c -> cwMap.put(c, new ClazzWrapper(c, ctx)));
 
         if(LOG.isDebugEnabled()) {
-            ecList.forEach(c -> LOG.debug("Repo entity class: {}", c.getName()));
+            cwMap.keySet().forEach(c -> LOG.debug("Repo entity class: {}", c.getName()));
         }
 
         if(StringUtils.isNotBlank(ctx.getEncryptionPwd())) {
