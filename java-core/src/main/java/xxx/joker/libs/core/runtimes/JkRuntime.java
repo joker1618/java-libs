@@ -23,32 +23,32 @@ public class JkRuntime {
      * - classpath: if launcher path is a folder (IDE run) or is a JAR inside Maven repository folder (libraries)
      * - launcher JAR: else
      */
-    public static List<Class<?>> findClasses(String packageName) {
-        try {
-            Field f = ClassLoader.class.getDeclaredField("classes");
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            boolean facc = f.isAccessible();
-            f.setAccessible(true);
-            List<Class<?>> classes =  (List<Class<?>>) f.get(classLoader);
-            f.setAccessible(facc);
-            classes.removeIf(c -> !c.getName().startsWith(packageName));
-            return classes;
-
-        } catch (Exception ex) {
-            throw new JkRuntimeException(ex);
-        }
-    }
 //    public static List<Class<?>> findClasses(String packageName) {
 //        try {
-//            File launcherPath = JkFiles.getLauncherPath(JkReflection.class).toFile();
-//            List<Class<?>> classes = getClassesFromClassLoader(packageName);
-//            classes.addAll(getClassesFromJar(launcherPath, packageName));
+//            Field f = ClassLoader.class.getDeclaredField("classes");
+//            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+//            boolean facc = f.isAccessible();
+//            f.setAccessible(true);
+//            List<Class<?>> classes =  (List<Class<?>>) f.get(classLoader);
+//            f.setAccessible(facc);
+//            classes.removeIf(c -> !c.getName().startsWith(packageName));
 //            return classes;
 //
 //        } catch (Exception ex) {
 //            throw new JkRuntimeException(ex);
 //        }
 //    }
+    public static List<Class<?>> findClasses(String packageName) {
+        try {
+            File launcherPath = JkFiles.getLauncherPath(JkReflection.class).toFile();
+            List<Class<?>> classes = getClassesFromClassLoader(packageName);
+            classes.addAll(getClassesFromJar(launcherPath, packageName));
+            return classes;
+
+        } catch (Exception ex) {
+            throw new JkRuntimeException(ex);
+        }
+    }
 
     private static List<Class<?>> getClassesFromClassLoader(String packageName) throws IOException, ClassNotFoundException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();

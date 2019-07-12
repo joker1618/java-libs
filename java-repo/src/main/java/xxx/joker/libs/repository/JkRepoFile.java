@@ -190,7 +190,7 @@ public abstract class JkRepoFile implements JkRepo {
         return repoManager.addResource(sourcePath, resName, RepoTags.of(tags));
     }
 
-    private List<Class<?>> scanPackages(String[] pkgsArr) {
+    public static List<Class<?>> scanPackages(String... pkgsArr) {
         Set<Class<?>> classes = new HashSet<>();
 
         List<String> pkgsToScan = JkConvert.toList(pkgsArr);
@@ -202,23 +202,7 @@ public abstract class JkRepoFile implements JkRepo {
         return JkConvert.toList(classes);
     }
 
-//    public static List<Class<?>> findClasses(String packageName) {
-//        try {
-//            Field f = ClassLoader.class.getDeclaredField("classes");
-//            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-//            boolean facc = f.isAccessible();
-//            f.setAccessible(true);
-//            List<Class<?>> classes =  (List<Class<?>>) f.get(classLoader);
-//            f.setAccessible(facc);
-//            classes = JkStreams.filter(classes, c -> c.getName().startsWith(packageName));
-//            return classes;
-//
-//        } catch (Exception ex) {
-//            throw new JkRuntimeException(ex);
-//        }
-//    }
-
-    public static List<Class<?>> findClasses(String packageName) {
+    private static List<Class<?>> findClasses(String packageName) {
         try {
             File launcherPath = JkFiles.getLauncherPath(JkReflection.class).toFile();
             List<Class<?>> classes = getClassesFromClassLoader(packageName);
@@ -246,7 +230,7 @@ public abstract class JkRepoFile implements JkRepo {
         return classes;
     }
     private static List<Class<?>> findClasses(File directory, String packageName) throws ClassNotFoundException {
-        List<Class<?>> classes = new ArrayList<>();
+            List<Class<?>> classes = new ArrayList<>();
         if (!directory.exists()) {
             return classes;
         }

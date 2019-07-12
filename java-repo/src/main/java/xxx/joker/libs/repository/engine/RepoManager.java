@@ -9,6 +9,7 @@ import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.media.JkImage;
 import xxx.joker.libs.core.media.JkMedia;
+import xxx.joker.libs.repository.JkRepoFile;
 import xxx.joker.libs.repository.config.RepoCtx;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.entities.*;
@@ -166,9 +167,7 @@ public class RepoManager {
 
     private List<Class<?>> getCommonEntityClasses() {
         List<Class<?>> classes = new ArrayList<>();
-        classes.add(RepoProperty.class);
-        classes.add(RepoResource.class);
-        classes.add(RepoUri.class);
+        classes.addAll(JkRepoFile.scanPackages("xxx.joker.libs.repository.entities"));
         return classes;
     }
 
