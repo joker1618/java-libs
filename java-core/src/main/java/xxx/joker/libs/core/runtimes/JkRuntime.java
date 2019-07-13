@@ -17,8 +17,11 @@ import java.util.jar.JarFile;
 public class JkRuntime {
 
     public static List<Class<?>> findClasses(String packageName) {
+        return findClasses(JkRuntime.class, packageName);
+    }
+    public static List<Class<?>> findClasses(Class<?> refClazz, String packageName) {
         try {
-            File launcherPath = JkFiles.getLauncherPath(JkRuntime.class).toFile();
+            File launcherPath = JkFiles.getLauncherPath(refClazz).toFile();
             if(launcherPath.isFile() && launcherPath.getName().toLowerCase().endsWith(".jar")) {
                 return findClassesInJar(launcherPath, packageName);
             } else {
