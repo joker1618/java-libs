@@ -2,34 +2,28 @@ package xxx.joker.libs.core.runtimes;
 
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.files.JkFiles;
-import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.utils.JkStrings;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.lang.reflect.Field;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import static xxx.joker.libs.core.utils.JkConsole.display;
-import static xxx.joker.libs.core.utils.JkConsole.displayColl;
-
 public class JkRuntime {
 
     public static List<Class<?>> findClasses(String packageName) {
         try {
             File launcherPath = JkFiles.getLauncherPath(JkRuntime.class).toFile();
-            List<Class<?>> classes = new ArrayList<>();
             if(launcherPath.isFile() && launcherPath.getName().toLowerCase().endsWith(".jar")) {
-                classes.addAll(getClassesFromJar(launcherPath, packageName));
+                return findClassesInJar(launcherPath, packageName);
+            } else {
+                return getClassesFromClassLoader(packageName);
             }
-            classes.addAll(getClassesFromClassLoader(packageName));
-            return classes;
 
         } catch (Exception ex) {
             throw new JkRuntimeException(ex);
@@ -72,18 +66,26 @@ public class JkRuntime {
         return classes;
     }
 
-    private static List<Class<?>> getClassesFromJar(File jarFile, String packageName) throws IOException, ClassNotFoundException {
-        List<Class<?>> classes = new ArrayList<>();
-        try(JarFile file = new JarFile(jarFile)) {
-            for (Enumeration<JarEntry> entry = file.entries(); entry.hasMoreElements(); ) {
-                JarEntry jarEntry = entry.nextElement();
-                String name = jarEntry.getName().replace("/", ".");
-                if (name.endsWith(".class") && (packageName.isEmpty() || name.startsWith(packageName))) {
-                    classes.add(Class.forName(name.replaceAll("\\.class$", "")));
+    private static List<Class<?>> findClassesInJar(Path jarFile, String packageName) {
+        return findClassesInJar(jarFile.toFile(), packageName);
+    }
+    private static List<Class<?>> findClassesInJar(File jarFile, String packageName)  {
+        try {
+            List<Class<?>> classes = new ArrayList<>();
+            try(JarFile file = new JarFile(jarFile)) {
+                for (Enumeration<JarEntry> entry = file.entries(); entry.hasMoreElements(); ) {
+                    JarEntry jarEntry = entry.nextElement();
+                    String name = jarEntry.getName().replace("/", ".");
+                    if (name.endsWith(".class") && (packageName.isEmpty() || name.startsWith(packageName))) {
+                        classes.add(Class.forName(name.replaceAll("\\.class$", "")));
+                    }
                 }
             }
+            return classes;
+
+        } catch (Exception e) {
+            throw new JkRuntimeException(e);
         }
-        return classes;
     }
 
     public static long getJvmStartTime() {
