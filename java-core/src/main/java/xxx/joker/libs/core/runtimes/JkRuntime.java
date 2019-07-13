@@ -24,11 +24,12 @@ public class JkRuntime {
     public static List<Class<?>> findClasses(String packageName) {
         try {
             File launcherPath = JkFiles.getLauncherPath(JkRuntime.class).toFile();
+            List<Class<?>> classes = new ArrayList<>();
             if(launcherPath.isFile() && launcherPath.getName().toLowerCase().endsWith(".jar")) {
-                return getClassesFromJar(launcherPath, packageName);
-            } else {
-                return getClassesFromClassLoader(packageName);
+                classes.addAll(getClassesFromJar(launcherPath, packageName));
             }
+            classes.addAll(getClassesFromClassLoader(packageName));
+            return classes;
 
         } catch (Exception ex) {
             throw new JkRuntimeException(ex);

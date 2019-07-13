@@ -167,7 +167,9 @@ public class RepoManager {
 
     private List<Class<?>> getCommonEntityClasses() {
         List<Class<?>> classes = new ArrayList<>();
-        classes.addAll(JkRepoFile.scanPackages("xxx.joker.libs.repository.entities"));
+        classes.add(RepoUri.class);
+        classes.add(RepoProperty.class);
+        classes.add(RepoResource.class);
         return classes;
     }
 
