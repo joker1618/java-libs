@@ -2,11 +2,14 @@ package xxx.joker.libs.core.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.exception.JkRuntimeException;
+import xxx.joker.libs.core.lambdas.JkStreams;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static java.lang.System.out;
@@ -23,6 +26,10 @@ public class JkConsole {
 	}
 	public static void displayColl(Collection<?> coll) {
 		coll.forEach(c -> display("{}", c));
+	}
+	public static <T,U> void displayColl(Collection<T> coll, Function<T,U> mapper) {
+		List<U> mapped = JkStreams.map(coll, mapper);
+		mapped.forEach(c -> display("{}", c));
 	}
 	public static void display(String mexFormat, Object... params) {
 		out.println(strf(mexFormat, params));

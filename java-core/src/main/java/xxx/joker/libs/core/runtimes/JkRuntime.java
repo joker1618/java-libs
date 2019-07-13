@@ -16,34 +16,19 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import static xxx.joker.libs.core.utils.JkConsole.display;
+import static xxx.joker.libs.core.utils.JkConsole.displayColl;
+
 public class JkRuntime {
 
-    /**
-     * Get classes from:
-     * - classpath: if launcher path is a folder (IDE run) or is a JAR inside Maven repository folder (libraries)
-     * - launcher JAR: else
-     */
-//    public static List<Class<?>> findClasses(String packageName) {
-//        try {
-//            Field f = ClassLoader.class.getDeclaredField("classes");
-//            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-//            boolean facc = f.isAccessible();
-//            f.setAccessible(true);
-//            List<Class<?>> classes =  (List<Class<?>>) f.get(classLoader);
-//            f.setAccessible(facc);
-//            classes.removeIf(c -> !c.getName().startsWith(packageName));
-//            return classes;
-//
-//        } catch (Exception ex) {
-//            throw new JkRuntimeException(ex);
-//        }
-//    }
     public static List<Class<?>> findClasses(String packageName) {
         try {
-            File launcherPath = JkFiles.getLauncherPath(JkReflection.class).toFile();
-            List<Class<?>> classes = getClassesFromClassLoader(packageName);
-            classes.addAll(getClassesFromJar(launcherPath, packageName));
-            return classes;
+            File launcherPath = JkFiles.getLauncherPath(JkRuntime.class).toFile();
+            if(launcherPath.isFile() && launcherPath.getName().toLowerCase().endsWith(".jar")) {
+                return getClassesFromJar(launcherPath, packageName);
+            } else {
+                return getClassesFromClassLoader(packageName);
+            }
 
         } catch (Exception ex) {
             throw new JkRuntimeException(ex);
@@ -74,10 +59,11 @@ public class JkRuntime {
         File[] files = directory.listFiles();
         if(files != null) {
             for (File file : files) {
+                String prefix = packageName.isEmpty() ? "" : packageName+".";
                 if (file.isDirectory()) {
-                    classes.addAll(findClasses(file, packageName + "." + file.getName()));
+                    classes.addAll(findClasses(file, prefix + file.getName()));
                 } else if (file.getName().endsWith(".class")) {
-                    classes.add(Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6)));
+                    classes.add(Class.forName(prefix + file.getName().replaceAll("\\.class$", "")));
                 }
             }
         }
@@ -91,8 +77,9 @@ public class JkRuntime {
             for (Enumeration<JarEntry> entry = file.entries(); entry.hasMoreElements(); ) {
                 JarEntry jarEntry = entry.nextElement();
                 String name = jarEntry.getName().replace("/", ".");
-                if (name.startsWith(packageName) && name.endsWith(".class"))
-                    classes.add(Class.forName(name.substring(0, name.length() - 6)));
+                if (name.endsWith(".class") && (packageName.isEmpty() || name.startsWith(packageName))) {
+                    classes.add(Class.forName(name.replaceAll("\\.class$", "")));
+                }
             }
         }
         return classes;
@@ -101,4 +88,5 @@ public class JkRuntime {
     public static long getJvmStartTime() {
         return ManagementFactory.getRuntimeMXBean().getStartTime();
     }
+
 }

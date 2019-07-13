@@ -169,6 +169,10 @@ public class JkFiles {
 
 
 	/* READ methods */
+	public static String read(Path filePath) {
+		return JkStreams.join(readLines(filePath, false, false));
+	}
+
 	public static List<String> readLines(InputStream is) {
 		try {
 			try (InputStreamReader isr = new InputStreamReader(is);
@@ -485,24 +489,28 @@ public class JkFiles {
 	}
 	public static String getFileName(String uriString) {
 		String fnRes = getResourceFilename(uriString);
-		String ext = getExtension(fnRes);
-		return fnRes.replaceAll("\\."+ext+"$", "");
+		String ext = getExtension(fnRes, false);
+		return fnRes.replaceAll(ext+"$", "");
 	}
 
 	public static String getExtension(Path path) {
-		if(Files.isDirectory(path)) {
-			return "";
-		}
-		return getExtension(path.normalize().toString());
+		return getExtension(path, false);
+	}
+	public static String getExtension(Path path, boolean holdDot) {
+		return getExtension(path.normalize().toString(), holdDot);
 	}
 	public static String getExtension(String uriString) {
+		return getExtension(uriString, false);
+	}
+	public static String getExtension(String uriString, boolean holdDot) {
 		String fnRes = getResourceFilename(uriString);
 		int index = fnRes.lastIndexOf('.');
 		boolean found = false;
 		for(int i = index - 1; !found && i >= 0; i--) {
 			found |= fnRes.charAt(i) != '.';
 		}
-		return !found ? "" : fnRes.substring(index + 1);
+		int adder = holdDot ? 0 : 1;
+		return !found ? "" : fnRes.substring(index + adder);
 	}
 	private static String getResourceFilename(String str) {
 		return str.replaceAll("[\\\\/]*$", "").replaceAll(".*[\\\\/]", "");
