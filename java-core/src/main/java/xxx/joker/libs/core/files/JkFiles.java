@@ -550,15 +550,6 @@ public class JkFiles {
 		return newPath;
 	}
 
-	public static Path getLauncherPath(Class<?> clazz) {
-		try {
-			URI uri = clazz.getProtectionDomain().getCodeSource().getLocation().toURI();
-			return toPath(uri);
-		} catch (URISyntaxException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	public static JkDateTime getLastModifiedTime(Path source) {
 		try {
 			FileTime ftime = Files.getLastModifiedTime(source);

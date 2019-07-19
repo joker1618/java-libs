@@ -10,6 +10,7 @@ import xxx.joker.libs.argsparser.design.classTypes.JkCommands;
 import xxx.joker.libs.argsparser.exceptions.DesignError;
 import xxx.joker.libs.core.files.JkEncryption;
 import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.runtimes.JkRuntime;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,7 +32,7 @@ public class DesignServiceImpl implements DesignService {
                              boolean ignoreCaseArgs)
                              throws DesignError {
 
-        launcherJarPath = JkFiles.getLauncherPath(cmdsClass);
+        launcherJarPath = JkRuntime.getLauncherPath(cmdsClass);
         logger.debug("Launcher path: {}", launcherJarPath);
 
         boolean checkDesign = doDesignCheck(cmdsClass);

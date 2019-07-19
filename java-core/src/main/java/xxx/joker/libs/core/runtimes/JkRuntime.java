@@ -6,6 +6,8 @@ import xxx.joker.libs.core.files.JkFiles;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -16,16 +18,25 @@ import java.util.jar.JarFile;
 
 public class JkRuntime {
 
+    public static Path getLauncherPath(Class<?> clazz) {
+        try {
+            URI uri = clazz.getProtectionDomain().getCodeSource().getLocation().toURI();
+            return JkFiles.toPath(uri);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static List<Class<?>> findClasses(String packageName) {
         return findClasses(JkRuntime.class, packageName);
     }
     public static List<Class<?>> findClasses(Class<?> refClazz, String packageName) {
         try {
-            File launcherPath = JkFiles.getLauncherPath(refClazz).toFile();
+            File launcherPath = getLauncherPath(refClazz).toFile();
             if(launcherPath.isFile() && launcherPath.getName().toLowerCase().endsWith(".jar")) {
                 return findClassesInJar(launcherPath, packageName);
             } else {
-                return getClassesFromClassLoader(packageName);
+                return findClassesInBuildFolder(packageName);
             }
 
         } catch (Exception ex) {
@@ -33,7 +44,7 @@ public class JkRuntime {
         }
     }
 
-    private static List<Class<?>> getClassesFromClassLoader(String packageName) throws IOException, ClassNotFoundException {
+    private static List<Class<?>> findClassesInBuildFolder(String packageName) throws IOException, ClassNotFoundException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         String path = packageName.replace('.', '/');
         Enumeration<URL> resources = classLoader.getResources(path);
@@ -44,11 +55,11 @@ public class JkRuntime {
         }
         List<Class<?>> classes = new ArrayList<>();
         for (File directory : dirs) {
-            classes.addAll(findClasses(directory, packageName));
+            classes.addAll(findClassesInBuildFolder(directory, packageName));
         }
         return classes;
     }
-    private static List<Class<?>> findClasses(File directory, String packageName) throws ClassNotFoundException {
+    private static List<Class<?>> findClassesInBuildFolder(File directory, String packageName) throws ClassNotFoundException {
         List<Class<?>> classes = new ArrayList<>();
         if (!directory.exists()) {
             return classes;
@@ -59,7 +70,7 @@ public class JkRuntime {
             for (File file : files) {
                 String prefix = packageName.isEmpty() ? "" : packageName+".";
                 if (file.isDirectory()) {
-                    classes.addAll(findClasses(file, prefix + file.getName()));
+                    classes.addAll(findClassesInBuildFolder(file, prefix + file.getName()));
                 } else if (file.getName().endsWith(".class")) {
                     classes.add(Class.forName(prefix + file.getName().replaceAll("\\.class$", "")));
                 }

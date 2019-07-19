@@ -125,7 +125,7 @@ public class JkOutput {
 				lines.add(formatObject1(e, fnames));
 			}
 
-			String header = JkStreams.join(fnames, "|");
+			String header = JkStreams.join(fnames, DEF_SEP);
 			lines.add(0, header);
 
 			return lines;
@@ -145,7 +145,7 @@ public class JkOutput {
 		}
 
 		for (String fname : fieldNames) {
-			if (sb.length() > 0) sb.append("|");
+			if (sb.length() > 0) sb.append(DEF_SEP);
 
 			Object fval = JkReflection.getFieldValue(o, fname);
 			if(fval == null) {

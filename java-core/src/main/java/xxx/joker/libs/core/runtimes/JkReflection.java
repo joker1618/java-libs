@@ -20,14 +20,14 @@ public class JkReflection {
 		try {
 			return (T) createInstance(Class.forName(clazzName));
 		} catch (Exception e) {
-			throw new JkRuntimeException(e);
+			throw new JkRuntimeException(e, "Error creating instance of {}", clazzName);
 		}
 	}
 	public static <T> T createInstance(Class<T> clazz) {
 		try {
 			return clazz.newInstance();
 		} catch (Exception e) {
-			throw new JkRuntimeException(e);
+			throw new JkRuntimeException(e, "Error creating instance of {}", clazz);
 		}
 	}
 
@@ -48,7 +48,7 @@ public class JkReflection {
 				field.setAccessible(false);
 			}
 		} catch (Exception e) {
-			throw new JkRuntimeException("Class {}: error setting field ({}) value ({})", instance.getClass(), field.getName(), value);
+			throw new JkRuntimeException(e, "Class {}: error setting field ({}) value ({})", instance.getClass(), field.getName(), value);
 		}
 	}
 
@@ -72,7 +72,7 @@ public class JkReflection {
 			return obj;
 
 		} catch (Exception ex) {
-			throw new JkRuntimeException("Class {}: error getting field value from ({})", instance.getClass().getName(), field.getName());
+			throw new JkRuntimeException(ex, "Class {}: error getting field value from ({})", instance.getClass().getName(), field.getName());
 		}
 	}
 
@@ -82,27 +82,29 @@ public class JkReflection {
 	}
 	public static List<Field> getFieldsByAnnotation(Class<?> sourceClass, Class<? extends Annotation> annotationClass) {
 		List<Field> toRet = new ArrayList<>();
-		Field[] declaredFields = sourceClass.getDeclaredFields();
-		if(declaredFields != null) {
+		Class<?> cl = sourceClass;
+		while (cl != null) {
+			Field[] declaredFields = cl.getDeclaredFields();
 			for (Field field : declaredFields) {
 				if (field.getAnnotation(annotationClass) != null) {
 					toRet.add(field);
 				}
 			}
+			cl = cl.getSuperclass();
 		}
 		return toRet;
 	}
 
-
 	public static List<Field> getFieldsByType(Class<?> sourceClass, Class<?> fieldType) {
 		List<Field> toRet = new ArrayList<>();
-		Field[] declaredFields = sourceClass.getDeclaredFields();
-		if(declaredFields != null) {
+		while(sourceClass != null) {
+			Field[] declaredFields = sourceClass.getDeclaredFields();
 			for (Field field : declaredFields) {
 				if (field.getType() == fieldType) {
 					toRet.add(field);
 				}
 			}
+			sourceClass = sourceClass.getSuperclass();
 		}
 		return toRet;
 	}

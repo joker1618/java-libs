@@ -20,17 +20,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class JkCsvParser {
+public class JkCsvParser<T> {
 
+    private Class<T> dataClass;
     private List<String> excludes = new ArrayList<>();
     private List<String> toShow = new ArrayList<>();
 
-    private JkCsvParser() {
-
+    public JkCsvParser(Class<T> dataClass) {
+        this.dataClass = dataClass;
     }
 
-    public static JkCsvParser get() {
-        return new JkCsvParser();
+    public static <T> JkCsvParser<T> get(Class<T> dataClass) {
+        return new JkCsvParser<>(dataClass);
+    }
+
+    public List<T> parseCsv(Path csvPath) {
+        return parseCsv(JkFiles.readLines(csvPath));
+    }
+    public List<T> parseCsv(List<String> csvLines) {
+        return parseCsv(csvLines, dataClass);
     }
 
     public static <T> List<T> parseCsv(Path csvPath, Class<T> clazz) {
