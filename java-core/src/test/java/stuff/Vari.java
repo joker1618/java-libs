@@ -1,16 +1,26 @@
 package stuff;
 
 import org.junit.Test;
+import xxx.joker.libs.core.runtimes.JkReflection;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import static xxx.joker.libs.core.utils.JkConsole.display;
+
 public class Vari {
+
+    private String str;
+    private final String strFinal = "ll";
+
+    @Test
+    public void inadfieee() {
+        List<Field> allFields = JkReflection.findAllFields(getClass());
+        allFields.forEach(f -> display(f.toGenericString()));
+    }
 
     @Test
     public void inieee() {
