@@ -168,7 +168,7 @@ public class JkReflection {
 		Class<?> sourceClazz = clazz;
 		List<Field> fields = new ArrayList<>();
 		while(sourceClazz != null) {
-			fields.addAll(JkConvert.toList(sourceClazz.getDeclaredFields()));
+			fields.addAll(0, JkConvert.toList(sourceClazz.getDeclaredFields()));
 			sourceClazz = sourceClazz.getSuperclass();
 		}
 		return fields;

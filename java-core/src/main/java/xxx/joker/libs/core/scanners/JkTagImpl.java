@@ -95,8 +95,8 @@ class JkTagImpl implements JkTag {
     }
 
     @Override
-    public JkTag getChild(String tagName, String... attributes) {
-        List<JkTag> children = getChildren(tagName);
+    public JkTag getChild(String childName, String... attributes) {
+        List<JkTag> children = getChildren(childName);
         children.removeIf(ch -> !ch.matchAttributes(attributes));
         return children.isEmpty() ? null : children.get(0);
     }
@@ -107,20 +107,20 @@ class JkTagImpl implements JkTag {
     }
 
     @Override
-    public List<JkTag> getChildren(String... tagNames) {
-        return JkStreams.filter(children, ch -> JkTests.containsIgnoreCase(tagNames, ch.getTagName()));
+    public List<JkTag> getChildren(String... childNames) {
+        return JkStreams.filter(children, ch -> JkTests.containsIgnoreCase(childNames, ch.getTagName()));
     }
 
     @Override
-    public JkTag findChild(String... tagsPaths) {
-        List<JkTag> res = findChildren(tagsPaths);
+    public JkTag walkFirstChild(String... tagsPaths) {
+        List<JkTag> res = walkChildren(tagsPaths);
         return res.isEmpty() ? null : res.get(0);
     }
 
     @Override
-    public List<JkTag> findChildren(String... tagsPaths) {
+    public List<JkTag> walkChildren(String... tagsPaths) {
         for (String tagsPath : tagsPaths) {
-            List<JkTag> childs = findTagChilds(tagsPath);
+            List<JkTag> childs = walkTagChilds(tagsPath);
             if(!childs.isEmpty())   return childs;
         }
         return Collections.emptyList();
@@ -162,7 +162,7 @@ class JkTagImpl implements JkTag {
         return found;
     }
 
-    private List<JkTag> findTagChilds(String tagsPath) {
+    private List<JkTag> walkTagChilds(String tagsPath) {
         JkTag t = this;
         int pos = 0;
         String[] tagsName = JkStrings.splitArr(tagsPath, " ", true);

@@ -36,7 +36,7 @@ public class TestJkFiles {
     public void moveSingleFile() {
         Path inputPath = Paths.get("C:\\Users\\f.barbano\\Desktop\\moveTest\\sec\\back.jpg");
         Path outputPath = Paths.get("C:\\Users\\f.barbano\\Desktop\\moveTest\\as\\fedeBack.jpg");
-        JkFiles.moveFile(inputPath, outputPath, true);
+        JkFiles.move(inputPath, outputPath, true);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class TestJkFiles {
     public void moveFolder() {
         Path inputPath = Paths.get("C:\\Users\\f.barbano\\Desktop\\moveTest\\sec");
         Path outputPath = Paths.get("C:\\Users\\f.barbano\\Desktop\\moveTest\\dio");
-        JkFiles.moveFile(inputPath, outputPath, true);
+        JkFiles.move(inputPath, outputPath, true);
     }
 
     @Test

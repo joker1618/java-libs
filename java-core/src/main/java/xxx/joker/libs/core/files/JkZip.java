@@ -68,7 +68,7 @@ public class JkZip {
             }
 
             if(!JkFiles.areEquals(archivePath, middleOutPath)) {
-                JkFiles.moveFile(middleOutPath, archivePath, true);
+                JkFiles.move(middleOutPath, archivePath, true);
             }
 
         } catch (IOException ex) {

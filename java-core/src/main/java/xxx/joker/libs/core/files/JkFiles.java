@@ -10,11 +10,9 @@ import xxx.joker.libs.core.utils.JkConvert;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.FileTime;
-import java.nio.file.attribute.PosixFilePermission;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
@@ -380,6 +378,10 @@ public class JkFiles {
 	public static Path copySafe(Path sourcePath, Path targetPath) {
 		return copy1(sourcePath, targetPath, false, true);
 	}
+	public static void copyInFolder(Path sourcePath, Path targetFolder) {
+		Path targetPath = targetFolder.relativize(sourcePath.getFileName());
+		copy1(sourcePath, targetPath, true, false);
+	}
 	private static Path copy1(Path sourcePath, Path targetPath, boolean overwrite, boolean safePath) {
 		try {
 			if (!Files.exists(sourcePath)) {
@@ -431,16 +433,20 @@ public class JkFiles {
 		}
 	}
 
-	public static void moveFile(Path sourcePath, Path targetPath) {
-		moveFile1(sourcePath, targetPath, true, false);
+	public static void move(Path sourcePath, Path targetPath) {
+		move1(sourcePath, targetPath, true, false);
 	}
-	public static void moveFile(Path sourcePath, Path targetPath, boolean overwrite) {
-		moveFile1(sourcePath, targetPath, overwrite, false);
+	public static void move(Path sourcePath, Path targetPath, boolean overwrite) {
+		move1(sourcePath, targetPath, overwrite, false);
 	}
-	public static Path moveFileSafely(Path sourcePath, Path targetPath) {
-		return moveFile1(sourcePath, targetPath, false, true);
+	public static Path moveSafely(Path sourcePath, Path targetPath) {
+		return move1(sourcePath, targetPath, false, true);
 	}
-	private static Path moveFile1(Path sourcePath, Path targetPath, boolean overwrite, boolean safePath) {
+	public static void moveInFolder(Path sourcePath, Path targetFolder) {
+		Path targetPath = targetFolder.resolve(sourcePath.getFileName());
+		move1(sourcePath, targetPath, true, false);
+	}
+	private static Path move1(Path sourcePath, Path targetPath, boolean overwrite, boolean safePath) {
 		try {
 			if (!Files.exists(sourcePath)) {
 				throw new FileNotFoundException(strf("Source path [%s] not exists!", sourcePath.toAbsolutePath()));

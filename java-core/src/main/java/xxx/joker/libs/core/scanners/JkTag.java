@@ -21,12 +21,12 @@ public interface JkTag {
     String getTagName();
 
     JkTag getChild(int childNum, int... subNums);
-    JkTag getChild(String tagName, String... attributes);
+    JkTag getChild(String childName, String... attributes);
     List<JkTag> getChildren();
-    List<JkTag> getChildren(String... tagNames);
+    List<JkTag> getChildren(String... childNames);
 
-    JkTag findChild(String... tagsPaths);
-    List<JkTag> findChildren(String... tagsPaths);
+    JkTag walkFirstChild(String... tagsPaths);
+    List<JkTag> walkChildren(String... tagsPaths);
 
     JkTag findFirstTag(String tagName, String... attributes);
     List<JkTag> findFirstTags(String tagName, String... attributes);

@@ -32,10 +32,10 @@ public class TestJkExceptions {
 
 //            StringBuilder sb = new StringBuilder();
 //            sb.append("Exception toString()\n");
-//            sb.append(strfl("{}\n", ex));
+//            sb.append(strfLog("{}\n", ex));
 //            sb.append("\n-----------------------\n\n");
 //            sb.append("Exception getMessage()\n");
-//            sb.append(strfl("{}\n", ex.getMessage()));
+//            sb.append(strfLog("{}\n", ex.getMessage()));
 //            display("{}", sb.toString());
 //
 //            ex.printStackTrace(System.out);

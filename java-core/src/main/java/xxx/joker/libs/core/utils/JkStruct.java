@@ -27,19 +27,27 @@ public class JkStruct {
         return dups;
     }
 
-    public static <K,V> List<K> getMapKeys(Map<K,V> map, Predicate<V> valuePred) {
+    public static <K,V> List<K> getMapKeys(Map<K,V> map, Predicate<V>... valueFilters) {
         List<K> keys = new ArrayList<>();
         map.entrySet().forEach(e -> {
-            if(valuePred.test(e.getValue())) {
+            boolean res = true;
+            for (Predicate<V> valueFilter : valueFilters) {
+                res &= valueFilter.test(e.getValue());
+            }
+            if(res) {
                 keys.add(e.getKey());
             }
         });
         return keys;
     }
-    public static <K,V> List<V> getMapValues(Map<K,V> map, Predicate<K> keyPred) {
+    public static <K,V> List<V> getMapValues(Map<K,V> map, Predicate<K>... keyFilters) {
         List<V> values = new ArrayList<>();
         map.entrySet().forEach(e -> {
-            if(keyPred.test(e.getKey())) {
+            boolean res = true;
+            for (Predicate<K> keyFilter : keyFilters) {
+                res &= keyFilter.test(e.getKey());
+            }
+            if(res) {
                 values.add(e.getValue());
             }
         });

@@ -9,7 +9,6 @@ import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.media.JkImage;
 import xxx.joker.libs.core.media.JkMedia;
-import xxx.joker.libs.core.runtimes.JkRuntime;
 import xxx.joker.libs.repository.JkRepoFile;
 import xxx.joker.libs.repository.config.RepoCtx;
 import xxx.joker.libs.repository.design.RepoEntity;
@@ -143,7 +142,7 @@ public class RepoManager {
         Path outPath = resBase.resolve(uriType.name().toLowerCase()).resolve(outName);
         if(!Files.exists(outPath)) {
             if(sourcePath.startsWith(resBase)) {
-                JkFiles.moveFile(sourcePath, outPath);
+                JkFiles.move(sourcePath, outPath);
             } else {
                 JkFiles.copy(sourcePath, outPath);
             }

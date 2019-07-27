@@ -68,6 +68,6 @@ public class JkDownloader {
     }
 
     private String createOutName(String url) {
-        return url.replaceFirst("http.?://", "").replaceAll("[^\\w-.]", "_");
+        return url.replaceAll("[^\\w-.]", "_");
     }
 }

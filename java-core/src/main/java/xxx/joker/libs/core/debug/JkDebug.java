@@ -36,7 +36,11 @@ public class JkDebug {
     public static void stopTimerNum(int stepNum) {
         stopTimer("STEP {}", stepNum);
     }
-    public static void stopTimer(long id) {
+    public static void stopAndStartNum(int numToStop, int numToStart) {
+        stopTimer("STEP {}", numToStop);
+        startTimer("STEP {}", numToStart);
+    }
+    public static void stopTimerID(long id) {
         synchronized (opened) {
             DTimer dt = opened.remove(id);
             dt.getTimer().stop();
@@ -46,13 +50,16 @@ public class JkDebug {
     /**
      * Close the last timer with the same label
      */
+    public static void stopAndStartTimer(String labelToStop, String labelToStart) {
+        stopTimer(labelToStop);
+        startTimer(labelToStart);
+    }
     public static void stopTimer(String label, Object... params) {
         synchronized (opened) {
-            List<Long> decrIDs = JkStreams.reverseOrder(opened.keySet());
             String lbl = strf(label, params);
-            for(Long id : decrIDs) {
+            for(Long id : opened.keySet()) {
                 if(opened.get(id).getLabel().equals(lbl)) {
-                    stopTimer(id);
+                    stopTimerID(id);
                     return;
                 }
             }

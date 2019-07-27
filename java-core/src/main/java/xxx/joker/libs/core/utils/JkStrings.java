@@ -5,7 +5,10 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.lambdas.JkStreams;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -37,19 +40,19 @@ public class JkStrings {
 		int numPhLogger = countPlaceholders(format, true);
 
 		if(numPhLogger > 0 && numPhLogger != numPhString && (numPhString == 0 || numPhLogger == params.length)) {
-			toRet = strfl(format, params);
+			toRet = strfLog(format, params);
 		} else {
-			toRet = strfs(format, params);
+			toRet = strFmt(format, params);
 		}
 
 		return toRet;
 	}
 	// Use String.format placeholders  (%s, %d, ...)
-	public static String strfs(String format, Object... params) {
+	public static String strFmt(String format, Object... params) {
 		return params.length == 0 ? format : String.format(format, params);
 	}
 	// Use logger placeholders  ({})
-	public static String strfl(String format, Object... params) {
+	public static String strfLog(String format, Object... params) {
 		if(params.length == 0) {
 			return format;
 		}
@@ -131,6 +134,20 @@ public class JkStrings {
 	public static String safeTrim(String source, String _default) {
 		return StringUtils.isBlank(source) ? _default : source.trim();
 	}
+
+	public static List<String> splitFlat(Collection<String> tags) {
+		Set<String> tagSet = new HashSet<>();
+		for (String tag : tags) {
+			List<String> tlist = JkConvert.toList(tag.split("[\\s,;|]"));
+			tlist.removeIf(StringUtils::isBlank);
+			tagSet.addAll(tlist);
+		}
+		return JkConvert.toList(tagSet);
+	}
+	public static List<String> splitFlat(String... tags) {
+		return splitFlat(JkConvert.toList(tags));
+	}
+
 
 	public static boolean matchRegExp(String regex, String source) {
 		Pattern pattern = Pattern.compile(regex);
