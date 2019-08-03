@@ -188,7 +188,13 @@ public class JkReflection {
 		}
 
 		Type[] types = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
-		return JkStreams.map(Arrays.asList(types), t -> (Class<?>) t).toArray(new Class<?>[0]);
+		return JkStreams.map(Arrays.asList(types), t -> {
+			if(JkReflection.isInstanceOf(t.getClass(), ParameterizedType.class)) {
+				return (Class<?>) (((ParameterizedType) t).getRawType());
+			} else {
+				return (Class<?>) t;
+			}
+		}).toArray(new Class<?>[0]);
 	}
 
 	public static Class<?> classForName(String className) {
