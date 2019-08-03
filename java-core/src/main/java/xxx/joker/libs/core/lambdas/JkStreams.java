@@ -101,6 +101,11 @@ public class JkStreams {
 	public static <T> List<T> distinct(Collection<T> source) {
 		return source.stream().distinct().collect(Collectors.toList());
 	}
+	public static <T> List<T> reversePositions(Collection<T> source) {
+		List<T> list = sorted(source);
+		Collections.reverse(list);
+		return list;
+	}
 	public static <T> List<T> reverseOrder(Collection<T> source) {
 		List<T> list = sorted(source);
 		Collections.reverse(list);
