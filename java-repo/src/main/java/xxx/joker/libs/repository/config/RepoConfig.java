@@ -1,7 +1,7 @@
 package xxx.joker.libs.repository.config;
 
 import xxx.joker.libs.core.runtimes.JkReflection;
-import xxx.joker.libs.core.types.JkFormattable;
+import xxx.joker.libs.core.format.JkFormattable;
 import xxx.joker.libs.repository.design.RepoEntity;
 import xxx.joker.libs.repository.engine.FieldWrapper;
 

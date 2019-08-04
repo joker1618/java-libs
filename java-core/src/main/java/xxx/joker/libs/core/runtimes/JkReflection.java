@@ -1,17 +1,20 @@
 package xxx.joker.libs.core.runtimes;
 
 import xxx.joker.libs.core.exception.JkRuntimeException;
+import xxx.joker.libs.core.format.JkFormatter;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.tests.JkTests;
-import xxx.joker.libs.core.types.JkFormattable;
+import xxx.joker.libs.core.format.JkFormattable;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
-import xxx.joker.libs.core.utils.JkStruct;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class JkReflection {
@@ -141,6 +144,14 @@ public class JkReflection {
 	public static boolean isInstanceOf(Class<?> clazz, Class<?>... expected) {
 		return isInstanceOf(clazz, Arrays.asList(expected));
 	}
+	public static boolean isOfClass(Class<?> clazz, Class<?>... classes) {
+		for(Class<?> c : classes) {
+			if(c == clazz) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public static List<Class<?>> findAllClassTypes(Class<?> clazz) {
 		Set<Class<?>> types = new HashSet<>();
@@ -228,30 +239,44 @@ public class JkReflection {
 		T target = createInstance(targetClass);
 		for (Field tf : targetFields) {
 			Field f = sourceFieldMap.get(fnames.get(tf.getName()));
-			if(f != null && f.getType() == tf.getType()) {
-				Object sval = getFieldValue(source, f);
-				setFieldValue(target, tf, sval);
+			if(f != null) {
+				if(f.getType() == tf.getType()) {
+					Object sval = getFieldValue(source, f);
+					setFieldValue(target, tf, sval);
+				} else if(tf.getType() == String.class) {
+					String sval = JkFormatter.get().formatFieldValue(getFieldValue(source, f), f.getType());
+					setFieldValue(target, tf, sval);
+				} else if(f.getType() == String.class) {
+					String sval = (String) getFieldValue(source, f);
+					Object o = JkFormatter.get().parseSingleValue(sval, tf.getType());
+					setFieldValue(target, tf, o);
+				} else {
+					JkFormatter fmt = JkFormatter.get();
+					String sval = fmt.formatFieldValue(getFieldValue(source, f), f.getType());
+					Object o = fmt.parseSingleValue(sval, tf.getType());
+					setFieldValue(target, tf, o);
+				}
 			}
 		}
 
 		return target;
 	}
-	public static <T> T copyFieldsExclude(Object source, Class<T> targetClass, String... fieldsToExclude) {
-		Map<String, Field> sourceFieldMap = JkStreams.toMapSingle(findAllFields(source.getClass()), Field::getName);
-		Map<String, Field> targetFields = JkStreams.toMapSingle(findAllFields(targetClass), Field::getName);
-		Arrays.stream(fieldsToExclude).forEach(targetFields::remove);
-
-		T target = createInstance(targetClass);
-		for (Field tf : targetFields.values()) {
-			Field f = sourceFieldMap.get(tf.getName());
-			if(f != null && f.getType() == tf.getType()) {
-				Object sval = getFieldValue(source, f);
-				setFieldValue(target, tf, sval);
-			}
-		}
-
-		return target;
-	}
+//	public static <T> T copyFieldsExclude(Object source, Class<T> targetClass, String... fieldsToExclude) {
+//		Map<String, Field> sourceFieldMap = JkStreams.toMapSingle(findAllFields(source.getClass()), Field::getName);
+//		Map<String, Field> targetFields = JkStreams.toMapSingle(findAllFields(targetClass), Field::getName);
+//		Arrays.stream(fieldsToExclude).forEach(targetFields::remove);
+//
+//		T target = createInstance(targetClass);
+//		for (Field tf : targetFields.values()) {
+//			Field f = sourceFieldMap.get(tf.getName());
+//			if(f != null && f.getType() == tf.getType()) {
+//				Object sval = getFieldValue(source, f);
+//				setFieldValue(target, tf, sval);
+//			}
+//		}
+//
+//		return target;
+//	}
 	private static Map<String, String> getFieldNameMap(String... fieldNames) {
 		Map<String, String> toRet = new LinkedHashMap<>();
 		for (String fstr : fieldNames) {

@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
-import xxx.joker.libs.core.types.JkFormattable;
+import xxx.joker.libs.core.format.JkFormattable;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.repository.config.RepoCtx;

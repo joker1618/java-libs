@@ -1,7 +1,7 @@
 package xxx.joker.libs.repository.entities;
 
 import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.types.JkFormattable;
+import xxx.joker.libs.core.format.JkFormattable;
 import xxx.joker.libs.core.utils.JkStrings;
 
 import java.util.LinkedHashMap;

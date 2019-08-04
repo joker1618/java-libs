@@ -1,6 +1,6 @@
 package xxx.joker.libs.core.datetime;
 
-import xxx.joker.libs.core.types.JkFormattable;
+import xxx.joker.libs.core.format.JkFormattable;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;

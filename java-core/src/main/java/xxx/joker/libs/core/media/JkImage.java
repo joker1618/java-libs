@@ -2,8 +2,7 @@ package xxx.joker.libs.core.media;
 
 import javafx.scene.image.Image;
 import xxx.joker.libs.core.files.JkFiles;
-import xxx.joker.libs.core.runtimes.JkEnvironment;
-import xxx.joker.libs.core.types.JkFormattable;
+import xxx.joker.libs.core.format.JkFormattable;
 import xxx.joker.libs.core.utils.JkStrings;
 
 import java.nio.file.Path;
