@@ -495,7 +495,7 @@ public class JkFiles {
 	}
 	public static String getFileName(String uriString) {
 		String fnRes = getResourceFilename(uriString);
-		String ext = getExtension(fnRes, false);
+		String ext = getExtension(fnRes, true);
 		return fnRes.replaceAll(ext+"$", "");
 	}
 

@@ -1,13 +1,13 @@
 package xxx.joker.libs.datalayer.util;
 
 import xxx.joker.libs.core.datetime.JkDateTime;
+import xxx.joker.libs.core.format.JkFormatter;
 import xxx.joker.libs.core.format.JkOutput;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.runtimes.JkRuntime;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.datalayer.design.RepoEntity;
 import xxx.joker.libs.datalayer.entities.RepoUri;
-import xxx.joker.libs.datalayer.export.TmpFmt;
 
 import java.lang.reflect.Modifier;
 import java.time.LocalDateTime;
@@ -20,7 +20,7 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class RepoUtil {
 
-    private static TmpFmt csvParser = TmpFmt.get();
+    private static JkFormatter csvParser = JkFormatter.get();
     static {
         // csvParser configs
         csvParser.addCustomClassFormat(JkDateTime.class, d -> d.format("yyyyMMdd_HHmmss"));

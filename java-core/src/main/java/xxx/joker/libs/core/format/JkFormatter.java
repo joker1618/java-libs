@@ -82,7 +82,7 @@ public class JkFormatter {
         Object o = isOfClass(fclazz, String.class) ? "" : null;
 
         if (StringUtils.isNotBlank(value) && !value.equalsIgnoreCase(CsvSep.PH_NULL)) {
-            Function<String, ?> parseFunc = retrieveCustomParse(fclazz);
+            Function<String, ?> parseFunc = retrieveCustomParser(fclazz);
             if(parseFunc != null) {
                 o = parseFunc.apply(value);
             } else if (isOfClass(fclazz, boolean.class, Boolean.class)) {
@@ -117,7 +117,7 @@ public class JkFormatter {
 
         return o;
     }
-    private Function<String, ?> retrieveCustomParse(Class<?> clazz) {
+    private Function<String, ?> retrieveCustomParser(Class<?> clazz) {
         // Search first in class format, if not found search in instance format
         Map.Entry<Class<?>, Function<String, ?>> found = JkStreams.findUnique(customClassParses.entrySet(), cc -> isOfClass(cc.getKey(), clazz));
         if(found != null) {
@@ -159,37 +159,36 @@ public class JkFormatter {
         return toRet;
     }
     public  <T> String formatFieldValue(T value, Class<?> fclazz) {
-        if (value == null) {
-            return "";
-        }
-
         String toRet = "";
-        Function<?, String> toStringFmt = retrieveCustomFormat(fclazz);
-        if (toStringFmt != null) {
-            Function<T, String> fmtFunc = (Function<T, String>) toStringFmt;
-            toRet = fmtFunc.apply(value);
-        } else if (isOfClass(fclazz, boolean.class, Boolean.class)) {
-            toRet = ((Boolean) value) ? "true" : "false";
-        } else if (isOfClass(fclazz, File.class, Path.class)) {
-            toRet = value.toString();
-        } else if (isOfClass(fclazz, LocalTime.class)) {
-            toRet = DTF_TIME.format((LocalTime) value);
-        } else if (isOfClass(fclazz, LocalDate.class)) {
-            toRet = DTF_DATE.format((LocalDate) value);
-        } else if (isOfClass(fclazz, LocalDateTime.class)) {
-            toRet = DTF_DATETIME.format((LocalDateTime) value);
-        } else if (isOfClass(fclazz, int.class, Integer.class, long.class, Long.class, float.class, Float.class, double.class, Double.class)) {
-            toRet = String.valueOf(value);
-        } else if (JkReflection.isInstanceOf(fclazz, JkFormattable.class)) {
-            toRet = ((JkFormattable)value).format();
-        } else if (JkReflection.isInstanceOf(fclazz, Enum.class)) {
-            toRet = ((Enum)value).name();
-        } else if (isOfClass(fclazz, String.class)) {
-            toRet = (String) value;
-        } else if (JkReflection.isInstanceOf(fclazz, Collection.class)) {
-            toRet = strf("({})", ((Collection)value).size());
-        } else {
-            toRet = value.toString();
+        
+        if (value != null) {
+            Function<?, String> toStringFmt = retrieveCustomFormat(fclazz);
+            if (toStringFmt != null) {
+                Function<T, String> fmtFunc = (Function<T, String>) toStringFmt;
+                toRet = fmtFunc.apply(value);
+            } else if (isOfClass(fclazz, boolean.class, Boolean.class)) {
+                toRet = ((Boolean) value) ? "true" : "false";
+            } else if (isOfClass(fclazz, File.class, Path.class)) {
+                toRet = value.toString();
+            } else if (isOfClass(fclazz, LocalTime.class)) {
+                toRet = DTF_TIME.format((LocalTime) value);
+            } else if (isOfClass(fclazz, LocalDate.class)) {
+                toRet = DTF_DATE.format((LocalDate) value);
+            } else if (isOfClass(fclazz, LocalDateTime.class)) {
+                toRet = DTF_DATETIME.format((LocalDateTime) value);
+            } else if (isOfClass(fclazz, int.class, Integer.class, long.class, Long.class, float.class, Float.class, double.class, Double.class)) {
+                toRet = String.valueOf(value);
+            } else if (JkReflection.isInstanceOf(fclazz, JkFormattable.class)) {
+                toRet = ((JkFormattable) value).format();
+            } else if (JkReflection.isInstanceOf(fclazz, Enum.class)) {
+                toRet = ((Enum) value).name();
+            } else if (isOfClass(fclazz, String.class)) {
+                toRet = (String) value;
+            } else if (JkReflection.isInstanceOf(fclazz, Collection.class)) {
+                toRet = strf("({})", ((Collection) value).size());
+            } else {
+                toRet = value.toString();
+            }
         }
 
         return toRet;

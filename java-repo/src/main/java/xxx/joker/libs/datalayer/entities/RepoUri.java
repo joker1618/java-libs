@@ -26,7 +26,7 @@ public class RepoUri extends RepoEntity {
 
     @Override
     public String getPrimaryKey() {
-        return strf("uri:{}", path);
+        return strf("uri[{}]", path);
     }
 
     public JkImage toJkImage() {

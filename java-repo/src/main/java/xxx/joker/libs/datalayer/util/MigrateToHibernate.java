@@ -42,8 +42,8 @@ public class MigrateToHibernate {
             newLines.add("");
             newLines.add("@Id");
             newLines.add("@GeneratedValue");
-            newLines.add("private Long jpaID;");
-            newLines.add("private String repoPK;");
+            newLines.add("private Long jpaId;");
+            newLines.add("private String repoPk;");
             newLines.add("");
 
             for (FieldWrap fw : cw.getFieldWraps()) {
@@ -59,12 +59,12 @@ public class MigrateToHibernate {
 
             newLines.add("");
 
-            newLines.add(strf("public Long getJpaID() {"));
-            newLines.add(strf("return jpaID;"));
+            newLines.add(strf("public Long getJpaId() {"));
+            newLines.add(strf("return jpaId;"));
             newLines.add(strf("}"));
 
-            newLines.add(strf("public String getRepoPK() {"));
-            newLines.add(strf("return repoPK;"));
+            newLines.add(strf("public String getRepoPk() {"));
+            newLines.add(strf("return repoPk;"));
             newLines.add(strf("}"));
 //            newLines.add(strf("public void setRepoPK(String repoPK) {"));
 //            newLines.add(strf("this.repoPK = repoPK;"));
@@ -138,7 +138,7 @@ public class MigrateToHibernate {
 
     public static <T> T cloneRepoEntity(RepoEntity source, Class<T> targetClass) {
         T cloned = JkReflection.copyFields(source, targetClass);
-        Field fieldRepoPK = JkReflection.getFieldByName(cloned.getClass(), "repoPK");
+        Field fieldRepoPK = JkReflection.getFieldByName(cloned.getClass(), "repoPk");
         if(fieldRepoPK != null) {
             JkReflection.setFieldValue(cloned, fieldRepoPK, source.getPrimaryKey());
         }

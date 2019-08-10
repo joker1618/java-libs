@@ -3,6 +3,8 @@ package xxx.joker.libs.datalayer.entities;
 import xxx.joker.libs.datalayer.design.RepoEntity;
 import xxx.joker.libs.datalayer.design.RepoField;
 
+import static xxx.joker.libs.core.utils.JkStrings.strf;
+
 public class RepoProperty extends RepoEntity {
 
     @RepoField
@@ -19,7 +21,7 @@ public class RepoProperty extends RepoEntity {
     
     @Override
     public String getPrimaryKey() {
-        return "property:" + getKey().toLowerCase();
+        return strf("property[{}]", getKey().toLowerCase());
     }
 
     public String getKey() {

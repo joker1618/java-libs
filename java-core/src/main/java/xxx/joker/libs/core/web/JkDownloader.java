@@ -13,6 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import static xxx.joker.libs.core.utils.JkConsole.display;
+
 public class JkDownloader {
 
     private static final Logger LOG = LoggerFactory.getLogger(JkDownloader.class);
@@ -68,6 +70,13 @@ public class JkDownloader {
     }
 
     private String createOutName(String url) {
-        return url.replaceAll("[^\\w-.]", "_");
+        String fixed = url.replaceAll("[^\\w-.]", "_");
+        String fext = JkFiles.getExtension(fixed);
+        String fname = JkFiles.getFileName(fixed);
+        if(fname.length() > 250) {
+            fname = fname.substring(0, 250);
+        }
+        return fname + "." + fext;
     }
+
 }
