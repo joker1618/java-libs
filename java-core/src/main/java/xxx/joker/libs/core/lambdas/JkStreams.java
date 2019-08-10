@@ -117,7 +117,7 @@ public class JkStreams {
 		return list;
 	}
 
-	public static <T> String join(Collection<T> source) {
+	public static <T> String joinLines(Collection<T> source) {
 		return join(source, StringUtils.LF);
 	}
 	public static <T> String join(Collection<T> source, String separator) {

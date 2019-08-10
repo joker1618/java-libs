@@ -113,7 +113,7 @@ public class JkOutput {
 
 	// Format objects
 	public static String formatColl(Collection<?> elems, String... fieldsToDisplay) {
-		return JkStreams.join(formatCollLines(elems, fieldsToDisplay));
+		return JkStreams.joinLines(formatCollLines(elems, fieldsToDisplay));
 	}
 	public static List<String> formatCollLines(Collection<?> elems, String... fieldsToDisplay) {
 		try {

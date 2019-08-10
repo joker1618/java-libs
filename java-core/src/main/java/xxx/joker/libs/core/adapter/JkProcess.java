@@ -65,9 +65,9 @@ public class JkProcess {
         String str = "";
         str += strf("Command: {}\nExit code: {}\n", command, exitCode);
         if(successCode == null || getExitCode() != successCode) {
-            str += JkStreams.join(JkStrings.leftPadLines(getErrorLines(), "error>  ", 1));
+            str += JkStreams.joinLines(JkStrings.leftPadLines(getErrorLines(), "error>  ", 1));
         }
-        str += JkStreams.join(JkStrings.leftPadLines(getOutputLines(), "output> ", 1));
+        str += JkStreams.joinLines(JkStrings.leftPadLines(getOutputLines(), "output> ", 1));
         return str;
     }
 

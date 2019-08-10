@@ -1,5 +1,6 @@
 package xxx.joker.libs.core.datetime;
 
+import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.format.JkFormattable;
 import xxx.joker.libs.core.utils.JkStrings;
 
@@ -98,7 +99,9 @@ public class JkDuration implements JkFormattable {
         }
 
         if(showMilli) {
-            sb.append(strf(".%03d", getMilli()));
+            String smilli = String.valueOf(getMilli());
+            smilli += StringUtils.repeat('0', 3 - smilli.length());
+            sb.append(strf(".{}", smilli));
         }
 
         if(totalMillis < 0L) {

@@ -81,7 +81,7 @@ public class JkFormatter {
     public Object parseSingleValue(String value, Class<?> fclazz) {
         Object o = isOfClass(fclazz, String.class) ? "" : null;
 
-        if (StringUtils.isNotBlank(value) && !value.equalsIgnoreCase(CsvSep.PH_NULL)) {
+        if (StringUtils.isNotBlank(value) && !value.equals(CsvSep.PH_NULL)) {
             Function<String, ?> parseFunc = retrieveCustomParse(fclazz);
             if(parseFunc != null) {
                 o = parseFunc.apply(value);

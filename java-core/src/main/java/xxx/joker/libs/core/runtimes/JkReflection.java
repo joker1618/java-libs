@@ -231,11 +231,12 @@ public class JkReflection {
 		Map<String, String> fnames;
 		if(fieldsToCopy.length > 0) {
 			fnames = getFieldNameMap(fieldsToCopy);
-			targetFields.removeIf(tf -> !JkTests.containsIgnoreCase(fnames.keySet(), tf.getName()));
+			targetFields.removeIf(tf -> !fnames.keySet().contains(tf.getName()));
 		} else {
 			fnames = JkStreams.toMapSingle(targetFields, Field::getName, Field::getName);
 		}
 
+		JkFormatter fmt = JkFormatter.get();
 		T target = createInstance(targetClass);
 		for (Field tf : targetFields) {
 			Field f = sourceFieldMap.get(fnames.get(tf.getName()));
@@ -244,14 +245,13 @@ public class JkReflection {
 					Object sval = getFieldValue(source, f);
 					setFieldValue(target, tf, sval);
 				} else if(tf.getType() == String.class) {
-					String sval = JkFormatter.get().formatFieldValue(getFieldValue(source, f), f.getType());
+					String sval = fmt.formatFieldValue(getFieldValue(source, f), f.getType());
 					setFieldValue(target, tf, sval);
 				} else if(f.getType() == String.class) {
 					String sval = (String) getFieldValue(source, f);
-					Object o = JkFormatter.get().parseSingleValue(sval, tf.getType());
+					Object o = fmt.parseSingleValue(sval, tf.getType());
 					setFieldValue(target, tf, o);
 				} else {
-					JkFormatter fmt = JkFormatter.get();
 					String sval = fmt.formatFieldValue(getFieldValue(source, f), f.getType());
 					Object o = fmt.parseSingleValue(sval, tf.getType());
 					setFieldValue(target, tf, o);
