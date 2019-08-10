@@ -1,7 +1,8 @@
-package xxx.joker.libs.core.format;
+package xxx.joker.libs.datalayer.export;
 
 import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.format.JkFormattable;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.utils.JkConvert;
@@ -20,7 +21,7 @@ import java.util.function.Function;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
-public class JkFormatter {
+public class TmpFmt {
 
     private static class CsvSep {
         public static final String SEP_FIELD = "|";
@@ -32,7 +33,7 @@ public class JkFormatter {
         public static final String PH_NEWLINE = "@_LF_@";
         public static final String PH_NULL = "@_NUL_@";
     }
-
+    
     private DateTimeFormatter DTF_TIME = DateTimeFormatter.ISO_LOCAL_TIME;
     private DateTimeFormatter DTF_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
     private DateTimeFormatter DTF_DATETIME = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -42,12 +43,12 @@ public class JkFormatter {
     private Map<Class<?>, Function<String, ?>> customClassParses = new HashMap<>();
     private Map<Class<?>, Function<String, ?>> customInstanceParses = new HashMap<>();
 
-    private JkFormatter() {
+    private TmpFmt() {
 
     }
 
-    public static JkFormatter get() {
-        return new JkFormatter();
+    public static TmpFmt get() {
+        return new TmpFmt();
     }
 
     public <T> List<T> parseCsv(Path csvPath, Class<T> clazz) {
@@ -78,7 +79,7 @@ public class JkFormatter {
         }
         return toRet;
     }
-    public Object parseSingleValue(String value, Class<?> fclazz) {
+    private Object parseSingleValue(String value, Class<?> fclazz) {
         Object o = isOfClass(fclazz, String.class) ? "" : null;
 
         if (StringUtils.isNotBlank(value) && !value.equalsIgnoreCase(CsvSep.PH_NULL)) {
@@ -158,7 +159,7 @@ public class JkFormatter {
 
         return toRet;
     }
-    public  <T> String formatFieldValue(T value, Class<?> fclazz) {
+    private <T> String formatFieldValue(T value, Class<?> fclazz) {
         if (value == null) {
             return "";
         }
