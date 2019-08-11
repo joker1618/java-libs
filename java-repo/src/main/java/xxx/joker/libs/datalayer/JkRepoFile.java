@@ -181,6 +181,15 @@ public abstract class JkRepoFile implements JkRepo {
     }
 
     @Override
+    public Path getUriPath(RepoResource resource) {
+        Path up = resource.getUri().getPath();
+        if(!up.isAbsolute()) {
+            up = ctx.getResourcesFolder().resolve(up);
+        }
+        return up;
+    }
+
+    @Override
     public RepoResource addResource(Path sourcePath, String resName, String... tags) {
         return resourceHandler.addResource(sourcePath, resName, RepoTags.of(tags));
     }

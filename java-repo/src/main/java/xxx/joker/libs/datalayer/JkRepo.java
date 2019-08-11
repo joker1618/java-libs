@@ -44,6 +44,7 @@ public interface JkRepo {
 //    String delProperty(String key);
 //
     RepoResource getResource(String resName, String... tags);
+    Path getUriPath(RepoResource resource);
     RepoResource addResource(Path sourcePath, String resName, String... tags);
 
     RepoCtx getRepoCtx();

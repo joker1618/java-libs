@@ -26,9 +26,9 @@ public class JfxUtil {
 	private static ImageView createImageView1(Image image, Integer fitWidth, Integer fitHeight) {
 		ImageView imageView = new ImageView();
 		if(image != null)	imageView.setImage(image);
+		imageView.setPreserveRatio(true);
 		if(fitWidth != null)	imageView.setFitWidth(fitWidth);
 		if(fitHeight != null)	imageView.setFitHeight(fitHeight);
-		imageView.setPreserveRatio(true);
 		return imageView;
 	}
 

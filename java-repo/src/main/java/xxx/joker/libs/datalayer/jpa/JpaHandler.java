@@ -10,6 +10,7 @@ import xxx.joker.libs.core.utils.JkStruct;
 import xxx.joker.libs.datalayer.config.RepoCtx;
 import xxx.joker.libs.datalayer.design.RepoEntity;
 import xxx.joker.libs.datalayer.entities.RepoProperty;
+import xxx.joker.libs.datalayer.entities.RepoUri;
 import xxx.joker.libs.datalayer.exceptions.RepoError;
 import xxx.joker.libs.datalayer.wrapper.ClazzWrap;
 import xxx.joker.libs.datalayer.wrapper.FieldWrap;
@@ -17,6 +18,7 @@ import xxx.joker.libs.datalayer.wrapper.FieldWrap;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
@@ -247,6 +249,7 @@ public class JpaHandler {
             ctx.getWriteLock().lock();
             // Remove all references to 'e' from other entities
             Map<ClazzWrap, List<FieldWrap>> cwRefMap = entityRefMap.get(e.getClass());
+
             cwRefMap.forEach((cw, fwList) -> {
                 Set<RepoEntity> entList = proxies.get(cw.getEClazz()).getEntities();
                 entList.forEach(re -> {
