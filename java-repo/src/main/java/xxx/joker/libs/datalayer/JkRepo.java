@@ -5,10 +5,7 @@ import xxx.joker.libs.datalayer.design.RepoEntity;
 import xxx.joker.libs.datalayer.entities.RepoResource;
 
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -50,7 +47,7 @@ public interface JkRepo {
     RepoCtx getRepoCtx();
 
     String toStringRepo();
-    String toStringRepo(Class<?>... classes);
-    String toStringRepo(Collection<Class<?>> classes);
+    String toStringClass(Class<?>... classes);
+    String toStringEntities(Collection<? extends RepoEntity> entities);
 
 }

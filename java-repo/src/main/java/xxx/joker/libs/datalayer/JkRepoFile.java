@@ -202,16 +202,20 @@ public abstract class JkRepoFile implements JkRepo {
     @Override
     public String toStringRepo() {
         List<Class<?>> keys = JkStreams.mapSort(getDataSets().entrySet(), Map.Entry::getKey, Comparator.comparing(Class::getName));
-        return toStringRepo(keys);
+        return toStringRepoClass(keys);
     }
 
     @Override
-    public String toStringRepo(Class<?>... classes) {
-        return toStringRepo(JkConvert.toList(classes));
+    public String toStringClass(Class<?>... classes) {
+        return toStringRepoClass(JkConvert.toList(classes));
     }
 
     @Override
-    public String toStringRepo(Collection<Class<?>> classes) {
+    public String toStringEntities(Collection<? extends RepoEntity> entities) {
+        return RepoUtil.toStringEntities(entities);
+    }
+
+    private String toStringRepoClass(Collection<Class<?>> classes) {
         List<String> tables = new ArrayList<>();
         for (Class<?> clazz : classes) {
             Set<RepoEntity> coll = getDataSet((Class<RepoEntity>) clazz);

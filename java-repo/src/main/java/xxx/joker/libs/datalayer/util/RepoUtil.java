@@ -29,7 +29,7 @@ public class RepoUtil {
         csvParser.addCustomInstanceFormat(RepoEntity.class, RepoEntity::strMini);
     }
 
-    public static String toStringEntities(Collection<RepoEntity> coll) {
+    public static String toStringEntities(Collection<? extends RepoEntity> coll) {
         if(coll.isEmpty())  return "";
         List<String> collLines = csvParser.formatCsv(coll);
         RepoEntity repoEntity = JkConvert.toList(coll).get(0);

@@ -38,6 +38,7 @@ public class JpaHandler {
 
     private TreeMap<Class<?>, ProxyDataSet> proxies;
     private Map<Long, RepoEntity> dataById;
+    private Map<Long, Set<Long>> usedRefMap;
 
     private Map<Class<?>, Map<ClazzWrap, List<FieldWrap>>> entityRefMap;
 
@@ -47,6 +48,7 @@ public class JpaHandler {
         this.proxies = new TreeMap<>(Comparator.comparing(Class::getName));
         this.proxies.putAll(JkStreams.toMapSingle(ctx.getClazzWraps().keySet(), k -> k, k -> new ProxyDataSet()));
         this.dataById = new TreeMap<>();
+        this.usedRefMap = new HashMap<>();
 
         // Get references relationships
         this.entityRefMap = new HashMap<>();
@@ -89,7 +91,9 @@ public class JpaHandler {
                         proxies.get(ec).getEntities().addAll(elist);
                         ClazzWrap clazzWrap = ctx.getClazzWraps().get(ec);
                         elist.forEach(v -> {
-                            dataById.put(v.getEntityId(), v);
+                            Long eid = v.getEntityId();
+                            dataById.put(eid, v);
+                            usedRefMap.put(eid, new HashSet<>());
                             clazzWrap.initEntityFields(v);
                             createProxyColls(clazzWrap, v);
                         });
@@ -176,6 +180,7 @@ public class JpaHandler {
 
             // Add dependency entities before the input entity 'e'
             // This avoid problems when 'e' has a primary key that use dependencies
+            Set<Long> refIds = new HashSet<>();
             List<FieldWrap> fwraps = cw.getFieldWrapsEntityFlat();
             fwraps.forEach(fw -> {
                 if (fw.isEntityFlat()) {
@@ -186,7 +191,9 @@ public class JpaHandler {
                             if (!res && edep.getEntityId() == null) {
                                 RepoEntity egot = get(edep.getClass(), edep::equals);
                                 fw.setValue(e, egot);
+                                edep = egot;
                             }
+                            refIds.add(edep.getEntityId());
                         }
                     } else if (fw.isList()) {
                         List<RepoEntity> depList = fw.getValueCast(e);
@@ -196,7 +203,9 @@ public class JpaHandler {
                             if (!res && edep.getEntityId() == null) {
                                 RepoEntity egot = get(edep.getClass(), edep::equals);
                                 depList.set(idx, egot);
+                                edep = egot;
                             }
+                            refIds.add(edep.getEntityId());
                         }
                     } else if (fw.isSet()) {
                         Set<RepoEntity> depSet = fw.getValueCast(e);
@@ -208,7 +217,9 @@ public class JpaHandler {
                                 depSet.remove(edep);
                                 RepoEntity egot = get(edep.getClass(), edep::equals);
                                 depSet.add(egot);
+                                edep = egot;
                             }
+                            refIds.add(edep.getEntityId());
                         }
                     }
                 }
@@ -229,7 +240,10 @@ public class JpaHandler {
 
                 if (add) {
                     idSeqValue.getAndIncrement();
-                    dataById.put(e.getEntityId(), e);
+                    Long eid = e.getEntityId();
+                    dataById.put(eid, e);
+                    usedRefMap.put(eid, new HashSet<>());
+                    refIds.forEach(id -> usedRefMap.get(id).add(eid));
                     updatePropertyIdSeq();
                     LOG.debug("Added new entity: {}", e);
                     return true;
@@ -249,7 +263,6 @@ public class JpaHandler {
             ctx.getWriteLock().lock();
             // Remove all references to 'e' from other entities
             Map<ClazzWrap, List<FieldWrap>> cwRefMap = entityRefMap.get(e.getClass());
-
             cwRefMap.forEach((cw, fwList) -> {
                 Set<RepoEntity> entList = proxies.get(cw.getEClazz()).getEntities();
                 entList.forEach(re -> {
