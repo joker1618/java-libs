@@ -108,9 +108,9 @@ public class DaoHandler {
         JkFiles.delete(bkpFolder);
 
         // Create zip
-//        List<Path> repoPaths = JkFiles.find(ctx.getDbFolder(), false, ctx::isEntityFilePath);
-//        Path outZipPath = ctx.getDbFolder().resolve(strf("{}#jkrepo.zip", ctx.getDbName()));
-//        JkZip.zipFiles(outZipPath, repoPaths);
+        List<Path> repoPaths = JkFiles.find(ctx.getDbFolder(), false, ctx::isEntityFilePath);
+        Path outZipPath = ctx.getDbFolder().resolve(strf("{}#jkrepo.zip", ctx.getDbName()));
+        JkZip.zipFiles(outZipPath, repoPaths);
 
         return true;
     }

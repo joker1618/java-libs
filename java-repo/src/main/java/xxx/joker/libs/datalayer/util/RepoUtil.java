@@ -23,10 +23,11 @@ public class RepoUtil {
     private static JkFormatter csvParser = JkFormatter.get();
     static {
         // csvParser configs
-        csvParser.addCustomClassFormat(JkDateTime.class, d -> d.format("yyyyMMdd_HHmmss"));
-        csvParser.addCustomClassFormat(LocalDateTime.class, d -> JkDateTime.of(d).format("yyyyMMdd_HHmmss"));
-        csvParser.addCustomClassFormat(RepoUri.class, u -> strf("uri[{}]", u.getEntityId()));
-        csvParser.addCustomInstanceFormat(RepoEntity.class, RepoEntity::strMini);
+        csvParser.setClassFormat(JkDateTime.class, d -> d.format("yyyyMMdd_HHmmss"));
+        csvParser.setClassFormat(LocalDateTime.class, d -> JkDateTime.of(d).format("yyyyMMdd_HHmmss"));
+        csvParser.setClassFormat(RepoUri.class, u -> strf("uri[{}]", u.getEntityId()));
+        csvParser.setInstanceFormat(RepoEntity.class, RepoEntity::strMini);
+        csvParser.setInstanceFormat(RepoEntity.class, RepoEntity::strMini);
     }
 
     public static String toStringEntities(Collection<? extends RepoEntity> coll) {

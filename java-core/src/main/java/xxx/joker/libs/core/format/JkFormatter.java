@@ -37,12 +37,12 @@ public class JkFormatter {
     private DateTimeFormatter DTF_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
     private DateTimeFormatter DTF_DATETIME = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-    private Map<Field, Function<?, String>> customFieldFormats= new HashMap<>();
-    private Map<Class<?>, Function<?, String>> customClassFormats = new HashMap<>();
-    private Map<Class<?>, Function<?, String>> customInstanceFormats = new HashMap<>();
-    private Map<Field, Function<String, ?>> customFieldParses = new HashMap<>();
-    private Map<Class<?>, Function<String, ?>> customClassParses = new HashMap<>();
-    private Map<Class<?>, Function<String, ?>> customInstanceParses = new HashMap<>();
+    private Map<Field, Function<?, String>> fieldFormats= new HashMap<>();
+    private Map<Class<?>, Function<?, String>> classFormats = new HashMap<>();
+    private Map<Class<?>, Function<?, String>> instanceFormats = new HashMap<>();
+    private Map<Field, Function<String, ?>> fieldParses = new HashMap<>();
+    private Map<Class<?>, Function<String, ?>> classParses = new HashMap<>();
+    private Map<Class<?>, Function<String, ?>> instanceParses = new HashMap<>();
 
     private JkFormatter() {
 
@@ -124,18 +124,18 @@ public class JkFormatter {
     }
     private Function<String, ?> retrieveCustomParser(Field field) {
         // Search in field format
-        Map.Entry<Field, Function<String, ?>> found1 = JkStreams.findUnique(customFieldParses.entrySet(), field::equals);
+        Map.Entry<Field, Function<String, ?>> found1 = JkStreams.findUnique(fieldParses.entrySet(), field::equals);
         if(found1 != null) {
             return found1.getValue();
         }
         // Search in class format
         Class<?> fclazz = field.getType();
-        Map.Entry<Class<?>, Function<String, ?>> found2 = JkStreams.findUnique(customClassParses.entrySet(), cc -> isOfClass(cc.getKey(), fclazz));
+        Map.Entry<Class<?>, Function<String, ?>> found2 = JkStreams.findUnique(classParses.entrySet(), cc -> isOfClass(cc.getKey(), fclazz));
         if(found2 != null) {
             return found2.getValue();
         }
         // Search in instance format
-        found2 = JkStreams.findUnique(customInstanceParses.entrySet(), cc -> JkReflection.isInstanceOf(cc.getKey(), fclazz));
+        found2 = JkStreams.findUnique(instanceParses.entrySet(), cc -> JkReflection.isInstanceOf(cc.getKey(), fclazz));
         if(found2 != null) {
             return found2.getValue();
         }
@@ -216,40 +216,40 @@ public class JkFormatter {
     }
     private Function<?, String> retrieveCustomFormat(Class<?> clazz, Field field) {
         // Search in field format
-        Map.Entry<Field, Function<?, String>> found1 = JkStreams.findUnique(customFieldFormats.entrySet(), field::equals);
+        Map.Entry<Field, Function<?, String>> found1 = JkStreams.findUnique(fieldFormats.entrySet(), field::equals);
         if(found1 != null) {
             return found1.getValue();
         }
         // Search in class format
-        Map.Entry<Class<?>, Function<?, String>> found2 = JkStreams.findUnique(customClassFormats.entrySet(), cc -> isOfClass(cc.getKey(), clazz));
+        Map.Entry<Class<?>, Function<?, String>> found2 = JkStreams.findUnique(classFormats.entrySet(), cc -> isOfClass(cc.getKey(), clazz));
         if(found2 != null) {
             return found2.getValue();
         }
         // Search in instance format
-        found2 = JkStreams.findUnique(customInstanceFormats.entrySet(), cc -> JkReflection.isInstanceOf(clazz, cc.getKey()));
+        found2 = JkStreams.findUnique(instanceFormats.entrySet(), cc -> JkReflection.isInstanceOf(clazz, cc.getKey()));
         if(found2 != null) {
             return found2.getValue();
         }
         return null;
     }
 
-    public <T> void addCustomFieldFormat(Class<T> clazz, String fieldName, Function<T, String> formatFunc) {
-        customFieldFormats.put(JkReflection.getFieldByName(clazz, fieldName), formatFunc);
+    public <T> void setFieldFormat(Class<T> clazz, String fieldName, Function<T, String> formatFunc) {
+        fieldFormats.put(JkReflection.getFieldByName(clazz, fieldName), formatFunc);
     }
-    public <T> void addCustomClassFormat(Class<T> clazz, Function<T, String> formatFunc) {
-        customClassFormats.put(clazz, formatFunc);
+    public <T> void setClassFormat(Class<T> clazz, Function<T, String> formatFunc) {
+        classFormats.put(clazz, formatFunc);
     }
-    public <T> void addCustomInstanceFormat(Class<T> clazz, Function<T, String> formatFunc) {
-        customInstanceFormats.put(clazz, formatFunc);
+    public <T> void setInstanceFormat(Class<T> clazz, Function<T, String> formatFunc) {
+        instanceFormats.put(clazz, formatFunc);
     }
-    public <T> void addCustomFieldParse(Class<T> clazz, String fieldName, Function<String, T> parseFunc) {
-        customFieldParses.put(JkReflection.getFieldByName(clazz, fieldName), parseFunc);
+    public <T> void setFieldParse(Class<T> clazz, String fieldName, Function<String, T> parseFunc) {
+        fieldParses.put(JkReflection.getFieldByName(clazz, fieldName), parseFunc);
     }
-    public <T> void addCustomClassParse(Class<T> clazz, Function<String, T> parseFunc) {
-        customClassParses.put(clazz, parseFunc);
+    public <T> void setClassParse(Class<T> clazz, Function<String, T> parseFunc) {
+        classParses.put(clazz, parseFunc);
     }
-    public <T> void addCustomInstanceParse(Class<T> clazz, Function<String, T> parseFunc) {
-        customInstanceParses.put(clazz, parseFunc);
+    public <T> void setInstanceParse(Class<T> clazz, Function<String, T> parseFunc) {
+        instanceParses.put(clazz, parseFunc);
     }
 
 }
