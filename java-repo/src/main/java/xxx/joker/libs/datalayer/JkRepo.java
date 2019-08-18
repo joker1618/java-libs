@@ -24,7 +24,7 @@ public interface JkRepo {
     <T extends RepoEntity> T get(Class<T> entityClazz, Predicate<T>... filters);
     <T extends RepoEntity> T getById(long id);
     <T extends RepoEntity> T getByPk(T entity);
-//    <T extends RepoEntity> T getByPkOrAdd(T entity);
+    <T extends RepoEntity> T getOrAddByPk(T entity);
 
     <T extends RepoEntity> boolean add(T toAdd);
     <T extends RepoEntity> boolean addAll(Collection<T> coll);

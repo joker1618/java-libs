@@ -6,11 +6,12 @@ import xxx.joker.libs.core.utils.JkStrings;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 import static java.time.temporal.ChronoUnit.*;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
-public class JkDuration implements JkFormattable {
+public class JkDuration implements JkFormattable, Comparable<JkDuration> {
     private long totalMillis;
 
     private int hours;
@@ -152,6 +153,9 @@ public class JkDuration implements JkFormattable {
         return minus(toSubtract);
     }
 
+    public javafx.util.Duration toFxDuration() {
+        return javafx.util.Duration.millis(totalMillis);
+    }
 
     @Override
     public String format() {
@@ -162,5 +166,23 @@ public class JkDuration implements JkFormattable {
     public JkDuration parse(String str) {
         init(Long.valueOf(str));
         return this;
+    }
+
+    @Override
+    public int compareTo(JkDuration o) {
+        return (int) (totalMillis - o.toMillis());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JkDuration that = (JkDuration) o;
+        return totalMillis == that.totalMillis;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(totalMillis);
     }
 }

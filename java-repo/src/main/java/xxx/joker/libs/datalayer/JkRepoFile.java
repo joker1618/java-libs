@@ -93,6 +93,16 @@ public class JkRepoFile implements JkRepo {
     }
 
     @Override
+    public <T extends RepoEntity> T getOrAddByPk(T entity) {
+        T found = (T) get(entity.getClass(), entity::equals);
+        if(found == null) {
+            add(entity);
+            found = entity;
+        }
+        return found;
+    }
+
+    @Override
     public <T extends RepoEntity> T getById(long id) {
         return (T) jpaHandler.getDataById().get(id);
     }
