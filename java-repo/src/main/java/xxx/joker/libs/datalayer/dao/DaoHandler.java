@@ -31,23 +31,26 @@ public class DaoHandler {
         List<RepoEntity> toRet = new ArrayList<>();
 
         // Read data file, without dependencies, and the fk file
-        List<DaoFK> daoFKs = new ArrayList<>();
+//        List<DaoFK> daoFKs = new ArrayList<>();
         for (ClazzWrap cw : ctx.getClazzWraps().values()) {
             List<String> lines = readRepoFile(ctx.getEntityDataPath(cw));
             toRet.addAll(cw.parseEntityData(lines));
 
-            lines = readRepoFile(ctx.getEntityForeignKeysPath(cw));
-            List<DaoFK> fkList = JkStreams.map(lines, line -> new DaoFK().parse(line));
-            daoFKs.addAll(fkList);
+//            lines = readRepoFile(ctx.getForeignKeysPath(cw));
+//            List<DaoFK> fkList = JkStreams.map(lines, line -> new DaoFK().parse(line));
+//            daoFKs.addAll(fkList);
         }
+
+        List<String> lines = readRepoFile(ctx.getForeignKeysPath());
+        List<DaoFK> fkList = JkStreams.map(lines, line -> new DaoFK().parse(line));
 
         // Set dependencies using simple collection (no Proxy)
         Map<Long, RepoEntity> idMap = JkStreams.toMapSingle(toRet, RepoEntity::getEntityId);
-        Map<Long, List<DaoFK>> fkMap = JkStreams.toMap(daoFKs, DaoFK::getFromID);
+        Map<Long, List<DaoFK>> fkMap = JkStreams.toMap(fkList, DaoFK::getFromID);
 
-        fkMap.forEach((sid, fkList) -> {
+        fkMap.forEach((sid, fkl) -> {
             RepoEntity fromEntity = idMap.get(sid);
-            fkList.forEach(fk -> {
+            fkl.forEach(fk -> {
                 RepoEntity depEntity = idMap.get(fk.getDepID());
                 ClazzWrap cw = ctx.getClazzWraps().get(fromEntity.getClass());
                 FieldWrap fw = cw.getFieldWrap(fk.getFieldName());
@@ -71,6 +74,7 @@ public class DaoHandler {
         // Persist entities
         List<RepoEntity> idSorted = JkStreams.sorted(entities, Comparator.comparing(RepoEntity::getEntityId));
         Map<Class<?>, List<RepoEntity>> toFormatMap = JkStreams.toMap(idSorted, RepoEntity::getClass);
+        List<DaoFK> fkList = new ArrayList<>();
         toFormatMap.forEach((c,reList) -> {
             if(!reList.isEmpty()) {
                 ClazzWrap cw = ctx.getClazzWraps().get(c);
@@ -80,7 +84,6 @@ public class DaoHandler {
                 LOG.debug("File persisted: {}", outDataPath);
 
                 List<FieldWrap> fwDeps = cw.getFieldWrapsEntityFlat();
-                List<DaoFK> fkList = new ArrayList<>();
                 reList.forEach(re -> {
                     fwDeps.forEach(fw -> {
                         if(fw.isEntity()) {
@@ -96,21 +99,17 @@ public class DaoHandler {
                         }
                     });
                 });
-                if(!fkList.isEmpty()) {
-                    List<String> fkLines = JkStreams.map(fkList, DaoFK::format);
-                    Path outFkeysPath = ctx.getEntityForeignKeysPath(cw);
-                    JkFiles.writeFile(outFkeysPath, fkLines);
-                    LOG.debug("File persisted: {}", outFkeysPath);
-                }
             }
         });
 
-        JkFiles.delete(bkpFolder);
+        if(!fkList.isEmpty()) {
+            List<String> fkLines = JkStreams.map(fkList, DaoFK::format);
+            Path outFkeysPath = ctx.getForeignKeysPath();
+            JkFiles.writeFile(outFkeysPath, fkLines);
+            LOG.debug("File persisted: {}", outFkeysPath);
+        }
 
-        // Create zip
-        List<Path> repoPaths = JkFiles.find(ctx.getDbFolder(), false, ctx::isEntityFilePath);
-        Path outZipPath = ctx.getDbFolder().resolve(strf("{}#jkrepo.zip", ctx.getDbName()));
-        JkZip.zipFiles(outZipPath, repoPaths);
+        JkFiles.delete(bkpFolder);
 
         return true;
     }

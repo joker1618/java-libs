@@ -73,8 +73,8 @@ public class RepoCtx {
     public Path getEntityDataPath(ClazzWrap clazzWrap) {
         return getEntityPath(clazzWrap, DB_EXT_DATA_FILE);
     }
-    public Path getEntityForeignKeysPath(ClazzWrap clazzWrap) {
-        return getEntityPath(clazzWrap, DB_EXT_FKEYS_FILE);
+    public Path getForeignKeysPath() {
+        return getDbFolder().resolve(strf(DB_FKEYS_FORMAT, getDbName()));
     }
     public Path getEntityDescrPath(ClazzWrap clazzWrap) {
         return getEntityPath(clazzWrap, DB_EXT_DESCR_FILE);

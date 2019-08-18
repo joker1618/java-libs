@@ -27,8 +27,8 @@ public class RepoConfig {
     public static final String DB_JKREPO_KEYWORD = "jkrepo";
     public static final String DB_FILENAME_FORMAT = "{}#{}#" + DB_JKREPO_KEYWORD + ".{}";
     public static final String DB_EXT_DATA_FILE = "data";
-    public static final String DB_EXT_FKEYS_FILE = "fkeys";
     public static final String DB_EXT_DESCR_FILE = "descr";
+    public static final String DB_FKEYS_FORMAT = "{}#" + DB_JKREPO_KEYWORD + ".fkeys";
 
     public static class CsvSeparator {
         public static final String SEP_FIELD = "|";
