@@ -34,6 +34,12 @@ public class JkStreams {
 	public static <T,U> List<U> mapUniq(Collection<T> source, Function<T,U> mapper) {
 		return source.stream().map(mapper).distinct().collect(Collectors.toList());
 	}
+	public static <T,U> List<U> mapSortUniq(Collection<T> source, Function<T,U> mapper) {
+		return source.stream().map(mapper).sorted().distinct().collect(Collectors.toList());
+	}
+	public static <T,U> List<U> mapSortUniq(Collection<T> source, Function<T,U> mapper, Comparator<U> sorter) {
+		return source.stream().map(mapper).sorted(sorter).distinct().collect(Collectors.toList());
+	}
 	public static <T,U> List<U> mapFilterSort(Collection<T> source, Function<T,U> mapper, Predicate<U> filter) {
 		return source.stream().map(mapper).filter(filter).sorted().collect(Collectors.toList());
 	}
@@ -69,6 +75,9 @@ public class JkStreams {
 	}
 	public static <T> List<T> filterUniq(Collection<T> source, Predicate<T> filter) {
 		return source.stream().filter(filter).distinct().collect(Collectors.toList());
+	}
+	public static <T> List<T> filterSortUniq(Collection<T> source, Predicate<T> filter) {
+		return source.stream().filter(filter).sorted().distinct().collect(Collectors.toList());
 	}
 	public static <T,U> List<U> filterMapSort(Collection<T> source, Predicate<T> filter, Function<T,U> mapper) {
 		return source.stream().filter(filter).map(mapper).sorted().collect(Collectors.toList());

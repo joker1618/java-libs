@@ -3,6 +3,7 @@ package xxx.joker.libs.datalayer.dao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.files.JkZip;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.datalayer.config.RepoCtx;
 import xxx.joker.libs.datalayer.design.RepoEntity;
@@ -12,6 +13,8 @@ import xxx.joker.libs.datalayer.wrapper.FieldWrap;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+
+import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class DaoHandler {
 
@@ -103,6 +106,12 @@ public class DaoHandler {
         });
 
         JkFiles.delete(bkpFolder);
+
+        // Create zip
+//        List<Path> repoPaths = JkFiles.find(ctx.getDbFolder(), false, ctx::isEntityFilePath);
+//        Path outZipPath = ctx.getDbFolder().resolve(strf("{}#jkrepo.zip", ctx.getDbName()));
+//        JkZip.zipFiles(outZipPath, repoPaths);
+
         return true;
     }
 

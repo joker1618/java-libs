@@ -10,6 +10,7 @@ import xxx.joker.libs.core.utils.JkConvert;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.FileTime;
@@ -584,7 +585,11 @@ public class JkFiles {
 	}
 	public static Path toPath(URI sourceURI) {
 		String path = sourceURI.getPath();
-		return Paths.get(path.startsWith("/") ? path.substring(1) : path);
+		return Paths.get(path.replaceAll("^/", ""));
+	}
+	public static Path toPath(URL sourceURL) {
+		String path = sourceURL.getPath();
+		return Paths.get(path.replaceAll("^/", ""));
 	}
 
 	public static String toURL(String source) {

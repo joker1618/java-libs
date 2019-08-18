@@ -245,15 +245,15 @@ public class JkReflection {
 					Object sval = getFieldValue(source, f);
 					setFieldValue(target, tf, sval);
 				} else if(tf.getType() == String.class) {
-					String sval = fmt.formatFieldValue(getFieldValue(source, f), f.getType());
+					String sval = fmt.formatFieldValue(getFieldValue(source, f), f);
 					setFieldValue(target, tf, sval);
 				} else if(f.getType() == String.class) {
 					String sval = (String) getFieldValue(source, f);
-					Object o = fmt.parseSingleValue(sval, tf.getType());
+					Object o = fmt.parseSingleValue(sval, tf);
 					setFieldValue(target, tf, o);
 				} else {
-					String sval = fmt.formatFieldValue(getFieldValue(source, f), f.getType());
-					Object o = fmt.parseSingleValue(sval, tf.getType());
+					String sval = fmt.formatFieldValue(getFieldValue(source, f), f);
+					Object o = fmt.parseSingleValue(sval, tf);
 					setFieldValue(target, tf, o);
 				}
 			}

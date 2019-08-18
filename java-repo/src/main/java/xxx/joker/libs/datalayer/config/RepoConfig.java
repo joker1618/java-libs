@@ -21,7 +21,8 @@ public class RepoConfig {
     public static final String RESOURCES_FOLDER_NAME = "resources";
     public static final String DB_FOLDER_NAME = "db";
 
-    public static final String REPO_SEQ_PROP = "_config.sequence.id.value";
+    public static final String PROP_SEQUENCE = "_config.sequence.id.value";
+    public static final String PROP_LAST_COMMIT = "_config.last.commit";
 
     public static final String DB_JKREPO_KEYWORD = "jkrepo";
     public static final String DB_FILENAME_FORMAT = "{}#{}#" + DB_JKREPO_KEYWORD + ".{}";

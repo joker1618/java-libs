@@ -10,7 +10,6 @@ import xxx.joker.libs.core.utils.JkStruct;
 import xxx.joker.libs.datalayer.config.RepoCtx;
 import xxx.joker.libs.datalayer.design.RepoEntity;
 import xxx.joker.libs.datalayer.entities.RepoProperty;
-import xxx.joker.libs.datalayer.entities.RepoUri;
 import xxx.joker.libs.datalayer.exceptions.RepoError;
 import xxx.joker.libs.datalayer.wrapper.ClazzWrap;
 import xxx.joker.libs.datalayer.wrapper.FieldWrap;
@@ -18,13 +17,13 @@ import xxx.joker.libs.datalayer.wrapper.FieldWrap;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Predicate;
 
-import static xxx.joker.libs.datalayer.config.RepoConfig.REPO_SEQ_PROP;
+import static xxx.joker.libs.core.utils.JkConsole.display;
+import static xxx.joker.libs.datalayer.config.RepoConfig.PROP_SEQUENCE;
 
 public class JpaHandler {
 
@@ -38,7 +37,7 @@ public class JpaHandler {
 
     private TreeMap<Class<?>, ProxyDataSet> proxies;
     private Map<Long, RepoEntity> dataById;
-    private Map<Long, Set<Long>> usedRefMap;
+    private Map<Long, Map<Long, Set<FieldWrap>>> usedRefMap;
 
     private Map<Class<?>, Map<ClazzWrap, List<FieldWrap>>> entityRefMap;
 
@@ -48,7 +47,7 @@ public class JpaHandler {
         this.proxies = new TreeMap<>(Comparator.comparing(Class::getName));
         this.proxies.putAll(JkStreams.toMapSingle(ctx.getClazzWraps().keySet(), k -> k, k -> new ProxyDataSet()));
         this.dataById = new TreeMap<>();
-        this.usedRefMap = new HashMap<>();
+        this.usedRefMap = new TreeMap<>();
 
         // Get references relationships
         this.entityRefMap = new HashMap<>();
@@ -85,7 +84,6 @@ public class JpaHandler {
                 if(!entities.isEmpty()) {
                     // add entities to dataSet proxies
                     // convert List and Set fields in collection proxies
-                    JkDebug.startTimer("init ds");
                     Map<Class<?>, List<RepoEntity>> emap = JkStreams.toMap(entities, RepoEntity::getClass);
                     emap.forEach((ec, elist) -> {
                         proxies.get(ec).getEntities().addAll(elist);
@@ -93,16 +91,43 @@ public class JpaHandler {
                         elist.forEach(v -> {
                             Long eid = v.getEntityId();
                             dataById.put(eid, v);
-                            usedRefMap.put(eid, new HashSet<>());
                             clazzWrap.initEntityFields(v);
                             createProxyColls(clazzWrap, v);
                         });
                     });
-                    JkDebug.stopTimer("init ds");
+
+                    // Analyze references
+                    emap.forEach((ec, elist) -> {
+                        ClazzWrap clazzWrap = ctx.getClazzWraps().get(ec);
+                        List<FieldWrap> fwList = clazzWrap.getCollFieldWrapsEntity();
+                        fwList.removeIf(fw -> fw.getFieldTypeFlat() != ec);
+                        elist.forEach(v -> {
+                            Long eid = v.getEntityId();
+                            usedRefMap.put(eid, new TreeMap<>());
+                            fwList.forEach(fw -> {
+                                if(fw.isCollection()) {
+                                    Collection<RepoEntity> coll = fw.getValueCast(v);
+                                    coll.forEach(re -> {
+                                        Long refId = re.getEntityId();
+                                        usedRefMap.putIfAbsent(refId, new HashMap<>());
+                                        usedRefMap.get(refId).putIfAbsent(eid, new HashSet<>());
+                                        usedRefMap.get(refId).get(eid).add(fw);
+                                    });
+                                } else {
+                                    RepoEntity re = fw.getValueCast(v);
+                                    if(re != null) {
+                                        Long refId = re.getEntityId();
+                                        usedRefMap.putIfAbsent(refId, new HashMap<>());
+                                        usedRefMap.get(refId).get(eid).add(fw);
+                                    }
+                                }
+                            });
+                        });
+                    });
 
                     // Set sequence id value using the RepoProperty associated, if exists, else to 'max id + 1'
                     List<RepoProperty> ep = JkStreams.map(emap.get(RepoProperty.class), e -> (RepoProperty)e);
-                    RepoProperty seqValProp = JkStreams.findUnique(ep, p -> REPO_SEQ_PROP.equals(p.getKey()));
+                    RepoProperty seqValProp = JkStreams.findUnique(ep, p -> PROP_SEQUENCE.equals(p.getKey()));
                     if(seqValProp == null) {
                         long val = JkStreams.reverseOrder(dataById.keySet()).get(0) + 1;
                         idSeqValue.set(val);
@@ -181,6 +206,7 @@ public class JpaHandler {
             // Add dependency entities before the input entity 'e'
             // This avoid problems when 'e' has a primary key that use dependencies
             Set<Long> refIds = new HashSet<>();
+            Map<Long, List<FieldWrap>> refs = new TreeMap<>();
             List<FieldWrap> fwraps = cw.getFieldWrapsEntityFlat();
             fwraps.forEach(fw -> {
                 if (fw.isEntityFlat()) {
@@ -194,6 +220,8 @@ public class JpaHandler {
                                 edep = egot;
                             }
                             refIds.add(edep.getEntityId());
+                            refs.putIfAbsent(edep.getEntityId(), new ArrayList<>());
+                            refs.get(edep.getEntityId()).add(fw);
                         }
                     } else if (fw.isList()) {
                         List<RepoEntity> depList = fw.getValueCast(e);
@@ -206,6 +234,8 @@ public class JpaHandler {
                                 edep = egot;
                             }
                             refIds.add(edep.getEntityId());
+                            refs.putIfAbsent(edep.getEntityId(), new ArrayList<>());
+                            refs.get(edep.getEntityId()).add(fw);
                         }
                     } else if (fw.isSet()) {
                         Set<RepoEntity> depSet = fw.getValueCast(e);
@@ -220,6 +250,8 @@ public class JpaHandler {
                                 edep = egot;
                             }
                             refIds.add(edep.getEntityId());
+                            refs.putIfAbsent(edep.getEntityId(), new ArrayList<>());
+                            refs.get(edep.getEntityId()).add(fw);
                         }
                     }
                 }
@@ -242,8 +274,12 @@ public class JpaHandler {
                     idSeqValue.getAndIncrement();
                     Long eid = e.getEntityId();
                     dataById.put(eid, e);
-                    usedRefMap.put(eid, new HashSet<>());
-                    refIds.forEach(id -> usedRefMap.get(id).add(eid));
+                    usedRefMap.put(eid, new HashMap<>());
+                    refs.forEach((id, fwList) -> {
+                        usedRefMap.putIfAbsent(id, new HashMap<>());
+                        usedRefMap.get(id).putIfAbsent(eid, new HashSet<>());
+                        usedRefMap.get(id).get(eid).addAll(fwList);
+                    });
                     updatePropertyIdSeq();
                     LOG.debug("Added new entity: {}", e);
                     return true;
@@ -261,28 +297,33 @@ public class JpaHandler {
     private boolean removeEntity(RepoEntity e) {
         try {
             ctx.getWriteLock().lock();
-            // Remove all references to 'e' from other entities
-            Map<ClazzWrap, List<FieldWrap>> cwRefMap = entityRefMap.get(e.getClass());
-            cwRefMap.forEach((cw, fwList) -> {
-                Set<RepoEntity> entList = proxies.get(cw.getEClazz()).getEntities();
-                entList.forEach(re -> {
-                    fwList.forEach(fw -> {
-                        if (fw.isEntity()) {
-                            if(e.equals(fw.getValueCast(re))) {
-                                fw.setValue(re, null);
-                            }
-                        } else if (fw.isEntityColl()) {
-                            Collection<RepoEntity> coll = fw.getValueCast(re);
-                            coll.removeIf(e::equals);
+
+            Long eid = e.getEntityId();
+            if(eid == null) {
+                return false;
+            }
+
+            usedRefMap.get(eid).forEach((parId, fwList) -> {
+                RepoEntity re = dataById.get(parId);
+                fwList.forEach(fw -> {
+                    if(fw.isCollection()) {
+                        Collection<RepoEntity> coll = fw.getValueCast(re);
+                        if(coll != null) {
+                            coll.removeIf(elem -> elem.getEntityId() == eid);
                         }
-                    });
+                    } else {
+                        fw.setValue(re, null);
+                    }
                 });
             });
+
 
             // Remove input entity 'e'
             boolean res = proxies.get(e.getClass()).getEntities().remove(e);
             if (res) {
-                dataById.remove(e.getEntityId());
+                dataById.remove(eid);
+                usedRefMap.remove(eid);
+                usedRefMap.values().forEach(v -> v.remove(eid));
                 e.setEntityId(null);
             }
             return res;
@@ -298,6 +339,7 @@ public class JpaHandler {
             proxies.values().forEach(pds -> pds.getEntities().clear());
             dataById.values().forEach(re -> re.setEntityId(null));
             dataById.clear();
+            usedRefMap.clear();
         } finally {
             ctx.getWriteLock().unlock();
         }
@@ -306,10 +348,10 @@ public class JpaHandler {
     private void updatePropertyIdSeq() {
         synchronized (idSeqValue) {
             Set<RepoEntity> props = proxies.get(RepoProperty.class).getEntities();
-            RepoEntity seqPropEntity = JkStreams.findUnique(props, p -> REPO_SEQ_PROP.equals(((RepoProperty) p).getKey()));
+            RepoEntity seqPropEntity = JkStreams.findUnique(props, p -> PROP_SEQUENCE.equals(((RepoProperty) p).getKey()));
             RepoProperty seqProp;
             if(seqPropEntity == null) {
-                seqProp = new RepoProperty(REPO_SEQ_PROP, String.valueOf(idSeqValue.get()));
+                seqProp = new RepoProperty(PROP_SEQUENCE, String.valueOf(idSeqValue.get()));
                 addEntityToRepo(seqProp);
             } else {
                 seqProp = (RepoProperty) seqPropEntity;

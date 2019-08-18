@@ -2,6 +2,7 @@ package xxx.joker.libs.datalayer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.datetime.JkDateTime;
 import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.debug.JkDebug;
 import xxx.joker.libs.core.lambdas.JkStreams;
@@ -10,6 +11,7 @@ import xxx.joker.libs.datalayer.config.RepoConfig;
 import xxx.joker.libs.datalayer.config.RepoCtx;
 import xxx.joker.libs.datalayer.dao.DaoHandler;
 import xxx.joker.libs.datalayer.design.RepoEntity;
+import xxx.joker.libs.datalayer.entities.RepoProperty;
 import xxx.joker.libs.datalayer.entities.RepoResource;
 import xxx.joker.libs.datalayer.entities.RepoTags;
 import xxx.joker.libs.datalayer.jpa.JpaHandler;
@@ -21,7 +23,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class JkRepoFile implements JkRepo {
+public class JkRepoFile implements JkRepo {
 
     private static final Logger LOG = LoggerFactory.getLogger(JkRepoFile.class);
 
@@ -43,7 +45,7 @@ public abstract class JkRepoFile implements JkRepo {
         this.ctx = new RepoCtx(repoFolder, dbName, eclasses, encrPwd);
 
         LOG.info("Init repo [folder={}, dbName={}, encr={}", ctx.getRepoFolder(), ctx.getDbName(), ctx.getEncrPwd());
-        eclasses.forEach(ec -> LOG.info("Repo entity class: {}", ec));
+        eclasses.forEach(ec -> LOG.info("Repo entity class: {}", ec.getName()));
 
         JkDebug.startTimer("dao");
         this.daoHandler = new DaoHandler(ctx);
@@ -113,8 +115,8 @@ public abstract class JkRepoFile implements JkRepo {
     }
 
     @Override
-    public <T extends RepoEntity> T removeID(long entityID) {
-        T e = getById(entityID);
+    public <T extends RepoEntity> T removeId(long entityId) {
+        T e = getById(entityId);
         return e != null ? remove(e) : null;
     }
 
@@ -166,6 +168,7 @@ public abstract class JkRepoFile implements JkRepo {
     public void commit() {
         try {
             ctx.getWriteLock().lock();
+            setProperty(RepoConfig.PROP_LAST_COMMIT, JkDateTime.now().format());
             JkTimer timer = new JkTimer();
             Collection<RepoEntity> values = jpaHandler.getDataById().values();
             daoHandler.persistData(values);
@@ -173,6 +176,42 @@ public abstract class JkRepoFile implements JkRepo {
         } finally {
             ctx.getWriteLock().unlock();
         }
+    }
+
+    @Override
+    public Set<RepoProperty> getProperties() {
+        return getDataSet(RepoProperty.class);
+    }
+
+    @Override
+    public String setProperty(String key, String value) {
+        RepoProperty prop = get(RepoProperty.class, p -> p.getKey().equals(key));
+        String oldValue;
+        if(prop == null) {
+            prop = new RepoProperty(key, value);
+            add(prop);
+            oldValue = null;
+        } else {
+            oldValue = prop.getValue();
+            prop.setValue(value);
+        }
+        return oldValue;
+    }
+
+    @Override
+    public String delProperty(String key) {
+        RepoProperty prop = get(RepoProperty.class, p -> p.getKey().equals(key));
+        if(prop == null) {
+            return null;
+        }
+        remove(prop);
+        return prop.getValue();
+    }
+
+    @Override
+    public String getProperty(String key) {
+        RepoProperty prop = get(RepoProperty.class, p -> p.getKey().equals(key));
+        return prop == null ? null : prop.getValue();
     }
 
     @Override

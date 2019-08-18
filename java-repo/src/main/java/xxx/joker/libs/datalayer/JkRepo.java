@@ -2,10 +2,14 @@ package xxx.joker.libs.datalayer;
 
 import xxx.joker.libs.datalayer.config.RepoCtx;
 import xxx.joker.libs.datalayer.design.RepoEntity;
+import xxx.joker.libs.datalayer.entities.RepoProperty;
 import xxx.joker.libs.datalayer.entities.RepoResource;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -24,7 +28,7 @@ public interface JkRepo {
 
     <T extends RepoEntity> boolean add(T toAdd);
     <T extends RepoEntity> boolean addAll(Collection<T> coll);
-    <T extends RepoEntity> T removeID(long entityID);
+    <T extends RepoEntity> T removeId(long entityId);
     <T extends RepoEntity> T remove(T toRemove);
     <T extends RepoEntity> boolean removeAll(Collection<T> coll);
 
@@ -34,12 +38,11 @@ public interface JkRepo {
     void rollback();
     void commit();
 
-//    Set<RepoProperty> getProperties();
-//    String getProperty(String key);
-//    String getProperty(String key, String _default);
-//    String setProperty(String key, String value);
-//    String delProperty(String key);
-//
+    Set<RepoProperty> getProperties();
+    String getProperty(String key);
+    String setProperty(String key, String value);
+    String delProperty(String key);
+
     RepoResource getResource(String resName, String... tags);
     Path getUriPath(RepoResource resource);
     RepoResource addResource(Path sourcePath, String resName, String... tags);
