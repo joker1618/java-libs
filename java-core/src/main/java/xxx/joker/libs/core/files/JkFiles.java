@@ -440,7 +440,7 @@ public class JkFiles {
 	public static void move(Path sourcePath, Path targetPath, boolean overwrite) {
 		move1(sourcePath, targetPath, overwrite, false);
 	}
-	public static Path moveSafely(Path sourcePath, Path targetPath) {
+	public static Path moveSafe(Path sourcePath, Path targetPath) {
 		return move1(sourcePath, targetPath, false, true);
 	}
 	public static void moveInFolder(Path sourcePath, Path targetFolder) {

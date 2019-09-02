@@ -27,7 +27,7 @@ public class RepoResource extends RepoEntity {
 
     @Override
     public String getPrimaryKey() {
-        return strf("resource[{}_{}]", getName(), getTags().format());
+        return strf("{}-{}", getName(), getTags().format());
     }
 
     public String getName() {

@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 public @interface JkArg {
 
-	String argName();
+	String name() default "";
 	String[] aliases() default {};
 
 	/**

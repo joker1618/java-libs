@@ -53,14 +53,14 @@ class ParserTypes {
 
             if(checkDesign) {
                 if(StringUtils.isBlank(argName.getArgName())) {
-                    throw new DesignError(argsNamesClass, "argName [{}] is blank", argName);
+                    throw new DesignError(argsNamesClass, "name [{}] is blank", argName);
                 }
                 if(argName.getArgName().contains(" ")) {
-                    throw new DesignError(argsNamesClass, "argName [{}] contains spaces", argName);
+                    throw new DesignError(argsNamesClass, "name [{}] contains spaces", argName);
                 }
-                // check if option argName is duplicated
+                // check if option name is duplicated
                 if(argsNamesMap.containsKey(argName.getArgName())) {
-                    throw new DesignError(argsNamesClass, "argName [{}] duplicated", argName);
+                    throw new DesignError(argsNamesClass, "name [{}] duplicated", argName);
                 }
             }
 

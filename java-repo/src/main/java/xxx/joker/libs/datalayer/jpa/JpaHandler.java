@@ -20,6 +20,7 @@ import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
@@ -39,8 +40,6 @@ public class JpaHandler {
     private Map<Long, RepoEntity> dataById;
     private Map<Long, Map<Long, Set<FieldWrap>>> usedRefMap;
 
-    private Map<Class<?>, Map<ClazzWrap, List<FieldWrap>>> entityRefMap;
-
     public JpaHandler(RepoCtx ctx, List<RepoEntity> entities) {
         this.ctx = ctx;
         this.idSeqValue = new AtomicLong(0L);
@@ -49,28 +48,44 @@ public class JpaHandler {
         this.dataById = new TreeMap<>();
         this.usedRefMap = new TreeMap<>();
 
-        // Get references relationships
-        this.entityRefMap = new HashMap<>();
-        ctx.getClazzWraps().keySet().forEach(sourceClass -> {
-            Map<ClazzWrap, List<FieldWrap>> cwRefMap = JkStreams.toMapSingle(ctx.getClazzWraps().values(), cw -> cw, cw -> cw.getFieldWraps(sourceClass));
-            List<ClazzWrap> toRemove = JkStruct.getMapKeys(cwRefMap, List::isEmpty);
-            toRemove.forEach(cwRefMap::remove);
-            entityRefMap.put(sourceClass, cwRefMap);
-        });
-
         // Check circular dependencies
-        for (Class<?> aClass : entityRefMap.keySet()) {
-            ClazzWrap cw = ctx.getClazzWraps().get(aClass);
-            for (ClazzWrap cw2 : entityRefMap.get(aClass).keySet()) {
-                List<FieldWrap> fwList = cw.getFieldWraps(cw2.getEClazz());
-                if(!fwList.isEmpty()) {
-                    throw new RepoError("Circular dependency. {} -> {}", aClass.getSimpleName(), JkStreams.map(fwList, fw -> fw.getFieldType().getSimpleName()));
-                }
-            }
-        }
+        checkCircularDependencies();
 
-        // Create property 'ID sequence'
+        // Init handler
         initDataSets(entities);
+    }
+
+    private void checkCircularDependencies() {
+        Map<Class<?>, Set<Class<?>>> refMap = new HashMap<>();
+        ctx.getClazzWraps().keySet().forEach(sourceClass -> {
+            Map<Class<?>, List<FieldWrap>> cmap = JkStreams.toMapSingle(ctx.getClazzWraps().values(), ClazzWrap::getEClazz, cw -> cw.getFieldWraps(sourceClass));
+            List<Class<?>> toRemove = JkStruct.getMapKeys(cmap, List::isEmpty);
+            toRemove.forEach(cmap::remove);
+            cmap.forEach((k,v) -> {
+                refMap.putIfAbsent(k, new HashSet<>());
+                v.forEach(ft -> refMap.get(k).add(ft.getFieldTypeFlat()));
+            });
+        });
+        refMap.keySet().forEach(c -> {
+            boolean res = isRecursive(new HashMap<>(refMap), c, c);
+            if(res) {
+                throw new RepoError("Circular dependency for class {}", c.getName());
+            }
+        });
+    }
+    private boolean isRecursive(Map<Class<?>, Set<Class<?>>> refMap, Class<?> sourceClazz, Class<?> toCheck) {
+        Set<Class<?>> cset = refMap.remove(toCheck);
+        if(cset == null) {
+            return false;
+        }
+        if(cset.contains(sourceClazz)) {
+            return true;
+        }
+        boolean res = false;
+        for (Class<?> c : cset) {
+            res |= isRecursive(refMap, sourceClazz, c);
+        }
+        return res;
     }
 
     public void initDataSets(List<RepoEntity> entities) {
@@ -99,7 +114,7 @@ public class JpaHandler {
                     // Analyze references
                     emap.forEach((ec, elist) -> {
                         ClazzWrap clazzWrap = ctx.getClazzWraps().get(ec);
-                        List<FieldWrap> fwList = clazzWrap.getCollFieldWrapsEntity();
+                        List<FieldWrap> fwList = clazzWrap.getFieldWrapsEntityFlat();
                         fwList.removeIf(fw -> fw.getFieldTypeFlat() != ec);
                         elist.forEach(v -> {
                             Long eid = v.getEntityId();
@@ -205,7 +220,6 @@ public class JpaHandler {
 
             // Add dependency entities before the input entity 'e'
             // This avoid problems when 'e' has a primary key that use dependencies
-            Set<Long> refIds = new HashSet<>();
             Map<Long, List<FieldWrap>> refs = new TreeMap<>();
             List<FieldWrap> fwraps = cw.getFieldWrapsEntityFlat();
             fwraps.forEach(fw -> {
@@ -219,7 +233,6 @@ public class JpaHandler {
                                 fw.setValue(e, egot);
                                 edep = egot;
                             }
-                            refIds.add(edep.getEntityId());
                             refs.putIfAbsent(edep.getEntityId(), new ArrayList<>());
                             refs.get(edep.getEntityId()).add(fw);
                         }
@@ -233,7 +246,6 @@ public class JpaHandler {
                                 depList.set(idx, egot);
                                 edep = egot;
                             }
-                            refIds.add(edep.getEntityId());
                             refs.putIfAbsent(edep.getEntityId(), new ArrayList<>());
                             refs.get(edep.getEntityId()).add(fw);
                         }
@@ -249,7 +261,6 @@ public class JpaHandler {
                                 depSet.add(egot);
                                 edep = egot;
                             }
-                            refIds.add(edep.getEntityId());
                             refs.putIfAbsent(edep.getEntityId(), new ArrayList<>());
                             refs.get(edep.getEntityId()).add(fw);
                         }

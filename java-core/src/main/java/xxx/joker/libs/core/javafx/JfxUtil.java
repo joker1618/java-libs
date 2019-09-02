@@ -15,18 +15,21 @@ import java.nio.file.Path;
 public class JfxUtil {
 
 	public static ImageView createImageView(Integer fitWidth, Integer fitHeight) {
-		return createImageView1(null, fitWidth, fitHeight);
+		return createImageView1(null, fitWidth, fitHeight, true);
 	}
 	public static ImageView createImageView(Path imgPath, Integer fitWidth, Integer fitHeight) {
 		return createImageView(new Image(JkFiles.toURL(imgPath)), fitWidth, fitHeight);
 	}
 	public static ImageView createImageView(Image image, Integer fitWidth, Integer fitHeight) {
-		return createImageView1(image, fitWidth, fitHeight);
+		return createImageView1(image, fitWidth, fitHeight, true);
 	}
-	private static ImageView createImageView1(Image image, Integer fitWidth, Integer fitHeight) {
+	public static ImageView createImageView(Image image, Integer fitWidth, Integer fitHeight, boolean preserveRatio) {
+		return createImageView1(image, fitWidth, fitHeight, preserveRatio);
+	}
+	private static ImageView createImageView1(Image image, Integer fitWidth, Integer fitHeight, boolean preserveRatio) {
 		ImageView imageView = new ImageView();
 		if(image != null)	imageView.setImage(image);
-		imageView.setPreserveRatio(true);
+		imageView.setPreserveRatio(preserveRatio);
 		if(fitWidth != null)	imageView.setFitWidth(fitWidth);
 		if(fitHeight != null)	imageView.setFitHeight(fitHeight);
 		return imageView;

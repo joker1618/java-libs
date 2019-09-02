@@ -5,6 +5,9 @@ import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.files.JkZip;
 import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.core.utils.JkConvert;
+import xxx.joker.libs.datalayer.config.RepoConfig;
+import xxx.joker.libs.datalayer.config.RepoConfig.CsvSep;
 import xxx.joker.libs.datalayer.config.RepoCtx;
 import xxx.joker.libs.datalayer.design.RepoEntity;
 import xxx.joker.libs.datalayer.wrapper.ClazzWrap;
@@ -14,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
+import static xxx.joker.libs.core.utils.JkConvert.toList;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class DaoHandler {
@@ -30,18 +34,16 @@ public class DaoHandler {
     public List<RepoEntity> loadDataFromFiles() {
         List<RepoEntity> toRet = new ArrayList<>();
 
-        // Read data file, without dependencies, and the fk file
-//        List<DaoFK> daoFKs = new ArrayList<>();
+        // Read data files, without dependencies
         for (ClazzWrap cw : ctx.getClazzWraps().values()) {
             List<String> lines = readRepoFile(ctx.getEntityDataPath(cw));
             toRet.addAll(cw.parseEntityData(lines));
-
-//            lines = readRepoFile(ctx.getForeignKeysPath(cw));
-//            List<DaoFK> fkList = JkStreams.map(lines, line -> new DaoFK().parse(line));
-//            daoFKs.addAll(fkList);
         }
 
+        // Read dependencies
+        String header = RepoConfig.getRepoFileFkeysHeader();
         List<String> lines = readRepoFile(ctx.getForeignKeysPath());
+        lines.remove(header);
         List<DaoFK> fkList = JkStreams.map(lines, line -> new DaoFK().parse(line));
 
         // Set dependencies using simple collection (no Proxy)
@@ -104,6 +106,7 @@ public class DaoHandler {
 
         if(!fkList.isEmpty()) {
             List<String> fkLines = JkStreams.map(fkList, DaoFK::format);
+            fkLines.add(0, RepoConfig.getRepoFileFkeysHeader());
             Path outFkeysPath = ctx.getForeignKeysPath();
             JkFiles.writeFile(outFkeysPath, fkLines);
             LOG.debug("File persisted: {}", outFkeysPath);

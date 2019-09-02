@@ -21,7 +21,7 @@ public class RepoProperty extends RepoEntity {
     
     @Override
     public String getPrimaryKey() {
-        return strf("property[{}]", getKey().toLowerCase());
+        return strf("{}", getKey().toLowerCase());
     }
 
     public String getKey() {

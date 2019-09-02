@@ -37,14 +37,6 @@ public class RepoUtil {
         return strf("*** {} ({}) ***\n{}", repoEntity.getClass(), coll.size(), JkOutput.columnsView(collLines));
     }
 
-
-    public static boolean isOfClass(Class<?> toFind, Class<?>... elems) {
-        for(Class<?> c : elems) {
-            if(c == toFind) return true;
-        }
-        return false;
-    }
-
     public static List<Class<?>> scanPackages(Class<?> launcherClazz, String... pkgsArr) {
         Set<Class<?>> classes = new HashSet<>();
 

@@ -1,6 +1,8 @@
 package xxx.joker.libs.datalayer.config;
 
+import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.format.JkFormattable;
+import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.datalayer.design.RepoEntity;
 import xxx.joker.libs.datalayer.wrapper.FieldWrap;
@@ -14,12 +16,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static xxx.joker.libs.core.utils.JkConvert.toList;
+
 public class RepoConfig {
 
     public static final String PACKAGE_COMMON_ENTITIES = "xxx.joker.libs.datalayer.entities";
 
     public static final String RESOURCES_FOLDER_NAME = "resources";
     public static final String DB_FOLDER_NAME = "db";
+
+    public static final String[] HEADER_REPO_FKEYS_FIELDS = {"entityId", "fieldName", "depId"};
 
     public static final String PROP_SEQUENCE = "_config.sequence.id.value";
     public static final String PROP_LAST_COMMIT = "_config.last.commit";
@@ -30,7 +36,7 @@ public class RepoConfig {
     public static final String DB_EXT_DESCR_FILE = "descr";
     public static final String DB_FKEYS_FORMAT = "{}#" + DB_JKREPO_KEYWORD + ".fkeys";
 
-    public static class CsvSeparator {
+    public static class CsvSep {
         public static final String SEP_FIELD = "|";
         public static final String SEP_LIST = ";";
 
@@ -52,6 +58,10 @@ public class RepoConfig {
             res = JkReflection.isInstanceOf(collType, CUSTOM_FIELDS) || ALLOWED_FIELDS.contains(collType);
         }
         return res;
+    }
+
+    public static String getRepoFileFkeysHeader() {
+        return JkStreams.join(toList(HEADER_REPO_FKEYS_FIELDS), CsvSep.SEP_FIELD);
     }
 
     private static final List<Class<?>> CUSTOM_FIELDS = Arrays.asList(

@@ -16,13 +16,15 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static xxx.joker.libs.core.runtimes.JkReflection.*;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class JkFormatter {
 
-    private static class CsvSep {
+    public static class CsvSep {
         public static final String SEP_FIELD = "|";
         public static final String SEP_LIST = ";";
 
@@ -37,12 +39,15 @@ public class JkFormatter {
     private DateTimeFormatter DTF_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
     private DateTimeFormatter DTF_DATETIME = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-    private Map<Field, Function<?, String>> fieldFormats= new HashMap<>();
+    private Map<Field, Function<?, String>> fieldFormats = new HashMap<>();
     private Map<Class<?>, Function<?, String>> classFormats = new HashMap<>();
     private Map<Class<?>, Function<?, String>> instanceFormats = new HashMap<>();
     private Map<Field, Function<String, ?>> fieldParses = new HashMap<>();
     private Map<Class<?>, Function<String, ?>> classParses = new HashMap<>();
     private Map<Class<?>, Function<String, ?>> instanceParses = new HashMap<>();
+
+    private Map<String, Function<?, String>> customFormats = new LinkedHashMap<>();
+    private List<Consumer<?>> afterParseFunctions = new ArrayList<>();
 
     private JkFormatter() {
 
@@ -63,7 +68,7 @@ public class JkFormatter {
 
         if(!csvLines.isEmpty()) {
             List<String> fnames = JkStrings.splitList(csvLines.get(0), fieldSep);
-            Map<String, Field> fmap = JkStreams.toMapSingle(fnames, fn -> fn, f -> JkReflection.getFieldByName(clazz, f));
+            Map<String, Field> fmap = JkStreams.toMapSingle(fnames, fn -> fn, f -> getFieldByName(clazz, f));
             for(int i = 1; i < csvLines.size(); i++) {
                 T elem = JkReflection.createInstance(clazz);
                 List<String> line = JkStrings.splitList(csvLines.get(i), fieldSep);
@@ -75,6 +80,7 @@ public class JkFormatter {
                         JkReflection.setFieldValue(elem, f, value);
                     }
                 }
+                afterParseFunctions.forEach(f -> ((Consumer<Object>)f).accept(elem));
                 toRet.add(elem);
             }
         }
@@ -84,37 +90,51 @@ public class JkFormatter {
         Class<?> fclazz = field.getType();
         Object o = isOfClass(fclazz, String.class) ? "" : null;
 
-        Function<String, ?> parseFunc = retrieveCustomParser(field);
+        Function<String, ?> parseFunc = retrieveCustomParser(fclazz, field);
+        if (StringUtils.isNotBlank(value)) {
+            if (parseFunc != null) {
+                o = parseFunc.apply(value);
+            } else {
+                o = parseSingleValue(value, fclazz);
+            }
+        }
+
+        return o;
+    }
+    public Object parseSingleValue(String value, Class<?> valueClazz) {
+        Object o = isOfClass(valueClazz, String.class) ? "" : null;
+
+        Function<String, ?> parseFunc = retrieveCustomParser(valueClazz, null);
         if (StringUtils.isNotBlank(value)) {
             if (parseFunc != null) {
                 o = parseFunc.apply(value);
             } else if (!value.equalsIgnoreCase(CsvSep.PH_NULL)) {
-                if (isOfClass(fclazz, boolean.class, Boolean.class)) {
+                if (isOfClass(valueClazz, boolean.class, Boolean.class)) {
                     o = Boolean.valueOf(value);
-                } else if (isOfClass(fclazz, int.class, Integer.class)) {
-                    o = JkConvert.toInt(value, fclazz.isPrimitive() ? 0 : null);
-                } else if (isOfClass(fclazz, long.class, Long.class)) {
-                    o = JkConvert.toLong(value, fclazz.isPrimitive() ? 0L : null);
-                } else if (isOfClass(fclazz, float.class, Float.class)) {
-                    o = JkConvert.toFloat(value, fclazz.isPrimitive() ? 0f : null);
-                } else if (isOfClass(fclazz, double.class, Double.class)) {
-                    o = JkConvert.toDouble(value, fclazz.isPrimitive() ? 0d : null);
-                } else if (isOfClass(fclazz, Path.class)) {
+                } else if (isOfClass(valueClazz, int.class, Integer.class)) {
+                    o = JkConvert.toInt(value, valueClazz.isPrimitive() ? 0 : null);
+                } else if (isOfClass(valueClazz, long.class, Long.class)) {
+                    o = JkConvert.toLong(value, valueClazz.isPrimitive() ? 0L : null);
+                } else if (isOfClass(valueClazz, float.class, Float.class)) {
+                    o = JkConvert.toFloat(value, valueClazz.isPrimitive() ? 0f : null);
+                } else if (isOfClass(valueClazz, double.class, Double.class)) {
+                    o = JkConvert.toDouble(value, valueClazz.isPrimitive() ? 0d : null);
+                } else if (isOfClass(valueClazz, Path.class)) {
                     o = Paths.get(value);
-                } else if (isOfClass(fclazz, File.class)) {
+                } else if (isOfClass(valueClazz, File.class)) {
                     o = new File(value);
-                } else if (isOfClass(fclazz, LocalTime.class)) {
+                } else if (isOfClass(valueClazz, LocalTime.class)) {
                     o = LocalTime.parse(value);
-                } else if (isOfClass(fclazz, LocalDate.class)) {
+                } else if (isOfClass(valueClazz, LocalDate.class)) {
                     o = LocalDate.parse(value);
-                } else if (isOfClass(fclazz, LocalDateTime.class)) {
+                } else if (isOfClass(valueClazz, LocalDateTime.class)) {
                     o = LocalDateTime.parse(value);
-                } else if (JkReflection.isInstanceOf(fclazz, JkFormattable.class)) {
-                    o = JkReflection.createInstance(fclazz);
+                } else if (isInstanceOf(valueClazz, JkFormattable.class)) {
+                    o = JkReflection.createInstance(valueClazz);
                     ((JkFormattable) o).parse(value);
-                } else if (JkReflection.isInstanceOf(fclazz, Enum.class)) {
-                    o = Enum.valueOf((Class) fclazz, value);
-                } else if (isOfClass(fclazz, String.class)) {
+                } else if (isInstanceOf(valueClazz, Enum.class)) {
+                    o = Enum.valueOf((Class) valueClazz, value);
+                } else if (isOfClass(valueClazz, String.class)) {
                     o = value;
                 }
             }
@@ -122,22 +142,24 @@ public class JkFormatter {
 
         return o;
     }
-    private Function<String, ?> retrieveCustomParser(Field field) {
+    private Function<String, ?> retrieveCustomParser(Class<?> clazz, Field field) {
         // Search in field format
-        Map.Entry<Field, Function<String, ?>> found1 = JkStreams.findUnique(fieldParses.entrySet(), field::equals);
-        if(found1 != null) {
-            return found1.getValue();
+        Function<String, ?> func;
+        if(field != null) {
+            func = fieldParses.get(field);
+            if (func != null) {
+                return func;
+            }
         }
         // Search in class format
-        Class<?> fclazz = field.getType();
-        Map.Entry<Class<?>, Function<String, ?>> found2 = JkStreams.findUnique(classParses.entrySet(), cc -> isOfClass(cc.getKey(), fclazz));
-        if(found2 != null) {
-            return found2.getValue();
+        func = classParses.get(clazz);
+        if(func != null) {
+            return func;
         }
         // Search in instance format
-        found2 = JkStreams.findUnique(instanceParses.entrySet(), cc -> JkReflection.isInstanceOf(cc.getKey(), fclazz));
-        if(found2 != null) {
-            return found2.getValue();
+        List<Function<String, ?>> functions = JkStreams.filterMap(instanceParses.entrySet(), cc -> isInstanceOf(clazz, cc.getKey()), Map.Entry::getValue);
+        if(!functions.isEmpty()) {
+            return functions.get(0);
         }
         return null;
     }
@@ -160,10 +182,16 @@ public class JkFormatter {
             allFields.removeIf(f -> fieldsToExclude.contains(f.getName()));
 
             String header = JkStreams.join(allFields, fieldSep, Field::getName);
+            if(!customFormats.isEmpty()) {
+                header += fieldSep + JkStreams.join(customFormats.keySet(), fieldSep);
+            }
             toRet.add(header);
 
             list.forEach(elem -> {
-                String join = JkStreams.join(allFields, CsvSep.SEP_FIELD, f -> formatFieldValue(JkReflection.getFieldValue(elem, f), f));
+                String join = JkStreams.join(allFields, fieldSep, f -> formatFieldValue(getFieldValue(elem, f), f));
+                if(!customFormats.isEmpty()) {
+                    join += fieldSep + JkStreams.join(customFormats.values(), fieldSep, cf -> ((Function<Object, String>) cf).apply(elem));
+                }
                 toRet.add(join);
             });
         }
@@ -179,26 +207,42 @@ public class JkFormatter {
             if (toStringFmt != null) {
                 Function<T, String> fmtFunc = (Function<T, String>) toStringFmt;
                 toRet = fmtFunc.apply(value);
-            } else if (isOfClass(fclazz, boolean.class, Boolean.class)) {
+            } else {
+                toRet = formatFieldValue(value, fclazz);
+            }
+        }
+
+        return toRet;
+    }
+    public String formatFieldValue(Object value, Class<?> valueClazz) {
+        String toRet = "";
+
+        if (value != null) {
+            Function<?, String> toStringFmt = retrieveCustomFormat(valueClazz, null);
+            if (toStringFmt != null) {
+                Function<Object, String> fmtFunc = (Function<Object, String>) toStringFmt;
+                toRet = fmtFunc.apply(value);
+            } else if (isOfClass(valueClazz, boolean.class, Boolean.class)) {
                 toRet = ((Boolean) value) ? "true" : "false";
-            } else if (isOfClass(fclazz, File.class, Path.class)) {
+            } else if (isOfClass(valueClazz, File.class, Path.class)) {
                 toRet = value.toString();
-            } else if (isOfClass(fclazz, LocalTime.class)) {
+            } else if (isOfClass(valueClazz, LocalTime.class)) {
                 toRet = DTF_TIME.format((LocalTime) value);
-            } else if (isOfClass(fclazz, LocalDate.class)) {
+            } else if (isOfClass(valueClazz, LocalDate.class)) {
                 toRet = DTF_DATE.format((LocalDate) value);
-            } else if (isOfClass(fclazz, LocalDateTime.class)) {
+            } else if (isOfClass(valueClazz, LocalDateTime.class)) {
                 toRet = DTF_DATETIME.format((LocalDateTime) value);
-            } else if (isOfClass(fclazz, int.class, Integer.class, long.class, Long.class, float.class, Float.class, double.class, Double.class)) {
+            } else if (isOfClass(valueClazz, int.class, Integer.class, long.class, Long.class, float.class, Float.class, double.class, Double.class)) {
                 toRet = String.valueOf(value);
-            } else if (JkReflection.isInstanceOf(fclazz, JkFormattable.class)) {
+            } else if (isInstanceOf(valueClazz, JkFormattable.class)) {
                 toRet = ((JkFormattable) value).format();
-            } else if (JkReflection.isInstanceOf(fclazz, Enum.class)) {
+            } else if (isInstanceOf(valueClazz, Enum.class)) {
                 toRet = ((Enum) value).name();
-            } else if (isOfClass(fclazz, String.class)) {
+            } else if (isOfClass(valueClazz, String.class)) {
                 toRet = (String) value;
-            } else if (JkReflection.isInstanceOf(fclazz, Collection.class)) {
-                toRet = strf("({})", ((Collection) value).size());
+            } else if (isInstanceOf(valueClazz, Collection.class)) {
+                Collection coll = (Collection) value;
+                toRet = JkStreams.join(coll, CsvSep.SEP_LIST, el -> el == null ? "" : formatFieldValue(el, el.getClass()));
             } else {
                 toRet = value.toString();
             }
@@ -206,35 +250,30 @@ public class JkFormatter {
 
         return toRet;
     }
-    private static boolean isOfClass(Class<?> clazz, Class<?>... classes) {
-        for(Class<?> c : classes) {
-            if(c == clazz) {
-                return true;
-            }
-        }
-        return false;
-    }
     private Function<?, String> retrieveCustomFormat(Class<?> clazz, Field field) {
         // Search in field format
-        Map.Entry<Field, Function<?, String>> found1 = JkStreams.findUnique(fieldFormats.entrySet(), field::equals);
-        if(found1 != null) {
-            return found1.getValue();
+        Function<?, String> func;
+        if(field != null) {
+            func = fieldFormats.get(field);
+            if (func != null) {
+                return func;
+            }
         }
         // Search in class format
-        Map.Entry<Class<?>, Function<?, String>> found2 = JkStreams.findUnique(classFormats.entrySet(), cc -> isOfClass(cc.getKey(), clazz));
-        if(found2 != null) {
-            return found2.getValue();
+        func = classFormats.get(clazz);
+        if(func != null) {
+            return func;
         }
         // Search in instance format
-        found2 = JkStreams.findUnique(instanceFormats.entrySet(), cc -> JkReflection.isInstanceOf(clazz, cc.getKey()));
-        if(found2 != null) {
-            return found2.getValue();
+        List<Function<?, String>> functions = JkStreams.filterMap(instanceFormats.entrySet(), cc -> isInstanceOf(clazz, cc.getKey()), Map.Entry::getValue);
+        if(!functions.isEmpty()) {
+            return functions.get(0);
         }
         return null;
     }
 
     public <T> void setFieldFormat(Class<T> clazz, String fieldName, Function<T, String> formatFunc) {
-        fieldFormats.put(JkReflection.getFieldByName(clazz, fieldName), formatFunc);
+        fieldFormats.put(getFieldByName(clazz, fieldName), formatFunc);
     }
     public <T> void setClassFormat(Class<T> clazz, Function<T, String> formatFunc) {
         classFormats.put(clazz, formatFunc);
@@ -243,13 +282,20 @@ public class JkFormatter {
         instanceFormats.put(clazz, formatFunc);
     }
     public <T> void setFieldParse(Class<T> clazz, String fieldName, Function<String, T> parseFunc) {
-        fieldParses.put(JkReflection.getFieldByName(clazz, fieldName), parseFunc);
+        fieldParses.put(getFieldByName(clazz, fieldName), parseFunc);
     }
     public <T> void setClassParse(Class<T> clazz, Function<String, T> parseFunc) {
         classParses.put(clazz, parseFunc);
     }
     public <T> void setInstanceParse(Class<T> clazz, Function<String, T> parseFunc) {
         instanceParses.put(clazz, parseFunc);
+    }
+
+    public <T> void setCustomFormat(String headerName, Function<T, String> formatFunc) {
+        customFormats.put(headerName, formatFunc);
+    }
+    public <T> void setAfterParseFunction(Consumer<T> afterParseFunc) {
+        afterParseFunctions.add(afterParseFunc);
     }
 
 }

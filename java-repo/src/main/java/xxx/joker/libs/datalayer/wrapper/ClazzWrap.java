@@ -18,12 +18,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static xxx.joker.libs.datalayer.config.RepoConfig.CsvSeparator.SEP_FIELD;
+import static xxx.joker.libs.datalayer.config.RepoConfig.CsvSep.SEP_FIELD;
 
 public class ClazzWrap {
 
     private final Class<?> eClazz;
     private final LinkedHashMap<String, FieldWrap> fieldByNameMap;
+    private FieldWrap entityIdFieldWrap;
+    private FieldWrap creationTmFieldWrap;
 
     public ClazzWrap(Class<?> eClazz) {
         this.eClazz = eClazz;
@@ -56,14 +58,22 @@ public class ClazzWrap {
     public List<String> formatEntityData(List<RepoEntity> entities) {
         List<String> toRet = new ArrayList<>();
 
+        // Print primary key (_epk):
+        // - after the entityId   (entityId|_epk)
+        // - after the creationTm if this come just after entityId (entityId|creationTm|_epk)
         List<String> fnames = JkConvert.toList(fieldByNameMap.keySet());
+        int idxId = fnames.indexOf(entityIdFieldWrap.getFieldName());
+        int idxTm = fnames.indexOf(creationTmFieldWrap.getFieldName());
+        int epkIndex = 1 + (idxTm == idxId + 1 ? idxTm : idxId);
+        fnames.add(epkIndex, "_epk");
         String header = JkStreams.join(fnames, SEP_FIELD);
         toRet.add(header);
 
         Stream<RepoEntity> sorted = entities.stream().sorted(Comparator.comparing(RepoEntity::getEntityId));
         sorted.forEach(e -> {
-            String line = JkStreams.join(fieldByNameMap.values(), SEP_FIELD, fw -> fw.formatValue(e));
-            toRet.add(line);
+            List<String> rowValues = JkStreams.map(fieldByNameMap.values(), fw -> fw.formatValue(e));
+            rowValues.add(epkIndex, e.getPrimaryKey());
+            toRet.add(JkStreams.join(rowValues, SEP_FIELD));
         });
 
         return toRet;
@@ -100,17 +110,18 @@ public class ClazzWrap {
         if(fields.size() != 1) {
             throw new RepoError("Must be present exactly one field annotated with @EntityID. [class={}]", eClazz.getSimpleName());
         }
-        FieldWrap fwId = new FieldWrap(fields.get(0));
+        entityIdFieldWrap = new FieldWrap(fields.get(0));
+
         // exactly 1 field @EntityCreationTm
         fields = JkReflection.getFieldsByAnnotation(eClazz, EntityCreationTm.class);
         if(fields.size() != 1) {
             throw new RepoError("Must be present exactly one field annotated with @EntityCreationTm. [class={}]", eClazz.getSimpleName());
         }
-        FieldWrap fwTm = new FieldWrap(fields.get(0));
+        creationTmFieldWrap = new FieldWrap(fields.get(0));
 
         // Add field entityID and creationTm
-        fieldByNameMap.put(fwId.getFieldName(), fwId);
-        fieldByNameMap.put(fwTm.getFieldName(), fwTm);
+        fieldByNameMap.put(entityIdFieldWrap.getFieldName(), entityIdFieldWrap);
+        fieldByNameMap.put(creationTmFieldWrap.getFieldName(), creationTmFieldWrap);
 
         // Add all @RepoField fields
         fields = JkReflection.getFieldsByAnnotation(eClazz, RepoField.class);

@@ -13,7 +13,7 @@ public class CParam {
 
 	private boolean required;
 	private Enum<? extends JkArgsTypes> _default;
-	private Enum<? extends JkArgsTypes> dependOn;
+	private Enum<? extends JkArgsTypes> dependFrom;
 	private List<COption> options;
 
 	public CParam(COption... options) {
@@ -21,26 +21,42 @@ public class CParam {
 	}
 
 	public CParam(boolean required, COption... options) {
-		this(null, null, required, options);
+		this(required, null, null, options);
 	}
 
-	public CParam(Enum<? extends JkArgsTypes> _default, Enum<? extends JkArgsTypes> dependOn, boolean required, COption... options) {
+	public CParam(Enum<? extends JkArgsTypes> _default, COption... options) {
+		this(false, _default, null, options);
+	}
+
+	public CParam(Enum<? extends JkArgsTypes> _default, Enum<? extends JkArgsTypes> dependFrom, COption... options) {
+		this(false, _default, dependFrom, options);
+	}
+
+	public CParam(boolean required, Enum<? extends JkArgsTypes> dependFrom, COption... options) {
+		this(true, null, dependFrom, options);
+	}
+
+	private CParam(boolean required, Enum<? extends JkArgsTypes> _default, Enum<? extends JkArgsTypes> dependFrom, COption... options) {
 		this.required = required;
 		this._default = _default;
-		this.dependOn = dependOn;
+		this.dependFrom = dependFrom;
 		this.options = JkConvert.toList(options);
 	}
+
 
 	public boolean isRequired() {
 		return required;
 	}
 
-	public Enum<? extends JkArgsTypes> getDefault() {
+	public JkArgsTypes getDefault() {
+		return (JkArgsTypes)_default;
+	}
+	public Enum<? extends JkArgsTypes> getDefaultEnum() {
 		return _default;
 	}
 
-	public Enum<? extends JkArgsTypes> getDependOn() {
-		return dependOn;
+	public Enum<? extends JkArgsTypes> getDependFrom() {
+		return dependFrom;
 	}
 
 	public List<COption> getOptions() {

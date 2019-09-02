@@ -5,6 +5,7 @@ import xxx.joker.libs.argsparser.design.classTypes.JkAbstractArgs;
 import xxx.joker.libs.argsparser.design.classTypes.JkArgsTypes;
 import xxx.joker.libs.argsparser.design.classTypes.JkCommands;
 import xxx.joker.libs.argsparser.design.descriptors.COption;
+import xxx.joker.libs.argsparser.design.descriptors.CParam;
 import xxx.joker.libs.argsparser.exceptions.DesignError;
 import xxx.joker.libs.argsparser.exceptions.ParseError;
 import xxx.joker.libs.argsparser.service.ArgWrapper;
@@ -81,6 +82,14 @@ public class ConsoleInputParser implements InputParser {
             parseShellInput(argsInstance, selCmd, aw, values);
         });
 
+        List<CParam> defList = JkStreams.filter(selCmd.getParams(), cp -> cp.getDefault() != null);
+        List<JkArgsTypes> found = JkStreams.map(argsMap.keySet(), ArgWrapper::getArgType);
+        defList.removeIf(cp -> !JkStreams.mapFilter(cp.getOptions(), co -> (JkArgsTypes)co.getArgType(), found::contains).isEmpty());
+        defList.forEach(def -> {
+            ArgWrapper aw = designService.getArgByNameAlias(def.getDefault().getArgName());
+            parseShellInput(argsInstance, selCmd, aw, Collections.emptyList());
+        });
+
         return argsInstance;
     }
 
@@ -104,7 +113,7 @@ public class ConsoleInputParser implements InputParser {
                     throw new ParseError(cw, aw, "values not allowed for boolean arg");
                 }
             } else if(values.size() != 1) {
-                throw new ParseError(cw, aw, "only one value allowed for {} args (found {} values)", argClass, values.size());
+                throw new ParseError(cw, aw, "only one value allowed for {} args (found {} values)", argClass.getName(), values.size());
             }
         }
 

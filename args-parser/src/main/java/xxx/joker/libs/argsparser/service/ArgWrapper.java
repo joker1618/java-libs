@@ -15,12 +15,13 @@ public class ArgWrapper {
 	private List<String> aliases;
 	private List<Class<?>> classes;
 
-	protected ArgWrapper(Field field, JkArgsTypes argType) {
+	protected ArgWrapper(Field field, String argName, JkArgsTypes argType) {
 		this.field = field;
 		this.argType = argType;
 
 		JkArg ann = field.getAnnotation(JkArg.class);
-		this.argName = ann.argName();
+
+		this.argName = argName;
 		this.aliases = JkConvert.toList(ann.aliases());
 		this.classes = JkConvert.toList(ann.classes());
 	}

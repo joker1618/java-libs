@@ -23,12 +23,14 @@ class ParserCmds {
     private Class<? extends JkCommands> cmdsClass;
     private List<CmdWrapper> cwList;
     private ParserTypes parserTypes;
+    private ParserArgs parserArgs;
 
     public ParserCmds(Class<? extends JkCommands> cmdsClass, ParserTypes parserTypes, ParserArgs parserArgs, boolean checkDesign) throws DesignError {
         this.cmdsClass = cmdsClass;
         this.cwList = new ArrayList<>();
         this.parserTypes = parserTypes;
-        init(checkDesign, parserArgs);
+        this.parserArgs = parserArgs;
+        init(checkDesign);
     }
 
     public CmdWrapper retrieveCommand(Collection<ArgWrapper> argsWrappers) {
@@ -51,7 +53,7 @@ class ParserCmds {
     }
 
 
-    private void init(boolean checkDesign, ParserArgs parserArgs) {
+    private void init(boolean checkDesign) {
         List<Field> fields = JkReflection.getFieldsByAnnotation(cmdsClass, JkCmdElem.class);
         if (checkDesign && fields.isEmpty()) {
             throw new DesignError(cmdsClass, "no fields annotated with @JkCmdElem");
@@ -73,7 +75,7 @@ class ParserCmds {
                 checkDefaults(cmd);
             }
 
-            setAndCheckOptionClass(cmd, parserArgs, checkDesign);
+            setAndCheckOptionClass(cmd, checkDesign);
 
             cmd.setEvolutions(computeCmdEvolutions(cmd));
 
@@ -117,9 +119,9 @@ class ParserCmds {
      * so is up to the user to avoid circular dependencies
      */
     private void checkParamDependency(CmdWrapper cmd) {
-        List<CParam> withDeps = JkStreams.filter(cmd.getParams(), param -> param.getDependOn() != null);
+        List<CParam> withDeps = JkStreams.filter(cmd.getParams(), param -> param.getDependFrom() != null);
         for(CParam cp : withDeps) {
-            Enum<? extends JkArgsTypes> dependOn = cp.getDependOn();
+            Enum<? extends JkArgsTypes> dependOn = cp.getDependFrom();
             // Dependency must refer to a COption that belong to another CParam
             boolean empty = JkStreams.filter(cp.getOptions(), co -> co.getArgType() == dependOn).isEmpty();
             if(!empty) {
@@ -136,17 +138,20 @@ class ParserCmds {
     private void checkDefaults(CmdWrapper cmd) {
         List<CParam> withDefault = JkStreams.filter(cmd.getParams(), param -> param.getDefault() != null);
         for(CParam cp : withDefault) {
-            Enum<? extends JkArgsTypes> def = cp.getDefault();
-            // Default must belong to the CParam or not exists at all in cmd options
-            boolean isOK = !JkStreams.filter(cp.getOptions(), co -> co.getArgType() == def).isEmpty();
-            isOK |= JkStreams.filter(cmd.getOptions(), co -> co.getArgType() == def).isEmpty();
-            if(!isOK) {
-                throw new DesignError(cmdsClass, "command {}: default value must belong to the same CParam or not exists at all", cmd.getCmdName(), def.name());
+            JkArgsTypes def = cp.getDefault();
+            ArgWrapper aw = parserArgs.getArgWrapper(def.getArgName());
+            if(aw.getField().getType() != boolean.class) {
+                throw new DesignError(cmdsClass, "command {}: default value {} must be a boolean", cmd.getCmdName(), def.name());
+            }
+            // Default value must be present in COption list
+            boolean existsInOptions = !JkStreams.filter(cp.getOptions(), co -> co.getArgType() == def).isEmpty();
+            if(!existsInOptions) {
+                throw new DesignError(cmdsClass, "command {}: default value {} must be present in COption list", cmd.getCmdName(), def.name());
             }
         }
     }
 
-    private void setAndCheckOptionClass(CmdWrapper cmd, ParserArgs parserArgs, boolean checkDesign) {
+    private void setAndCheckOptionClass(CmdWrapper cmd, boolean checkDesign) {
         String cmdName = cmd.getCmdName();
         List<COption> options = cmd.getOptions();
 
@@ -218,7 +223,7 @@ class ParserCmds {
         Set<Enum<?>> usedOptions = new HashSet<>();
 
         // Analyze first all params without option dependency
-        List<CParam> noDeps = JkStreams.filter(params, cpar -> cpar.getDependOn() == null);
+        List<CParam> noDeps = JkStreams.filter(params, cpar -> cpar.getDependFrom() == null);
         for(CParam cp : noDeps) {
             List<char[]> tot = new ArrayList<>();
             for (COption co : cp.getOptions()) {
@@ -236,23 +241,23 @@ class ParserCmds {
 
         if(!onlyRequired) {
             // Now analyze params with option dependency
-            List<CParam> withDeps = JkStreams.filter(params, cpar -> cpar.getDependOn() != null);
+            List<CParam> withDeps = JkStreams.filter(params, cpar -> cpar.getDependFrom() != null);
             while (!withDeps.isEmpty()) {
                 // a param can depends on another param that in turn has an option dependency
                 // to avoid problem in computing evolution, a param is analyzed only if his dependency is already analyzed
                 int idx = -1;
                 for (int i = 0; i < withDeps.size() && idx == -1; i++) {
-                    if (usedOptions.contains(withDeps.get(i).getDependOn())) {
+                    if (usedOptions.contains(withDeps.get(i).getDependFrom())) {
                         idx = i;
                     }
                 }
 
                 if (idx == -1) {
-                    throw new DesignError(cmdsClass, "command {}: wrong option dependencies ({} not found)", cmd.getCmdName(), JkStreams.map(withDeps, CParam::getDependOn));
+                    throw new DesignError(cmdsClass, "command {}: wrong option dependencies ({} not found)", cmd.getCmdName(), JkStreams.map(withDeps, CParam::getDependFrom));
                 }
 
                 CParam removed = withDeps.remove(idx);
-                int depIdx = removed.getDependOn().ordinal();
+                int depIdx = removed.getDependFrom().ordinal();
                 List<char[]> sourceEvols = JkStreams.filter(evolutions, arr -> arr[depIdx] == '1');
                 List<char[]> tot = new ArrayList<>();
                 for (COption co : removed.getOptions()) {

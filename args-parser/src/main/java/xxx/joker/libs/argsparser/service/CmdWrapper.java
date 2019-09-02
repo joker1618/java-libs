@@ -28,7 +28,7 @@ public class CmdWrapper {
 
 	public int countIndependentEvolutions() {
 		if(numOfIndependentEvolutions == -1) {
-			List<CParam> noDeps = JkStreams.filter(getParams(), cpar -> cpar.getDependOn() == null);
+			List<CParam> noDeps = JkStreams.filter(getParams(), cpar -> cpar.getDependFrom() == null);
 
 			int count = 0;
 			int evolNum = 1;

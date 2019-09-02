@@ -18,7 +18,9 @@ import xxx.joker.libs.datalayer.jpa.JpaHandler;
 import xxx.joker.libs.datalayer.resourcer.ResourceHandler;
 import xxx.joker.libs.datalayer.util.RepoUtil;
 
+import java.io.Serializable;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -176,9 +178,15 @@ public class JkRepoFile implements JkRepo {
 
     @Override
     public void commit() {
+        commit(null);
+    }
+
+    @Override
+    public void commit(LocalDateTime commitTime) {
         try {
             ctx.getWriteLock().lock();
-            setProperty(RepoConfig.PROP_LAST_COMMIT, JkDateTime.now().format());
+            JkDateTime tm = commitTime == null ? JkDateTime.now() : JkDateTime.of(commitTime);
+            setProperty(RepoConfig.PROP_LAST_COMMIT, tm.format());
             JkTimer timer = new JkTimer();
             Collection<RepoEntity> values = jpaHandler.getDataById().values();
             daoHandler.persistData(values);
@@ -231,16 +239,17 @@ public class JkRepoFile implements JkRepo {
 
     @Override
     public Path getUriPath(RepoResource resource) {
-        Path up = resource.getUri().getPath();
-        if(!up.isAbsolute()) {
-            up = ctx.getResourcesFolder().resolve(up);
-        }
-        return up;
+        return resourceHandler.getUriPath(resource);
     }
 
     @Override
     public RepoResource addResource(Path sourcePath, String resName, String... tags) {
         return resourceHandler.addResource(sourcePath, resName, RepoTags.of(tags));
+    }
+
+    @Override
+    public void exportResources(Path outFolder) {
+        resourceHandler.exportResources(outFolder);
     }
 
     @Override

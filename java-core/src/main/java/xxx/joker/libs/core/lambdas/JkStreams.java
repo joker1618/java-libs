@@ -14,8 +14,13 @@ public class JkStreams {
 	public static <T,U> List<U> map(Collection<T> source, Function<T,U> mapper) {
 		return source.stream().map(mapper).collect(Collectors.toList());
 	}
-	public static <T,U> List<U> flatMap(Collection<T> source, Function<T,Collection<U>> mapper) {
-		return source.stream().flatMap(e -> mapper.apply(e).stream()).collect(Collectors.toList());
+	@SafeVarargs
+	public static <T,U> List<U> flatMap(Collection<T> source, Function<T,Collection<U>> mapper, Predicate<U>... filters) {
+		Stream<U> stream = source.stream().flatMap(e -> mapper.apply(e).stream());
+		for(Predicate<U> filter : filters) {
+			stream = stream.filter(filter);
+		}
+		return stream.collect(Collectors.toList());
 	}
 	@SafeVarargs
 	public static <T,U> List<U> mapFilter(Collection<T> source, Function<T,U> mapper, Predicate<U>... filters) {
@@ -132,8 +137,13 @@ public class JkStreams {
 	public static <T> String join(Collection<T> source, String separator) {
 		return source.stream().map(Object::toString).collect(Collectors.joining(separator));
 	}
-	public static <T> String join(Collection<T> source, String separator, Function<T,String> mapFunc) {
-		return source.stream().map(mapFunc).collect(Collectors.joining(separator));
+	@SafeVarargs
+	public static <T> String join(Collection<T> source, String separator, Function<T,String> mapFunc, Predicate<T>... filters) {
+		Stream<T> stream = source.stream();
+		for (Predicate<T> filter : filters) {
+			stream = stream.filter(filter);
+		}
+		return stream.map(mapFunc).collect(Collectors.joining(separator));
 	}
 
 	@SafeVarargs

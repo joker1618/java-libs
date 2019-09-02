@@ -43,16 +43,17 @@ class ParserArgs {
             if(checkDesign) {
                 checkNameAliasUniqueness(allNameAlias, field, annot);
                 checkClassCoherence(field, annot);
-                checkRelatedOptName(parserTypes, annot);
+                checkRelatedOptName(parserTypes, field);
             }
-            JkArgsTypes optName = parserTypes.getByArgName(annot.argName());
-            ArgWrapper argWrapper = new ArgWrapper(field, optName);
+            String argName = retrieveArgName(field);
+            JkArgsTypes optName = parserTypes.getByArgName(argName);
+            ArgWrapper argWrapper = new ArgWrapper(field, argName, optName);
             argList.add(argWrapper);
         }
     }
 
     private void checkNameAliasUniqueness(Set<String> allNameAlias, Field field, JkArg annot) {
-        String annName = annot.argName();
+        String annName = retrieveArgName(field);
         List<String> annAliases = JkConvert.toList(annot.aliases());
 
         if(ignoreCaseArgs) {
@@ -60,12 +61,12 @@ class ParserArgs {
             annAliases = JkStreams.map(annAliases, String::toLowerCase);
         }
 
-        // No spaces in argName and aliases
+        // No spaces in name and aliases
         if(StringUtils.isBlank(annName)) {
-            throw new DesignError(argsClass, "field {}, argName is blank", field.getName());
+            throw new DesignError(argsClass, "field {}, name is blank", field.getName());
         }
         if(annName.contains(" ")) {
-            throw new DesignError(argsClass, "field {}, argName contains spaces [{}]", field.getName(), annName);
+            throw new DesignError(argsClass, "field {}, name contains spaces [{}]", field.getName(), annName);
         }
         annAliases.forEach(alias -> {
             if(StringUtils.isBlank(alias)) {
@@ -76,9 +77,9 @@ class ParserArgs {
             }
         });
 
-        // argName and aliases must be unique
+        // name and aliases must be unique
         if (!allNameAlias.add(annName)) {
-            throw new DesignError(argsClass, "argName {} duplicated", annName);
+            throw new DesignError(argsClass, "name {} duplicated", annName);
         } else {
             annAliases.forEach(alias -> {
                 if (!allNameAlias.add(alias)) {
@@ -89,7 +90,9 @@ class ParserArgs {
     }
 
     private void checkClassCoherence(Field field, JkArg annot) {
-        if (annot.classes().length == 0) {
+        List<Class<?>> annotClasses = JkConvert.toList(annot.classes());
+
+        if (annotClasses.isEmpty()) {
             // no annotation classes -> class is the field type (must be supported)
             if (!Configs.SUPPORTED_CLASSES.contains(field.getType())) {
                 throw new DesignError(argsClass,
@@ -100,8 +103,6 @@ class ParserArgs {
             }
 
         } else {
-            List<Class<?>> annotClasses = JkConvert.toList(annot.classes());
-
             // annotation classes found --> field type must be Object
             if (field.getType() != Object.class) {
                 throw new DesignError(argsClass,
@@ -122,12 +123,18 @@ class ParserArgs {
         }
     }
 
-    private void checkRelatedOptName(ParserTypes parserTypes, JkArg annot) {
-        // check if exists an enum field in JkArgsTypes with argName equals to annot.argName
-        if(parserTypes.getByArgName(annot.argName()) == null) {
+    private void checkRelatedOptName(ParserTypes parserTypes, Field field) {
+        // check if exists an enum field in JkArgsTypes with name equals to annot.name
+        String argname = retrieveArgName(field);
+        if(parserTypes.getByArgName(argname) == null) {
             String argTypeClass = parserTypes.getArgsNamesClass().getSimpleName();
-            throw new DesignError(argsClass, "no enum with argName equals to [{}] found in class {}", annot.argName(), argTypeClass);
+            throw new DesignError(argsClass, "no enum with name equals to [{}] found in class {}", argname, argTypeClass);
         }
+    }
+
+    private String retrieveArgName(Field field) {
+        JkArg annot = field.getAnnotation(JkArg.class);
+        return annot.name().isEmpty() ? field.getName() : annot.name();
     }
 
 }

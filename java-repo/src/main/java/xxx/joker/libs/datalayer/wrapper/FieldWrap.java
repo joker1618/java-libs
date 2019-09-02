@@ -23,8 +23,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static xxx.joker.libs.core.runtimes.JkReflection.isInstanceOf;
-import static xxx.joker.libs.datalayer.config.RepoConfig.CsvSeparator.*;
-import static xxx.joker.libs.datalayer.util.RepoUtil.isOfClass;
+import static xxx.joker.libs.core.runtimes.JkReflection.isOfClass;
+import static xxx.joker.libs.datalayer.config.RepoConfig.CsvSep.*;
 
 
 public class FieldWrap {

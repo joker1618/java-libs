@@ -74,14 +74,13 @@ public class ResourceHandler {
 
     private RepoUri getOrAddRepoUri(Path sourcePath, String sourceMd5) {
         RepoUriType uriType = RepoUriType.fromExtension(sourcePath);
-//        String sourceMd5 = JkEncryption.getMD5(sourcePath);
 
-        String outName = strf("{}{}", sourceMd5, JkFiles.getExtension(sourcePath, true));
+        String outName = strf("{}{}", sourceMd5, JkFiles.getExtension(sourcePath, true).toLowerCase());
         Path resBase = ctx.getResourcesFolder();
         Path outPath = resBase.resolve(uriType.name().toLowerCase()).resolve(outName);
         if(!Files.exists(outPath)) {
             JkFiles.copy(sourcePath, outPath);
-            LOG.info("Added new file to resources: {}", sourcePath);
+            LOG.info("Copied from [{}] to [{}]", sourcePath, outPath);
         }
 
         RepoMetaData md = new RepoMetaData();
@@ -106,5 +105,20 @@ public class ResourceHandler {
         return finalUri;
     }
 
+    public void exportResources(Path outFolder) {
+        Set<RepoResource> dsResources = jpaHandler.getDataSet(RepoResource.class);
+        for (RepoResource res : dsResources) {
+            Path source = getUriPath(res);
+            String outName = strf("{}/{}/{}{}", res.getUri().getType(), res.getTags().format(), res.getName(), JkFiles.getExtension(source, true));
+            JkFiles.copy(source, outFolder.resolve(outName));
+        }
+    }
 
+    public Path getUriPath(RepoResource resource) {
+        Path up = resource.getUri().getPath();
+        if(!up.isAbsolute()) {
+            up = ctx.getResourcesFolder().resolve(up);
+        }
+        return up;
+    }
 }

@@ -6,6 +6,7 @@ import xxx.joker.libs.datalayer.entities.RepoProperty;
 import xxx.joker.libs.datalayer.entities.RepoResource;
 
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ public interface JkRepo {
     void initRepoContent(List<RepoEntity> repoData);
     void rollback();
     void commit();
+    void commit(LocalDateTime commitTime);
 
     Set<RepoProperty> getProperties();
     String getProperty(String key);
@@ -46,6 +48,7 @@ public interface JkRepo {
     RepoResource getResource(String resName, String... tags);
     Path getUriPath(RepoResource resource);
     RepoResource addResource(Path sourcePath, String resName, String... tags);
+    void exportResources(Path outFolder);
 
     RepoCtx getRepoCtx();
 
