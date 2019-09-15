@@ -12,21 +12,21 @@ import java.util.*;
 public class JkConvert {
 
 	/* DATA STRUCTURES */
-	public static <T> TreeSet<T> toTreeSet(T[] source) {
+	public static <T> TreeSet<T> toTreeSet(T... source) {
 		return source == null ? null : new TreeSet<>(Arrays.asList(source));
 	}
 	public static <T> TreeSet<T> toTreeSet(Collection<T> source) {
 		return source == null ? null : new TreeSet<>(source);
 	}
 
-	public static <T> HashSet<T> toHashSet(T[] source) {
+	public static <T> HashSet<T> toHashSet(T... source) {
 		return source == null ? null : new HashSet<>(Arrays.asList(source));
 	}
 	public static <T> HashSet<T> toHashSet(Collection<T> source) {
 		return source == null ? null : new HashSet<>(source);
 	}
 
-	public static <T> List<T> toList(T[] source) {
+	public static <T> List<T> toList(T... source) {
 		return source == null ? null : new ArrayList<>(Arrays.asList(source));
 	}
 	public static <T> List<T> toList(Collection<T> source) {

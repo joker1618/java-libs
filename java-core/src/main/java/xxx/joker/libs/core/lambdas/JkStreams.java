@@ -100,6 +100,16 @@ public class JkStreams {
 		return source.stream().filter(filter).map(mapper).sorted(sorter).distinct().collect(Collectors.toList());
 	}
 
+	public static <T> int count(Collection<T> source, Predicate<T>... filters) {
+		return filter(source, filters).size();
+	}
+	public static <T,K>  Map<K, Integer> count(Collection<T> source, Function<T,K> mapper, Predicate<T>... filters) {
+		Map<K, List<T>> map = toMap(source, mapper, v -> v, filters);
+		Map<K,Integer> toRet = new HashMap<>();
+		map.forEach((k,v) -> toRet.putIfAbsent(k, v.size()));
+		return toRet;
+	}
+
 	public static <T> List<T> sorted(Collection<T> source) {
 		return source.stream().sorted().collect(Collectors.toList());
 	}

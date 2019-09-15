@@ -2,7 +2,6 @@ package xxx.joker.libs.datalayer.jpa;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.libs.core.debug.JkDebug;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
@@ -20,10 +19,8 @@ import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static xxx.joker.libs.core.utils.JkConsole.display;
 import static xxx.joker.libs.datalayer.config.RepoConfig.PROP_SEQUENCE;
 
 public class JpaHandler {

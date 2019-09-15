@@ -46,8 +46,11 @@ public interface JkRepo {
     String delProperty(String key);
 
     RepoResource getResource(String resName, String... tags);
-    Path getUriPath(RepoResource resource);
+    List<RepoResource> findResources(String... tags);
     RepoResource addResource(Path sourcePath, String resName, String... tags);
+    boolean removeResource(RepoResource resource);
+    boolean removeResource(String resName, String... tags);
+    boolean removeResources(String... tags);
     void exportResources(Path outFolder);
 
     RepoCtx getRepoCtx();

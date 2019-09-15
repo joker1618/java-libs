@@ -1,6 +1,5 @@
 package xxx.joker.libs.datalayer.config;
 
-import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.format.JkFormattable;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;

@@ -7,7 +7,6 @@ import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.runtimes.JkRuntime;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.datalayer.design.RepoEntity;
-import xxx.joker.libs.datalayer.entities.RepoUri;
 
 import java.lang.reflect.Modifier;
 import java.time.LocalDateTime;
@@ -25,7 +24,6 @@ public class RepoUtil {
         // csvParser configs
         csvParser.setClassFormat(JkDateTime.class, d -> d.format("yyyyMMdd_HHmmss"));
         csvParser.setClassFormat(LocalDateTime.class, d -> JkDateTime.of(d).format("yyyyMMdd_HHmmss"));
-        csvParser.setClassFormat(RepoUri.class, u -> strf("uri[{}]", u.getEntityId()));
         csvParser.setInstanceFormat(RepoEntity.class, RepoEntity::strMini);
         csvParser.setInstanceFormat(RepoEntity.class, RepoEntity::strMini);
     }

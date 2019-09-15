@@ -5,6 +5,7 @@ import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.datalayer.config.RepoConfig;
+import xxx.joker.libs.datalayer.config.RepoCtx;
 import xxx.joker.libs.datalayer.design.EntityCreationTm;
 import xxx.joker.libs.datalayer.design.EntityID;
 import xxx.joker.libs.datalayer.design.RepoEntity;
@@ -12,6 +13,8 @@ import xxx.joker.libs.datalayer.design.RepoField;
 import xxx.joker.libs.datalayer.exceptions.RepoError;
 
 import java.lang.reflect.Field;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -33,7 +36,7 @@ public class ClazzWrap {
         initClazz();
     }
 
-    public List<RepoEntity> parseEntityData(List<String> lines) {
+    public List<RepoEntity> parseEntityData(List<String> lines, RepoCtx ctx) {
         List<RepoEntity> elist = new ArrayList<>();
         if(!lines.isEmpty()) {
             List<String> header = JkStrings.splitList(lines.get(0), SEP_FIELD);
@@ -52,10 +55,13 @@ public class ClazzWrap {
                 elist.add(e);
             }
         }
+        fieldByNameMap.values().stream().filter(FieldWrap::isRepoResourcePath).forEach(fw ->
+            elist.forEach(e -> fw.setValue(e, ctx.getResourcesFolder().resolve((Path)fw.getValue(e))))
+        );
         return elist;
     }
 
-    public List<String> formatEntityData(List<RepoEntity> entities) {
+    public List<String> formatEntityData(List<RepoEntity> entities, RepoCtx ctx) {
         List<String> toRet = new ArrayList<>();
 
         // Print primary key (_epk):
@@ -71,7 +77,14 @@ public class ClazzWrap {
 
         Stream<RepoEntity> sorted = entities.stream().sorted(Comparator.comparing(RepoEntity::getEntityId));
         sorted.forEach(e -> {
-            List<String> rowValues = JkStreams.map(fieldByNameMap.values(), fw -> fw.formatValue(e));
+            List<String> rowValues = JkStreams.map(fieldByNameMap.values(), fw -> {
+                if (!fw.isRepoResourcePath()) {
+                    return fw.formatValue(e);
+                } else {
+                    Path absPath = Paths.get(fw.formatValue(e)).toAbsolutePath();
+                    return ctx.getResourcesFolder().relativize(absPath).toString();
+                }
+            });
             rowValues.add(epkIndex, e.getPrimaryKey());
             toRet.add(JkStreams.join(rowValues, SEP_FIELD));
         });

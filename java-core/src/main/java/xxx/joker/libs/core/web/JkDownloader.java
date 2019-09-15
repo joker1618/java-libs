@@ -5,15 +5,12 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.files.JkEncryption;
 import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-
-import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class JkDownloader {
 

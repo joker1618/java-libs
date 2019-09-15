@@ -1,12 +1,9 @@
 package various;
 
 import org.junit.Test;
-import xxx.joker.libs.core.runtimes.JkReflection;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;

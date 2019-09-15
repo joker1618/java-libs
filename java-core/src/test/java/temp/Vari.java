@@ -1,6 +1,5 @@
 package temp;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import xxx.joker.libs.core.datetime.JkDateTime;
 import xxx.joker.libs.core.datetime.JkDuration;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.Random;
 
 import static xxx.joker.libs.core.utils.JkConsole.display;
-import static xxx.joker.libs.core.utils.JkConsole.displayColl;
 
 public class Vari {
 

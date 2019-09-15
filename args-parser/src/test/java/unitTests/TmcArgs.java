@@ -3,8 +3,6 @@ package unitTests;
 import xxx.joker.libs.argsparser.design.annotations.JkArg;
 import xxx.joker.libs.argsparser.design.classTypes.JkAbstractArgs;
 
-import java.nio.file.Path;
-
 public class TmcArgs extends JkAbstractArgs<TmcCmd> {
 
 	@JkArg

@@ -9,6 +9,7 @@ import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.datalayer.design.AllowNullString;
 import xxx.joker.libs.datalayer.design.RepoEntity;
+import xxx.joker.libs.datalayer.design.RepoResourcePath;
 import xxx.joker.libs.datalayer.exceptions.RepoError;
 
 import java.io.File;
@@ -58,6 +59,10 @@ public class FieldWrap {
                 field.getDeclaringClass().getAnnotation(AllowNullString.class) != null;
         if(allowNullStr) {
             directives.add(AllowNullString.class);
+        }
+
+        if(field.getAnnotation(RepoResourcePath.class) != null) {
+            directives.add(RepoResourcePath.class);
         }
     }
 
@@ -128,6 +133,10 @@ public class FieldWrap {
 
     private boolean isAllowNull() {
         return directives.contains(AllowNullString.class);
+    }
+
+    public boolean isRepoResourcePath() {
+        return directives.contains(RepoResourcePath.class);
     }
 
     protected void fillDefaultValues(RepoEntity instance) {

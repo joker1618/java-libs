@@ -3,11 +3,8 @@ package xxx.joker.libs.datalayer.dao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.files.JkFiles;
-import xxx.joker.libs.core.files.JkZip;
 import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.datalayer.config.RepoConfig;
-import xxx.joker.libs.datalayer.config.RepoConfig.CsvSep;
 import xxx.joker.libs.datalayer.config.RepoCtx;
 import xxx.joker.libs.datalayer.design.RepoEntity;
 import xxx.joker.libs.datalayer.wrapper.ClazzWrap;
@@ -16,9 +13,6 @@ import xxx.joker.libs.datalayer.wrapper.FieldWrap;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-
-import static xxx.joker.libs.core.utils.JkConvert.toList;
-import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class DaoHandler {
 
@@ -37,7 +31,7 @@ public class DaoHandler {
         // Read data files, without dependencies
         for (ClazzWrap cw : ctx.getClazzWraps().values()) {
             List<String> lines = readRepoFile(ctx.getEntityDataPath(cw));
-            toRet.addAll(cw.parseEntityData(lines));
+            toRet.addAll(cw.parseEntityData(lines, ctx));
         }
 
         // Read dependencies
@@ -80,7 +74,7 @@ public class DaoHandler {
         toFormatMap.forEach((c,reList) -> {
             if(!reList.isEmpty()) {
                 ClazzWrap cw = ctx.getClazzWraps().get(c);
-                List<String> dataLines = cw.formatEntityData(reList);
+                List<String> dataLines = cw.formatEntityData(reList, ctx);
                 Path outDataPath = ctx.getEntityDataPath(cw);
                 JkFiles.writeFile(outDataPath, dataLines);
                 LOG.debug("File persisted: {}", outDataPath);

@@ -1,6 +1,7 @@
 package stuff;
 
 import org.junit.Test;
+import xxx.joker.libs.core.datetime.JkDateTime;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,5 +19,11 @@ public class TryExcelUtil {
         LocalDateTime ldt = LocalDateTime.of(ld, LocalTime.MIN);
         display("%s", ldt);
         display("%s", DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss.SSS").format(ldt));
+    }
+
+    @Test
+    public void aa() {
+        JkDateTime now = JkDateTime.now();
+        display(now.format());
     }
 }

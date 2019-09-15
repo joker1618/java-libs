@@ -1,39 +1,22 @@
 package xxx.joker.libs.core.javafx;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.scene.Node;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.files.JkFiles;
 
+import javax.imageio.ImageIO;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class JfxUtil {
-
-	public static ImageView createImageView(Integer fitWidth, Integer fitHeight) {
-		return createImageView1(null, fitWidth, fitHeight, true);
-	}
-	public static ImageView createImageView(Path imgPath, Integer fitWidth, Integer fitHeight) {
-		return createImageView(new Image(JkFiles.toURL(imgPath)), fitWidth, fitHeight);
-	}
-	public static ImageView createImageView(Image image, Integer fitWidth, Integer fitHeight) {
-		return createImageView1(image, fitWidth, fitHeight, true);
-	}
-	public static ImageView createImageView(Image image, Integer fitWidth, Integer fitHeight, boolean preserveRatio) {
-		return createImageView1(image, fitWidth, fitHeight, preserveRatio);
-	}
-	private static ImageView createImageView1(Image image, Integer fitWidth, Integer fitHeight, boolean preserveRatio) {
-		ImageView imageView = new ImageView();
-		if(image != null)	imageView.setImage(image);
-		imageView.setPreserveRatio(preserveRatio);
-		if(fitWidth != null)	imageView.setFitWidth(fitWidth);
-		if(fitHeight != null)	imageView.setFitHeight(fitHeight);
-		return imageView;
-	}
 
 	public static Window getWindow(Event e) {
 		return ((Node)e.getSource()).getScene().getWindow();
@@ -53,6 +36,16 @@ public class JfxUtil {
 
 		} catch (Exception ex) {
 			throw new JkRuntimeException(ex);
+		}
+	}
+
+	public static void takeSnapshot(Node node, Path outPath) {
+		try {
+			WritableImage image = node.snapshot(new SnapshotParameters(), null);
+			Files.createDirectories(JkFiles.getParent(outPath));
+			ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", outPath.toFile());
+		} catch (IOException e) {
+			throw new JkRuntimeException(e);
 		}
 	}
 }

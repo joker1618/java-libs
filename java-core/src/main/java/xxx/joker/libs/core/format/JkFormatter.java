@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static xxx.joker.libs.core.runtimes.JkReflection.*;
-import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class JkFormatter {
 

@@ -20,6 +20,10 @@ public class RepoTags implements JkFormattable<RepoTags> {
         this.tags.addAll(lowercase);
     }
 
+    public boolean belongToGroup(RepoTags ot) {
+        return JkStreams.filter(ot.tags, t -> !tags.contains(t)).isEmpty();
+    }
+
     public static RepoTags of(String... tags) {
         List<String> tagList = JkStrings.splitFlat(tags);
         return new RepoTags(tagList);

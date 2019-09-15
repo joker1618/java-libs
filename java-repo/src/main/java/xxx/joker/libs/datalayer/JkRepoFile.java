@@ -18,7 +18,6 @@ import xxx.joker.libs.datalayer.jpa.JpaHandler;
 import xxx.joker.libs.datalayer.resourcer.ResourceHandler;
 import xxx.joker.libs.datalayer.util.RepoUtil;
 
-import java.io.Serializable;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -238,13 +237,28 @@ public class JkRepoFile implements JkRepo {
     }
 
     @Override
-    public Path getUriPath(RepoResource resource) {
-        return resourceHandler.getUriPath(resource);
+    public List<RepoResource> findResources(String... tags) {
+        return resourceHandler.findResources(RepoTags.of(tags));
     }
 
     @Override
     public RepoResource addResource(Path sourcePath, String resName, String... tags) {
         return resourceHandler.addResource(sourcePath, resName, RepoTags.of(tags));
+    }
+
+    @Override
+    public boolean removeResource(RepoResource resource) {
+        return resourceHandler.removeResource(resource);
+    }
+
+    @Override
+    public boolean removeResource(String resName, String... tags) {
+        return resourceHandler.removeResource(resName, RepoTags.of(tags));
+    }
+
+    @Override
+    public boolean removeResources(String... tags) {
+        return resourceHandler.removeResources(RepoTags.of(tags));
     }
 
     @Override
