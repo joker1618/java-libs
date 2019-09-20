@@ -100,10 +100,12 @@ public class JkStreams {
 		return source.stream().filter(filter).map(mapper).sorted(sorter).distinct().collect(Collectors.toList());
 	}
 
+	@SafeVarargs
 	public static <T> int count(Collection<T> source, Predicate<T>... filters) {
 		return filter(source, filters).size();
 	}
-	public static <T,K>  Map<K, Integer> count(Collection<T> source, Function<T,K> mapper, Predicate<T>... filters) {
+	@SafeVarargs
+	public static <T,K>  Map<K, Integer> countMap(Collection<T> source, Function<T,K> mapper, Predicate<T>... filters) {
 		Map<K, List<T>> map = toMap(source, mapper, v -> v, filters);
 		Map<K,Integer> toRet = new HashMap<>();
 		map.forEach((k,v) -> toRet.putIfAbsent(k, v.size()));
@@ -143,6 +145,10 @@ public class JkStreams {
 
 	public static <T> String joinLines(Collection<T> source) {
 		return join(source, StringUtils.LF);
+	}
+	@SafeVarargs
+	public static <T> String joinLines(Collection<T> source, Function<T,String> mapFunc, Predicate<T>... filters) {
+		return join(source, StringUtils.LF, mapFunc, filters);
 	}
 	public static <T> String join(Collection<T> source, String separator) {
 		return source.stream().map(Object::toString).collect(Collectors.joining(separator));

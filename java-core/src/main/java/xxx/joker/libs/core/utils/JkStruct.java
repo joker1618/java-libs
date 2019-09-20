@@ -54,6 +54,21 @@ public class JkStruct {
         return values;
     }
 
+    public static <T> List<T> safeSublist(Collection<T> list, int from) {
+        return safeSublist(list, from, list.size());
+    }
+    public static <T> List<T> safeSublist(Collection<T> coll, int from, int to) {
+        List<T> res = new ArrayList<>();
+        List<T> source = new ArrayList<>(coll);
+        if(from >= 0 && from < source.size()) {
+            if(to > from) {
+                int end = Math.min(to, source.size());
+                res.addAll(source.subList(from, end));
+            }
+        }
+        return res;
+    }
+
     public static <T> T getLastElem(Collection<T> coll) {
         List<T> list = JkConvert.toList(coll);
         return list.isEmpty() ? null : list.get(list.size() - 1);

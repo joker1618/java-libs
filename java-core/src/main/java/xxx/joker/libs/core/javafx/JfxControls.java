@@ -28,6 +28,9 @@ public class JfxControls {
 	public static ImageView createImageView(Image image, int fitWidth, int fitHeight) {
 		return createImageView1(image, (double) fitWidth, (double) fitHeight, true);
 	}
+	public static ImageView createImageView(Image image) {
+		return createImageView1(image, null, null, true);
+	}
 	public static ImageView createImageView(Image image, Double fitWidth, Double fitHeight) {
 		return createImageView1(image, fitWidth, fitHeight, true);
 	}

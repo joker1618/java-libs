@@ -289,7 +289,7 @@ public class JpaHandler {
                         usedRefMap.get(id).get(eid).addAll(fwList);
                     });
                     updatePropertyIdSeq();
-                    LOG.debug("Added new entity: {}", e);
+                    LOG.info("Added new entity: {}", e);
                     return true;
                 } else {
                     e.setEntityId(null);
@@ -329,6 +329,7 @@ public class JpaHandler {
             // Remove input entity 'e'
             boolean res = proxies.get(e.getClass()).getEntities().remove(e);
             if (res) {
+                LOG.info("Removing entity: {}", e);
                 dataById.remove(eid);
                 usedRefMap.remove(eid);
                 usedRefMap.values().forEach(v -> v.remove(eid));
@@ -348,6 +349,7 @@ public class JpaHandler {
             dataById.values().forEach(re -> re.setEntityId(null));
             dataById.clear();
             usedRefMap.clear();
+            LOG.info("Cleared all data sets");
         } finally {
             ctx.getWriteLock().unlock();
         }

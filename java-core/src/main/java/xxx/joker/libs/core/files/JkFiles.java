@@ -379,9 +379,10 @@ public class JkFiles {
 	public static Path copySafe(Path sourcePath, Path targetPath) {
 		return copy1(sourcePath, targetPath, false, true);
 	}
-	public static void copyInFolder(Path sourcePath, Path targetFolder) {
-		Path targetPath = targetFolder.relativize(sourcePath.getFileName());
+	public static Path copyInFolder(Path sourcePath, Path targetFolder) {
+		Path targetPath = targetFolder.resolve(sourcePath.getFileName());
 		copy1(sourcePath, targetPath, true, false);
+		return targetPath;
 	}
 	private static Path copy1(Path sourcePath, Path targetPath, boolean overwrite, boolean safePath) {
 		try {
