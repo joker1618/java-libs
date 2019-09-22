@@ -4,10 +4,10 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class JkArea {
 
-    int x;
-    int y;
-    int width;
-    int height;
+    private int x;
+    private int y;
+    private int width;
+    private int height;
 
     public JkArea() {
 

@@ -22,6 +22,9 @@ public class JfxUtil {
 		return ((Node)e.getSource()).getScene().getWindow();
 	}
 
+	public static Stage getStage(Node node) {
+		return (Stage)node.getScene().getWindow();
+	}
 	public static Stage getStage(Event e) {
 		return (Stage)getWindow(e);
 	}

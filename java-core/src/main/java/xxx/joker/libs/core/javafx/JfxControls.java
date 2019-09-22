@@ -9,6 +9,8 @@ import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.utils.JkStrings;
 
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class JfxControls {
@@ -46,17 +48,24 @@ public class JfxControls {
 		return imageView;
 	}
 
-	public static HBox createHBox(String styleClasses, Node... nodes) {
-		HBox hbox = new HBox(nodes);
+	public static HBox createHBox(String styleClasses, Collection<? extends Node> nodes) {
+		HBox hbox = new HBox();
+		hbox.getChildren().addAll(nodes);
 		List<String> scList = JkStrings.splitList(styleClasses, " ");
 		hbox.getStyleClass().addAll(scList);
 		return hbox;
 	}
-	public static VBox createVBox(String styleClasses, Node... nodes) {
-		VBox vbox = new VBox(nodes);
+	public static HBox createHBox(String styleClasses, Node... nodes) {
+		return createHBox(styleClasses, Arrays.asList(nodes));
+	}
+	public static VBox createVBox(String styleClasses, Collection<? extends Node> nodes) {
+		VBox vbox = new VBox();
+		vbox.getChildren().addAll(nodes);
 		List<String> scList = JkStrings.splitList(styleClasses, " ");
 		vbox.getStyleClass().addAll(scList);
 		return vbox;
 	}
-
+	public static VBox createVBox(String styleClasses, Node... nodes) {
+		return createVBox(styleClasses, Arrays.asList(nodes));
+	}
 }

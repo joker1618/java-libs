@@ -32,8 +32,8 @@ public class JkRuntime {
     }
     public static List<Class<?>> findClasses(Class<?> refClazz, String packageName) {
         try {
-            File launcherPath = getLauncherPath(refClazz).toFile();
-            if(launcherPath.isFile() && launcherPath.getName().toLowerCase().endsWith(".jar")) {
+            if(isRunFromJar(refClazz)) {
+                File launcherPath = getLauncherPath(refClazz).toFile();
                 return findClassesInJar(launcherPath, packageName);
             } else {
                 return findClassesInBuildFolder(packageName);
@@ -42,6 +42,11 @@ public class JkRuntime {
         } catch (Exception ex) {
             throw new JkRuntimeException(ex);
         }
+    }
+
+    public static boolean isRunFromJar(Class<?> refClazz) {
+        File launcherPath = getLauncherPath(refClazz).toFile();
+        return launcherPath.isFile() && launcherPath.getName().toLowerCase().endsWith(".jar");
     }
 
     private static List<Class<?>> findClassesInBuildFolder(String packageName) throws IOException, ClassNotFoundException {
