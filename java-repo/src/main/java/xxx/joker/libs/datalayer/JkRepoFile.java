@@ -45,7 +45,7 @@ public class JkRepoFile implements JkRepo {
 
         this.ctx = new RepoCtx(repoFolder, dbName, eclasses, encrPwd);
 
-        LOG.info("Init repo [folder={}, dbName={}, encr={}", ctx.getRepoFolder(), ctx.getDbName(), ctx.getEncrPwd());
+        LOG.info("Init repo [folder={}, dbName={}, encr={}]", ctx.getRepoFolder(), ctx.getDbName(), ctx.getEncrPwd() != null);
         eclasses.forEach(ec -> LOG.info("Repo entity class: {}", ec.getName()));
 
         JkDebug.startTimer("dao");

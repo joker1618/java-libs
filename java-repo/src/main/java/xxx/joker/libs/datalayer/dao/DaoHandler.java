@@ -2,6 +2,7 @@ package xxx.joker.libs.datalayer.dao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.files.JkEncryption;
 import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.datalayer.config.RepoConfig;
@@ -76,7 +77,7 @@ public class DaoHandler {
                 ClazzWrap cw = ctx.getClazzWraps().get(c);
                 List<String> dataLines = cw.formatEntityData(reList, ctx);
                 Path outDataPath = ctx.getEntityDataPath(cw);
-                JkFiles.writeFile(outDataPath, dataLines);
+                writeRepoFile(outDataPath, dataLines);
                 LOG.debug("File persisted: {}", outDataPath);
 
                 List<FieldWrap> fwDeps = cw.getFieldWrapsEntityFlat();
@@ -102,7 +103,7 @@ public class DaoHandler {
             List<String> fkLines = JkStreams.map(fkList, DaoFK::format);
             fkLines.add(0, RepoConfig.getRepoFileFkeysHeader());
             Path outFkeysPath = ctx.getForeignKeysPath();
-            JkFiles.writeFile(outFkeysPath, fkLines);
+            writeRepoFile(outFkeysPath, fkLines);
             LOG.debug("File persisted: {}", outFkeysPath);
         }
 
@@ -114,10 +115,28 @@ public class DaoHandler {
     private List<String> readRepoFile(Path sourcePath) {
         if (!Files.exists(sourcePath)) {
             return Collections.emptyList();
-        } else {
-            return JkFiles.readLinesNotBlank(sourcePath);
         }
+
+        List<String> lines;
+        if(ctx.getEncrPwd() != null) {
+            Path decrPath = ctx.getTempFolder().resolve(sourcePath.getFileName());
+            JkEncryption.decryptFile(sourcePath, decrPath, ctx.getEncrPwd());
+            lines = JkFiles.readLinesNotBlank(decrPath);
+            JkFiles.delete(decrPath);
+        } else {
+            lines = JkFiles.readLinesNotBlank(sourcePath);
+        }
+        return lines;
     }
 
-
+    private void writeRepoFile(Path outPath, List<String> lines) {
+        if(ctx.getEncrPwd() != null) {
+            Path tmpPath = ctx.getTempFolder().resolve(outPath.getFileName());
+            JkFiles.writeFile(tmpPath, lines);
+            JkEncryption.encryptFile(tmpPath, outPath, ctx.getEncrPwd());
+            JkFiles.delete(tmpPath);
+        } else {
+            JkFiles.writeFile(outPath, lines);
+        }
+    }
 }

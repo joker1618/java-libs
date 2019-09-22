@@ -380,8 +380,11 @@ public class JkFiles {
 		return copy1(sourcePath, targetPath, false, true);
 	}
 	public static Path copyInFolder(Path sourcePath, Path targetFolder) {
+		return copyInFolder(sourcePath, targetFolder, false);
+	}
+	public static Path copyInFolder(Path sourcePath, Path targetFolder, boolean safeCopy) {
 		Path targetPath = targetFolder.resolve(sourcePath.getFileName());
-		copy1(sourcePath, targetPath, true, false);
+		copy1(sourcePath, targetPath, true, safeCopy);
 		return targetPath;
 	}
 	private static Path copy1(Path sourcePath, Path targetPath, boolean overwrite, boolean safePath) {
