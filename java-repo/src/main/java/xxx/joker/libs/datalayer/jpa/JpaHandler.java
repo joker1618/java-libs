@@ -175,6 +175,9 @@ public class JpaHandler {
         return JkStreams.toMapSingle(proxies.entrySet(), e -> (Class<T>)e.getKey(), e -> (Set<T>) e.getValue().getProxyDataSet());
     }
     public <T extends RepoEntity> Set<T> getDataSet(Class<T> entityClazz) {
+        if(proxies.containsKey(entityClazz)) {
+            throw new JkRuntimeException("Unable to get data set of type {}: class not managed (loaded classes = {})", entityClazz, proxies.keySet());
+        }
         return (Set<T>) proxies.get(entityClazz).getProxyDataSet();
     }
     public Map<Long, RepoEntity> getDataById() {
