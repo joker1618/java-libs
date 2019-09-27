@@ -27,9 +27,9 @@ public class Vari {
     }
     @Test
     public void caristr() throws Exception {
-        String str = "fed -pP0\tla.poi";
-        display("W\n{}\n{}", str, str.replaceAll("\\W", "@"));
-        display("W dot\n{}\n{}", str, str.replaceAll("[^\\w.-]", "@"));
+        String str = "  \t ciao\n \n\n\t\t fede  \t\t";
+        display(str.split("\\s"));
+        display(str.split("\\s+"));
     }
     @Test
     public void provedaas() throws Exception {

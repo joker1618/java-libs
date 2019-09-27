@@ -158,6 +158,11 @@ public class JkDuration implements JkFormattable, Comparable<JkDuration> {
     }
 
     @Override
+    public String toString() {
+        return format();
+    }
+
+    @Override
     public String format() {
         return String.valueOf(totalMillis);
     }

@@ -50,14 +50,14 @@ public class JkReflection {
 		}
 	}
 
-	public static Object getFieldValue(Object instance, String fieldName) {
+	public static <T> T getFieldValue(Object instance, String fieldName) {
 		try {
 			return getFieldValue(instance, getFieldByName(instance.getClass(), fieldName));
 		} catch (Exception ex) {
 			throw new JkRuntimeException("Class {}: error getting field value from ({})", instance.getClass().getName(), fieldName);
 		}
 	}
-	public static Object getFieldValue(Object instance, Field field) {
+	public static <T> T getFieldValue(Object instance, Field field) {
 		try {
 			Object obj;
 			if (field.isAccessible()) {
@@ -67,7 +67,7 @@ public class JkReflection {
 				obj = field.get(instance);
 				field.setAccessible(false);
 			}
-			return obj;
+			return (T) obj;
 
 		} catch (Exception ex) {
 			throw new JkRuntimeException(ex, "Class {}: error getting field value from ({})", instance.getClass().getName(), field.getName());
@@ -220,68 +220,56 @@ public class JkReflection {
 	 * @return
 	 */
 	public static <T> T copyFields(Object source, Class<T> targetClass, String... fieldsToCopy) {
+		T target = createInstance(targetClass);
+		copyFields(source, target, fieldsToCopy);
+		return target;
+	}
+	public static void copyFields(Object source, Object target, String... fieldsToCopy) {
 		Map<String, Field> sourceFieldMap = JkStreams.toMapSingle(findAllFields(source.getClass()), Field::getName);
-		List<Field> targetFields = findAllFields(targetClass);
+		List<Field> targetFields = findAllFields(target.getClass());
 
 		Map<String, String> fnames;
 		if(fieldsToCopy.length > 0) {
 			fnames = getFieldNameMap(fieldsToCopy);
-			targetFields.removeIf(tf -> !fnames.keySet().contains(tf.getName()));
 		} else {
 			fnames = JkStreams.toMapSingle(targetFields, Field::getName, Field::getName);
 		}
 
 		JkFormatter fmt = JkFormatter.get();
-		T target = createInstance(targetClass);
 		for (Field tf : targetFields) {
-			Field f = sourceFieldMap.get(fnames.get(tf.getName()));
-			if(f != null) {
-				if(f.getType() == tf.getType()) {
-					Object sval = getFieldValue(source, f);
-					setFieldValue(target, tf, sval);
-				} else if(tf.getType() == String.class) {
-					String sval = fmt.formatFieldValue(getFieldValue(source, f), f);
-					setFieldValue(target, tf, sval);
-				} else if(f.getType() == String.class) {
-					String sval = (String) getFieldValue(source, f);
-					Object o = fmt.parseSingleValue(sval, tf);
-					setFieldValue(target, tf, o);
-				} else {
-					String sval = fmt.formatFieldValue(getFieldValue(source, f), f);
-					Object o = fmt.parseSingleValue(sval, tf);
-					setFieldValue(target, tf, o);
+			String sourceFieldName = fnames.get(tf.getName());
+			if(sourceFieldName != null) {
+				Field sf = sourceFieldMap.get(sourceFieldName);
+				if (sf != null) {
+					if (sf.getType() == tf.getType()) {
+						Object sval = getFieldValue(source, sf);
+						setFieldValue(target, tf, sval);
+					} else if (tf.getType() == String.class) {
+						String sval = fmt.formatFieldValue(getFieldValue(source, sf), sf);
+						setFieldValue(target, tf, sval);
+					} else if (sf.getType() == String.class) {
+						String sval = getFieldValue(source, sf);
+						Object o = fmt.parseFieldValue(sval, tf);
+						setFieldValue(target, tf, o);
+					} else {
+						String sval = fmt.formatFieldValue(getFieldValue(source, sf), sf);
+						Object o = fmt.parseFieldValue(sval, tf);
+						setFieldValue(target, tf, o);
+					}
 				}
 			}
 		}
-
-		return target;
 	}
-//	public static <T> T copyFieldsExclude(Object source, Class<T> targetClass, String... fieldsToExclude) {
-//		Map<String, Field> sourceFieldMap = JkStreams.toMapSingle(findAllFields(source.getClass()), Field::getName);
-//		Map<String, Field> targetFields = JkStreams.toMapSingle(findAllFields(targetClass), Field::getName);
-//		Arrays.stream(fieldsToExclude).forEach(targetFields::remove);
-//
-//		T target = createInstance(targetClass);
-//		for (Field tf : targetFields.values()) {
-//			Field f = sourceFieldMap.get(tf.getName());
-//			if(f != null && f.getType() == tf.getType()) {
-//				Object sval = getFieldValue(source, f);
-//				setFieldValue(target, tf, sval);
-//			}
-//		}
-//
-//		return target;
-//	}
 	private static Map<String, String> getFieldNameMap(String... fieldNames) {
 		Map<String, String> toRet = new LinkedHashMap<>();
 		for (String fstr : fieldNames) {
-			String trimmed = fstr.replaceAll(" +", " ").trim();
-			List<String> tlist = JkStrings.splitList(trimmed, " ");
+			String trimmed = fstr.replaceAll("\\s+", " ").trim();
+			List<String> tlist = JkStrings.splitList(trimmed, " ", true);
 			tlist.forEach(t -> {
 				if(!t.contains("=")) {
 					toRet.put(t, t);
 				} else {
-					String[] arr = JkStrings.splitArr(t, "=");
+					String[] arr = JkStrings.splitArr(t, "=", true);
 					toRet.put(arr[1], arr[0]);
 				}
 			});

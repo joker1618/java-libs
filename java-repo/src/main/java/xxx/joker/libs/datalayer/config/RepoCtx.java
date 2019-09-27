@@ -1,5 +1,6 @@
 package xxx.joker.libs.datalayer.config;
 
+import xxx.joker.libs.core.files.JkZip;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.datalayer.wrapper.ClazzWrap;
 
@@ -37,8 +38,8 @@ public class RepoCtx {
         return encrPwd;
     }
 
-    public Path getTempFolder() {
-        return repoFolder.resolve("tmp");
+    public Path getDecryptFolder() {
+        return repoFolder.resolve("decrypted");
     }
 
     public Path getRepoFolder() {

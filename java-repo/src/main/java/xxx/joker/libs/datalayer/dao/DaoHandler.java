@@ -119,7 +119,7 @@ public class DaoHandler {
 
         List<String> lines;
         if(ctx.getEncrPwd() != null) {
-            Path decrPath = ctx.getTempFolder().resolve(sourcePath.getFileName());
+            Path decrPath = ctx.getDecryptFolder().resolve(sourcePath.getFileName());
             JkEncryption.decryptFile(sourcePath, decrPath, ctx.getEncrPwd());
             lines = JkFiles.readLinesNotBlank(decrPath);
             JkFiles.delete(decrPath);
@@ -131,7 +131,7 @@ public class DaoHandler {
 
     private void writeRepoFile(Path outPath, List<String> lines) {
         if(ctx.getEncrPwd() != null) {
-            Path tmpPath = ctx.getTempFolder().resolve(outPath.getFileName());
+            Path tmpPath = ctx.getDecryptFolder().resolve(outPath.getFileName());
             JkFiles.writeFile(tmpPath, lines);
             JkEncryption.encryptFile(tmpPath, outPath, ctx.getEncrPwd());
             JkFiles.delete(tmpPath);

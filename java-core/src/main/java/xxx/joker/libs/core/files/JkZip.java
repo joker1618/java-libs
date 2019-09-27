@@ -15,9 +15,11 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class JkZip {
-    
+
+    private static final int BUFFER_SIZE = 1024 * 500;
+
     public static void unzipArchive(Path archivePath, Path outFolder) {
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[BUFFER_SIZE];
 
         try (FileInputStream fis = new FileInputStream(archivePath.toFile());
              ZipInputStream zis = new ZipInputStream(fis)) {
@@ -94,7 +96,7 @@ public class JkZip {
         try(FileInputStream fis = new FileInputStream(fileToZip)) {
             ZipEntry zipEntry = new ZipEntry(fileName);
             zipOut.putNextEntry(zipEntry);
-            byte[] bytes = new byte[1024];
+            byte[] bytes = new byte[BUFFER_SIZE];
             int length;
             while ((length = fis.read(bytes)) >= 0) {
                 zipOut.write(bytes, 0, length);

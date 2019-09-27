@@ -5,10 +5,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.lambdas.JkStreams;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -68,6 +65,8 @@ public class JkStrings {
 				String strValue;
 				if(obj == null)	{
 					strValue = "_null";
+				} else if(obj.getClass().isArray()){
+					strValue = Arrays.toString((Object[])obj);
 				} else {
 					strValue = obj.toString();
 				}

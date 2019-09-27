@@ -75,7 +75,7 @@ public class JkFormatter {
                     Field f = fmap.get(fnames.get(col));
                     if(f != null) {
                         String strVal = line.get(col);
-                        Object value = parseSingleValue(strVal, f);
+                        Object value = parseFieldValue(strVal, f);
                         JkReflection.setFieldValue(elem, f, value);
                     }
                 }
@@ -85,7 +85,7 @@ public class JkFormatter {
         }
         return toRet;
     }
-    public Object parseSingleValue(String value, Field field) {
+    public Object parseFieldValue(String value, Field field) {
         Class<?> fclazz = field.getType();
         Object o = isOfClass(fclazz, String.class) ? "" : null;
 
@@ -93,14 +93,25 @@ public class JkFormatter {
         if (StringUtils.isNotBlank(value)) {
             if (parseFunc != null) {
                 o = parseFunc.apply(value);
+            } else if(isInstanceOf(fclazz, Collection.class)) {
+                List<String> elems = JkStrings.splitList(value, CsvSep.SEP_LIST);
+                Class<?> collType = getParametrizedTypes(field)[0];
+                List<?> list = JkStreams.map(elems, el -> parseFieldValue(el, collType));
+                if(isInstanceOf(fclazz, List.class)) {
+                    o = list;
+                } else if(isInstanceOf(collType, Comparable.class)) {
+                    o = JkConvert.toTreeSet(list);
+                } else {
+                    o = JkConvert.toHashSet(list);
+                }
             } else {
-                o = parseSingleValue(value, fclazz);
+                o = parseFieldValue(value, fclazz);
             }
         }
 
         return o;
     }
-    public Object parseSingleValue(String value, Class<?> valueClazz) {
+    public Object parseFieldValue(String value, Class<?> valueClazz) {
         Object o = isOfClass(valueClazz, String.class) ? "" : null;
 
         Function<String, ?> parseFunc = retrieveCustomParser(valueClazz, null);
@@ -206,6 +217,10 @@ public class JkFormatter {
             if (toStringFmt != null) {
                 Function<T, String> fmtFunc = (Function<T, String>) toStringFmt;
                 toRet = fmtFunc.apply(value);
+            } else if (isInstanceOf(fclazz, Collection.class)) {
+                Collection coll = (Collection) value;
+                Class<?> collType = getParametrizedTypes(field)[0];
+                toRet = JkStreams.join(coll, CsvSep.SEP_LIST, el -> formatFieldValue(el, collType));
             } else {
                 toRet = formatFieldValue(value, fclazz);
             }
@@ -214,9 +229,11 @@ public class JkFormatter {
         return toRet;
     }
     public String formatFieldValue(Object value, Class<?> valueClazz) {
-        String toRet = "";
+        String toRet;
 
-        if (value != null) {
+        if (value == null) {
+            toRet = CsvSep.PH_NULL;
+        } else {
             Function<?, String> toStringFmt = retrieveCustomFormat(valueClazz, null);
             if (toStringFmt != null) {
                 Function<Object, String> fmtFunc = (Function<Object, String>) toStringFmt;
@@ -239,9 +256,6 @@ public class JkFormatter {
                 toRet = ((Enum) value).name();
             } else if (isOfClass(valueClazz, String.class)) {
                 toRet = (String) value;
-            } else if (isInstanceOf(valueClazz, Collection.class)) {
-                Collection coll = (Collection) value;
-                toRet = JkStreams.join(coll, CsvSep.SEP_LIST, el -> el == null ? "" : formatFieldValue(el, el.getClass()));
             } else {
                 toRet = value.toString();
             }

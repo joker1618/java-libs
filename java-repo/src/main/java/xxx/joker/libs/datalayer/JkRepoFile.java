@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.datetime.JkDateTime;
 import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.debug.JkDebug;
+import xxx.joker.libs.core.files.JkEncryption;
+import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.datalayer.config.RepoConfig;
@@ -55,6 +57,13 @@ public class JkRepoFile implements JkRepo {
         this.jpaHandler = new JpaHandler(ctx, lines);
         JkDebug.stopTimer("jpa");
         this.resourceHandler = new ResourceHandler(ctx, jpaHandler);
+
+        if(ctx.getEncrPwd() != null) {
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                JkFiles.delete(ctx.getDecryptFolder());
+                LOG.info("Deleted decrypt folder: {}", ctx.getDecryptFolder());
+            }));
+        }
     }
 
 
@@ -267,19 +276,29 @@ public class JkRepoFile implements JkRepo {
     }
 
     @Override
+    public Path getResourcePath(RepoResource resource) {
+        if(ctx.getEncrPwd() == null) {
+            return resource.getPath();
+        }
+        Path outPath = ctx.getDecryptFolder().resolve(resource.getPath().getFileName());
+        JkEncryption.decryptFile(resource.getPath(), outPath, ctx.getEncrPwd());
+        return outPath;
+    }
+
+    @Override
     public RepoCtx getRepoCtx() {
         return ctx;
     }
 
     @Override
-    public String toStringRepo() {
+    public String toStringRepo(boolean sortById) {
         List<Class<?>> keys = JkStreams.mapSort(getDataSets().entrySet(), Map.Entry::getKey, Comparator.comparing(Class::getName));
-        return toStringRepoClass(keys);
+        return toStringRepoClass(sortById, keys);
     }
 
     @Override
-    public String toStringClass(Class<?>... classes) {
-        return toStringRepoClass(JkConvert.toList(classes));
+    public String toStringClass(boolean sortById, Class<?>... classes) {
+        return toStringRepoClass(sortById, JkConvert.toList(classes));
     }
 
     @Override
@@ -287,11 +306,17 @@ public class JkRepoFile implements JkRepo {
         return RepoUtil.toStringEntities(entities);
     }
 
-    private String toStringRepoClass(Collection<Class<?>> classes) {
+    private String toStringRepoClass(boolean sortById, Collection<Class<?>> classes) {
         List<String> tables = new ArrayList<>();
         for (Class<?> clazz : classes) {
             Set<RepoEntity> coll = getDataSet((Class<RepoEntity>) clazz);
-            tables.add(RepoUtil.toStringEntities(coll));
+            List<RepoEntity> sorted;
+            if(sortById) {
+                sorted = JkStreams.sorted(coll, Comparator.comparingLong(RepoEntity::getEntityId));
+            } else {
+                sorted = JkStreams.sorted(coll);
+            }
+            tables.add(RepoUtil.toStringEntities(sorted));
         }
         return JkStreams.join(tables, "\n\n");
     }

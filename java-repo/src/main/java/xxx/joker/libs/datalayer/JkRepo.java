@@ -5,6 +5,8 @@ import xxx.joker.libs.datalayer.design.RepoEntity;
 import xxx.joker.libs.datalayer.entities.RepoProperty;
 import xxx.joker.libs.datalayer.entities.RepoResource;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -53,10 +55,13 @@ public interface JkRepo {
     boolean removeResources(String... tags);
     void exportResources(Path outFolder);
 
+    // use this methods to get resource data: if repo is encrypted, read directly will get an error
+    Path getResourcePath(RepoResource resource);
+
     RepoCtx getRepoCtx();
 
-    String toStringRepo();
-    String toStringClass(Class<?>... classes);
+    String toStringRepo(boolean sortById);
+    String toStringClass(boolean sortById, Class<?>... classes);
     String toStringEntities(Collection<? extends RepoEntity> entities);
 
 }
