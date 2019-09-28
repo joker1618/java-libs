@@ -91,7 +91,9 @@ public class JpaHandler {
             checkIdAndPk(entities);
 
             synchronized (idSeqValue) {
-                clearAll();
+                if(!dataById.isEmpty()) {
+                    clearAll();
+                }
 
                 if(!entities.isEmpty()) {
                     // add entities to dataSet proxies
