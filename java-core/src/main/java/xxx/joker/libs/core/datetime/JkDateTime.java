@@ -60,6 +60,9 @@ public class JkDateTime implements Comparable<JkDateTime>, JkFormattable<JkDateT
         return ldt.format(DEF_FMT);
     }
 
+    public String toAod() {
+        return ldt.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
+    }
     public String format(String pattern) {
         return ldt.format(DateTimeFormatter.ofPattern(pattern));
     }
