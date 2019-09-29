@@ -53,6 +53,7 @@ public class JfxControls {
 		hbox.getChildren().addAll(nodes);
 		List<String> scList = JkStrings.splitList(styleClasses, " ");
 		hbox.getStyleClass().addAll(scList);
+		hbox.getStyleClass().addAll("jfxBox", "jfxHBox");
 		return hbox;
 	}
 	public static HBox createHBox(String styleClasses, Node... nodes) {
@@ -63,6 +64,7 @@ public class JfxControls {
 		vbox.getChildren().addAll(nodes);
 		List<String> scList = JkStrings.splitList(styleClasses, " ");
 		vbox.getStyleClass().addAll(scList);
+		vbox.getStyleClass().addAll("jfxBox", "jfxVBox");
 		return vbox;
 	}
 	public static VBox createVBox(String styleClasses, Node... nodes) {

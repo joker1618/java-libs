@@ -15,6 +15,7 @@ import xxx.joker.libs.datalayer.jpa.JpaHandler;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
@@ -29,16 +30,42 @@ public class ResourceHandler {
     public ResourceHandler(RepoCtx ctx, JpaHandler jpaHandler) {
         this.ctx = ctx;
         this.jpaHandler = jpaHandler;
+        performResourcesCheck();
+    }
+
+    public void performResourcesCheck() {
+        Set<RepoResource> dsResources = jpaHandler.getDataSet(RepoResource.class);
+        List<Path> resPaths = JkStreams.mapUniq(dsResources, RepoResource::getPath);
+
+        // Restore resources that were previously deleted, but for any reason the repo was not committed (probably a failure)
+        // In this case the resources are still presents in the repo data set, and the files are located in 'RepoConfig.FOLDER_UNCOMMITTED_DEL_RES'.
+        List<RepoResource> toRestoreList = JkStreams.filter(dsResources, res -> !Files.exists(res.getPath()));
+        for (RepoResource res : toRestoreList) {
+            Path from = ctx.getUncommittedDeletedResourcesFolder().resolve(res.getPath().getFileName());
+            if(Files.exists(from)) {
+                JkFiles.move(from, res.getPath());
+                LOG.info("Restored file for resource {}", res);
+            } else {
+                dsResources.remove(res);
+                LOG.info("Removed resource {}: file not found, unable to restore", res);
+            }
+        }
+
+        // Move the files that are not associated to any resource to 'RepoConfig.FOLDER_UNCOMMITTED_DEL_RES'.
+        List<Path> notUsedList = JkFiles.findFiles(ctx.getResourcesFolder(), true, p -> !resPaths.contains(p));
+        for (Path path : notUsedList) {
+            JkFiles.moveInFolder(path, ctx.getUncommittedDeletedResourcesFolder());
+            LOG.info("Deleted unused file {}", path);
+        }
     }
 
     public RepoResource getResource(String resName, RepoTags tags) {
         try {
             ctx.getReadLock().lock();
-            Set<RepoResource> dsRes = jpaHandler.getDataSet(RepoResource.class);
             RepoResource res = new RepoResource();
             res.setName(resName);
             res.setTags(tags);
-            return JkStreams.findUnique(dsRes, res::equals);
+            return jpaHandler.get(RepoResource.class, res::equals);
 
         } finally {
             ctx.getReadLock().unlock();
@@ -90,40 +117,33 @@ public class ResourceHandler {
     public boolean removeResource(RepoResource resource) {
         try {
             ctx.getWriteLock().lock();
-
-            if(resource == null) {
-                return false;
+            return removeResource1(resource);
+        } finally {
+            ctx.getWriteLock().unlock();
+        }
+    }
+    public boolean removeResources(RepoTags tags) {
+        try {
+            ctx.getWriteLock().lock();
+            List<RepoResource> resList = findResources(tags);
+            boolean result = false;
+            for (RepoResource res : resList) {
+                result |= removeResource1(res);
             }
-
-            Path resPath = ctx.getResourcesFolder().resolve(resource.getPath());
-            JkFiles.delete(resPath);
-            jpaHandler.getDataSet(RepoResource.class).remove(resource);
-            return true;
+            return result;
 
         } finally {
             ctx.getWriteLock().unlock();
         }
     }
-
-    public boolean removeResources(RepoTags tags) {
-        try {
-            ctx.getWriteLock().lock();
-
-            List<RepoResource> resList = findResources(tags);
-            if(resList.isEmpty()) {
-                return false;
-            }
-
-            for (RepoResource res : resList) {
-                Path resPath = ctx.getResourcesFolder().resolve(res.getPath());
-                JkFiles.delete(resPath);
-                jpaHandler.getDataSet(RepoResource.class).remove(res);
-            }
-            return true;
-
-        } finally {
-            ctx.getWriteLock().unlock();
+    private boolean removeResource1(RepoResource resource) {
+        if(resource == null) {
+            return false;
         }
+        Path resPath = ctx.getResourcesFolder().resolve(resource.getPath());
+        JkFiles.moveInFolder(resPath, ctx.getUncommittedDeletedResourcesFolder());
+        jpaHandler.getDataSet(RepoResource.class).remove(resource);
+        return true;
     }
 
     public void exportResources(Path outFolder) {
@@ -138,4 +158,13 @@ public class ResourceHandler {
         Set<RepoResource> dsRes = jpaHandler.getDataSet(RepoResource.class);
         return JkStreams.filter(dsRes, res -> res.getTags().belongToGroup(tags));
     }
+
+    public void commitChanges() {
+        Path toDel = ctx.getUncommittedDeletedResourcesFolder();
+        if(Files.exists(toDel)) {
+            JkFiles.delete(toDel);
+            LOG.debug("Deleted folder {}", toDel);
+        }
+    }
+
 }

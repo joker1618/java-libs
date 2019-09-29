@@ -1,6 +1,5 @@
 package xxx.joker.libs.datalayer.config;
 
-import xxx.joker.libs.core.files.JkZip;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.datalayer.wrapper.ClazzWrap;
 
@@ -38,18 +37,30 @@ public class RepoCtx {
         return encrPwd;
     }
 
-    public Path getDecryptFolder() {
-        return repoFolder.resolve("decrypted");
-    }
-
     public Path getRepoFolder() {
         return repoFolder;
     }
     public Path getDbFolder() {
-        return repoFolder.resolve(DB_FOLDER_NAME);
+        return repoFolder.resolve(FOLDER_DB);
     }
     public Path getResourcesFolder() {
-        return repoFolder.resolve(RESOURCES_FOLDER_NAME);
+        return repoFolder.resolve(FOLDER_RESOURCES);
+    }
+    public Path getDecryptFolder() {
+        return repoFolder.resolve(FOLDER_DECRYPTED);
+    }
+
+    /**
+     * This folder is used to prevent to loose resources when the repo is non committed.
+     * The resources deleted are moved here (are not actually deleted).
+     * This folder is deleted when the repo is committed.
+     * On startup, must be used to recover the resources deleted but not committed, that so are still presents in the REPO.
+     */
+    public Path getUncommittedDeletedResourcesFolder() {
+        return repoFolder.resolve(FOLDER_UNCOMMITTED_DEL_RES);
+    }
+    public Path getTempFolder() {
+        return repoFolder.resolve(FOLDER_TEMP);
     }
 
     public String getDbName() {

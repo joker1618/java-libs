@@ -21,8 +21,11 @@ public class RepoConfig {
 
     public static final String PACKAGE_COMMON_ENTITIES = "xxx.joker.libs.datalayer.entities";
 
-    public static final String RESOURCES_FOLDER_NAME = "resources";
-    public static final String DB_FOLDER_NAME = "db";
+    public static final String FOLDER_RESOURCES = "resources";
+    public static final String FOLDER_DB = "db";
+    public static final String FOLDER_DECRYPTED = "decrypted";
+    public static final String FOLDER_UNCOMMITTED_DEL_RES = "deleted-resources-uncommitted";
+    public static final String FOLDER_TEMP = "temp";
 
     public static final String[] HEADER_REPO_FKEYS_FIELDS = {"entityId", "fieldName", "depId"};
 

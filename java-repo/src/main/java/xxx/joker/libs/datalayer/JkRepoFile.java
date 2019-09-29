@@ -78,22 +78,26 @@ public class JkRepoFile implements JkRepo {
     }
 
     @Override
-    public <T extends RepoEntity> List<T> getList(Class<T> entityClazz, Predicate<T>... filters) {
+    @SafeVarargs
+    public final <T extends RepoEntity> List<T> getList(Class<T> entityClazz, Predicate<T>... filters) {
         return JkStreams.filter(getDataSet(entityClazz), filters);
     }
 
     @Override
-    public <K, T extends RepoEntity> Map<K, List<T>> getMap(Class<T> entityClazz, Function<T, K> keyMapper, Predicate<T>... filters) {
+    @SafeVarargs
+    public final <K, T extends RepoEntity> Map<K, List<T>> getMap(Class<T> entityClazz, Function<T, K> keyMapper, Predicate<T>... filters) {
         return JkStreams.toMap(getDataSet(entityClazz), keyMapper, v -> v, filters);
     }
 
     @Override
-    public <K, T extends RepoEntity> Map<K, T> getMapSingle(Class<T> entityClazz, Function<T, K> keyMapper, Predicate<T>... filters) {
+    @SafeVarargs
+    public final <K, T extends RepoEntity> Map<K, T> getMapSingle(Class<T> entityClazz, Function<T, K> keyMapper, Predicate<T>... filters) {
         return JkStreams.toMapSingle(getDataSet(entityClazz), keyMapper, v -> v, filters);
     }
 
     @Override
-    public <T extends RepoEntity> T get(Class<T> entityClazz, Predicate<T>... filters) {
+    @SafeVarargs
+    public final <T extends RepoEntity> T get(Class<T> entityClazz, Predicate<T>... filters) {
         return jpaHandler.get(entityClazz, filters);
     }
 
@@ -177,6 +181,7 @@ public class JkRepoFile implements JkRepo {
             ctx.getWriteLock().lock();
             List<RepoEntity> fromFiles = daoHandler.loadDataFromFiles();
             jpaHandler.initDataSets(fromFiles);
+            resourceHandler.performResourcesCheck();
             LOG.info("Rollback done");
         } finally {
             ctx.getWriteLock().unlock();
@@ -198,6 +203,7 @@ public class JkRepoFile implements JkRepo {
             JkTimer timer = new JkTimer();
             Collection<RepoEntity> values = jpaHandler.getDataById().values();
             daoHandler.persistData(values);
+            resourceHandler.commitChanges();
             LOG.info("Committed repo in {}", timer.toStringElapsed());
         } finally {
             ctx.getWriteLock().unlock();

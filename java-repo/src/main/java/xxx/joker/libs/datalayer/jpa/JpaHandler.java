@@ -170,7 +170,8 @@ public class JpaHandler {
         });
     }
 
-    public <T extends RepoEntity> T get(Class<T> entityClazz, Predicate<T>... filters) {
+    @SafeVarargs
+    public final <T extends RepoEntity> T get(Class<T> entityClazz, Predicate<T>... filters) {
         return JkStreams.findUnique(getDataSet(entityClazz), filters);
     }
     public <T extends RepoEntity> Map<Class<T>, Set<T>> getDataSets() {
