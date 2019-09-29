@@ -146,9 +146,9 @@ public class ResourceHandler {
         return true;
     }
 
-    public void exportResources(Path outFolder) {
-        Set<RepoResource> dsResources = jpaHandler.getDataSet(RepoResource.class);
-        for (RepoResource res : dsResources) {
+    public void exportResources(Path outFolder, RepoTags tags) {
+        List<RepoResource> resources = findResources(tags);
+        for (RepoResource res : resources) {
             String outName = strf("{}/{}/{}{}", res.getType(), res.getTags().format(), res.getName(), JkFiles.getExtension(res.getPath(), true));
             JkFiles.copy(res.getPath(), outFolder.resolve(outName));
         }

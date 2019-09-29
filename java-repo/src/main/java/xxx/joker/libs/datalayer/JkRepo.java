@@ -53,7 +53,7 @@ public interface JkRepo {
     boolean removeResource(RepoResource resource);
     boolean removeResource(String resName, String... tags);
     boolean removeResources(String... tags);
-    void exportResources(Path outFolder);
+    void exportResources(Path outFolder, String... tags);
 
     // use this methods to get resource data: if repo is encrypted, read directly will get an error
     Path getResourcePath(RepoResource resource);

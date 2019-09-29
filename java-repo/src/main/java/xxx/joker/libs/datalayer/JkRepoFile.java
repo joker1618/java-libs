@@ -277,8 +277,8 @@ public class JkRepoFile implements JkRepo {
     }
 
     @Override
-    public void exportResources(Path outFolder) {
-        resourceHandler.exportResources(outFolder);
+    public void exportResources(Path outFolder, String... tags) {
+        resourceHandler.exportResources(outFolder, RepoTags.of(tags));
     }
 
     @Override
