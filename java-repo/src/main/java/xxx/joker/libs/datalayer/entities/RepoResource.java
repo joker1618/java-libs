@@ -1,8 +1,9 @@
 package xxx.joker.libs.datalayer.entities;
 
+import xxx.joker.libs.datalayer.design.EntityField;
+import xxx.joker.libs.datalayer.design.EntityPK;
 import xxx.joker.libs.datalayer.design.RepoEntity;
-import xxx.joker.libs.datalayer.design.RepoField;
-import xxx.joker.libs.datalayer.design.RepoResourcePath;
+import xxx.joker.libs.datalayer.design.ResourcePath;
 
 import java.nio.file.Path;
 
@@ -10,27 +11,29 @@ import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class RepoResource extends RepoEntity {
 
-    @RepoField
-    @RepoResourcePath
+    @EntityField
+    @ResourcePath
     private Path path;
 
-    @RepoField
+    @EntityPK
+    @EntityField
     private String name;
-    @RepoField
+    @EntityPK
+    @EntityField
     private RepoTags tags;
-    @RepoField
+    @EntityField
     private String md5;
-    @RepoField
+    @EntityField
     private RepoResourceType type;
 
 
     public RepoResource() {
     }
 
-    @Override
-    public String getPrimaryKey() {
-        return strf("{}-{}", getName(), getTags().format());
-    }
+//    @Override
+//    public String getPrimaryKey() {
+//        return strf("{}-{}", getName(), getTags().format());
+//    }
 
     public String getName() {
         return name;

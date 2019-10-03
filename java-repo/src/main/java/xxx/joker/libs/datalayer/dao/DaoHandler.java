@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.files.JkEncryption;
 import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.format.JkFormatter;
 import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.datalayer.config.RepoConfig;
 import xxx.joker.libs.datalayer.config.RepoCtx;
@@ -64,9 +65,9 @@ public class DaoHandler {
 
     public boolean persistData(Collection<RepoEntity> entities) {
         // Move all existing DB files to a temporary sub folder, so if something goes wrong, there is a backup
-        Path bkpFolder = ctx.getDbFolder().resolve(".backupMove");
-        List<Path> oldDbFiles = JkFiles.find(ctx.getDbFolder(), false, ctx::isEntityFilePath);
-        oldDbFiles.forEach(op -> JkFiles.moveInFolder(op, bkpFolder));
+        Path bkpFolder = ctx.getRepoFolder().resolve(".backupTemp");
+        JkFiles.find(ctx.getDbFolder(), false).forEach(p -> JkFiles.moveInFolder(p, bkpFolder.resolve(ctx.getDbName())));
+        JkFiles.find(ctx.getMetadataFolder(), false).forEach(p -> JkFiles.moveInFolder(p, bkpFolder.resolve(ctx.getMetadataFolder().getFileName())));
 
         // Persist entities
         List<RepoEntity> idSorted = JkStreams.sorted(entities, Comparator.comparing(RepoEntity::getEntityId));
@@ -99,6 +100,7 @@ public class DaoHandler {
             }
         });
 
+        // Persist foreign keys
         if(!fkList.isEmpty()) {
             List<String> fkLines = JkStreams.map(fkList, DaoFK::format);
             fkLines.add(0, RepoConfig.getRepoFileFkeysHeader());
@@ -106,6 +108,15 @@ public class DaoHandler {
             writeRepoFile(outFkeysPath, fkLines);
             LOG.debug("File persisted: {}", outFkeysPath);
         }
+
+        // Persist metadata
+        JkFormatter fmt = JkFormatter.get();
+        ctx.getClazzWraps().values().forEach(cw -> {
+            List<DaoMetadata> metaList = JkStreams.map(cw.getFieldWraps(), DaoMetadata::new);
+            Path outPath = ctx.getMetadataPath(cw);
+            JkFiles.writeFile(outPath, fmt.formatCsv(metaList));
+            LOG.debug("File persisted: {}", outPath);
+        });
 
         JkFiles.delete(bkpFolder);
 

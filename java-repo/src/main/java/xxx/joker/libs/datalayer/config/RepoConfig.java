@@ -23,6 +23,7 @@ public class RepoConfig {
 
     public static final String FOLDER_RESOURCES = "resources";
     public static final String FOLDER_DB = "db";
+    public static final String FOLDER_METADATA = "metadata";
     public static final String FOLDER_DECRYPTED = "decrypted";
     public static final String FOLDER_UNCOMMITTED_DEL_RES = "deleted-resources-uncommitted";
     public static final String FOLDER_TEMP = "temp";
@@ -34,8 +35,8 @@ public class RepoConfig {
 
     public static final String DB_JKREPO_KEYWORD = "jkrepo";
     public static final String DB_FILENAME_FORMAT = "{}#{}#" + DB_JKREPO_KEYWORD + ".{}";
+    public static final String METADATA_FILENAME_FORMAT = "{}#{}#" + DB_JKREPO_KEYWORD + ".metadata";
     public static final String DB_EXT_DATA_FILE = "data";
-    public static final String DB_EXT_DESCR_FILE = "descr";
     public static final String DB_FKEYS_FORMAT = "{}#" + DB_JKREPO_KEYWORD + ".fkeys";
 
     public static class CsvSep {
@@ -51,15 +52,19 @@ public class RepoConfig {
 
     public static boolean isValidType(FieldWrap fieldWrap) {
         Class<?> fieldType = fieldWrap.getFieldType();
-        boolean res = ALLOWED_FIELDS.contains(fieldType);
+        boolean res = SIMPLE_FIELDS.contains(fieldType);
         if(!res) {
             res = JkReflection.isInstanceOf(fieldType, CUSTOM_FIELDS);
         }
         if(!res && ALLOWED_COLLECTIONS.contains(fieldType)) {
             Class<?> collType = fieldWrap.getCollType();
-            res = JkReflection.isInstanceOf(collType, CUSTOM_FIELDS) || ALLOWED_FIELDS.contains(collType);
+            res = JkReflection.isInstanceOf(collType, CUSTOM_FIELDS) || SIMPLE_FIELDS.contains(collType);
         }
         return res;
+    }
+
+    public static boolean isValidTypeForPK(FieldWrap fieldWrap) {
+        return SIMPLE_FIELDS.contains(fieldWrap.getFieldType()) || JkReflection.isInstanceOf(fieldWrap.getFieldType(), JkFormattable.class);
     }
 
     public static String getRepoFileFkeysHeader() {
@@ -72,7 +77,7 @@ public class RepoConfig {
             Enum.class
     );
 
-    private static final List<Class<?>> ALLOWED_FIELDS = Arrays.asList(
+    private static final List<Class<?>> SIMPLE_FIELDS = Arrays.asList(
             Boolean.class,		boolean.class,
             Integer.class,		int.class,
             Long.class,			long.class,

@@ -1,15 +1,17 @@
 package xxx.joker.libs.datalayer.entities;
 
+import xxx.joker.libs.datalayer.design.EntityField;
+import xxx.joker.libs.datalayer.design.EntityPK;
 import xxx.joker.libs.datalayer.design.RepoEntity;
-import xxx.joker.libs.datalayer.design.RepoField;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class RepoProperty extends RepoEntity {
 
-    @RepoField
+    @EntityPK
+    @EntityField
     private String key;
-    @RepoField
+    @EntityField
     private String value;
 
     public RepoProperty() {
@@ -19,10 +21,10 @@ public class RepoProperty extends RepoEntity {
         this.value = value;
     }
     
-    @Override
-    public String getPrimaryKey() {
-        return strf("{}", getKey().toLowerCase());
-    }
+//    @Override
+//    public String getPrimaryKey() {
+//        return strf("{}", getKey().toLowerCase());
+//    }
 
     public String getKey() {
         return key;

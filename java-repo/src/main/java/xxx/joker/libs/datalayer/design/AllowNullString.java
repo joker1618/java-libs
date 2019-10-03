@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * By default, NULL strings are replaced by ""
  *
  * Usage:
- * - on Field annotated with @RepoField
+ * - on Field annotated with @EntityField
  * - on Class implementing RepoEntity
  * NB: Class directive has priority with respect to Field
  */

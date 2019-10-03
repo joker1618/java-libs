@@ -144,6 +144,8 @@ public class JkFormatter {
                     ((JkFormattable) o).parse(value);
                 } else if (isInstanceOf(valueClazz, Enum.class)) {
                     o = Enum.valueOf((Class) valueClazz, value);
+                } else if (isOfClass(valueClazz, Class.class)) {
+                    o = JkReflection.classForName(value);
                 } else if (isOfClass(valueClazz, String.class)) {
                     o = value;
                 }
@@ -256,6 +258,8 @@ public class JkFormatter {
                 toRet = ((Enum) value).name();
             } else if (isOfClass(valueClazz, String.class)) {
                 toRet = (String) value;
+            } else if (isOfClass(valueClazz, Class.class)){
+                toRet = ((Class)value).getName();
             } else {
                 toRet = value.toString();
             }

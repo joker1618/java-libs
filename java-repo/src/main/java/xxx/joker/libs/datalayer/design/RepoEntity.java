@@ -3,12 +3,20 @@ package xxx.joker.libs.datalayer.design;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import xxx.joker.libs.core.datetime.JkDateTime;
+import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.core.runtimes.JkReflection;
+import xxx.joker.libs.datalayer.wrapper.ClazzWrap;
+import xxx.joker.libs.datalayer.wrapper.FieldWrap;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.util.*;
 
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public abstract class RepoEntity implements IRepoEntity<RepoEntity> {
+
+    private static final Map<Class<?>, List<FieldWrap>> PK_FIELDS = Collections.synchronizedMap(new HashMap<>());
 
     @EntityID
     protected Long entityId;
@@ -26,6 +34,19 @@ public abstract class RepoEntity implements IRepoEntity<RepoEntity> {
         if (o == null || getClass() != o.getClass()) return false;
         RepoEntity other = (RepoEntity) o;
         return getPrimaryKey().equalsIgnoreCase(other.getPrimaryKey());
+    }
+
+    @Override
+    public final String getPrimaryKey() {
+        if(!PK_FIELDS.containsKey(getClass())) {
+            synchronized (PK_FIELDS) {
+                if(!PK_FIELDS.containsKey(getClass())) {
+                    ClazzWrap cw = new ClazzWrap(getClass());
+                    PK_FIELDS.put(getClass(), cw.getFieldWrapsPK());
+                }
+            }
+        }
+        return JkStreams.join(PK_FIELDS.get(getClass()), "-", fw -> fw.formatValue(this));
     }
 
     @Override

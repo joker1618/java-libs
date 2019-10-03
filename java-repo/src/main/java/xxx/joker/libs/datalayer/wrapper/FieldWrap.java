@@ -7,9 +7,7 @@ import xxx.joker.libs.core.lambdas.JkStreams;
 import xxx.joker.libs.core.runtimes.JkReflection;
 import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
-import xxx.joker.libs.datalayer.design.AllowNullString;
-import xxx.joker.libs.datalayer.design.RepoEntity;
-import xxx.joker.libs.datalayer.design.RepoResourcePath;
+import xxx.joker.libs.datalayer.design.*;
 import xxx.joker.libs.datalayer.exceptions.RepoError;
 
 import java.io.File;
@@ -61,8 +59,11 @@ public class FieldWrap {
             directives.add(AllowNullString.class);
         }
 
-        if(field.getAnnotation(RepoResourcePath.class) != null) {
-            directives.add(RepoResourcePath.class);
+        if(field.getAnnotation(ResourcePath.class) != null) {
+            directives.add(ResourcePath.class);
+        }
+        if(field.getAnnotation(EntityPK.class) != null) {
+            directives.add(EntityPK.class);
         }
     }
 
@@ -72,6 +73,10 @@ public class FieldWrap {
 
     public String getFieldName() {
         return field.getName();
+    }
+
+    public Set<Class<?>> getDirectives() {
+        return directives;
     }
 
     public Class<?> getFieldType() {
@@ -131,12 +136,19 @@ public class FieldWrap {
         }
     }
 
-    private boolean isAllowNull() {
+    public boolean isAllowNull() {
         return directives.contains(AllowNullString.class);
     }
 
-    public boolean isRepoResourcePath() {
-        return directives.contains(RepoResourcePath.class);
+    public boolean isResourcePath() {
+        return directives.contains(ResourcePath.class);
+    }
+
+    public boolean isEntityID() {
+        return field.isAnnotationPresent(EntityID.class);
+    }
+    public boolean isEntityPK() {
+        return directives.contains(EntityPK.class);
     }
 
     protected void fillDefaultValues(RepoEntity instance) {
@@ -201,7 +213,7 @@ public class FieldWrap {
         return escapeString(toRet, isString);
     }
 
-    private String escapeString(String value, boolean fullEscape) {
+    public static String escapeString(String value, boolean fullEscape) {
         if(value == null) {
             return PH_NULL;
         }
@@ -214,7 +226,7 @@ public class FieldWrap {
         return res;
     }
 
-    private String unescapeString(String value, boolean fullEscape) {
+    public static String unescapeString(String value, boolean fullEscape) {
         if(PH_NULL.equals(value)) {
             return null;
         }
@@ -308,6 +320,7 @@ public class FieldWrap {
     public int hashCode() {
         return Objects.hash(field);
     }
+
 
     @Override
     public String toString() {

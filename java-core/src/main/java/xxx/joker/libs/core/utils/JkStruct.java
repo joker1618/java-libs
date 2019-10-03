@@ -74,9 +74,4 @@ public class JkStruct {
         return list.isEmpty() ? null : list.get(list.size() - 1);
     }
 
-    public static <T> List<T> reversePositions(Collection<T> source) {
-        List<T> list = new ArrayList<>();
-        source.forEach(elem -> list.add(0, elem));
-        return list;
-    }
 }

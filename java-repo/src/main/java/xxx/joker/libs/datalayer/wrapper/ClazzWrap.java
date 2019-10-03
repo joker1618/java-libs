@@ -7,9 +7,9 @@ import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.datalayer.config.RepoConfig;
 import xxx.joker.libs.datalayer.config.RepoCtx;
 import xxx.joker.libs.datalayer.design.EntityCreationTm;
+import xxx.joker.libs.datalayer.design.EntityField;
 import xxx.joker.libs.datalayer.design.EntityID;
 import xxx.joker.libs.datalayer.design.RepoEntity;
-import xxx.joker.libs.datalayer.design.RepoField;
 import xxx.joker.libs.datalayer.exceptions.RepoError;
 
 import java.lang.reflect.Field;
@@ -29,10 +29,12 @@ public class ClazzWrap {
     private final LinkedHashMap<String, FieldWrap> fieldByNameMap;
     private FieldWrap entityIdFieldWrap;
     private FieldWrap creationTmFieldWrap;
+    private List<FieldWrap> pkFieldWraps;
 
     public ClazzWrap(Class<?> eClazz) {
         this.eClazz = eClazz;
         this.fieldByNameMap = new LinkedHashMap<>();
+        this.pkFieldWraps = new ArrayList<>();
         initClazz();
     }
 
@@ -55,7 +57,7 @@ public class ClazzWrap {
                 elist.add(e);
             }
         }
-        fieldByNameMap.values().stream().filter(FieldWrap::isRepoResourcePath).forEach(fw ->
+        fieldByNameMap.values().stream().filter(FieldWrap::isResourcePath).forEach(fw ->
             elist.forEach(e -> fw.setValue(e, ctx.getResourcesFolder().resolve((Path)fw.getValue(e))))
         );
         return elist;
@@ -78,7 +80,7 @@ public class ClazzWrap {
         Stream<RepoEntity> sorted = entities.stream().sorted(Comparator.comparing(RepoEntity::getEntityId));
         sorted.forEach(e -> {
             List<String> rowValues = JkStreams.map(fieldByNameMap.values(), fw -> {
-                if (!fw.isRepoResourcePath()) {
+                if (!fw.isResourcePath()) {
                     return fw.formatValue(e);
                 } else {
                     Path absPath = Paths.get(fw.formatValue(e)).toAbsolutePath();
@@ -105,6 +107,9 @@ public class ClazzWrap {
     public FieldWrap getFieldWrap(String fieldName) {
         return fieldByNameMap.get(fieldName);
     }
+    public List<FieldWrap> getFieldWrapsPK() {
+        return JkStreams.filter(fieldByNameMap.values(), FieldWrap::isEntityPK);
+    }
 
     public List<FieldWrap> getFieldWrapsEntityFlat() {
         return JkStreams.filter(fieldByNameMap.values(), FieldWrap::isEntityFlat);
@@ -119,7 +124,7 @@ public class ClazzWrap {
 
     private void initClazz() {
         // exactly 1 field @EntityID
-        List<Field> fields = fields = JkReflection.getFieldsByAnnotation(eClazz, EntityID.class);
+        List<Field> fields = JkReflection.getFieldsByAnnotation(eClazz, EntityID.class);
         if(fields.size() != 1) {
             throw new RepoError("Must be present exactly one field annotated with @EntityID. [class={}]", eClazz.getSimpleName());
         }
@@ -136,10 +141,10 @@ public class ClazzWrap {
         fieldByNameMap.put(entityIdFieldWrap.getFieldName(), entityIdFieldWrap);
         fieldByNameMap.put(creationTmFieldWrap.getFieldName(), creationTmFieldWrap);
 
-        // Add all @RepoField fields
-        fields = JkReflection.getFieldsByAnnotation(eClazz, RepoField.class);
+        // Add all @EntityField fields
+        fields = JkReflection.getFieldsByAnnotation(eClazz, EntityField.class);
         if(fields.isEmpty()) {
-            throw new RepoError("No fields annotated with '@RepoField' found in class {}", eClazz.getSimpleName());
+            throw new RepoError("No fields annotated with '@EntityField' found in class {}", eClazz.getSimpleName());
         }
         fields.forEach(ff -> fieldByNameMap.put(ff.getName(), new FieldWrap(ff)));
 
@@ -154,6 +159,16 @@ public class ClazzWrap {
                 throw new RepoError("Final field not allowed [class={}, field={}]", eClazz.getSimpleName(), k);
             }
         });
+
+        // Check primary key
+        pkFieldWraps = JkStreams.filter(fieldByNameMap.values(), FieldWrap::isEntityPK);
+        if(pkFieldWraps.isEmpty()) {
+            throw new RepoError("No fields annotated with EntityPK [class={}]", eClazz.getSimpleName());
+        }
+        List<FieldWrap> wrongs = JkStreams.filter(pkFieldWraps, fw -> !RepoConfig.isValidTypeForPK(fw));
+        if(!wrongs.isEmpty()) {
+            throw new RepoError("Fields type not allowed to be in PK [class={}, fields={}]", eClazz.getSimpleName(), wrongs);
+        }
     }
 }
 

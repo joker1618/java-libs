@@ -2,9 +2,12 @@ package xxx.joker.libs.datalayer.resourcer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.datetime.JkTimer;
+import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.files.JkEncryption;
 import xxx.joker.libs.core.files.JkFiles;
 import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.core.runtimes.JkRuntime;
 import xxx.joker.libs.datalayer.config.RepoCtx;
 import xxx.joker.libs.datalayer.entities.RepoResource;
 import xxx.joker.libs.datalayer.entities.RepoResourceType;
@@ -12,12 +15,17 @@ import xxx.joker.libs.datalayer.entities.RepoTags;
 import xxx.joker.libs.datalayer.exceptions.RepoError;
 import xxx.joker.libs.datalayer.jpa.JpaHandler;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import static xxx.joker.libs.core.utils.JkConsole.display;
+import static xxx.joker.libs.core.utils.JkConsole.displayColl;
 import static xxx.joker.libs.core.utils.JkStrings.strf;
 
 public class ResourceHandler {
@@ -34,28 +42,47 @@ public class ResourceHandler {
     }
 
     public void performResourcesCheck() {
-        Set<RepoResource> dsResources = jpaHandler.getDataSet(RepoResource.class);
-        List<Path> resPaths = JkStreams.mapUniq(dsResources, RepoResource::getPath);
+        try {
+            if (Files.exists(ctx.getUncommittedDeletedResourcesFolder())) {
+                JkTimer timer = new JkTimer();
+                Set<RepoResource> dsResources = jpaHandler.getDataSet(RepoResource.class);
 
-        // Restore resources that were previously deleted, but for any reason the repo was not committed (probably a failure)
-        // In this case the resources are still presents in the repo data set, and the files are located in 'RepoConfig.FOLDER_UNCOMMITTED_DEL_RES'.
-        List<RepoResource> toRestoreList = JkStreams.filter(dsResources, res -> !Files.exists(res.getPath()));
-        for (RepoResource res : toRestoreList) {
-            Path from = ctx.getUncommittedDeletedResourcesFolder().resolve(res.getPath().getFileName());
-            if(Files.exists(from)) {
-                JkFiles.move(from, res.getPath());
-                LOG.info("Restored file for resource {}", res);
-            } else {
-                dsResources.remove(res);
-                LOG.info("Removed resource {}: file not found, unable to restore", res);
+                // Restore resources that were previously deleted, but for any reason the repo was not committed (probably a failure)
+                // In this case the resources are still presents in the repo data set, and the files are located in 'RepoConfig.FOLDER_UNCOMMITTED_DEL_RES'.
+                List<RepoResource> toRestoreList = JkStreams.filter(dsResources, res -> !Files.exists(res.getPath()));
+//                List<Path> uncommittedList = new ArrayList<>();
+//                if (!toRestoreList.isEmpty()) {
+//                    uncommittedList.addAll(JkFiles.findFiles(ctx.getUncommittedDeletedResourcesFolder(), true));
+//                }
+                for (RepoResource res : toRestoreList) {
+                    Path from = ctx.getUncommittedDeletedResourcesFolder().resolve(res.getPath().getFileName());
+                    if (Files.exists(from)) {
+//                    if (JkFiles.containsPath(uncommittedList, from)) {
+                        JkFiles.move(from, res.getPath());
+//                        uncommittedList.removeIf(p -> JkFiles.areEquals(p, from));
+                        LOG.info("Restored file for resource {}", res);
+                    } else {
+                        dsResources.remove(res);
+                        LOG.info("Removed resource {}: file not found, unable to restore", res);
+                    }
+                }
+//
+//            // Move the files that are not associated to any resource to 'RepoConfig.FOLDER_UNCOMMITTED_DEL_RES'.
+//            List<Path> notUsedList = JkStreams.filter(foundPaths, p -> !JkFiles.containsPath(resPaths, p));
+//            for (Path path : notUsedList) {
+//                JkFiles.moveInFolder(path, ctx.getUncommittedDeletedResourcesFolder());
+//                LOG.info("Deleted unused file {}", path);
+//            }
+                List<Path> resPaths = JkStreams.mapUniq(dsResources, RepoResource::getPath);
+                Files.walk(ctx.getResourcesFolder())
+                        .filter(p -> !JkFiles.containsPath(resPaths, p))
+                        .forEach(JkFiles::delete);
+
+                LOG.debug("Check resources done in {}", timer.toStringElapsed());
             }
-        }
 
-        // Move the files that are not associated to any resource to 'RepoConfig.FOLDER_UNCOMMITTED_DEL_RES'.
-        List<Path> notUsedList = JkFiles.findFiles(ctx.getResourcesFolder(), true, p -> !resPaths.contains(p));
-        for (Path path : notUsedList) {
-            JkFiles.moveInFolder(path, ctx.getUncommittedDeletedResourcesFolder());
-            LOG.info("Deleted unused file {}", path);
+        } catch(IOException e) {
+            throw new JkRuntimeException(e, "Error during resources check");
         }
     }
 
@@ -140,8 +167,7 @@ public class ResourceHandler {
         if(resource == null) {
             return false;
         }
-        Path resPath = ctx.getResourcesFolder().resolve(resource.getPath());
-        JkFiles.moveInFolder(resPath, ctx.getUncommittedDeletedResourcesFolder());
+        JkFiles.moveInFolder(resource.getPath(), ctx.getUncommittedDeletedResourcesFolder());
         jpaHandler.getDataSet(RepoResource.class).remove(resource);
         return true;
     }

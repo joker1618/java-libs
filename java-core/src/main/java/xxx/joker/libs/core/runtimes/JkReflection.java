@@ -210,6 +210,13 @@ public class JkReflection {
 			throw new JkRuntimeException(e, "Class not found for name: {}", className);
 		}
 	}
+	public static Class<?> classForNameSafe(String className) {
+		try {
+			return Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			return null;
+		}
+	}
 
 	/**
 	 *

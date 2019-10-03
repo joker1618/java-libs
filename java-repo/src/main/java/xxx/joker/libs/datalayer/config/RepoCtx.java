@@ -43,6 +43,9 @@ public class RepoCtx {
     public Path getDbFolder() {
         return repoFolder.resolve(FOLDER_DB);
     }
+    public Path getMetadataFolder() {
+        return repoFolder.resolve(FOLDER_METADATA);
+    }
     public Path getResourcesFolder() {
         return repoFolder.resolve(FOLDER_RESOURCES);
     }
@@ -83,16 +86,22 @@ public class RepoCtx {
         return fn.startsWith(dbName) && fn.contains(DB_JKREPO_KEYWORD);
     }
     public Path getEntityDataPath(ClazzWrap clazzWrap) {
-        return getEntityPath(clazzWrap, DB_EXT_DATA_FILE);
+        return getEntityDataPath(clazzWrap.getEClazz().getSimpleName());
+    }
+    public Path getEntityDataPath(String clazzSimpleName) {
+        return getEntityPath(clazzSimpleName, DB_EXT_DATA_FILE);
     }
     public Path getForeignKeysPath() {
         return getDbFolder().resolve(strf(DB_FKEYS_FORMAT, getDbName()));
     }
-    public Path getEntityDescrPath(ClazzWrap clazzWrap) {
-        return getEntityPath(clazzWrap, DB_EXT_DESCR_FILE);
+    public Path getMetadataPath(ClazzWrap cw) {
+        return getMetadataPath(cw.getEClazz().getSimpleName());
     }
-    private Path getEntityPath(ClazzWrap clazzWrap, String extension) {
-        String fname = strf(DB_FILENAME_FORMAT, dbName, clazzWrap.getEClazz().getSimpleName(), extension);
+     public Path getMetadataPath(String clazzSimpleName) {
+        return getMetadataFolder().resolve(strf(METADATA_FILENAME_FORMAT, getDbName(), clazzSimpleName));
+    }
+    private Path getEntityPath(String clazzSimpleName, String extension) {
+        String fname = strf(DB_FILENAME_FORMAT, dbName, clazzSimpleName, extension);
         return getDbFolder().resolve(fname);
     }
 }

@@ -1,45 +1,52 @@
 package various;
 
 import org.junit.Test;
+import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.core.runtimes.JkReflection;
+import xxx.joker.libs.datalayer.design.EntityPK;
+import xxx.joker.libs.datalayer.design.ResourcePath;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedArrayType;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
+import static xxx.joker.libs.core.runtimes.JkReflection.isInstanceOf;
+import static xxx.joker.libs.core.runtimes.JkReflection.isOfClass;
 import static xxx.joker.libs.core.utils.JkConsole.display;
 
 public class Misc {
 
-//    @Test
-//    public void tenum() {
-//        Class<?> clazz = RepoUriType.class;
-//        Object ruto = Enum.valueOf((Class)clazz, "IMAGE");
-//        display("{}",ruto);
-//        RepoUriType rut = (RepoUriType) Enum.valueOf((Class)clazz, "IMAGE");
-//        display(rut.name());
-//        display("{}", JkReflection.isInstanceOf(clazz, Enum.class));
-//
-//        String s = "fe%%de/r/ico,l  a;ma:don na";
-//        display("{}\n{}", s, s.replaceAll("[/%,;:\\s]", "_"));
-////
-////        Collection<Integer> coll = Collections.emptyList();
-////        display(coll.getClass().getName());
-////        display(coll.getClass().getTypeName());
-////        display(((ParameterizedType) coll.getClass()
-////                .getGenericSuperclass()).toString());
-////        display(((ParameterizedType) coll.getClass()
-////                .getGenericSuperclass()).getActualTypeArguments()[0].getTypeName());
-////        Class genclazz = (Class) ((ParameterizedType) coll.getClass()
-////                .getGenericSuperclass()).getActualTypeArguments()[0];
-////        display(genclazz.getName());
-//    }
+    @Test
+    public void tenum() {
+        Class<?> clazz = int.class;
+        Class<?> clazz2 = String.class;
+        display("{}", clazz.getName());
+        display("{}", clazz2.getName());
+        display("{}", clazz == int.class);
+    }
 
     @Test
     public void t22t() {
-        Path p1 = Paths.get("pippo");
-        Path p2 = p1.toAbsolutePath();
-        display("1 {}", p1.relativize(p1.resolve("file")));
-        display("2 {}", p2.relativize(p2.resolve("file")));
+        Class<?> a1 = ResourcePath.class;
+        Class<?> a2 = EntityPK.class;
+        List<Class<?>> alist = Arrays.asList(a1, a2);
+        display("a1  {}  {}  {}  {}", a1 == ResourcePath.class, a1.equals(ResourcePath.class),
+                isOfClass(a1, ResourcePath.class), isInstanceOf(a1, ResourcePath.class)
+        );
+        display("a1  {}  {}  {}  {}  {}", alist.contains(a1), alist.contains(ResourcePath.class),
+                JkStreams.count(alist, ac -> isOfClass(ResourcePath.class)),
+                JkStreams.count(alist, ac -> ac == ResourcePath.class),
+                JkStreams.count(alist, ac -> ac.equals(ResourcePath.class))
+        );
+
+        List<Class<?>> alist2 = Arrays.asList(EntityPK.class, ResourcePath.class);
+        Class<?> ac = alist2.get(0);
+        display("a2  {}", alist2.contains(ac));
+
     }
 
     @Test
