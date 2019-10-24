@@ -4,8 +4,6 @@ import xxx.joker.libs.datalayer.design.EntityField;
 import xxx.joker.libs.datalayer.design.EntityPK;
 import xxx.joker.libs.datalayer.design.RepoEntity;
 
-import static xxx.joker.libs.core.utils.JkStrings.strf;
-
 public class RepoProperty extends RepoEntity {
 
     @EntityPK

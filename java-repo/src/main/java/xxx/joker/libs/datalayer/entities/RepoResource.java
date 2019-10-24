@@ -7,8 +7,6 @@ import xxx.joker.libs.datalayer.design.ResourcePath;
 
 import java.nio.file.Path;
 
-import static xxx.joker.libs.core.utils.JkStrings.strf;
-
 public class RepoResource extends RepoEntity {
 
     @EntityField

@@ -137,18 +137,18 @@ public class FieldWrap {
     }
 
     public boolean isAllowNull() {
-        return directives.contains(AllowNullString.class);
+        return field.isAnnotationPresent(AllowNullString.class);
     }
 
     public boolean isResourcePath() {
-        return directives.contains(ResourcePath.class);
+        return field.isAnnotationPresent(ResourcePath.class);
     }
 
     public boolean isEntityID() {
         return field.isAnnotationPresent(EntityID.class);
     }
     public boolean isEntityPK() {
-        return directives.contains(EntityPK.class);
+        return field.isAnnotationPresent(EntityPK.class);
     }
 
     protected void fillDefaultValues(RepoEntity instance) {

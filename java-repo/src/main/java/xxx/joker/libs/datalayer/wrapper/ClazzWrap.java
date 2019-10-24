@@ -6,10 +6,7 @@ import xxx.joker.libs.core.utils.JkConvert;
 import xxx.joker.libs.core.utils.JkStrings;
 import xxx.joker.libs.datalayer.config.RepoConfig;
 import xxx.joker.libs.datalayer.config.RepoCtx;
-import xxx.joker.libs.datalayer.design.EntityCreationTm;
-import xxx.joker.libs.datalayer.design.EntityField;
-import xxx.joker.libs.datalayer.design.EntityID;
-import xxx.joker.libs.datalayer.design.RepoEntity;
+import xxx.joker.libs.datalayer.design.*;
 import xxx.joker.libs.datalayer.exceptions.RepoError;
 
 import java.lang.reflect.Field;
@@ -143,6 +140,7 @@ public class ClazzWrap {
 
         // Add all @EntityField fields
         fields = JkReflection.getFieldsByAnnotation(eClazz, EntityField.class);
+        fields.addAll(JkReflection.getFieldsByAnnotation(eClazz, EntityPK.class));
         if(fields.isEmpty()) {
             throw new RepoError("No fields annotated with '@EntityField' found in class {}", eClazz.getSimpleName());
         }
