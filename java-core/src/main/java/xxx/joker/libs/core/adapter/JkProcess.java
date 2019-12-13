@@ -1,8 +1,8 @@
 package xxx.joker.libs.core.adapter;
 
 import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.utils.JkStrings;
+import xxx.joker.libs.core.lambda.JkStreams;
+import xxx.joker.libs.core.util.JkStrings;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static xxx.joker.libs.core.utils.JkStrings.strf;
+import static xxx.joker.libs.core.util.JkStrings.strf;
 
 public class JkProcess {
 
@@ -30,7 +30,7 @@ public class JkProcess {
     }
 
     public static JkProcess execute(String command, Object... params) {
-        return execute(Paths.get(""), command, params);
+        return execute(Paths.get("").toAbsolutePath(), command, params);
     }
     public static JkProcess execute(Path baseFolder, String command, Object... params) {
         try {

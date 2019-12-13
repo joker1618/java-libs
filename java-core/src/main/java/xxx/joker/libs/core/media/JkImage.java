@@ -1,16 +1,16 @@
 package xxx.joker.libs.core.media;
 
 import javafx.scene.image.Image;
-import xxx.joker.libs.core.files.JkFiles;
-import xxx.joker.libs.core.format.JkFormattable;
-import xxx.joker.libs.core.utils.JkStrings;
+import xxx.joker.libs.core.file.JkFiles;
+import xxx.joker.libs.core.format.JkSortFormattable;
+import xxx.joker.libs.core.util.JkStrings;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static xxx.joker.libs.core.utils.JkStrings.strf;
+import static xxx.joker.libs.core.util.JkStrings.strf;
 
-public class JkImage implements JkFormattable {
+public class JkImage extends JkSortFormattable<JkImage> {
 
     private static final String FIELD_SEP = "**";
 

@@ -1,0 +1,33 @@
+*** JkRepo ***
+
+DESCRIPTION:
+
+Framework to manage the data layer.
+
+To create a class manageable from the framework:
+- the class must extends 'RepoEntity'
+- every field managed must be annotated with @EntityField or @EntityPK or @ForeignID
+- one or more fields must be annotated with 'EntityPK' (see constraints below)
+
+PRIMARY KEY
+The PK of an entity is very important: equals(), hashcode() and compareTo() methods use the it
+
+It is created as follow:
+A) if the class is annotated with @NoPrimaryKey the entity ID will be used as a PK
+B) else the fields annotated with @EntityPK will be used
+
+Constraint:
+1. if @NoPrimaryKey is used, the used of @EntityPK is denied (and viceversa)
+2. A field @EntityPK must be of SIMPLE type
+
+Important:
+*** @EntityPK used with null fields will cause a problem
+
+DEPENDENCIES
+
+- For struct types that have as a generic child a RepoEntity:
+    1. Collections must be of RepoEntity (no nested Collection/Map)
+    2. Map must have a key of simple type, and a value of simple type or Collection<simple type>
+
+
+

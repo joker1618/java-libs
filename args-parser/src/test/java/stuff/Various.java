@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import java.lang.reflect.Field;
 
-import static xxx.joker.libs.core.utils.JkConsole.display;
+import static xxx.joker.libs.core.util.JkConsole.display;
 
 public class Various {
 

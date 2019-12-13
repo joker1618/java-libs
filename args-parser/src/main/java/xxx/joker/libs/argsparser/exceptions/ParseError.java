@@ -4,7 +4,7 @@ import xxx.joker.libs.argsparser.service.ArgWrapper;
 import xxx.joker.libs.argsparser.service.CmdWrapper;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 
-import static xxx.joker.libs.core.utils.JkStrings.strf;
+import static xxx.joker.libs.core.util.JkStrings.strf;
 
 public class ParseError extends JkRuntimeException {
 

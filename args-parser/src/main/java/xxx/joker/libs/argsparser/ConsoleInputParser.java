@@ -14,11 +14,11 @@ import xxx.joker.libs.argsparser.service.DesignService;
 import xxx.joker.libs.argsparser.service.DesignServiceImpl;
 import xxx.joker.libs.core.datetime.JkDates;
 import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.files.JkFiles;
-import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.runtimes.JkReflection;
-import xxx.joker.libs.core.tests.JkTests;
-import xxx.joker.libs.core.utils.JkConvert;
+import xxx.joker.libs.core.file.JkFiles;
+import xxx.joker.libs.core.lambda.JkStreams;
+import xxx.joker.libs.core.runtime.JkReflection;
+import xxx.joker.libs.core.test.JkTests;
+import xxx.joker.libs.core.util.JkConvert;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -157,7 +157,7 @@ public class ConsoleInputParser implements InputParser {
             try {
                 fieldValue = parseInputValues(co, values, classCheck, classConverter);
             } catch(ParseError err) {
-                throw new ParseError(cw, aw, err.getErrorMex());
+                throw new ParseError(cw, aw, err.getMessage());
             }
         }
 

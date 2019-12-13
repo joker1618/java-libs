@@ -1,7 +1,7 @@
 package xxx.joker.libs.core.adapter;
 
 import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.file.JkFiles;
 
 import java.io.IOException;
 import java.nio.file.Files;

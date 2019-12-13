@@ -4,7 +4,7 @@ import xxx.joker.libs.argsparser.design.classTypes.JkArgsTypes;
 import xxx.joker.libs.argsparser.design.classTypes.JkCommands;
 import xxx.joker.libs.argsparser.design.descriptors.COption;
 import xxx.joker.libs.argsparser.design.descriptors.CParam;
-import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.core.lambda.JkStreams;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,8 +2,10 @@ package spikes;
 
 
 import org.junit.Test;
-import xxx.joker.libs.core.lambdas.JkStreams;
+import xxx.joker.libs.core.datetime.JkDateTime;
+import xxx.joker.libs.core.lambda.JkStreams;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.nio.file.Path;
@@ -11,8 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static xxx.joker.libs.core.utils.JkConsole.display;
-import static xxx.joker.libs.core.utils.JkStrings.strf;
+import static xxx.joker.libs.core.util.JkConsole.display;
+import static xxx.joker.libs.core.util.JkStrings.strf;
 
 public class GetListElemType {
 
@@ -21,12 +23,10 @@ public class GetListElemType {
     List<String> stringList;
     List<Integer> integerList;
     Map<Integer, Path> mappa;
+    Map<JkDateTime, List<File>> mappa2;
 
     @Test
     public void getElemType() throws Exception {
-        ParameterizedType strGen = (ParameterizedType) GetListElemType.class.getDeclaredField("str").getGenericType();
-        List<? extends Class<?>> cl = JkStreams.map(Arrays.asList(strGen.getActualTypeArguments()), t -> (Class<?>) t);
-        display("str  {}\n", cl);
         Field stringListField = GetListElemType.class.getDeclaredField("stringList");
         ParameterizedType stringListType = (ParameterizedType) stringListField.getGenericType();
         Class<?>[] arr = JkStreams.map(Arrays.asList(stringListType.getActualTypeArguments()), t -> (Class<?>) t).toArray(new Class<?>[0]);
@@ -49,9 +49,15 @@ public class GetListElemType {
 
         Field mapfielf = GetListElemType.class.getDeclaredField("mappa");
         ParameterizedType mappapt = (ParameterizedType) mapfielf.getGenericType();
-        Class<?> mlc1 = (Class<?>) mappapt.getActualTypeArguments()[0];
-        Class<?> mlc2 = (Class<?>) mappapt.getActualTypeArguments()[1];
-        System.out.println(strf("Map<{}, {}>", mlc1.getSimpleName(), mlc2.getSimpleName()));
+        Class<?> mlc1_1 = (Class<?>) mappapt.getActualTypeArguments()[0];
+        Class<?> mlc1_2 = (Class<?>) mappapt.getActualTypeArguments()[1];
+        System.out.println(strf("Map<{}, {}>", mlc1_1.getSimpleName(), mlc1_2.getSimpleName()));
+
+        Field mapfielf2 = GetListElemType.class.getDeclaredField("mappa2");
+        ParameterizedType mappapt2 = (ParameterizedType) mapfielf2.getGenericType();
+        Class<?> mlc2_1 = (Class<?>) mappapt2.getActualTypeArguments()[0];
+        Class<?> mlc2_2 = (Class<?>) ((ParameterizedType) mappapt2.getActualTypeArguments()[1]).getActualTypeArguments()[0];
+        System.out.println(strf("Map<{}, List<{}>>", mlc2_1.getSimpleName(), mlc2_2.getSimpleName()));
 
     }
 }

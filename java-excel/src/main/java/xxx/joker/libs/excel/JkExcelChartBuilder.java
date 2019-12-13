@@ -10,8 +10,8 @@ import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.*;
 import org.apache.poi.xssf.usermodel.charts.XSSFChartLegend;
 import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.objects.JkArea;
+import xxx.joker.libs.core.lambda.JkStreams;
+import xxx.joker.libs.core.object.JkArea;
 
 import java.awt.*;
 import java.util.ArrayList;

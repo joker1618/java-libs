@@ -6,3 +6,6 @@ target
 java-repo/src/test/resources/db
 temp-agenda/agl.sh
 v.patch
+
+dbsimple
+scenicView.properties

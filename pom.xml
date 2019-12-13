@@ -7,16 +7,12 @@
     <parent>
         <groupId>xxx.joker.parent</groupId>
         <artifactId>java-8-base-parent</artifactId>
-        <version>1.0</version>
+        <version>3.0</version>
     </parent>
-
-    <properties>
-        <java.libs.version>2.0</java.libs.version>
-    </properties>
 
     <groupId>xxx.joker.libs</groupId>
     <artifactId>java-libs</artifactId>
-    <version>2.0</version>
+    <version>3.0</version>
 
     <modules>
         <module>java-core</module>

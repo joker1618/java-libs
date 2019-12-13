@@ -2,9 +2,9 @@ package xxx.joker.libs.core.web;
 
 import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.files.JkFiles;
-import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.utils.JkBytes;
+import xxx.joker.libs.core.file.JkFiles;
+import xxx.joker.libs.core.lambda.JkStreams;
+import xxx.joker.libs.core.util.JkBytes;
 
 import java.io.*;
 import java.net.URL;

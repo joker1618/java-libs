@@ -1,22 +1,16 @@
 package various;
 
+import javafx.beans.property.SimpleBooleanProperty;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.runtimes.JkReflection;
-import xxx.joker.libs.datalayer.design.EntityPK;
-import xxx.joker.libs.datalayer.design.ResourcePath;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedArrayType;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Pattern;
 
-import static xxx.joker.libs.core.runtimes.JkReflection.isInstanceOf;
-import static xxx.joker.libs.core.runtimes.JkReflection.isOfClass;
-import static xxx.joker.libs.core.utils.JkConsole.display;
+import static xxx.joker.libs.core.runtime.JkReflection.isInstanceOf;
+import static xxx.joker.libs.core.runtime.JkReflection.isOfClass;
+import static xxx.joker.libs.core.util.JkConsole.display;
 
 public class Misc {
 
@@ -27,25 +21,16 @@ public class Misc {
         display("{}", clazz.getName());
         display("{}", clazz2.getName());
         display("{}", clazz == int.class);
-    }
+        display(StringUtils.equals(null, null));
+        Path p1 = Paths.get("").toAbsolutePath().resolve("pippo");
+        Path p2 = Paths.get("").toAbsolutePath().resolve("pluto");
+        display(p1.resolve(p2));
 
-    @Test
-    public void t22t() {
-        Class<?> a1 = ResourcePath.class;
-        Class<?> a2 = EntityPK.class;
-        List<Class<?>> alist = Arrays.asList(a1, a2);
-        display("a1  {}  {}  {}  {}", a1 == ResourcePath.class, a1.equals(ResourcePath.class),
-                isOfClass(a1, ResourcePath.class), isInstanceOf(a1, ResourcePath.class)
-        );
-        display("a1  {}  {}  {}  {}  {}", alist.contains(a1), alist.contains(ResourcePath.class),
-                JkStreams.count(alist, ac -> isOfClass(ResourcePath.class)),
-                JkStreams.count(alist, ac -> ac == ResourcePath.class),
-                JkStreams.count(alist, ac -> ac.equals(ResourcePath.class))
-        );
-
-        List<Class<?>> alist2 = Arrays.asList(EntityPK.class, ResourcePath.class);
-        Class<?> ac = alist2.get(0);
-        display("a2  {}", alist2.contains(ac));
+        SimpleBooleanProperty sop = new SimpleBooleanProperty(true);
+        sop.addListener((obs,o,n) -> display("fede"));
+        sop.set(false);
+        sop.set(false);
+        sop.set(true);
 
     }
 

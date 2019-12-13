@@ -2,7 +2,7 @@ package xxx.joker.libs.argsparser.exceptions;
 
 import xxx.joker.libs.core.exception.JkRuntimeException;
 
-import static xxx.joker.libs.core.utils.JkStrings.strf;
+import static xxx.joker.libs.core.util.JkStrings.strf;
 
 public class DesignError extends JkRuntimeException {
 

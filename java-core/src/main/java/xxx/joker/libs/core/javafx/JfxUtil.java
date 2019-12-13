@@ -4,17 +4,22 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import xxx.joker.libs.core.exception.JkRuntimeException;
-import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.file.JkFiles;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
+
+import static xxx.joker.libs.core.util.JkStrings.strf;
 
 public class JfxUtil {
 
@@ -50,5 +55,17 @@ public class JfxUtil {
 		} catch (IOException e) {
 			throw new JkRuntimeException(e);
 		}
+	}
+
+	public static boolean alertConfirm(String headerFormat, Object... params) {
+		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+		alert.setHeaderText(strf(headerFormat, params));
+		Optional<ButtonType> resp = alert.showAndWait();
+		return resp.isPresent() && resp.get() == ButtonType.OK;
+	}
+	public static void alertInfo(String headerFormat, Object... params) {
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setHeaderText(strf(headerFormat, params));
+		alert.showAndWait();
 	}
 }

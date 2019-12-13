@@ -1,0 +1,12 @@
+1 - file name -> from'jkrepo' to 'jkRepo'
+2 - placeholders -> from @_VAL_@ to @VAL@
+3 - file name -> use "." instead "#"
+4 - fkey.simple && {}.KEYWORD_JKREPO
+5 - fkeys file format
+
+
+
+
+a1 - added size to RepoResource
+
+

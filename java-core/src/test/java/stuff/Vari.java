@@ -1,13 +1,13 @@
 package stuff;
 
 import org.junit.Test;
-import xxx.joker.libs.core.runtimes.JkReflection;
+import xxx.joker.libs.core.runtime.JkReflection;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import static xxx.joker.libs.core.utils.JkConsole.display;
+import static xxx.joker.libs.core.util.JkConsole.display;
 
 public class Vari {
 

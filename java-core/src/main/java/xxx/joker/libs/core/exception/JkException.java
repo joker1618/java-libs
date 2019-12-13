@@ -3,7 +3,7 @@ package xxx.joker.libs.core.exception;
 import java.util.ArrayList;
 import java.util.List;
 
-import static xxx.joker.libs.core.utils.JkStrings.strf;
+import static xxx.joker.libs.core.util.JkStrings.strf;
 
 /**
  * Created by f.barbano on 19/11/2017.
@@ -29,11 +29,6 @@ public class JkException extends Exception implements JkThrowable {
 
 	public JkException(Throwable cause) {
 		super(cause);
-	}
-
-	@Override
-	public String getErrorMex() {
-		return super.getMessage();
 	}
 
 	@Override

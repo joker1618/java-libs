@@ -1,6 +1,6 @@
 package xxx.joker.libs.core.exception;
 
-import static xxx.joker.libs.core.utils.JkStrings.strf;
+import static xxx.joker.libs.core.util.JkStrings.strf;
 
 abstract class JkThrowableUtil {
 

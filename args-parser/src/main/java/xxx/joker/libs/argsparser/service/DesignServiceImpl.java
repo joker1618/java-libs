@@ -8,9 +8,9 @@ import xxx.joker.libs.argsparser.design.classTypes.JkAbstractArgs;
 import xxx.joker.libs.argsparser.design.classTypes.JkArgsTypes;
 import xxx.joker.libs.argsparser.design.classTypes.JkCommands;
 import xxx.joker.libs.argsparser.exceptions.DesignError;
-import xxx.joker.libs.core.files.JkEncryption;
-import xxx.joker.libs.core.files.JkFiles;
-import xxx.joker.libs.core.runtimes.JkRuntime;
+import xxx.joker.libs.core.file.JkEncryption;
+import xxx.joker.libs.core.file.JkFiles;
+import xxx.joker.libs.core.runtime.JkRuntime;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

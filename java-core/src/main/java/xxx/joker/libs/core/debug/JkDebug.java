@@ -3,8 +3,8 @@ package xxx.joker.libs.core.debug;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.format.JkOutput;
-import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.runtimes.JkRuntime;
+import xxx.joker.libs.core.lambda.JkStreams;
+import xxx.joker.libs.core.runtime.JkRuntime;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static xxx.joker.libs.core.utils.JkConsole.display;
-import static xxx.joker.libs.core.utils.JkStrings.strf;
+import static xxx.joker.libs.core.util.JkConsole.display;
+import static xxx.joker.libs.core.util.JkStrings.strf;
 
 public class JkDebug {
 
@@ -22,10 +22,10 @@ public class JkDebug {
     private static final List<DTimer> closed = new ArrayList<>();
 
 
-    public static long startTimerNum(int stepNum) {
-        return startTimer("STEP {}", stepNum);
+    public static long start(int stepNum) {
+        return start("STEP {}", stepNum);
     }
-    public static long startTimer(String label, Object... params) {
+    public static long start(String label, Object... params) {
         synchronized (opened) {
             long id = idSeq.getAndIncrement();
             opened.put(id, new DTimer(id, strf(label, params)));
@@ -33,12 +33,12 @@ public class JkDebug {
         }
     }
 
-    public static void stopTimerNum(int stepNum) {
-        stopTimer("STEP {}", stepNum);
+    public static void stop(int stepNum) {
+        stop("STEP {}", stepNum);
     }
-    public static void stopAndStartNum(int numToStop, int numToStart) {
-        stopTimer("STEP {}", numToStop);
-        startTimer("STEP {}", numToStart);
+    public static void stopStart(int numToStop, int numToStart) {
+        stop("STEP {}", numToStop);
+        start("STEP {}", numToStart);
     }
     public static void stopTimerID(long id) {
         synchronized (opened) {
@@ -50,11 +50,11 @@ public class JkDebug {
     /**
      * Close the last timer with the same label
      */
-    public static void stopAndStartTimer(String labelToStop, String labelToStart) {
-        stopTimer(labelToStop);
-        startTimer(labelToStart);
+    public static void stopStart(String labelToStop, String labelToStart) {
+        stop(labelToStop);
+        start(labelToStart);
     }
-    public static void stopTimer(String label, Object... params) {
+    public static void stop(String label, Object... params) {
         synchronized (opened) {
             String lbl = strf(label, params);
             for(Long id : opened.keySet()) {
@@ -86,7 +86,7 @@ public class JkDebug {
                 long sum = JkStreams.sumLong(dtList, dt -> dt.getTimer().elapsed());
                 JkDuration durTot = JkDuration.of(sum);
 
-                String str = strf("{}|{}", lbl, durTot.toStringElapsed());
+                String str = strf("{}|{}", lbl, durTot.strElapsed());
                 if(totMilli > 0L) {
                     int perc = (int)(sum * 100d / totMilli);
                     str += strf("|%3s%%", perc);
@@ -96,7 +96,7 @@ public class JkDebug {
                     multi = true;
                     double each = (double) sum / dtList.size();
                     JkDuration durEach = JkDuration.of(each);
-                    str += strf("|{}|{}", dtList.size(), durEach.toStringElapsed());
+                    str += strf("|{}|{}", dtList.size(), durEach.strElapsed());
                     if(totMilli > 0L) {
                         double perc2 = 100d * each / totMilli;
                         str += strf("|%6s%%", strf("%.2f", perc2));
@@ -107,7 +107,7 @@ public class JkDebug {
             }
 
             if(showTotJvmTime) {
-                lines.add(strf("TOTAL|{}", JkDuration.toStringElapsed(totMilli)));
+                lines.add(strf("TOTAL|{}", JkDuration.strElapsed(totMilli)));
             }
 
             String header = "LABEL|TIME";

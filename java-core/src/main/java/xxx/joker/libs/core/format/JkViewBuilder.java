@@ -1,13 +1,13 @@
 package xxx.joker.libs.core.format;
 
 import org.apache.commons.lang3.StringUtils;
-import xxx.joker.libs.core.enums.JkAlign;
-import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.utils.JkStrings;
+import xxx.joker.libs.core.enumerative.JkAlign;
+import xxx.joker.libs.core.lambda.JkStreams;
+import xxx.joker.libs.core.util.JkStrings;
 
 import java.util.*;
 
-import static xxx.joker.libs.core.utils.JkStrings.strf;
+import static xxx.joker.libs.core.util.JkStrings.strf;
 
 /**
  * Created by f.barbano on 26/05/2018.
@@ -198,51 +198,5 @@ public class JkViewBuilder {
 			return toRet;
 		}
 	}
-
-
-	// todo review
-//	@ToAnalyze
-//	@Deprecated
-//	public JkViewBuilder addColumnRight(String separator, String colValues) {
-//		return addColumnRight(separator, JkStrings.splitList(colValues, StringUtils.LF));
-//	}
-//	@ToAnalyze
-//	@Deprecated
-//	public JkViewBuilder addColumnRight(String separator, List<String> colValues) {
-//		if(lines.isEmpty()) {
-//			lines.addAll(colValues);
-//		} else {
-//			while (lines.size() < colValues.size()) {
-//				lines.add("");
-//			}
-//			while (colValues.size() < lines.size()) {
-//				colValues.add("");
-//			}
-//
-//			List<String> cols = new ArrayList<>();
-//			for(int i = 0; i < lines.size(); i++) {
-//				cols.add(strf("%s%s%s", lines.get(i), separator, colValues.get(i)));
-//			}
-//			lines = cols;
-//		}
-//
-//		return this;
-//	}
-//
-//	@ToAnalyze
-//	@Deprecated
-//	public JkViewBuilder addColumns(String separator, String col1, String col2) {
-//		List<String> colValues1 = JkStrings.splitList(col1.trim(), StringUtils.LF, true);
-//		List<String> colValues2 = JkStrings.splitList(col2.trim(), StringUtils.LF, true);
-//		return addColumns(separator, colValues1, colValues2);
-//	}
-//	@ToAnalyze
-//	@Deprecated
-//	public JkViewBuilder addColumns(String separator, List<String> colValues1, List<String> colValues2) {
-//		addColumnRight(separator, colValues1);
-//		addColumnRight(separator, colValues2);
-//		return this;
-//	}
-//
 
 }

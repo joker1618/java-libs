@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static xxx.joker.libs.core.utils.JkConsole.display;
+import static xxx.joker.libs.core.util.JkConsole.display;
 
 public class TestJkExceptions {
 
@@ -32,10 +32,10 @@ public class TestJkExceptions {
 
 //            StringBuilder sb = new StringBuilder();
 //            sb.append("Exception toString()\n");
-//            sb.append(strfLog("{}\n", ex));
+//            sb.append(strLog("{}\n", ex));
 //            sb.append("\n-----------------------\n\n");
 //            sb.append("Exception getMessage()\n");
-//            sb.append(strfLog("{}\n", ex.getMessage()));
+//            sb.append(strLog("{}\n", ex.getMessage()));
 //            display("{}", sb.toString());
 //
 //            ex.printStackTrace(System.out);

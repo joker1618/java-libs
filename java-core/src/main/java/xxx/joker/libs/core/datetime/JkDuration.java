@@ -1,17 +1,16 @@
 package xxx.joker.libs.core.datetime;
 
 import org.apache.commons.lang3.StringUtils;
-import xxx.joker.libs.core.format.JkFormattable;
-import xxx.joker.libs.core.utils.JkStrings;
+import xxx.joker.libs.core.format.JkSortFormattable;
+import xxx.joker.libs.core.util.JkStrings;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.Objects;
 
 import static java.time.temporal.ChronoUnit.*;
-import static xxx.joker.libs.core.utils.JkStrings.strf;
+import static xxx.joker.libs.core.util.JkStrings.strf;
 
-public class JkDuration implements JkFormattable, Comparable<JkDuration> {
+public class JkDuration extends JkSortFormattable<JkDuration> {
     private long totalMillis;
 
     private int hours;
@@ -76,16 +75,16 @@ public class JkDuration implements JkFormattable, Comparable<JkDuration> {
         return of(System.currentTimeMillis() - startMillis);
     }
 
-    public String toStringElapsed() {
-        return toStringElapsed(true);
+    public String strElapsed() {
+        return strElapsed(true);
     }
-    public String toStringElapsed(boolean showMilli) {
-        return toStringElapsed(showMilli, SECONDS);
+    public String strElapsed(boolean showMilli) {
+        return strElapsed(showMilli, SECONDS);
     }
-    public String toStringElapsed(ChronoUnit minUnit) {
-        return toStringElapsed(true, minUnit);
+    public String strElapsed(ChronoUnit minUnit) {
+        return strElapsed(true, minUnit);
     }
-    public String toStringElapsed(boolean showMilli, ChronoUnit minUnit) {
+    public String strElapsed(boolean showMilli, ChronoUnit minUnit) {
         StringBuilder sb = new StringBuilder();
 
         if(getHours() > 0 || minUnit == HOURS) {
@@ -112,17 +111,17 @@ public class JkDuration implements JkFormattable, Comparable<JkDuration> {
         return sb.toString();
     }
 
-    public static String toStringElapsed(long milli) {
-        return JkDuration.of(milli).toStringElapsed();
+    public static String strElapsed(long milli) {
+        return JkDuration.of(milli).strElapsed();
     }
-    public static String toStringElapsed(long milli, boolean showMilli) {
-        return JkDuration.of(milli).toStringElapsed(showMilli);
+    public static String strElapsed(long milli, boolean showMilli) {
+        return JkDuration.of(milli).strElapsed(showMilli);
     }
-    public static String toStringElapsed(long milli, ChronoUnit minUnit) {
-        return JkDuration.of(milli).toStringElapsed(minUnit);
+    public static String strElapsed(long milli, ChronoUnit minUnit) {
+        return JkDuration.of(milli).strElapsed(minUnit);
     }
-    public static String toStringElapsed(long milli, boolean showMilli, ChronoUnit minUnit) {
-        return JkDuration.of(milli).toStringElapsed(showMilli, minUnit);
+    public static String strElapsed(long milli, boolean showMilli, ChronoUnit minUnit) {
+        return JkDuration.of(milli).strElapsed(showMilli, minUnit);
     }
 
     public long toMillis() {
@@ -178,16 +177,4 @@ public class JkDuration implements JkFormattable, Comparable<JkDuration> {
         return (int) (totalMillis - o.toMillis());
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        JkDuration that = (JkDuration) o;
-        return totalMillis == that.totalMillis;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(totalMillis);
-    }
 }

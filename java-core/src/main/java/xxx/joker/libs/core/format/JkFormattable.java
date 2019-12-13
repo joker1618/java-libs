@@ -1,9 +1,9 @@
 package xxx.joker.libs.core.format;
 
 
-import xxx.joker.libs.core.runtimes.JkReflection;
+import xxx.joker.libs.core.runtime.JkReflection;
 
-public interface JkFormattable<T> {
+public interface JkFormattable<T> extends Comparable<T> {
 
     String format();
 

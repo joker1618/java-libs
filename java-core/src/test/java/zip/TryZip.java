@@ -1,8 +1,8 @@
 package zip;
 
 import org.junit.Test;
-import xxx.joker.libs.core.files.JkFiles;
-import xxx.joker.libs.core.files.JkZip;
+import xxx.joker.libs.core.file.JkFiles;
+import xxx.joker.libs.core.file.JkZip;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

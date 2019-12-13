@@ -2,7 +2,7 @@ package xxx.joker.libs.argsparser;
 
 import xxx.joker.libs.argsparser.design.classTypes.JkAbstractArgs;
 import xxx.joker.libs.argsparser.exceptions.ParseError;
-import xxx.joker.libs.core.utils.JkStrings;
+import xxx.joker.libs.core.util.JkStrings;
 
 import java.util.ArrayList;
 import java.util.List;

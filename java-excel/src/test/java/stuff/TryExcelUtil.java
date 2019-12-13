@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-import static xxx.joker.libs.core.utils.JkConsole.display;
+import static xxx.joker.libs.core.util.JkConsole.display;
 
 public class TryExcelUtil {
 

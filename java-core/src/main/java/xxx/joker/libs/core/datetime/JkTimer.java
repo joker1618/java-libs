@@ -42,8 +42,8 @@ public class JkTimer {
         return endTm != -1L;
     }
 
-    public String toStringElapsed() {
-        return JkDuration.toStringElapsed(elapsed());
+    public String strElapsed() {
+        return JkDuration.strElapsed(elapsed());
     }
 
     public long getStartTm() {

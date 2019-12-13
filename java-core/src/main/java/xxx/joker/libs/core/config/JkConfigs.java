@@ -3,10 +3,10 @@ package xxx.joker.libs.core.config;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.libs.core.files.JkFiles;
-import xxx.joker.libs.core.lambdas.JkStreams;
-import xxx.joker.libs.core.utils.JkConvert;
-import xxx.joker.libs.core.utils.JkStrings;
+import xxx.joker.libs.core.file.JkFiles;
+import xxx.joker.libs.core.lambda.JkStreams;
+import xxx.joker.libs.core.util.JkConvert;
+import xxx.joker.libs.core.util.JkStrings;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -16,15 +16,24 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static xxx.joker.libs.core.utils.JkStrings.strf;
+import static xxx.joker.libs.core.util.JkStrings.strf;
 
 /**
- * Created by f.barbano on 12/10/2017.
+ * Manage properties.
+ *
+ * In the property files is allowed the use of variables:
+ * - environment variables:	${env:PROP_KEY}
+ * - other property key:	${PROP_KEY}
+ *
+ * Every time a property is added, all the properties are re-evaluated to resolve the variables#
+ *
  */
 
 public class JkConfigs {
 
 	private static final Logger LOG = LoggerFactory.getLogger(JkConfigs.class);
+
+	private static JkConfigs appConfigs;
 
 	protected Map<String, Prop> configMap;
 
@@ -34,6 +43,17 @@ public class JkConfigs {
 
 	public JkConfigs() {
 		this.configMap = Collections.synchronizedMap(new HashMap<>());
+	}
+	public JkConfigs(Path configFile) {
+		this();
+		loadConfigFile(configFile);
+	}
+
+	public static synchronized JkConfigs getAppConfigs() {
+		if(appConfigs == null) {
+			appConfigs = new JkConfigs();
+		}
+		return appConfigs;
 	}
 
 	public boolean loadConfigFile(Path configFile) {
@@ -78,8 +98,7 @@ public class JkConfigs {
 		// replace environment variables  ${env:var}
 		evaluateEnvironmentVariables();
 
-		// replace variables
-		// #var#  and  ${var}  allowed
+		// replace variables ${var}
 		evaluateVariables();
 	}
 
@@ -201,29 +220,18 @@ public class JkConfigs {
 			}
 		} while (changed);
 	}
-	// return the next variable found:   #var#  or  ${var}
+	// return the next variable found:   ${var}
 	private List<Var> getVariables(String value) {
 		String str = value;
-		String varName;
 		boolean go = true;
 		List<Var> toRet = new ArrayList<>();
 
 		while(go) {
-			Var var = null;
-
-			varName = StringUtils.substringBetween(str, "#", "#");
-			if(StringUtils.isNotBlank(varName)) {
-				var = new Var(varName, "#" + varName + "#");
-			} else {
-				varName = StringUtils.substringBetween(str, "${", "}");
-				if(StringUtils.isNotBlank(varName)) {
-					var = new Var(varName, "${" + varName + "}");
-				}
-			}
-
-			if(var == null) {
+			String varName = StringUtils.substringBetween(str, "${", "}");
+			if(StringUtils.isBlank(varName)) {
 				go = false;
 			} else {
+				Var var = new Var(varName);
 				toRet.add(var);
 				int nextStart = str.indexOf(var.placeholder) + var.placeholder.length();
 				str = str.substring(nextStart);
@@ -233,25 +241,16 @@ public class JkConfigs {
 		return toRet;
 	}
 	private boolean containsVariables(String value) {
-		String varName = StringUtils.substringBetween(value, "#", "#");
-		if(StringUtils.isNotBlank(varName)) {
-			return true;
-		}
-
-		varName = StringUtils.substringBetween(value, "${", "}");
-		if(StringUtils.isNotBlank(varName)) {
-			return true;
-		}
-
-		return false;
+		String varName = StringUtils.substringBetween(value, "${", "}");
+		return StringUtils.isNotBlank(varName);
 	}
 
 	private class Var {
 		String varName;
 		String placeholder;
-		Var(String varName, String placeholder) {
+		Var(String varName) {
 			this.varName = varName;
-			this.placeholder = placeholder;
+			this.placeholder = "${" + varName + "}";
 		}
 	}
 

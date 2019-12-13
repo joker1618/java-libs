@@ -1,12 +1,12 @@
 package xxx.joker.libs.core.datetime;
 
-import xxx.joker.libs.core.format.JkFormattable;
+import org.apache.commons.lang3.StringUtils;
+import xxx.joker.libs.core.format.JkSortFormattable;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
 
-public class JkDateTime implements Comparable<JkDateTime>, JkFormattable<JkDateTime> {
+public class JkDateTime extends JkSortFormattable<JkDateTime> {
 
     private static final DateTimeFormatter DEF_FMT = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
@@ -35,7 +35,7 @@ public class JkDateTime implements Comparable<JkDateTime>, JkFormattable<JkDateT
         return new JkDateTime(LocalDateTime.now());
     }
 
-    public long getTotalMillis() {
+    public long totalMillis() {
         return ldt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
@@ -57,7 +57,10 @@ public class JkDateTime implements Comparable<JkDateTime>, JkFormattable<JkDateT
 
     @Override
     public String format() {
-        return ldt.format(DEF_FMT);
+        String format = ldt.format(DEF_FMT);
+        if(format.indexOf('.') == -1)
+            format += ".";
+        return StringUtils.rightPad(format, 23, "0");
     }
 
     public String toAod() {
@@ -74,24 +77,6 @@ public class JkDateTime implements Comparable<JkDateTime>, JkFormattable<JkDateT
     public JkDateTime parse(String str) {
         init(LocalDateTime.parse(str, DEF_FMT));
         return this;
-    }
-
-    @Override
-    public String toString() {
-        return format();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        JkDateTime that = (JkDateTime) o;
-        return compareTo(that) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(ldt);
     }
 
     private void init(LocalDateTime ldt) {

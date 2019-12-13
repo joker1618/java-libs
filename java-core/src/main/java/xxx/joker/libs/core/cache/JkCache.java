@@ -25,7 +25,7 @@ public class JkCache<K, V> {
         return value;
     }
 
-    public synchronized void add(K key, V value) {
+    public synchronized void put(K key, V value) {
         cacheMap.put(key, value);
     }
 

@@ -3,12 +3,12 @@ package dev;
 import org.junit.Test;
 import xxx.joker.libs.core.datetime.JkDuration;
 import xxx.joker.libs.core.datetime.JkTimer;
-import xxx.joker.libs.core.files.JkFiles;
+import xxx.joker.libs.core.file.JkFiles;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static xxx.joker.libs.core.utils.JkConsole.display;
+import static xxx.joker.libs.core.util.JkConsole.display;
 
 public class TestJkFiles {
 
@@ -52,7 +52,7 @@ public class TestJkFiles {
         Path outputPath = Paths.get("C:\\Users\\f.barbano\\Desktop\\to");
         JkTimer timer = new JkTimer();
         JkFiles.copy(inputPath, outputPath, true);
-        display("Copy completed in {}", JkDuration.toStringElapsed(timer.elapsed()));
+        display("Copy completed in {}", JkDuration.strElapsed(timer.elapsed()));
     }
 
     @Test
