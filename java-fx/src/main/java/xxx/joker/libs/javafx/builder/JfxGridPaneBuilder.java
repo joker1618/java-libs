@@ -1,9 +1,10 @@
-package xxx.joker.libs.core.javafx;
+package xxx.joker.libs.javafx.builder;
 
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import xxx.joker.libs.core.util.JkStrings;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +22,7 @@ public class JfxGridPaneBuilder {
         return add(row, col, 1, 1, lbl, params);
     }
     public JfxGridPaneBuilder add(int row, int col, int rowSpan, int colSpan, String lbl, Object... params) {
-        return add(row, col, rowSpan, colSpan, new Label(strf(lbl, params)));
+        return add(row, col, rowSpan, colSpan, new Label(JkStrings.strf(lbl, params)));
     }
     public JfxGridPaneBuilder add(int row, int col, Node node) {
         return add(row, col, 1, 1, node);
@@ -49,8 +50,9 @@ public class JfxGridPaneBuilder {
         return this;
     }
 
-    public GridPane createGridPane() {
+    public GridPane createGridPane(String... styleClasses) {
         GridPane gp = new GridPane();
+        gp.getStyleClass().addAll(styleClasses);
         createGridPane(gp);
         return gp;
     }

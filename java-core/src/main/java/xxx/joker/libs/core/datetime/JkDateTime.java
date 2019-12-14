@@ -1,12 +1,12 @@
 package xxx.joker.libs.core.datetime;
 
 import org.apache.commons.lang3.StringUtils;
-import xxx.joker.libs.core.format.JkSortFormattable;
+import xxx.joker.libs.core.format.JkFormattableDefault;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
-public class JkDateTime extends JkSortFormattable<JkDateTime> {
+public class JkDateTime extends JkFormattableDefault<JkDateTime> {
 
     private static final DateTimeFormatter DEF_FMT = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 

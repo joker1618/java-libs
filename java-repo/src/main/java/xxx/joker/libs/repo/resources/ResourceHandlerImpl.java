@@ -15,6 +15,7 @@ import xxx.joker.libs.repo.exceptions.RepoError;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -65,7 +66,7 @@ class ResourceHandlerImpl implements ResourceHandler {
         Path outPath = ctx.getResourcePath(sourceMd5, JkFiles.getExtension(sourcePath), resType);
         if(addType == AddType.MOVE) {
             JkFiles.move(sourcePath, outPath);
-        } else {
+        } else if(!Files.exists(outPath)){
             JkFiles.copy(sourcePath, outPath);
         }
         long size = JkFiles.sizeOf(outPath);
@@ -84,7 +85,11 @@ class ResourceHandlerImpl implements ResourceHandler {
 
     @Override
     public void exportResources(Path outFolder, RepoTags tags) {
-        List<RepoResource> resources = findResources(tags);
+        exportResources(outFolder, findResources(tags));
+    }
+
+    @Override
+    public void exportResources(Path outFolder, Collection<RepoResource> resources) {
         for (RepoResource res : resources) {
             String outName = strf("{}/{}/{}{}", res.getType(), res.getTags().format(), res.getName(), JkFiles.getExtension(res.getPath(), true));
             JkFiles.copy(res.getPath(), outFolder.resolve(outName));
@@ -96,7 +101,6 @@ class ResourceHandlerImpl implements ResourceHandler {
         List<Path> used = map(resources, RepoResource::getPath);
         List<Path> unused = JkFiles.findFiles(ctx.getResourcesFolder(), true);
         unused.removeIf(p -> JkFiles.containsPath(used, p));
-        LOG.info("Start removing {} unused resource files", unused.size());
         unused.forEach(JkFiles::delete);
         LOG.info("Removed {} unused resource files", unused.size());
         return unused;

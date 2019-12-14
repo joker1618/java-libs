@@ -19,13 +19,11 @@ public class ProxySet implements InvocationHandler {
     private final ReadWriteLock lock;
     private final Function<RepoEntity, Boolean> addFunction;
     private final TreeSet<RepoEntity> sourceSet;
-    private final Consumer<Long> addIndexConsumer;
 
-    public ProxySet(ReadWriteLock lock, Collection<RepoEntity> sourceData, Function<RepoEntity, Boolean> addFunction, Consumer<Long> addIndexConsumer) {
+    public ProxySet(ReadWriteLock lock, Collection<RepoEntity> sourceData, Function<RepoEntity, Boolean> addFunction) {
         this.lock = lock;
         this.addFunction = addFunction;
         this.sourceSet = new TreeSet<>(sourceData);
-        this.addIndexConsumer = addIndexConsumer;
     }
 
     @Override
@@ -40,21 +38,13 @@ public class ProxySet implements InvocationHandler {
             if ("add".equals(methodName)) {
                 RepoEntity e = (RepoEntity) args[0];
                 addFunction.apply(e);
-                if(sourceSet.add(e)){
-                    addIndexConsumer.accept(e.getEntityId());
-                    return true;
-                }
-                return false;
+                return sourceSet.add(e);
             }
 
             if ("addAll".equals(methodName)) {
                 Collection<RepoEntity> coll = (Collection<RepoEntity>) args[0];
                 coll.forEach(addFunction::apply);
-                if(sourceSet.addAll(coll)) {
-                    filter(coll, sourceSet::contains).forEach(re -> addIndexConsumer.accept(re.getEntityId()));
-                    return true;
-                }
-                return false;
+                return sourceSet.addAll(coll);
             }
 
             return method.invoke(sourceSet, args);

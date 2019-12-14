@@ -110,10 +110,10 @@ public class TypeWrapper {
         return toString(false);
     }
 
-    public  String toString(boolean useCallSimpleName) {
-        String str = useCallSimpleName ? getTypeClass().getSimpleName() : getTypeClass().getName();
+    public  String toString(boolean useClassSimpleName) {
+        String str = useClassSimpleName ? getTypeClass().getSimpleName() : getTypeClass().getName();
         if(isParametrized()) {
-            String join = JkStreams.join(getParamTypes(), ",", pt -> pt.toString(useCallSimpleName));
+            String join = JkStreams.join(getParamTypes(), ",", pt -> pt.toString(useClassSimpleName));
             str += strf("<{}>", join);
         }
         return str;

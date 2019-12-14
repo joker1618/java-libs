@@ -3,6 +3,7 @@ package xxx.joker.libs.repo.jpa;
 import xxx.joker.libs.repo.config.RepoCtx;
 import xxx.joker.libs.repo.design.RepoEntity;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +20,7 @@ public interface JpaHandler {
     <T extends RepoEntity> Set<T> getDataSet(Class<T> entityClazz);
     Map<Long, RepoEntity> getDataById();
 
-    void initRepoContent(List<RepoEntity> repoData);
+    void initRepoContent(Collection<RepoEntity> repoData);
 
     void clearAll();
 
@@ -29,5 +30,8 @@ public interface JpaHandler {
     String getProperty(String key);
     String setProperty(String key, String value);
     String delProperty(String key);
+
+    void updateDependencies(Collection<? extends RepoEntity> entities);
+    void removeFromDependencies(RepoEntity toRemove, Collection<? extends RepoEntity> entities);
 
 }

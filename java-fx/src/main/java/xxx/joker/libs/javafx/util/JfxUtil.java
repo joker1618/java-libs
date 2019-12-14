@@ -1,4 +1,4 @@
-package xxx.joker.libs.core.javafx;
+package xxx.joker.libs.javafx.util;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.file.JkFiles;
+import xxx.joker.libs.core.util.JkStrings;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
@@ -59,13 +60,14 @@ public class JfxUtil {
 
 	public static boolean alertConfirm(String headerFormat, Object... params) {
 		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-		alert.setHeaderText(strf(headerFormat, params));
+		alert.setHeaderText(JkStrings.strf(headerFormat, params));
 		Optional<ButtonType> resp = alert.showAndWait();
 		return resp.isPresent() && resp.get() == ButtonType.OK;
 	}
+
 	public static void alertInfo(String headerFormat, Object... params) {
 		Alert alert = new Alert(Alert.AlertType.INFORMATION);
-		alert.setHeaderText(strf(headerFormat, params));
+		alert.setHeaderText(JkStrings.strf(headerFormat, params));
 		alert.showAndWait();
 	}
 }

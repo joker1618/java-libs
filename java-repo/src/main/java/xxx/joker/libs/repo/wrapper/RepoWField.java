@@ -35,9 +35,6 @@ public class RepoWField extends FieldWrapper {
     public boolean isEntityPK() {
         return containsAnnotation(EntityPK.class);
     }
-    public boolean isForeignID() {
-        return containsAnnotation(ForeignID.class);
-    }
     public boolean isResourcePath() {
         EntityField ann = field.getAnnotation(EntityField.class);
         return ann != null && ann.refType().equals(RepoConfig.REF_TYPE_FIELD_RESOURCE_PATH);
@@ -65,7 +62,7 @@ public class RepoWField extends FieldWrapper {
                 } else if (isOfClass(TreeSet.class)) {
                     o = new TreeSet<>();
                 } else if (isOfClass(Set.class)) {
-                    o = getParamTypes().get(0).isComparable() ? new TreeSet<>() : new LinkedHashSet<>();
+                    o = getParamType(0).isComparable() ? new TreeSet<>() : new LinkedHashSet<>();
                 }
 
             } else if (isMap()) {
@@ -76,7 +73,7 @@ public class RepoWField extends FieldWrapper {
                 } else if (isOfClass(TreeMap.class)) {
                     o = new TreeMap<>();
                 } else if (isOfClass(Map.class)) {
-                    o = getParamTypes().get(0).isComparable() ? new TreeMap<>() : new LinkedHashMap<>();
+                    o = getParamType(0).isComparable() ? new TreeMap<>() : new LinkedHashMap<>();
                 }
             }
 
@@ -86,22 +83,17 @@ public class RepoWField extends FieldWrapper {
         }
     }
 
-    public Class<?> getCollType() {
-        return isCollection() ? getTypeClass(0) : null;
-    }
-
-
     public List<Class<?>> retrieveEntityParametrizedTypes() {
         return retrieveEntityParametrizedTypes(this);
     }
-
     private List<Class<?>> retrieveEntityParametrizedTypes(TypeWrapper tw) {
         List<Class<?>> toRet = new ArrayList<>();
         if (tw.instanceOf(RepoEntity.class)) {
             toRet.add(tw.getTypeClass());
-        }
-        for (TypeWrapper twChild : tw.getParamTypes()) {
-            toRet.addAll(retrieveEntityParametrizedTypes(twChild));
+        } else if(tw.isParametrized()) {
+            for (TypeWrapper twChild : tw.getParamTypes()) {
+                toRet.addAll(retrieveEntityParametrizedTypes(twChild));
+            }
         }
         return toRet;
     }

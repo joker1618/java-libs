@@ -19,13 +19,11 @@ public class ProxyList implements InvocationHandler {
     private final List<RepoEntity> sourceList;
     private final ReadWriteLock lock;
     private final Function<RepoEntity, Boolean> addFunction;
-    private final Consumer<Long> addIndexConsumer;
 
-    public ProxyList(Collection<RepoEntity> sourceList, ReadWriteLock lock, Function<RepoEntity, Boolean> addFunction, Consumer<Long> addIndexConsumer) {
+    public ProxyList(Collection<RepoEntity> sourceList, ReadWriteLock lock, Function<RepoEntity, Boolean> addFunction) {
         this.sourceList = new ArrayList<>(sourceList);
         this.lock = lock;
         this.addFunction = addFunction;
-        this.addIndexConsumer = addIndexConsumer;
     }
 
     @Override
@@ -41,15 +39,12 @@ public class ProxyList implements InvocationHandler {
                 if(args.length == 1) {
                     RepoEntity e = (RepoEntity) args[0];
                     addFunction.apply(e);
-                    boolean res = sourceList.add(e);
-                    addIndexConsumer.accept(e.getEntityId());
-                    return res;
+                    return sourceList.add(e);
                 } else {
                     int pos = (int) args[0];
                     RepoEntity e = (RepoEntity) args[1];
                     addFunction.apply(e);
                     sourceList.add(pos, e);
-                    addIndexConsumer.accept(e.getEntityId());
                     return null;
                 }
             }
@@ -58,16 +53,12 @@ public class ProxyList implements InvocationHandler {
                 if(args.length == 1) {
                     Collection<RepoEntity> coll = (Collection<RepoEntity>) args[0];
                     coll.forEach(addFunction::apply);
-                    boolean res = sourceList.addAll(coll);
-                    filter(coll, sourceList::contains).forEach(re -> addIndexConsumer.accept(re.getEntityId()));
-                    return res;
+                    return sourceList.addAll(coll);
                 } else {
                     int pos = (int) args[0];
                     Collection<RepoEntity> coll = (Collection<RepoEntity>) args[1];
                     coll.forEach(addFunction::apply);
-                    boolean res = sourceList.addAll(pos, coll);
-                    filter(coll, sourceList::contains).forEach(re -> addIndexConsumer.accept(re.getEntityId()));
-                    return res;
+                    return sourceList.addAll(pos, coll);
                 }
             }
 
@@ -75,9 +66,7 @@ public class ProxyList implements InvocationHandler {
                 int pos = (int) args[0];
                 RepoEntity e = (RepoEntity) args[1];
                 addFunction.apply(e);
-                Object res = sourceList.set(pos, e);
-                addIndexConsumer.accept(e.getEntityId());
-                return res;
+                return sourceList.set(pos, e);
             }
 
             return method.invoke(sourceList, args);

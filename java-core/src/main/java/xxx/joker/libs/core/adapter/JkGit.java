@@ -11,20 +11,20 @@ import java.util.List;
 
 public class JkGit {
 
-    private Path gitFolder;
-    private String gitUrl;
+    private Path localFolder;
+    private String remoteUrl;
 
-    public JkGit(Path gitFolder, String gitUrl) {
-        this.gitFolder = gitFolder;
-        this.gitUrl = gitUrl;
+    public JkGit(Path localFolder, String remoteUrl) {
+        this.localFolder = localFolder;
+        this.remoteUrl = remoteUrl;
     }
 
     public JkProcess clone() {
         try {
-            Path parent = JkFiles.getParent(gitFolder);
+            Path parent = JkFiles.getParent(localFolder);
             Files.createDirectories(parent);
-            JkFiles.delete(gitFolder);
-            return JkProcess.execute(parent, "git clone {} {}", gitUrl, gitFolder.getFileName());
+            JkFiles.delete(localFolder);
+            return JkProcess.execute(parent, "git clone {} {}", remoteUrl, localFolder.getFileName());
 
         } catch (IOException e) {
             throw new JkRuntimeException(e);
@@ -32,22 +32,29 @@ public class JkGit {
     }
 
     public JkProcess pull() {
-        return JkProcess.execute(gitFolder, "git pull");
+        return JkProcess.execute(localFolder, "git pull");
     }
 
     public List<JkProcess> commitAndPush(String commitMex) {
         List<JkProcess> resList = new ArrayList<>();
-        resList.add(JkProcess.execute(gitFolder, "git add --all"));
-        resList.add(JkProcess.execute(gitFolder, "git commit -m {}", commitMex));
-        resList.add(JkProcess.execute(gitFolder, "git push"));
+        resList.add(JkProcess.execute(localFolder, "git add --all"));
+        resList.add(JkProcess.execute(localFolder, "git commit -m {}", commitMex));
+        resList.add(JkProcess.execute(localFolder, "git push"));
         return resList;
     }
 
     public List<JkProcess> setCommitter(String userName, String userMail) {
         List<JkProcess> resList = new ArrayList<>();
-        resList.add(JkProcess.execute(gitFolder, "git config user.name \"{}\"", userName));
-        resList.add(JkProcess.execute(gitFolder, "git config user.email \"{}\"", userMail));
+        resList.add(JkProcess.execute(localFolder, "git config user.name \"{}\"", userName));
+        resList.add(JkProcess.execute(localFolder, "git config user.email \"{}\"", userMail));
         return resList;
     }
 
+    public Path getLocalFolder() {
+        return localFolder;
+    }
+
+    public String getRemoteUrl() {
+        return remoteUrl;
+    }
 }

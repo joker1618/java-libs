@@ -22,16 +22,14 @@ public class ProxyMap implements InvocationHandler {
     private final Function<RepoEntity, Boolean> addFunction;
     private final RepoWField fw;
     private final ProxyFactory proxyFactory;
-    private final Consumer<Long> addIndexConsumer;
 
 
-    public ProxyMap(Map sourceMap, ReadWriteLock lock, Function<RepoEntity, Boolean> addFunction, RepoWField fw, ProxyFactory proxyFactory, Consumer<Long> addIndexConsumer) {
+    public ProxyMap(Map sourceMap, ReadWriteLock lock, Function<RepoEntity, Boolean> addFunction, RepoWField fw, ProxyFactory proxyFactory) {
         this.sourceMap = sourceMap;
         this.lock = lock;
         this.addFunction = addFunction;
         this.fw = fw;
         this.proxyFactory = proxyFactory;
-        this.addIndexConsumer = addIndexConsumer;
     }
 
     @Override
@@ -160,22 +158,20 @@ public class ProxyMap implements InvocationHandler {
         if(fw.getParamType(0).instanceOf(RepoEntity.class)) {
             RepoEntity reKey = (RepoEntity) key;
             addFunction.apply(reKey);
-            addIndexConsumer.accept(reKey.getEntityId());
         }
         Object value = args[1];
-        Object finalValue = value;
+        Object finalValue;
         TypeWrapper fwValue = fw.getParamType(1);
         if(fwValue.instanceOf(RepoEntity.class)) {
             RepoEntity reValue = (RepoEntity) value;
             addFunction.apply(reValue);
-            addIndexConsumer.accept(reValue.getEntityId());
+            finalValue = reValue;
         } else if(fwValue.isCollection() && fwValue.getParamType(0).instanceOf(RepoEntity.class)) {
             Collection<RepoEntity> coll = (Collection<RepoEntity>) value;
-            coll.forEach(elem -> {
-                addFunction.apply(elem);
-                addIndexConsumer.accept(elem.getEntityId());
-            });
-            finalValue = fwValue.isList() ? proxyFactory.createProxyList(coll, addIndexConsumer) : proxyFactory.createProxySet(coll, addIndexConsumer);
+            coll.forEach(addFunction::apply);
+            finalValue = fwValue.isList() ? proxyFactory.createProxyList(coll) : proxyFactory.createProxySet(coll);
+        } else {
+            finalValue = value;
         }
         return sourceMap.put(key, finalValue);
     }

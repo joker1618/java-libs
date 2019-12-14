@@ -4,7 +4,6 @@ import xxx.joker.libs.core.lambda.JkStreams;
 import xxx.joker.libs.repo.design.annotation.marker.CreationTm;
 import xxx.joker.libs.repo.design.annotation.marker.EntityID;
 import xxx.joker.libs.repo.design.annotation.marker.EntityPK;
-import xxx.joker.libs.repo.design.annotation.marker.ForeignID;
 import xxx.joker.libs.repo.exceptions.RepoError;
 import xxx.joker.libs.repo.wrapper.RepoWClazz;
 import xxx.joker.libs.repo.wrapper.RepoWField;
@@ -37,8 +36,6 @@ public class RepoChecker {
         checkField(cw, RepoWField::isCreationTm, "@CreationTm", true, VALID_TYPE_CREATION_TM, CreationTm.class);
         // Check resource path
         checkField(cw, RepoWField::isResourcePath, "@EntityField used as a resource path", false, VALID_TYPE_RESOURCE_PATH, null);
-        // Check foreign ID
-        checkField(cw, RepoWField::isForeignID, "@ForeignID", false, VALID_TYPE_FOREIGN_ID, ForeignID.class);
         // Check PK
         checkField(cw, RepoWField::isEntityPK, "@EntityPK", false, RepoConfig::isValidTypeForEntityPK, EntityPK.class);
         // Check cascade delete
@@ -60,7 +57,7 @@ public class RepoChecker {
                 throw new RepoError(DESIGN_WRONG_FIELD_TYPE, "Fields type not allowed for {} [class={}, fields={}]", label, cname, fw);
         }
 
-        List<Class<? extends Annotation>> notAllowed = toList(EntityID.class, CreationTm.class, EntityPK.class, ForeignID.class);
+        List<Class<? extends Annotation>> notAllowed = toList(EntityID.class, CreationTm.class, EntityPK.class);
         notAllowed.remove(allowed);
         for (RepoWField wf : fwList) {
             List<Class<? extends Annotation>> found = JkStreams.filter(notAllowed, wf::containsAnnotation);

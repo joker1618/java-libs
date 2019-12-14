@@ -6,6 +6,8 @@ import xxx.joker.libs.core.lambda.JkStreams;
 import xxx.joker.libs.core.runtime.JkReflection;
 import xxx.joker.libs.core.runtime.wrapper.TypeWrapper;
 import xxx.joker.libs.repo.design.RepoEntity;
+import xxx.joker.libs.repo.design.entities.RepoProperty;
+import xxx.joker.libs.repo.design.entities.RepoResource;
 
 import java.io.File;
 import java.lang.reflect.Modifier;
@@ -20,7 +22,7 @@ import static xxx.joker.libs.core.util.JkStrings.strf;
 
 public class RepoConfig {
 
-    public static final String PACKAGE_COMMON_ENTITIES = "xxx.joker.libs.repo.design.entities";
+    public static final List<Class<?>> PACKAGE_COMMON_ENTITIES = Arrays.asList(RepoProperty.class, RepoResource.class);
 
     public static final String REF_TYPE_FIELD_RESOURCE_PATH = "resourcePath";
 
@@ -38,7 +40,6 @@ public class RepoConfig {
     public static final List<Class<?>> VALID_TYPE_ENTITY_ID = toList(Long.class);
     public static final List<Class<?>> VALID_TYPE_CREATION_TM = toList(JkDateTime.class);
     public static final List<Class<?>> VALID_TYPE_RESOURCE_PATH = toList(Path.class);
-    public static final List<Class<?>> VALID_TYPE_FOREIGN_ID = toList(Long.class);
 
     public static boolean isValidRepoClass(Class<?> clazz) {
         return JkReflection.isInstanceOf(clazz, RepoEntity.class) &&

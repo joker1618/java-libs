@@ -18,6 +18,14 @@ import java.util.function.Predicate;
 
 import static xxx.joker.libs.core.util.JkConvert.toList;
 
+/**
+ * When an entity is added to the repo, also its dependencies are added
+ *
+ * When an entity is deleted, is remove from the related data set,
+ * but not from other entities where it is used as a dependency.
+ * Pay attention to call the method 'updateDependencies' or 'removeFromDependencies if it's used in other entities
+ * This choice is made for performance reasons
+ */
 public interface JkRepo {
 
     static Builder builder() {
@@ -25,11 +33,10 @@ public interface JkRepo {
     }
 
 
-    void initRepo(List<RepoEntity> repoData);
+    void initDataSets(Collection<RepoEntity> repoData);
 
     Map<Class<? extends RepoEntity>, Set<RepoEntity>> getDataSets();
     <T extends RepoEntity> Set<T> getDataSet(Class<T> entityClazz);
-
     <T extends RepoEntity> List<T> getList(Class<T> entityClazz, Predicate<T>... filters);
     <K, T extends RepoEntity> Map<K,List<T>> getMap(Class<T> entityClazz, Function<T, K> keyMapper, Predicate<T>... filters);
     <K, T extends RepoEntity> Map<K,T> getMapSingle(Class<T> entityClazz, Function<T, K> keyMapper, Predicate<T>... filters);
@@ -41,9 +48,16 @@ public interface JkRepo {
 
     <T extends RepoEntity> boolean add(T... toAdd);
     <T extends RepoEntity> boolean addAll(Collection<T> coll);
+
     <T extends RepoEntity> T removeId(long entityId);
     <T extends RepoEntity> boolean remove(T toRemove);
     boolean removeAll(Collection<? extends RepoEntity> toRemove);
+
+    void updateDependencies(RepoEntity... entities);
+    void updateDependencies(Collection<? extends RepoEntity> entities);
+    void removeFromDependencies(RepoEntity toRemove, RepoEntity... entities);
+    void removeFromDependencies(RepoEntity toRemove, Collection<? extends RepoEntity> entities);
+
     void clearAll();
 
     void rollback();
@@ -63,15 +77,19 @@ public interface JkRepo {
     RepoResource addResource(Path sourcePath, String resName, RepoTags repoTags, AddType addType);
     void exportResources(Path outFolder);
     void exportResources(Path outFolder, RepoTags repoTags);
+    void exportResources(Path outFolder, Collection<RepoResource> resources);
+    List<Path> cleanResources();
 
     RepoCtx getRepoCtx();
 
     String toStringRepo();
     String toStringRepo(boolean sortById);
+
+    String toStringClass(Class<?>... classes);
+
     String toStringClass(boolean sortById, Class<?>... classes);
     String toStringEntities(Collection<? extends RepoEntity> entities);
 
-    List<Path> cleanResources();
 
     class Builder {
         private Path repoFolder;
@@ -82,9 +100,9 @@ public interface JkRepo {
         public RepoCtx buildCtx() {
             Set<Class> eClasses = new HashSet<>(classes);
             eClasses.addAll(RepoUtil.scanPackages(getClass(), packages));
-            eClasses.addAll(RepoUtil.scanPackages(JkRepoFile.class, RepoConfig.PACKAGE_COMMON_ENTITIES));
+            eClasses.addAll(RepoConfig.PACKAGE_COMMON_ENTITIES);
             eClasses.removeIf(ec -> !RepoConfig.isValidRepoClass(ec));
-            return new RepoCtx(repoFolder, dbName, JkStreams.map(eClasses, RepoWClazz::new));
+            return new RepoCtx(repoFolder, dbName, JkStreams.map(eClasses, RepoWClazz::get));
         }
 
         public JkRepo buildRepo() {

@@ -5,6 +5,7 @@ import xxx.joker.libs.repo.design.entities.RepoResource;
 import xxx.joker.libs.repo.design.entities.RepoTags;
 
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +21,7 @@ public interface ResourceHandler {
     RepoResource getOrAddResource(Path sourcePath, String resName, RepoTags repoTags, AddType addType);
 
     void exportResources(Path outFolder, RepoTags repoTags);
+    void exportResources(Path outFolder, Collection<RepoResource> resources);
 
     List<Path> cleanResources();
 

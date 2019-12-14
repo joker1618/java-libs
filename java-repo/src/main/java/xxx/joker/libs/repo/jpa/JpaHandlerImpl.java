@@ -26,6 +26,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static xxx.joker.libs.core.lambda.JkStreams.filter;
+import static xxx.joker.libs.core.lambda.JkStreams.filterMap;
 import static xxx.joker.libs.core.util.JkConvert.toList;
 import static xxx.joker.libs.repo.config.RepoConfig.PROP_DB_SEQUENCE;
 import static xxx.joker.libs.repo.exceptions.ErrorType.*;
@@ -47,7 +49,7 @@ class JpaHandlerImpl implements JpaHandler {
         this.dataById = new TreeMap<>();
         this.indexManager = new IndexManager(0L);
 
-        this.proxyFactory = new ProxyFactory(ctx.getLock(), e -> e.getEntityId() == null && addEntityToRepo(e), this::removeEntity, indexManager);
+        this.proxyFactory = new ProxyFactory(ctx.getLock(), this::addEntityToRepo, this::removeEntity);
         this.proxies = new TreeMap<>(Comparator.comparing(Class::getName));
         this.proxies.putAll(JkStreams.toMapSingle(ctx.getWClazzMap().keySet(), Function.identity(), k -> proxyFactory.createProxyDataSet()));
 
@@ -88,7 +90,7 @@ class JpaHandlerImpl implements JpaHandler {
     }
 
     @Override
-    public void initRepoContent(List<RepoEntity> repoData) {
+    public void initRepoContent(Collection<RepoEntity> repoData) {
         try {
             ctx.getWriteLock().lock();
             List<DaoDTO> dtoList = daoHandler.createDTOs(repoData);
@@ -138,13 +140,13 @@ class JpaHandlerImpl implements JpaHandler {
             fw.initNullValue(elem);
             if(fw.isEntityFlat() && (fw.isList() || fw.isSet() || fw.isMap())) {
                 if(fw.isList()) {
-                    List<RepoEntity> proxyList = proxyFactory.createProxyList(fw.getValue(elem), elem, fw);
+                    List<RepoEntity> proxyList = proxyFactory.createProxyList(fw.getValue(elem));
                     fw.setValue(elem, proxyList);
                 } else if(fw.isSet()) {
-                    Set<RepoEntity> proxySet = proxyFactory.createProxySet(fw.getValue(elem), elem, fw);
+                    Set<RepoEntity> proxySet = proxyFactory.createProxySet(fw.getValue(elem));
                     fw.setValue(elem, proxySet);
                 } else if(fw.isMap()) {
-                    Map<?, ?> proxyMap = proxyFactory.createProxyMap(fw.getValue(elem), elem, fw);
+                    Map<?, ?> proxyMap = proxyFactory.createProxyMap(fw.getValue(elem), fw);
                     fw.setValue(elem, proxyMap);
                 }
             }
@@ -198,7 +200,6 @@ class JpaHandlerImpl implements JpaHandler {
             ctx.getWriteLock().lock();
             proxies.values().forEach(pds -> pds.getEntities().clear());
             dataById.clear();
-            indexManager.clearUsages();
             LOG.info("Cleared all data sets");
         } finally {
             ctx.getWriteLock().unlock();
@@ -267,6 +268,94 @@ class JpaHandlerImpl implements JpaHandler {
         return prop == null ? null : prop.getValue();
     }
 
+    @Override
+    public void updateDependencies(Collection<? extends RepoEntity> entities) {
+        try {
+            ctx.getWriteLock().lock();
+            Set<Long> idSet = dataById.keySet();
+            for (RepoEntity entity : entities) {
+                RepoWClazz wClazz = ctx.getWClazz(entity.getClass());
+                for (RepoWField wField : wClazz.getFields(RepoWField::isEntityFlat)) {
+                    if(wField.isEntity()) {
+                        RepoEntity re = wField.getValue(entity);
+                        if(re != null && !idSet.contains(re.getEntityId())) {
+                            wField.setValue(entity, null);
+                        }
+
+                    } else if(wField.isCollection()) {
+                        Collection<RepoEntity> coll = wField.getValue(entity);
+                        coll.removeIf(elem -> !idSet.contains(elem.getEntityId()));
+
+                    } else if(wField.isMap()) {
+                        Map<?,?> map = wField.getValue(entity);
+                        if(wField.getParamType(0).instanceOf(RepoEntity.class)) {
+                            List<?> keysToRemove = filter(map.keySet(), k -> !idSet.contains(((RepoEntity) k).getEntityId()));
+                            keysToRemove.forEach(map::remove);
+                        }
+                        TypeWrapper twMapValue = wField.getParamType(1);
+                        if(twMapValue.instanceOfFlat(RepoEntity.class)) {
+                            if (twMapValue.instanceOf(RepoEntity.class)) {
+                                List<?> keysToRemove = filterMap(map.entrySet(), e -> !idSet.contains(((RepoEntity) e.getValue()).getEntityId()), Map.Entry::getKey);
+                                keysToRemove.forEach(map::remove);
+
+                            } else if (twMapValue.isCollection()) {
+                                for (Object valueColl : map.values()) {
+                                    Collection<RepoEntity> coll = (Collection<RepoEntity>) valueColl;
+                                    coll.removeIf(e -> !idSet.contains(e.getEntityId()));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        } finally {
+            ctx.getWriteLock().unlock();
+        }
+    }
+    @Override
+    public void removeFromDependencies(RepoEntity toRemove, Collection<? extends RepoEntity> entities) {
+        try {
+            ctx.getWriteLock().lock();
+            for (RepoEntity entity : entities) {
+                for (RepoWField wf : ctx.getWClazz(entity.getClass()).getFields(wf -> wf.instanceOfFlat(toRemove.getClass()))) {
+                    if(wf.isEntity()) {
+                        if(toRemove.equals(wf.getValue(entity))) {
+                            wf.setValue(entity, null);
+                        }
+
+                    } else if(wf.isCollection()) {
+                        Collection<RepoEntity> coll = wf.getValue(entity);
+                        coll.remove(toRemove);
+
+                    } else if(wf.isMap()) {
+                        Map<?,?> map = wf.getValue(entity);
+                        if(wf.getParamType(0).instanceOf(RepoEntity.class)) {
+                            map.remove(toRemove);
+                        }
+                        TypeWrapper twMapValue = wf.getParamType(1);
+                        if(twMapValue.instanceOfFlat(RepoEntity.class)) {
+                            if (twMapValue.instanceOf(RepoEntity.class)) {
+                                List<?> keysToRemove = filterMap(map.entrySet(), e -> toRemove.equals(e.getValue()), Map.Entry::getKey);
+                                keysToRemove.forEach(map::remove);
+
+                            } else if (twMapValue.isCollection()) {
+                                for (Object valueColl : map.values()) {
+                                    Collection<RepoEntity> coll = (Collection<RepoEntity>) valueColl;
+                                    coll.remove(toRemove);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        } finally {
+            ctx.getWriteLock().unlock();
+        }
+
+    }
+
 
     private void initDataSets(List<DaoDTO> dtoList) {
         try {
@@ -293,24 +382,6 @@ class JpaHandlerImpl implements JpaHandler {
                         createProxiesForStructFields(cw, elem);
                     });
                 });
-
-                // Analyze references (needed in case of delete, else analyze all eligible elements in collection or map will take too much time)
-                BiConsumer<DaoFK, Long> biConsumer = (fk, depID) -> {
-                    RepoWField fw = ctx.getWClazz(dataById.get(fk.getSourceID()).getClass()).getField(fk.getFieldName());
-                    indexManager.addUsage(depID, fk.getSourceID(), fw);
-                };
-                JkStreams.flatMap(dtoList, DaoDTO::getForeignKeys).forEach(fk -> {
-                    if(fk.isCollection()) {
-                        biConsumer.accept(fk, fk.getCollectionDepID());
-                    } else if(fk.isMapEntry()) {
-                        if(fk.isMapKeyID()) {
-                            biConsumer.accept(fk, fk.getMapKeyAsID());
-                        }
-                        if(fk.isMapValueID()) {
-                            biConsumer.accept(fk, fk.getMapValueAsID());
-                        }
-                    }
-                });
             }
 
             // Update sequence ID value to the next value to use
@@ -326,10 +397,8 @@ class JpaHandlerImpl implements JpaHandler {
     private boolean addEntityToRepo(RepoEntity e) {
         try {
             ctx.getWriteLock().lock();
-            if (e.getEntityId() != null) {
-                LOG.debug("Unable to add entity: ID already set. {}", e.strFull());
+            if (e.getEntityId() != null)
                 return false;
-            }
 
             // Init fields with def value
             RepoWClazz cw = ctx.getWClazz(e.getClass());
@@ -402,11 +471,6 @@ class JpaHandlerImpl implements JpaHandler {
                 if (add) {
                     Long eid = e.getEntityId();
                     dataById.put(eid, e);
-                    refs.forEach((id, fwList) ->
-                            fwList.stream()
-                                    .filter(wf -> wf.isCollection() || wf.isMap())
-                                    .forEach(fw -> indexManager.addUsage(id, eid, fw))
-                    );
                     indexManager.unlockSequence(true);
                     updateIdSequenceProperty();
                     LOG.info("Added new entity: {}", e);
@@ -480,86 +544,13 @@ class JpaHandlerImpl implements JpaHandler {
                 return false;
             }
 
-            // Remove 'e' from other entities
-            // Remove from simple fields
-            List<RepoWField> fields = ctx.getWClazzMap().values().stream()
-                    .flatMap(cw -> cw.getFields(RepoWField::isEntity).stream())
-                    .filter(wf -> wf.isOfClass(e.getClass()))
-                    .collect(Collectors.toList());
-            Map<Class<?>, List<RepoWField>> fieldMap = JkStreams.toMap(fields, wf -> wf.getField().getDeclaringClass());
-            for (Class entityClazz : fieldMap.keySet()) {
-                Set<RepoEntity> ds = getDataSet(entityClazz);
-                ds.forEach(elem -> {
-                    fieldMap.get(entityClazz).forEach(wf -> {
-                        if(e.equals(wf.getValue(elem))) {
-                            wf.setValue(elem, null);
-                        }
-                    });
-                });
-            }
-            // Remove from collection and map fields
-            Map<Long, Set<RepoWField>> sourceDepMap = indexManager.getEntityUsage(eid);
-            List<Long> childIDs = toList(sourceDepMap.keySet());
-            for(int i = 0; i < childIDs.size(); i++) {
-                Long chId = childIDs.get(i);
-                Set<RepoWField> fwSet = sourceDepMap.get(chId);
-                // FIXME: error if delete entities used in other PK, case not managed
-                if(fwSet != null) {
-                    RepoEntity re = dataById.get(chId);
-                    fwSet.forEach(fw -> {
-                        if(fw.isEntityFlat()) {
-                            if(fw.isList() || fw.isSet()) {
-                                Collection<RepoEntity> coll = fw.getValue(re);
-                                if(coll != null) {
-                                    coll.removeIf(elem -> elem.getEntityId() == eid);
-                                }
-                            } else if(fw.isMap()){
-                                Map map = fw.getValue(re);
-                                if(fw.getParamType(0).instanceOf(RepoEntity.class)) {
-                                    map.remove(e);
-                                }
-                                TypeWrapper twValue = fw.getParamType(1);
-                                if(twValue.instanceOf(RepoEntity.class)) {
-                                    toList(map.keySet()).forEach(k -> {
-                                        if(map.get(k).equals(e)) {
-                                            map.remove(k);
-                                        }
-                                    });
-                                } else if(twValue.isCollection() && twValue.getParamType(0).instanceOf(RepoEntity.class)) {
-                                    map.keySet().forEach(k -> {
-                                        Collection<RepoEntity> coll = (Collection<RepoEntity>) map.get(k);
-                                        coll.remove(e);
-                                    });
-                                }
-                            }
-                        }
-                    });
-                }
-            }
-
             // Remove input entity 'e'
             boolean res = proxies.get(e.getClass()).getEntities().remove(e);
             if(!res)
                 return false;
 
             dataById.remove(eid);
-            indexManager.removeEntity(eid);
             LOG.info("Removed entity: {}", e);
-
-            // Remove where used as a foreign ID
-            List<RepoWField> fieldsFId = JkStreams.flatMap(ctx.getWClazzMap().values(), cw -> cw.getFields(RepoWField::isForeignID));
-            Map<Class<?>, List<RepoWField>> fieldsFIdMap = JkStreams.toMap(fieldsFId, wf -> wf.getField().getDeclaringClass());
-            for (Class entityClazz : fieldsFIdMap.keySet()) {
-                Set<RepoEntity> ds = getDataSet(entityClazz);
-                ds.forEach(elem -> {
-                    fieldsFIdMap.get(entityClazz).forEach(wf -> {
-                        Long fid = wf.getValue(elem);
-                        if(eid.equals(fid)) {
-                            wf.setValue(elem, null);
-                        }
-                    });
-                });
-            }
 
             // Manage cascade delete
             List<RepoWField> cascadeFields = ctx.getWClazz(e.getClass()).getFields(RepoWField::isCascadeDelete);
@@ -581,6 +572,7 @@ class JpaHandlerImpl implements JpaHandler {
             ctx.getWriteLock().unlock();
         }
     }
+
 
     private void updateIdSequenceProperty() {
         try {

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import xxx.joker.libs.core.datetime.JkDateTime;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 
 public interface RepoEntity extends Comparable<RepoEntity> {
 
@@ -20,5 +21,7 @@ public interface RepoEntity extends Comparable<RepoEntity> {
     String strShort();
     String strFull();
     String strFull(ToStringStyle sstyle);
+
+    Comparator<RepoEntity> typedComparator();
 
 }

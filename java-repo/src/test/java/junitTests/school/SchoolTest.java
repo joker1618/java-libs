@@ -1,12 +1,10 @@
-package junit.entity.correct.depsDesign;
+package junitTests.school;
 
-import junit.entity.correct.misc.SimpleObject;
 import org.junit.Before;
 import org.junit.Test;
 import xxx.joker.libs.core.file.JkEncryption;
 import xxx.joker.libs.core.file.JkFiles;
 import xxx.joker.libs.core.format.JkViewBuilder;
-import xxx.joker.libs.core.lambda.JkStreams;
 import xxx.joker.libs.core.test.JkDataTest;
 import xxx.joker.libs.repo.JkRepo;
 import xxx.joker.libs.repo.config.RepoCtx;
@@ -25,7 +23,7 @@ import static xxx.joker.libs.core.util.JkStrings.strf;
 
 public class SchoolTest {
 
-    public static final Path BASE_FOLDER = Paths.get("src/test/resources/repoTests");
+    public static final Path BASE_FOLDER = Paths.get("src/test/resources/repos");
     public static final String DB_NAME = "school";
 
     static final JkDataTest dataTest = new JkDataTest(3433);
@@ -37,7 +35,7 @@ public class SchoolTest {
                 .setRepoFolder(BASE_FOLDER.resolve(DB_NAME))
                 .setDbName(DB_NAME)
                 .addClasses(ClassRoom.class)
-                .addPackage("junit.entity.correct.depsDesign");
+                .addPackage("junitTests.school");
     }
 
     @Test

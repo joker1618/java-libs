@@ -2,7 +2,7 @@ package xxx.joker.libs.core.media;
 
 import javafx.scene.image.Image;
 import xxx.joker.libs.core.file.JkFiles;
-import xxx.joker.libs.core.format.JkSortFormattable;
+import xxx.joker.libs.core.format.JkFormattableDefault;
 import xxx.joker.libs.core.util.JkStrings;
 
 import java.nio.file.Path;
@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 
 import static xxx.joker.libs.core.util.JkStrings.strf;
 
-public class JkImage extends JkSortFormattable<JkImage> {
+public class JkImage extends JkFormattableDefault<JkImage> {
 
     private static final String FIELD_SEP = "**";
 

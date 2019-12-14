@@ -15,6 +15,9 @@ public class JkEnvironment {
     public static Path getHomeFolder() {
         return Paths.get(System.getProperty(HOME_FOLDER_KEY));
     }
+    public static Path getDesktopFolder() {
+        return getHomeFolder().resolve("Desktop");
+    }
 
     public static Path getAppsFolder() {
         String val = System.getProperty(APPS_FOLDER_KEY);

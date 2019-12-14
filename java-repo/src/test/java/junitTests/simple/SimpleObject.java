@@ -1,4 +1,4 @@
-package junit.entity.correct.misc;
+package junitTests.simple;
 
 import xxx.joker.libs.core.enumerative.JkAlign;
 import xxx.joker.libs.core.test.JkDataTest;

@@ -1,4 +1,4 @@
-package junit.entity.correct.depsDesign;
+package junitTests.school;
 
 import xxx.joker.libs.core.test.JkDataTest;
 import xxx.joker.libs.repo.design.SimpleRepoEntity;

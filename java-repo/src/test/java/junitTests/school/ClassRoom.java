@@ -1,4 +1,4 @@
-package junit.entity.correct.depsDesign;
+package junitTests.school;
 
 import xxx.joker.libs.repo.design.SimpleRepoEntity;
 import xxx.joker.libs.repo.design.annotation.marker.EntityPK;

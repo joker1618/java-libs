@@ -1,13 +1,13 @@
 package xxx.joker.libs.repo.design.entities;
 
-import xxx.joker.libs.core.format.JkSortFormattable;
+import xxx.joker.libs.core.format.JkFormattableDefault;
 import xxx.joker.libs.core.lambda.JkStreams;
 import xxx.joker.libs.core.test.JkTests;
 import xxx.joker.libs.core.util.JkStrings;
 
 import java.util.*;
 
-public class RepoTags extends JkSortFormattable<RepoTags> {
+public class RepoTags extends JkFormattableDefault<RepoTags> {
 
     private static final String SEP = "-";
 

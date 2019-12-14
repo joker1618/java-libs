@@ -35,8 +35,23 @@ public interface JkTag {
 
     JkRange getRange();
 
+
+    /**
+     * @return raw html
+     */
     String getHtmlTag();
+    /**
+     * @param includeTagName
+     * @return raw html
+     */
+    String getHtmlTag(boolean includeTagName);
+    /**
+     * @return text of the tag only (no text of child tags)
+     */
     String getText();
+    /**
+     * @return text of the tag including the text of child tags
+     */
     String getTextFlat();
 
     JkTag cloneTag();

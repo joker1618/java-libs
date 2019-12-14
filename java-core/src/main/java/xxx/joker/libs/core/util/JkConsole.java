@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static java.lang.System.out;
 import static xxx.joker.libs.core.util.JkStrings.strf;
@@ -25,9 +26,18 @@ public class JkConsole {
 		display("{}", o);
 	}
 	public static void displayColl(Collection<?> coll) {
-		coll.forEach(c -> display("{}", c));
+		displayColl("", coll);
+	}
+	public static void displayColl(String title, Collection<?> coll) {
+		displayColl(title, coll, Function.identity());
 	}
 	public static <T,U> void displayColl(Collection<T> coll, Function<T,U> mapper) {
+		displayColl("", coll, mapper);
+	}
+	public static <T,U> void displayColl(String title, Collection<T> coll, Function<T,U> mapper) {
+		if(StringUtils.isNotBlank(title)) {
+			display(title);
+		}
 		List<U> mapped = JkStreams.map(coll, mapper);
 		mapped.forEach(c -> display("{}", c));
 	}

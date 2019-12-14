@@ -58,18 +58,18 @@ import static xxx.joker.libs.core.util.JkStrings.strf;
  * - long
  * - float
  * - double
- * 
+ *
  * - Boolean		
  * - Short
  * - Integer
  * - Long
  * - Float		    
  * - Double		
- * 
+ *
  * - LocalTime
  * - LocalDate
  * - LocalDateTime
- *  
+ *
  * - File
  * - Path
  *
@@ -141,6 +141,9 @@ public class JkFormatter {
     public <T> List<T> parseCsv(Path csvPath, Class<T> clazz) {
         return parseCsv(JkFiles.readLines(csvPath), clazz, true);
     }
+    public <T> List<T> parseCsv(List<String> csvLines, Class<T> clazz)  {
+        return parseCsv(csvLines, clazz, true);
+    }
     public <T> List<T> parseCsv(List<String> csvLines, Class<T> clazz, boolean includeFields, String... fieldNames)  {
         return parseCsv(csvLines, clazz, includeFields, JkConvert.toList(fieldNames));
     }
@@ -157,7 +160,8 @@ public class JkFormatter {
         List<String> csvLines = filter(lines, StringUtils::isNotBlank);
 
         if(!csvLines.isEmpty()) {
-            List<String> fnames = JkStrings.splitList(csvLines.get(0), sep.getSeparator());
+            List<String> fileHeader = JkStrings.splitList(csvLines.get(0), sep.getSeparator());
+            List<String> fnames = new ArrayList<>(fileHeader);
             int numColumnsExpected = fnames.size();
             if(fieldNames.size() > 0) {
                 if(includeFields) {
@@ -167,7 +171,7 @@ public class JkFormatter {
                 }
             }
 
-            Map<String, Field> fmap = JkStreams.toMapSingle(fnames, fn -> fn, f -> getFieldByName(clazz, f));
+            Map<String, Field> fmap = JkStreams.toMapSingle(fnames, fn -> fn, f -> getFieldByName(clazz, f, true));
             for(int i = 1; i < csvLines.size(); i++) {
                 String csvLine = csvLines.get(i);
                 T elem = JkReflection.createInstance(clazz);
@@ -175,10 +179,13 @@ public class JkFormatter {
                 if(line.size() != numColumnsExpected) {
                     LOG.warn("Skipped line: columns found {}, expected {}.  [{}]", line.size(), numColumnsExpected, csvLine);
                 } else {
-                    for (int col = 0; col < fnames.size(); col++) {
-                        String fieldName = fnames.get(col);
+                    for (int col = 0; col < fileHeader.size(); col++) {
+                        String fieldName = fileHeader.get(col);
                         try {
                             Field f = fmap.get(fieldName);
+                            if(f == null) {
+                                f = findFieldIgnoreCase(fmap, fieldName);
+                            }
                             if (f != null) {
                                 String strVal = unescapeString(line.get(col), false, sep);
                                 if (strVal != null) {
@@ -207,6 +214,12 @@ public class JkFormatter {
         }
         return toRet;
     }
+
+    private Field findFieldIgnoreCase(Map<String, Field> fmap, String fieldName) {
+        List<String> filter = filter(fmap.keySet(), str -> str.equalsIgnoreCase(fieldName));
+        return filter.isEmpty() ? null : fmap.get(filter.get(0));
+    }
+
     public Object parseFieldValue(String value, Field field) {
         Object o;
 

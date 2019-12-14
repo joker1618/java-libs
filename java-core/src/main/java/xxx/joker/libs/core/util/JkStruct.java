@@ -56,6 +56,13 @@ public class JkStruct {
         return values;
     }
 
+    public static <K,V> Map<V,K> swapMapEntriesSingle(Map<K,V> map) {
+        return JkStreams.toMapSingle(map.entrySet(), Map.Entry::getValue, Map.Entry::getKey);
+    }
+    public static <K,V> Map<V,List<K>> swapMapEntries(Map<K,V> map) {
+        return JkStreams.toMap(map.entrySet(), Map.Entry::getValue, Map.Entry::getKey);
+    }
+
     public static <T> List<T> safeSublist(Collection<T> list, int from) {
         return list == null ? Collections.emptyList() : safeSublist(list, from, list.size());
     }
@@ -71,6 +78,15 @@ public class JkStruct {
             }
         }
         return res;
+    }
+
+    public static int indexOfIgnoreCase(List<String> strings, String toFind) {
+        for(int i = 0; i < strings.size(); i++) {
+            if(toFind.equalsIgnoreCase(strings.get(i))) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public static <T> T getLastElem(Collection<T> coll) {

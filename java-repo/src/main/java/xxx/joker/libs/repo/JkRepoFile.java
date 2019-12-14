@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.file.JkFiles;
 import xxx.joker.libs.core.lambda.JkStreams;
+import xxx.joker.libs.core.runtime.wrapper.TypeWrapper;
 import xxx.joker.libs.repo.config.RepoChecker;
 import xxx.joker.libs.repo.config.RepoConfig;
 import xxx.joker.libs.repo.config.RepoCtx;
@@ -17,14 +18,14 @@ import xxx.joker.libs.repo.resources.AddType;
 import xxx.joker.libs.repo.resources.ResourceHandler;
 import xxx.joker.libs.repo.util.RepoUtil;
 import xxx.joker.libs.repo.wrapper.RepoWClazz;
+import xxx.joker.libs.repo.wrapper.RepoWField;
 
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static xxx.joker.libs.core.lambda.JkStreams.joinLines;
-import static xxx.joker.libs.core.lambda.JkStreams.map;
+import static xxx.joker.libs.core.lambda.JkStreams.*;
 import static xxx.joker.libs.core.util.JkConvert.toList;
 import static xxx.joker.libs.core.util.JkStrings.strf;
 
@@ -61,10 +62,10 @@ public class JkRepoFile implements JkRepo {
         // Find entity classes
         Set<Class<?>> eClasses = new HashSet<>(classes);
         eClasses.addAll(RepoUtil.scanPackages(getClass(), packages));
-        eClasses.addAll(RepoUtil.scanPackages(JkRepoFile.class, RepoConfig.PACKAGE_COMMON_ENTITIES));
+        eClasses.addAll(RepoConfig.PACKAGE_COMMON_ENTITIES);
         eClasses.removeIf(ec -> !RepoConfig.isValidRepoClass(ec));
 
-        List<RepoWClazz> wcList = map(eClasses, ec -> new RepoWClazz((Class<RepoEntity>)ec));
+        List<RepoWClazz> wcList = map(eClasses, ec -> RepoWClazz.get((Class<RepoEntity>)ec));
         wcList.forEach(RepoChecker::checkEntityClass);
 
         return new RepoCtx(repoFolder, dbName, wcList);
@@ -83,7 +84,7 @@ public class JkRepoFile implements JkRepo {
     @Override
     @SafeVarargs
     public final <T extends RepoEntity> List<T> getList(Class<T> entityClazz, Predicate<T>... filters) {
-        return JkStreams.filter(getDataSet(entityClazz), filters);
+        return filter(getDataSet(entityClazz), filters);
     }
 
     @Override
@@ -147,12 +148,10 @@ public class JkRepoFile implements JkRepo {
         if(e == null)   return null;
         return remove(e) ? e : null;
     }
-
     @Override
     public <T extends RepoEntity> boolean remove(T toRemove) {
         return getDataSet(toRemove.getClass()).remove(toRemove);
     }
-
     @Override
     public boolean removeAll(Collection<? extends RepoEntity> toRemove) {
         boolean res = false;
@@ -163,12 +162,29 @@ public class JkRepoFile implements JkRepo {
     }
 
     @Override
+    public void updateDependencies(RepoEntity... entities) {
+        updateDependencies(toList(entities));
+    }
+    @Override
+    public void updateDependencies(Collection<? extends RepoEntity> entities) {
+        jpaHandler.updateDependencies(entities);
+    }
+    @Override
+    public void removeFromDependencies(RepoEntity toRemove, RepoEntity... entities) {
+        removeFromDependencies(toRemove, toList(entities));
+    }
+    @Override
+    public void removeFromDependencies(RepoEntity toRemove, Collection<? extends RepoEntity> entities) {
+        jpaHandler.removeFromDependencies(toRemove, entities);
+    }
+
+    @Override
     public void clearAll() {
         jpaHandler.clearAll();
     }
 
     @Override
-    public void initRepo(List<RepoEntity> repoData) {
+    public void initDataSets(Collection<RepoEntity> repoData) {
         jpaHandler.initRepoContent(repoData);
     }
 
@@ -279,6 +295,16 @@ public class JkRepoFile implements JkRepo {
     }
 
     @Override
+    public void exportResources(Path outFolder, Collection<RepoResource> resources) {
+        try {
+            ctx.getReadLock().lock();
+            resourceHandler.exportResources(outFolder, resources);
+        } finally {
+            ctx.getReadLock().unlock();
+        }
+    }
+
+    @Override
     public RepoCtx getRepoCtx() {
         return ctx;
     }
@@ -291,6 +317,11 @@ public class JkRepoFile implements JkRepo {
     public String toStringRepo(boolean sortById) {
         List<Class<?>> keys = JkStreams.mapSort(getDataSets().entrySet(), Map.Entry::getKey, Comparator.comparing(Class::getName));
         return toStringRepoClass(sortById, keys);
+    }
+
+    @Override
+    public String toStringClass(Class<?>... classes) {
+        return toStringClass(false, classes);
     }
 
     @Override

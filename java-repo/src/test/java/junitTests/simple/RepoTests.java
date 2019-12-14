@@ -1,4 +1,4 @@
-package junit.entity.correct.misc;
+package junitTests.simple;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 
 public class RepoTests {
 
-    public static final Path BASE_FOLDER = Paths.get("src/test/resources/repoTests");
+    public static final Path BASE_FOLDER = Paths.get("src/test/resources/repos");
     public static final String DB_NAME = "simple";
 
     JkDataTest dataTest = new JkDataTest(666);

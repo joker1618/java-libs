@@ -5,13 +5,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
-public abstract class JkSortFormattable<T> implements JkFormattable<T> {
+public abstract class JkFormattableDefault<T> implements JkFormattable<T> {
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        JkSortFormattable other = (JkSortFormattable) o;
+        JkFormattableDefault other = (JkFormattableDefault) o;
         return StringUtils.equalsIgnoreCase(format(), other.format());
     }
 

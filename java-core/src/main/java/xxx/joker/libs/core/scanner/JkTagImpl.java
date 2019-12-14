@@ -182,8 +182,13 @@ class JkTagImpl implements JkTag {
     }
 
     @Override
+    public String getHtmlTag(boolean includeTagName) {
+        String strHtml = getFullHtml().substring(startPos, endPos);
+        return includeTagName ? strHtml : stripMainTag(strHtml);
+    }
+    @Override
     public String getHtmlTag() {
-        return getFullHtml().substring(startPos, endPos);
+        return getHtmlTag(true);
     }
 
     @Override
@@ -191,7 +196,7 @@ class JkTagImpl implements JkTag {
         StringBuilder sb = new StringBuilder();
         if(!children.isEmpty()) {
             List<JkRange> chRanges = JkStreams.map(children, ch -> ch.getRange().shiftStart(-1 * startPos));
-            String htag = getHtmlTag();
+            String htag = getHtmlTag(true);
             int start = 0;
             for (JkRange r : chRanges) {
                 sb.append(htag, start, r.getStart());
@@ -199,21 +204,21 @@ class JkTagImpl implements JkTag {
             }
             sb.append(htag.substring(start));
         } else {
-            sb.append(getHtmlTag());
+            sb.append(getHtmlTag(true));
         }
 
-        String str = sb.toString().replaceAll("^<[^<]*?>", "").replaceAll("</[^<]*?>$", "");
+        String str = stripMainTag(sb.toString());
         return JkHtmlChars.fixDirtyChars(str).trim();
     }
 
     @Override
     public String getTextFlat() {
-        return getHtmlTag().replaceAll("<[^<]*?>", "").trim();
+        return getHtmlTag(false).replaceAll("<[^<]*?>", "").trim();
     }
 
     @Override
     public JkTag cloneTag() {
-        return JkScanners.parseHtmlTag(getHtmlTag(), getTagName());
+        return JkScanners.parseHtmlTag(getHtmlTag(true), getTagName());
     }
 
     @Override
@@ -271,5 +276,9 @@ class JkTagImpl implements JkTag {
     }
     protected void setHtml(String html) {
         this.html = html;
+    }
+
+    protected String stripMainTag(String html) {
+        return html.replaceAll("^<[^<]*?>", "").replaceAll("</[^<]*?>$", "").trim();
     }
 }

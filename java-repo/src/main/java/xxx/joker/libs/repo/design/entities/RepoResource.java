@@ -1,5 +1,6 @@
 package xxx.joker.libs.repo.design.entities;
 
+import org.apache.commons.lang3.StringUtils;
 import xxx.joker.libs.repo.config.RepoConfig;
 import xxx.joker.libs.repo.design.SimpleRepoEntity;
 import xxx.joker.libs.repo.design.annotation.marker.EntityField;
@@ -28,7 +29,7 @@ public final class RepoResource extends SimpleRepoEntity {
     }
 
     public boolean match(String name, RepoTags tags) {
-        return this.name.equals(name) && this.tags.equals(tags);
+        return StringUtils.equalsIgnoreCase(this.name, name) && this.tags.equals(tags);
     }
 
     public String getName() {

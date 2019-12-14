@@ -15,20 +15,27 @@ import static xxx.joker.libs.core.util.JkConvert.toList;
 
 public class RepoWClazz {
 
+    private static final Map<Class<?>, RepoWClazz> cacheInstances = new HashMap<>();
+
     private final Class<? extends RepoEntity> eClazz;
     private final LinkedHashMap<String, RepoWField> byNameMap;
 
-    public RepoWClazz(Class<? extends RepoEntity> eClazz) {
+    private RepoWClazz(Class<? extends RepoEntity> eClazz) {
         this.eClazz = eClazz;
 
         // Find all fields annotated with one of the following
         List<Field> fields = JkReflection.findAllFields(eClazz);
         List<Class<? extends Annotation>> expAnn = Arrays.asList(
-                EntityID.class, EntityPK.class, CreationTm.class, ForeignID.class, EntityField.class
+                EntityID.class, EntityPK.class, CreationTm.class, EntityField.class
         );
         List<RepoWField> fwList = JkStreams.mapFilter(fields, RepoWField::new, fw -> fw.containsAnnotation(expAnn));
         Map<String, RepoWField> fwMap = JkStreams.toMapSingle(fwList, RepoWField::getFieldName);
         this.byNameMap = new LinkedHashMap<>(fwMap);
+    }
+
+    public static synchronized RepoWClazz get(Class<? extends RepoEntity> eClazz) {
+        cacheInstances.putIfAbsent(eClazz, new RepoWClazz(eClazz));
+        return cacheInstances.get(eClazz);
     }
 
     public Class<? extends RepoEntity> getEClazz() {

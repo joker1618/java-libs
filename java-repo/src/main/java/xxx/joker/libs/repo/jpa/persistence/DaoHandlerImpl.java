@@ -114,54 +114,55 @@ class DaoHandlerImpl implements DaoHandler {
                 Map<String, List<DaoFK>> byName = JkStreams.toMap(fkList, DaoFK::getFieldName);
                 byName.forEach((fname,daofks) -> {
                     RepoWField fw = ctx.getWClazz(e.getClass()).getField(fname);
+                    if(fw != null) {
+                        List<DaoFK> fks = JkStreams.sorted(daofks);
+                        if (fw.isEntity()) {
+                            RepoEntity dep = entityMap.get(fks.get(0).getSingleDepID());
+                            fw.setValue(e, dep);
 
-                    List<DaoFK> fks = JkStreams.sorted(daofks);
-                    if(fw.isEntity()) {
-                        RepoEntity dep = entityMap.get(fks.get(0).getSingleDepID());
-                        fw.setValue(e, dep);
-
-                    } else if(fw.isCollection()) {
-                        List<RepoEntity> depList = new ArrayList<>();
-                        for (DaoFK fk : JkStreams.sorted(fks)) {
-                            RepoEntity dep = entityMap.get(fk.getCollectionDepID());
-                            depList.add(dep);
-                        }
-                        Collection<RepoEntity> coll = fw.isList() ? depList : toLinkedHashSet(depList);
-                        fw.setValue(e, coll);
-
-                    } else if(fw.isMap()) {
-                        Map<String, List<DaoFK>> byKeyMap = JkStreams.toMap(fks, fk -> fk.getMapKey().getValue());
-                        TypeWrapper twKey = fw.getParamType(0);
-                        TypeWrapper twValue = fw.getParamType(1);
-                        Map finalMap = new LinkedHashMap();
-                        byKeyMap.forEach((k,v) -> {
-                            Object key;
-                            if(twKey.instanceOf(RepoEntity.class)) {
-                                key = entityMap.get(toLong(k));
-                            } else {
-                                key = fmtEntities.parseValue(k, twKey);
+                        } else if (fw.isCollection()) {
+                            List<RepoEntity> depList = new ArrayList<>();
+                            for (DaoFK fk : JkStreams.sorted(fks)) {
+                                RepoEntity dep = entityMap.get(fk.getCollectionDepID());
+                                depList.add(dep);
                             }
-                            Object value;
-                            if(twValue.isCollection()) {
-                                List<Object> depList = new ArrayList<>();
-                                for (DaoFK fk : JkStreams.sorted(v)) {
-                                    if(twValue.instanceOfFlat(RepoEntity.class)) {
-                                        depList.add(entityMap.get(fk.getMapValueAsID()));
+                            Collection<RepoEntity> coll = fw.isList() ? depList : toLinkedHashSet(depList);
+                            fw.setValue(e, coll);
+
+                        } else if (fw.isMap()) {
+                            Map<String, List<DaoFK>> byKeyMap = JkStreams.toMap(fks, fk -> fk.getMapKey().getValue());
+                            TypeWrapper twKey = fw.getParamType(0);
+                            TypeWrapper twValue = fw.getParamType(1);
+                            Map finalMap = new LinkedHashMap();
+                            byKeyMap.forEach((k, v) -> {
+                                Object key;
+                                if (twKey.instanceOf(RepoEntity.class)) {
+                                    key = entityMap.get(toLong(k));
+                                } else {
+                                    key = fmtEntities.parseValue(k, twKey);
+                                }
+                                Object value;
+                                if (twValue.isCollection()) {
+                                    List<Object> depList = new ArrayList<>();
+                                    for (DaoFK fk : JkStreams.sorted(v)) {
+                                        if (twValue.instanceOfFlat(RepoEntity.class)) {
+                                            depList.add(entityMap.get(fk.getMapValueAsID()));
+                                        } else {
+                                            depList.add(fmtEntities.parseValue(fk.getValue().getValue(), twValue.getParamType(0)));
+                                        }
+                                    }
+                                    value = twValue.isList() ? depList : toLinkedHashSet(depList);
+                                } else {
+                                    if (twValue.instanceOf(RepoEntity.class)) {
+                                        value = entityMap.get(v.get(0).getMapValueAsID());
                                     } else {
-                                        depList.add(fmtEntities.parseValue(fk.getValue().getValue(), twValue.getParamType(0)));
+                                        value = fmtEntities.parseValue(v.get(0).getValue().getValue(), twValue);
                                     }
                                 }
-                                value = twValue.isList() ? depList : toLinkedHashSet(depList);
-                            } else {
-                                if(twValue.instanceOf(RepoEntity.class)) {
-                                    value = entityMap.get(v.get(0).getMapValueAsID());
-                                } else {
-                                    value = fmtEntities.parseValue(v.get(0).getValue().getValue(), twValue);
-                                }
-                            }
-                            finalMap.put(key, value);
-                        });
-                        fw.setValue(e, finalMap);
+                                finalMap.put(key, value);
+                            });
+                            fw.setValue(e, finalMap);
+                        }
                     }
                 });
             }
@@ -211,7 +212,9 @@ class DaoHandlerImpl implements DaoHandler {
             for (RepoWField fw : cw.getFields(RepoWField::isEntityFlat)) {
                 if(fw.isEntity()) {
                     RepoEntity dep = fw.getValue(e);
-                    dto.getForeignKeys().add(DaoFK.ofSingle(e, fw, dep));
+                    if(dep != null) {
+                        dto.getForeignKeys().add(DaoFK.ofSingle(e, fw, dep));
+                    }
 
                 } else if(fw.isCollection()) {
                     Collection<RepoEntity> coll = fw.getValue(e);

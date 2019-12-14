@@ -18,12 +18,17 @@ public class JkScanners {
     }
 
     public static JkTag parseHtmlTag(String html, String tagName, String... startStrings) {
+        return parseHtmlTag(html, tagName, false, startStrings);
+    }
+    public static JkTag parseHtmlTag(String html, String tagName, boolean startAfter, String... startStrings) {
         JkTextScanner scanner = new JkTextScannerImpl(html, true);
 
         for(String ss : startStrings) {
             if(StringUtils.isNotEmpty(ss)) {
-                if(!scanner.startAt(ss)) {
-                    return null;
+                if(!startAfter) {
+                    if(!scanner.startAt(ss))    return null;
+                } else  {
+                    if(!scanner.startAfter(ss))    return null;
                 }
             }
         }

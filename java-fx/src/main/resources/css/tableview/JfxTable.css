@@ -1,0 +1,58 @@
+.jfxTable {
+    -fgColorOdd:   BLACK;
+    -bgColorOdd:   WHITE;
+    -fgColorEven:  BLACK;
+    -bgColorEven:  #ccf2ff;
+    -fgColorHover: WHITE;
+    -bgColorHover: #000033;
+
+    -headerHeight: 30;
+    -rowHeight: 25;
+}
+
+.column-header-background {
+    -fx-min-height: -headerHeight;
+    -fx-pref-height: -headerHeight;
+}
+.table-row-cell {
+    -fx-min-height: -rowHeight;
+    -fx-pref-height: -rowHeight;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: -bgColorOdd;
+}
+.table-row-cell:odd .table-cell {
+    -fx-text-fill: -fgColorOdd;
+}
+
+.table-row-cell:even {
+    -fx-background-color: -bgColorEven;
+}
+.table-row-cell:even .table-cell {
+    -fx-text-fill: -fgColorEven;
+}
+
+.table-cell {
+    -fx-alignment: CENTER-LEFT;
+}
+.table-cell.centered {
+    -fx-text-alignment: CENTER;
+    -fx-alignment: CENTER;
+}
+
+.table-row-cell:filled:selected .table-cell,
+.jfxTable:row-selection .table-row-cell:filled:hover .table-cell,
+.jfxTable:row-selection .table-row-cell:filled:selected:hover .table-cell,
+.jfxTable:row-selection .table-row-cell:filled:selected:focused:hover .table-cell,
+.jfxTable:row-selection .table-row-cell:filled:selected:focused  .table-cell {
+    -fx-text-fill: -fgColorHover;
+}
+
+.table-row-cell:filled:selected,
+.jfxTable:row-selection .table-row-cell:filled:hover,
+.jfxTable:row-selection .table-row-cell:filled:selected:hover,
+.jfxTable:row-selection .table-row-cell:filled:selected:focused:hover,
+.jfxTable:row-selection .table-row-cell:filled:selected:focused  {
+    -fx-background-color: -bgColorHover;
+}

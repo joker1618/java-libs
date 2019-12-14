@@ -2,18 +2,12 @@ package json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import junit.entity.correct.misc.SimpleObject;
-import org.junit.Before;
+import junitTests.simple.SimpleObject;
 import org.junit.Test;
-import xxx.joker.libs.core.file.JkFiles;
 import xxx.joker.libs.core.test.JkDataTest;
-import xxx.joker.libs.repo.JkRepo;
-import xxx.joker.libs.repo.util.RepoUtil;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static xxx.joker.libs.core.util.JkConsole.display;
 

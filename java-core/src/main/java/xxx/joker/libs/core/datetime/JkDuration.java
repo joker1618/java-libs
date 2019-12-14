@@ -1,7 +1,7 @@
 package xxx.joker.libs.core.datetime;
 
 import org.apache.commons.lang3.StringUtils;
-import xxx.joker.libs.core.format.JkSortFormattable;
+import xxx.joker.libs.core.format.JkFormattableDefault;
 import xxx.joker.libs.core.util.JkStrings;
 
 import java.time.Duration;
@@ -10,7 +10,10 @@ import java.time.temporal.ChronoUnit;
 import static java.time.temporal.ChronoUnit.*;
 import static xxx.joker.libs.core.util.JkStrings.strf;
 
-public class JkDuration extends JkSortFormattable<JkDuration> {
+public class JkDuration extends JkFormattableDefault<JkDuration> {
+
+    public static final JkDuration ZERO = JkDuration.of(0);
+
     private long totalMillis;
 
     private int hours;

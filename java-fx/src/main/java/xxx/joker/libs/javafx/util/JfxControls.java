@@ -1,4 +1,4 @@
-package xxx.joker.libs.core.javafx;
+package xxx.joker.libs.javafx.util;
 
 import javafx.scene.Node;
 import javafx.scene.image.Image;

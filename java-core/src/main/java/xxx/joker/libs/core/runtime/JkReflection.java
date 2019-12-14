@@ -4,11 +4,12 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.format.JkFormatter;
 import xxx.joker.libs.core.lambda.JkStreams;
-import xxx.joker.libs.core.util.JkConvert;
+import xxx.joker.libs.core.test.JkTests;
 import xxx.joker.libs.core.util.JkStrings;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -81,7 +82,10 @@ public class JkReflection {
 		return JkStreams.filter(findAllFields(sourceClass), f -> isInstanceOf(f.getType(), fieldType));
 	}
 	public static Field getFieldByName(Class<?> sourceClass, String fieldName) {
-		return JkStreams.findUnique(findAllFields(sourceClass), f -> f.getName().equals(fieldName));
+		return getFieldByName(sourceClass, fieldName, false);
+	}
+	public static Field getFieldByName(Class<?> sourceClass, String fieldName, boolean ignoreCase) {
+		return JkStreams.findUnique(findAllFields(sourceClass), f -> ignoreCase ? f.getName().equalsIgnoreCase(fieldName) : f.getName().equals(fieldName));
 	}
 
 	public static Enum getEnumByName(Class<?> enumClass, String enumName) {
@@ -209,6 +213,7 @@ public class JkReflection {
 	public static void copyFields(Object source, Object target, String... fieldsToCopy) {
 		Map<String, Field> sourceFieldMap = JkStreams.toMapSingle(findAllFields(source.getClass()), Field::getName);
 		List<Field> targetFields = findAllFields(target.getClass());
+		targetFields.removeIf(f -> Modifier.isFinal(f.getModifiers()));
 
 		Map<String, String> fnames;
 		if(fieldsToCopy.length > 0) {
@@ -221,6 +226,43 @@ public class JkReflection {
 		for (Field tf : targetFields) {
 			String sourceFieldName = fnames.get(tf.getName());
 			if(sourceFieldName != null) {
+				Field sf = sourceFieldMap.get(sourceFieldName);
+				if (sf != null) {
+					if (sf.getType() == tf.getType()) {
+						Object sval = getFieldValue(source, sf);
+						setFieldValue(target, tf, sval);
+					} else if (tf.getType() == String.class) {
+						String sval = fmt.formatFieldValue(getFieldValue(source, sf), sf);
+						setFieldValue(target, tf, sval);
+					} else if (sf.getType() == String.class) {
+						String sval = getFieldValue(source, sf);
+						Object o = fmt.parseFieldValue(sval, tf);
+						setFieldValue(target, tf, o);
+					} else {
+						String sval = fmt.formatFieldValue(getFieldValue(source, sf), sf);
+						Object o = fmt.parseFieldValue(sval, tf);
+						setFieldValue(target, tf, o);
+					}
+				}
+			}
+		}
+	}
+	public static <T> T copyFieldsExclude(Object source, Class<T> targetClass, String... fieldsToExclude) {
+		T target = createInstance(targetClass);
+		copyFieldsExclude(source, target, fieldsToExclude);
+		return target;
+	}
+	public static void copyFieldsExclude(Object source, Object target, String... fieldsToExclude) {
+		Map<String, Field> sourceFieldMap = JkStreams.toMapSingle(findAllFields(source.getClass()), Field::getName);
+		List<Field> targetFields = findAllFields(target.getClass());
+		targetFields.removeIf(f -> Modifier.isFinal(f.getModifiers()));
+
+		List<String> fnames = JkStreams.mapFilterUniq(targetFields, Field::getName, fn -> !JkTests.containsIgnoreCase(fieldsToExclude, fn));
+
+		JkFormatter fmt = JkFormatter.get();
+		for (Field tf : targetFields) {
+			String sourceFieldName = tf.getName();
+			if(fnames.contains(sourceFieldName)) {
 				Field sf = sourceFieldMap.get(sourceFieldName);
 				if (sf != null) {
 					if (sf.getType() == tf.getType()) {

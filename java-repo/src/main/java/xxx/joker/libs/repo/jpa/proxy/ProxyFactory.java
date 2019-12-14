@@ -22,13 +22,11 @@ public class ProxyFactory {
     private final ReadWriteLock lock;
     private final Function<RepoEntity, Boolean> addFunction;
     private final Function<RepoEntity, Boolean> removeFunction;
-    private final IndexManager indexManager;
 
-    public ProxyFactory(ReadWriteLock lock, Function<RepoEntity, Boolean> addFunction, Function<RepoEntity, Boolean> removeFunction, IndexManager indexManager) {
+    public ProxyFactory(ReadWriteLock lock, Function<RepoEntity, Boolean> addFunction, Function<RepoEntity, Boolean> removeFunction) {
         this.lock = lock;
         this.addFunction = addFunction;
         this.removeFunction = removeFunction;
-        this.indexManager = indexManager;
     }
 
     public ProxyDataSet createProxyDataSet() {
@@ -39,39 +37,32 @@ public class ProxyFactory {
         return new ProxyDataSet(lock, finalData, addFunction, removeFunction);
     }
 
-    public Set<RepoEntity> createProxySet(Collection<RepoEntity> data, RepoEntity parent, RepoWField wField) {
-        return createProxySet(data, createAddIndexConsumer(parent, wField));
-    }
-    public Set<RepoEntity> createProxySet(Collection<RepoEntity> data, Consumer<Long> addIndexConsumer) {
+    public Set<RepoEntity> createProxySet(Collection<RepoEntity> data) {
         ClassLoader loader = TreeSet.class.getClassLoader();
         Class[] interfaces = {Set.class};
         Collection<RepoEntity> finalData = data == null ? Collections.emptyList() : data;
-        ProxySet proxySet = new ProxySet(lock, finalData, addFunction, addIndexConsumer);
+        Function<RepoEntity, Boolean> addFuncFinal = e -> e.getEntityId() == null && addFunction.apply(e);
+        ProxySet proxySet = new ProxySet(lock, finalData, addFuncFinal);
         return (Set<RepoEntity>) Proxy.newProxyInstance(loader, interfaces, proxySet);
     }
 
-    public List<RepoEntity> createProxyList(Collection<RepoEntity> data, RepoEntity parent, RepoWField wField) {
-        return createProxyList(data, createAddIndexConsumer(parent, wField));
-    }
-    public List<RepoEntity> createProxyList(Collection<RepoEntity> data, Consumer<Long> addIndexConsumer) {
+    public List<RepoEntity> createProxyList(Collection<RepoEntity> data) {
         ClassLoader loader = ArrayList.class.getClassLoader();
         Class[] interfaces = {List.class};
         Collection<RepoEntity> finalData = data == null ? Collections.emptyList() : data;
-        ProxyList proxyList = new ProxyList(finalData, lock, addFunction, addIndexConsumer);
+        Function<RepoEntity, Boolean> addFuncFinal = e -> e.getEntityId() == null && addFunction.apply(e);
+        ProxyList proxyList = new ProxyList(finalData, lock, addFuncFinal);
         return (List<RepoEntity>) Proxy.newProxyInstance(loader, interfaces, proxyList);
     }
 
-    public Map<?, ?> createProxyMap(Map<?,?> map, RepoEntity parent, RepoWField wField) {
+    public Map<?, ?> createProxyMap(Map<?,?> map, RepoWField wField) {
         Class<?> mapClass = map instanceof TreeMap ? TreeMap.class : LinkedHashMap.class;
         ClassLoader loader = mapClass.getClassLoader();
         Class[] interfaces = {Map.class};
         Map<?,?> finalData = map == null ? new LinkedHashMap<>() : map;
-        Consumer<Long> addIndexConsumer = createAddIndexConsumer(parent, wField);
-        ProxyMap proxyMap = new ProxyMap(finalData, lock, addFunction, wField, this, addIndexConsumer);
+        Function<RepoEntity, Boolean> addFuncFinal = e -> e.getEntityId() == null && addFunction.apply(e);
+        ProxyMap proxyMap = new ProxyMap(finalData, lock, addFuncFinal, wField, this);
         return (Map<?,?>) Proxy.newProxyInstance(loader, interfaces, proxyMap);
     }
 
-    private Consumer<Long> createAddIndexConsumer(RepoEntity parent, RepoWField wField) {
-        return id -> indexManager.addUsage(id, parent.getEntityId(), wField);
-    }
 }

@@ -19,6 +19,7 @@
         <module>args-parser</module>
         <module>java-repo</module>
         <module>java-excel</module>
+        <module>java-fx</module>
     </modules>
 
     <packaging>pom</packaging>
