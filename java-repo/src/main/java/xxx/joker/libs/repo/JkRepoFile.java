@@ -182,7 +182,7 @@ public class JkRepoFile implements JkRepo {
 
     @Override
     public void erase() {
-
+        jpaHandler.clearAll(true);
     }
 
     @Override
