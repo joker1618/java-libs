@@ -14,7 +14,7 @@ public class IndexManager {
     }
 
     public synchronized void setSequenceValue(long value) {
-        mainSequence.set(value);;
+        mainSequence.set(value);
     }
 
     public synchronized long getSequenceValueAndLock() {

@@ -3,9 +3,7 @@ package xxx.joker.libs.repo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxx.joker.libs.core.datetime.JkTimer;
-import xxx.joker.libs.core.file.JkFiles;
 import xxx.joker.libs.core.lambda.JkStreams;
-import xxx.joker.libs.core.runtime.wrapper.TypeWrapper;
 import xxx.joker.libs.repo.config.RepoChecker;
 import xxx.joker.libs.repo.config.RepoConfig;
 import xxx.joker.libs.repo.config.RepoCtx;
@@ -18,7 +16,6 @@ import xxx.joker.libs.repo.resources.AddType;
 import xxx.joker.libs.repo.resources.ResourceHandler;
 import xxx.joker.libs.repo.util.RepoUtil;
 import xxx.joker.libs.repo.wrapper.RepoWClazz;
-import xxx.joker.libs.repo.wrapper.RepoWField;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -180,7 +177,12 @@ public class JkRepoFile implements JkRepo {
 
     @Override
     public void clearAll() {
-        jpaHandler.clearAll();
+        jpaHandler.clearAll(false);
+    }
+
+    @Override
+    public void erase() {
+
     }
 
     @Override

@@ -2,17 +2,14 @@ package xxx.joker.libs.repo.jpa;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.lambda.JkStreams;
 import xxx.joker.libs.core.runtime.wrapper.TypeWrapper;
 import xxx.joker.libs.repo.config.RepoCtx;
 import xxx.joker.libs.repo.design.RepoEntity;
 import xxx.joker.libs.repo.design.entities.RepoProperty;
-import xxx.joker.libs.repo.exceptions.ErrorType;
 import xxx.joker.libs.repo.exceptions.RepoError;
 import xxx.joker.libs.repo.jpa.indexes.IndexManager;
 import xxx.joker.libs.repo.jpa.persistence.DaoDTO;
-import xxx.joker.libs.repo.jpa.persistence.DaoFK;
 import xxx.joker.libs.repo.jpa.persistence.DaoHandler;
 import xxx.joker.libs.repo.jpa.proxy.ProxyDataSet;
 import xxx.joker.libs.repo.jpa.proxy.ProxyFactory;
@@ -21,10 +18,8 @@ import xxx.joker.libs.repo.wrapper.RepoWField;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static xxx.joker.libs.core.lambda.JkStreams.filter;
 import static xxx.joker.libs.core.lambda.JkStreams.filterMap;
@@ -195,11 +190,14 @@ class JpaHandlerImpl implements JpaHandler {
     }
 
     @Override
-    public void clearAll() {
+    public void clearAll(boolean resetIdSequence) {
         try {
             ctx.getWriteLock().lock();
             proxies.values().forEach(pds -> pds.getEntities().clear());
             dataById.clear();
+            if(resetIdSequence) {
+                indexManager.setSequenceValue(0L);
+            }
             LOG.info("Cleared all data sets");
         } finally {
             ctx.getWriteLock().unlock();
@@ -365,7 +363,7 @@ class JpaHandlerImpl implements JpaHandler {
             List<RepoEntity> finalList = checkIdAndPk(entities);
 
             if(!dataById.isEmpty())
-                clearAll();
+                clearAll(false);
 
             if(!finalList.isEmpty()) {
                 Map<Class<?>, List<RepoEntity>> emap = JkStreams.toMap(finalList, RepoEntity::getClass);

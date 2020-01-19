@@ -59,6 +59,7 @@ public interface JkRepo {
     void removeFromDependencies(RepoEntity toRemove, Collection<? extends RepoEntity> entities);
 
     void clearAll();
+    void erase();
 
     void rollback();
     void commit();
