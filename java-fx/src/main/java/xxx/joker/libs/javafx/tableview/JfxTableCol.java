@@ -50,18 +50,7 @@ public class JfxTableCol<T, V> extends TableColumn<T, V> {
         }
 
         if(formatter != null) {
-            col.formatter = formatter;
-            col.setCellFactory(param -> new TableCell<T, V>() {
-                @Override
-                protected void updateItem (V item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (item == null || empty) {
-                        setText(null);
-                    } else {
-                        setText(formatter.apply(item));
-                    }
-                }
-            });
+            col.setFormatter(formatter);
         }
 
         return col;
@@ -94,6 +83,17 @@ public class JfxTableCol<T, V> extends TableColumn<T, V> {
 
     public void setFormatter(Function<V, String> formatter) {
         this.formatter = formatter;
+        setCellFactory(param -> new TableCell<T, V>() {
+            @Override
+            protected void updateItem (V item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                } else {
+                    setText(formatter.apply(item));
+                }
+            }
+        });
     }
 
 //    public void setFixedPrefWidth(double prefWidth) {
