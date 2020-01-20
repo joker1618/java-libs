@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.List;
@@ -147,5 +148,17 @@ public class JkDates {
         }
     }
 
+    public static int daysBetween(LocalDateTime ldt1, LocalDateTime ldt2) {
+        return daysBetween(ldt1.toLocalDate(), ldt2.toLocalDate());
+    }
+    public static int daysBetween(LocalDate ld1, LocalDate ld2) {
+        return (int) ChronoUnit.DAYS.between(ld1, ld2);
+    }
+    public static int yearsBetween(LocalDateTime ldt1, LocalDateTime ldt2) {
+        return yearsBetween(ldt1.toLocalDate(), ldt2.toLocalDate());
+    }
+    public static int yearsBetween(LocalDate ld1, LocalDate ld2) {
+        return (int) ChronoUnit.YEARS.between(ld1, ld2);
+    }
 
 }
