@@ -18,6 +18,9 @@ public class JfxGridPaneBuilder {
     // row, cols
     private Map<Integer, Map<Integer, GpBox>> boxMap = new HashMap<>();
 
+    public JfxGridPaneBuilder add(int row, int col, int number) {
+        return add(row, col, 1, 1, strf("%d", number));
+    }
     public JfxGridPaneBuilder add(int row, int col, String lbl, Object... params) {
         return add(row, col, 1, 1, lbl, params);
     }
