@@ -15,6 +15,8 @@ public class JfxTable<T> extends TableView<T> {
 
     private int headerHeight;
     private int rowHeight;
+    private int extraTableWidth;
+    private int[] colWidths;
     private int maxElemVisible;
 
     public JfxTable(String... styleClasses) {
@@ -55,15 +57,11 @@ public class JfxTable<T> extends TableView<T> {
         this.maxElemVisible = numElemVisible;
     }
 
-    public void refreshHeight() {
-        int num = Math.min(getItems().size(), maxElemVisible);
-        num = Math.max(2, num);
-        int h = 5 + headerHeight + rowHeight * num;
-        setMinHeight(h);
-        setPrefHeight(h);
+    public void refreshTableSize() {
+        refreshWidth();
+        refreshHeight();
     }
-
-    public void setWidths(int addWidth, int... colWidths) {
+    public void refreshWidth() {
         int iw = 0;
         int sum = 0;
         for(int col = 0; col < getColumns().size(); col++) {
@@ -72,9 +70,31 @@ public class JfxTable<T> extends TableView<T> {
             sum += colWidths[iw];
             iw = (iw + 1) % colWidths.length;
         }
-        int tableWidth = addWidth + sum;
+        int tableWidth = extraTableWidth + sum;
         setMinWidth(tableWidth);
         setPrefWidth(tableWidth);
+    }
+    public void refreshHeight() {
+        int num = Math.min(getItems().size(), maxElemVisible);
+        num = Math.max(2, num);
+        int h = 5 + headerHeight + rowHeight * num;
+        setMinHeight(h);
+        setPrefHeight(h);
+    }
+
+    public void setExtraTableWidth(int extraTableWidth) {
+        this.extraTableWidth = extraTableWidth;
+    }
+    public void setWidths(int extraTableWidth, int... colWidths) {
+        setExtraTableWidth(extraTableWidth);
+        this.colWidths = colWidths;
+    }
+    public void setWidthsGroups(int addWidth, int widthColFirst, int widthColMiddle, int widthColLast) {
+        this.colWidths = new int[getColumns().size()];
+        for (int col = 0; col < getColumns().size(); col++) {
+            int w = col == 0 ? widthColFirst : col < getColumns().size() - 1 ? widthColMiddle : widthColLast;
+            colWidths[col] = w;
+        }
     }
 
 //    public void resizeWidth() {
