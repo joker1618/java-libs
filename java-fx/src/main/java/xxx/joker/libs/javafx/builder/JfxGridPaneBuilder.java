@@ -38,6 +38,15 @@ public class JfxGridPaneBuilder {
         return this;
     }
 
+    public JfxGridPaneBuilder addMulti(int row, int startCol, Node... nodes) {
+        int col = startCol;
+        for(int i = 0; i < nodes.length; i++) {
+            add(row, startCol + i, nodes[i]);
+        }
+        return this;
+    }
+
+
     public JfxGridPaneBuilder removeRow(int row) {
         boxMap.remove(row);
         return this;
