@@ -36,9 +36,9 @@ public class JkDebug {
     public static void stop(int stepNum) {
         stop("STEP {}", stepNum);
     }
-    public static void stopStart(int numStepToStop, int numStepToStart) {
+    public static long stopStart(int numStepToStop, int numStepToStart) {
         stop("STEP {}", numStepToStop);
-        start("STEP {}", numStepToStart);
+        return start("STEP {}", numStepToStart);
     }
     public static void stopID(long id) {
         synchronized (opened) {
@@ -50,13 +50,13 @@ public class JkDebug {
     /**
      * Close the last timer with the same label
      */
-    public static void stopStart(String labelToStop, String labelToStart) {
+    public static long stopStart(String labelToStop, String labelToStart) {
         stop(labelToStop);
-        start(labelToStart);
+        return start(labelToStart);
     }
-    public static void stopStart(long idToStop, String labelToStart) {
+    public static long stopStart(long idToStop, String labelToStart) {
         stopID(idToStop);
-        start(labelToStart);
+        return start(labelToStart);
     }
     public static void stop(String label, Object... params) {
         synchronized (opened) {
