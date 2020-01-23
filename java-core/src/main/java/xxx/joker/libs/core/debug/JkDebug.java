@@ -36,11 +36,11 @@ public class JkDebug {
     public static void stop(int stepNum) {
         stop("STEP {}", stepNum);
     }
-    public static void stopStart(int numToStop, int numToStart) {
-        stop("STEP {}", numToStop);
-        start("STEP {}", numToStart);
+    public static void stopStart(int numStepToStop, int numStepToStart) {
+        stop("STEP {}", numStepToStop);
+        start("STEP {}", numStepToStart);
     }
-    public static void stopTimerID(long id) {
+    public static void stopID(long id) {
         synchronized (opened) {
             DTimer dt = opened.remove(id);
             dt.getTimer().stop();
@@ -54,12 +54,16 @@ public class JkDebug {
         stop(labelToStop);
         start(labelToStart);
     }
+    public static void stopStart(long idToStop, String labelToStart) {
+        stopID(idToStop);
+        start(labelToStart);
+    }
     public static void stop(String label, Object... params) {
         synchronized (opened) {
             String lbl = strf(label, params);
             for(Long id : opened.keySet()) {
                 if(opened.get(id).getLabel().equals(lbl)) {
-                    stopTimerID(id);
+                    stopID(id);
                     return;
                 }
             }
