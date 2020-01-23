@@ -62,6 +62,10 @@ public class JkCsv {
         return csv;
     }
 
+    public List<String> getHeader() {
+        return header;
+    }
+
     public List<JkCsvRow> getData() {
         return data;
     }
