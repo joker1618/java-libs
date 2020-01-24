@@ -70,6 +70,13 @@ public class JkCsv {
         return data;
     }
 
+    public List<String> toCsvLines() {
+        List<String> toRet = new ArrayList<>();
+        toRet.add(join(header, SEP_FIELD.getSeparator()));
+        map(getData(), JkCsvRow::getCurrentData).forEach(cd -> toRet.add(join(cd, SEP_FIELD.getSeparator())));
+        return toRet;
+    }
+
     public void persist(Path outPath) {
         List<String> lines = new ArrayList<>();
         lines.add(join(header, SEP_FIELD.getSeparator()));
