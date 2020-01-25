@@ -62,17 +62,19 @@ public class JfxTable<T> extends TableView<T> {
         refreshHeight();
     }
     public void refreshWidth() {
-        int iw = 0;
-        int sum = 0;
-        for(int col = 0; col < getColumns().size(); col++) {
-            getColumns().get(col).setMinWidth(colWidths[iw]);
-            getColumns().get(col).setPrefWidth(colWidths[iw]);
-            sum += colWidths[iw];
-            iw = (iw + 1) % colWidths.length;
+        if(colWidths != null) {
+            int iw = 0;
+            int sum = 0;
+            for (int col = 0; col < getColumns().size(); col++) {
+                getColumns().get(col).setMinWidth(colWidths[iw]);
+                getColumns().get(col).setPrefWidth(colWidths[iw]);
+                sum += colWidths[iw];
+                iw = (iw + 1) % colWidths.length;
+            }
+            int tableWidth = extraTableWidth + sum;
+            setMinWidth(tableWidth);
+            setPrefWidth(tableWidth);
         }
-        int tableWidth = extraTableWidth + sum;
-        setMinWidth(tableWidth);
-        setPrefWidth(tableWidth);
     }
     public void refreshHeight() {
         int num = Math.min(getItems().size(), maxElemVisible);
@@ -84,6 +86,12 @@ public class JfxTable<T> extends TableView<T> {
 
     public void setExtraTableWidth(int extraTableWidth) {
         this.extraTableWidth = extraTableWidth;
+    }
+    public void setColWidth(int colNum, int colWidth) {
+        if(colWidths == null) {
+            colWidths = new int[getColumns().size()];
+        }
+        colWidths[colNum] = colWidth;
     }
     public void setWidths(int extraTableWidth, int... colWidths) {
         setExtraTableWidth(extraTableWidth);
