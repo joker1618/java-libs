@@ -91,11 +91,11 @@ public class JkDuration extends JkFormattableDefault<JkDuration> {
         StringBuilder sb = new StringBuilder();
 
         if(getHours() > 0 || minUnit == HOURS) {
-            sb.append(strf("%02d:", getHours()));
+            sb.append(strf("%d:", getHours()));
             sb.append(strf("%02d:", getMinutes()));
             sb.append(strf("%02d", getSeconds()));
         } else if(getMinutes() > 0 || minUnit == MINUTES) {
-            sb.append(strf("%02d:", getMinutes()));
+            sb.append(strf("%d:", getMinutes()));
             sb.append(strf("%02d", getSeconds()));
         } else {
             sb.append(strf("%d", getSeconds()));
