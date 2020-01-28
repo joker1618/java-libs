@@ -95,7 +95,11 @@ public class JfxTable<T> extends TableView<T> {
     }
     public void setWidths(int extraTableWidth, int... colWidths) {
         setExtraTableWidth(extraTableWidth);
-        this.colWidths = colWidths;
+        int[] arr = new int[getColumns().size()];
+        for(int i = 0, j = 0; i < arr.length; i++, j = (j+1)%colWidths.length) {
+            arr[i] = colWidths[j];
+        }
+        this.colWidths = arr;
     }
     public void setWidthsGroups(int extraTableWidth, int widthColFirst, int widthColMiddle, int widthColLast) {
         setExtraTableWidth(extraTableWidth);
