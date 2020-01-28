@@ -23,17 +23,23 @@ public class JkDownloader {
     }
 
     public String getHtml(String url) {
-        List<String> lines = getHtmlLines(url);
+        return getHtml(url, false);
+    }
+    public String getHtml(String url, boolean forceDownload) {
+        List<String> lines = getHtmlLines(url, forceDownload);
         return JkStreams.join(lines, StringUtils.LF);
     }
 
     public List<String> getHtmlLines(String url) {
+        return getHtmlLines(url, false);
+    }
+    public List<String> getHtmlLines(String url, boolean forceDownload) {
         try {
             String fname = createOutName(url) + ".html";
 
             Path htmlPath = folder.resolve(fname);
             List<String> lines;
-            if(!Files.exists(htmlPath)) {
+            if(!Files.exists(htmlPath) || forceDownload) {
                 LOG.info("Downloading html from: {}", url);
                 lines = JkWeb.downloadHtmlLines(url);
                 JkFiles.writeFile(htmlPath, lines);
