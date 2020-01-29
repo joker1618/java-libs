@@ -40,8 +40,16 @@ public class JkConvert {
 	public static <T> List<T> toList(T... source) {
 		return source == null ? null : new ArrayList<>(Arrays.asList(source));
 	}
-	public static <T> List<T> toList(Collection<T> source) {
-		return source == null ? null : new ArrayList<>(source);
+	@SafeVarargs
+	public static <T> List<T> toList(Collection<T>... sourceColls) {
+		if(sourceColls == null) {
+			return null;
+		}
+		List<T> list = new ArrayList<>();
+		for (Collection<T> coll : sourceColls) {
+			list.addAll(coll);
+		}
+		return list;
 	}
 
 
