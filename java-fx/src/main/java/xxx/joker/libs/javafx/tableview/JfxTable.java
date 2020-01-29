@@ -110,42 +110,6 @@ public class JfxTable<T> extends TableView<T> {
         }
     }
 
-//    public void resizeWidth() {
-//        double tablePrefWidth = 2d + 20d;
-//
-//        //Set the right policy
-//        for(int idx = 0; idx < getColumns().size(); idx++) {
-//            JfxTableCol<T, ?> col = getJfxCol(idx);
-//
-//            if(col.isVisible()) {
-//                double wcol;
-//                if (col.getStyleClass().contains(CSS_CLASS_FIXED_WIDTH)) {
-//                    wcol = col.getPrefWidth();
-//                } else {
-//                    //Minimal width = columnheader
-//                    Text t = new Text(col.getText());
-//                    double max = t.getLayoutBounds().getWidth();
-//                    for (int i = 1; i < getItems().size(); i++) {
-//                        //cell must not be empty
-//                        if (col.getCellData(i) != null) {
-//                            t = new Text(col.formatCellData(i));
-//                            double calcwidth = t.getLayoutBounds().getWidth();
-//                            if (calcwidth > max) {
-//                                max = calcwidth;
-//                            }
-//                        }
-//                    }
-//                    wcol = max + EXTRA_COL_WIDTH;
-//                }
-//                col.setPrefWidth(wcol);
-//                // add extra space
-//                tablePrefWidth += wcol;
-//            }
-//        }
-//
-//        setPrefWidth(tablePrefWidth);
-//    }
-
     private JfxTableCol<T,?> getJfxCol(int index) {
         return (JfxTableCol<T,?>) getColumns().get(index);
     }
