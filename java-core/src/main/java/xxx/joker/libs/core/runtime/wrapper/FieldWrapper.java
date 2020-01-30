@@ -57,6 +57,18 @@ public class FieldWrapper extends TypeWrapper {
     public boolean isFinal() {
         return Modifier.isFinal(field.getModifiers());
     }
+    public boolean isPrivate() {
+        return Modifier.isPrivate(field.getModifiers());
+    }
+    public boolean isProtected() {
+        return Modifier.isProtected(field.getModifiers());
+    }
+    public boolean isPublic() {
+        return Modifier.isPublic(field.getModifiers());
+    }
+    public boolean isStatic() {
+        return Modifier.isStatic(field.getModifiers());
+    }
 
     @Override
     public String toString() {
