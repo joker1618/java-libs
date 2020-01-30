@@ -387,6 +387,8 @@ class JpaHandlerImpl implements JpaHandler {
             indexManager.setSequenceValue(seqValue);
             updateIdSequenceProperty();
 
+            LOG.info("Initialized repo");
+
         } finally {
             ctx.getWriteLock().unlock();
         }

@@ -20,6 +20,7 @@
         <module>java-repo</module>
         <module>java-excel</module>
         <module>java-fx</module>
+        <module>java-spring-jdbc</module>
     </modules>
 
     <packaging>pom</packaging>
