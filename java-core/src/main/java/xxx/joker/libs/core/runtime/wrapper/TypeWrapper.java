@@ -77,6 +77,9 @@ public class TypeWrapper {
         return false;
     }
 
+    public boolean isSingleObject() {
+        return !isCollection() && !isMap();
+    }
     public boolean isMap() {
         return instanceOf(Map.class);
     }
