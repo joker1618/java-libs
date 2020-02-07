@@ -58,8 +58,9 @@ public class JkDateTime extends JkFormattableDefault<JkDateTime> {
     @Override
     public String format() {
         String format = ldt.format(DEF_FMT);
-        if(format.indexOf('.') == -1)
+        if(format.indexOf('.') == -1) {
             format += ".";
+        }
         return StringUtils.rightPad(format, 23, "0");
     }
 

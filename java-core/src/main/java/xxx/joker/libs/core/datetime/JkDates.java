@@ -39,6 +39,15 @@ public class JkDates {
     }
 
     /* FORMAT */
+    public static String format(TemporalAccessor ldt) {
+        if(ldt instanceof LocalTime) {
+            return DateTimeFormatter.ISO_LOCAL_TIME.format(ldt);
+        }
+        if(ldt instanceof LocalDate) {
+            return DateTimeFormatter.ISO_LOCAL_DATE.format(ldt);
+        }
+        return JkDateTime.of((LocalDateTime)ldt).format();
+    }
     public static String format(TemporalAccessor ldt, String pattern) {
         return DateTimeFormatter.ofPattern(pattern).format(ldt);
     }
