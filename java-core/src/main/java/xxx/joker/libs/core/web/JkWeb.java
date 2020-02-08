@@ -1,8 +1,13 @@
 package xxx.joker.libs.core.web;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.datetime.JkTimer;
+import xxx.joker.libs.core.enumerative.JkSizeUnit;
 import xxx.joker.libs.core.exception.JkRuntimeException;
 import xxx.joker.libs.core.file.JkFiles;
+import xxx.joker.libs.core.format.JkOutput;
 import xxx.joker.libs.core.lambda.JkStreams;
 import xxx.joker.libs.core.util.JkBytes;
 
@@ -11,11 +16,14 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class JkWeb {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(JkWeb.class);
 
 	public static String downloadHtml(String webPageURL) {
 		List<String> lines = downloadHtmlLines(webPageURL);
@@ -65,7 +73,13 @@ public class JkWeb {
 		}
 	}
 	public static void downloadResource(String resourceURL, Path outputPath) {
+		downloadResource(resourceURL, outputPath, true);
+	}
+	public static void downloadResource(String resourceURL, Path outputPath, boolean printLog) {
 		try {
+			double logSize = JkSizeUnit.MB.size() * 10;
+			JkTimer timer = JkTimer.start();
+
 			URL webURL = new URL(resourceURL);
 			URLConnection conn = webURL.openConnection();
 
@@ -76,8 +90,18 @@ public class JkWeb {
 			try (InputStream is = new BufferedInputStream(conn.getInputStream());
 				 OutputStream os = new BufferedOutputStream(new FileOutputStream(outputPath.toFile()))) {
 				int nread;
+				double totread = 0d;
+				double prev = 0d;
 				while ((nread = is.read(arr)) != -1) {
 					os.write(arr, 0, nread);
+					if(printLog) {
+						totread += nread;
+						if((totread - prev) >= logSize) {
+							prev = totread;
+							long secElapsed = (long) timer.elapsed(ChronoUnit.SECONDS);
+							LOG.info("Downloaded {}  ({}/s)", JkOutput.humanSize(totread), JkOutput.humanSize(totread / secElapsed));
+						}
+					}
 				}
 			}
 

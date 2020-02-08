@@ -1,7 +1,9 @@
 package xxx.joker.libs.core.datetime;
 
 import org.apache.commons.lang3.tuple.Pair;
+import xxx.joker.libs.core.enumerative.JkSizeUnit;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +18,11 @@ public class JkTimer {
         this.marks = new ArrayList<>();
         this.endTm = -1L;
     }
-    
+
+    public static JkTimer start() {
+        return new JkTimer();
+    }
+
     public void reset() {
         startTm = nowMillis();
         marks.clear();
@@ -30,6 +36,18 @@ public class JkTimer {
     public long elapsed() {
         long stop = endTm == -1 ? nowMillis() : endTm;
         return stop - startTm;
+    }
+
+    public double elapsed(ChronoUnit chronoUnit) {
+        long el = elapsed();
+        int denominator;
+        switch (chronoUnit) {
+            case SECONDS:   denominator = 1000;   break;
+            case MINUTES:   denominator = 1000 * 60;   break;
+            case HOURS:     denominator = 1000 * 60 * 60;   break;
+            default:        denominator = 1;    break;
+        }
+        return ((double) el) / denominator;
     }
 
     public void stop() {
