@@ -2,7 +2,7 @@ package xxx.joker.libs.core.exception;
 
 import static xxx.joker.libs.core.util.JkStrings.strf;
 
-abstract class JkThrowableUtil {
+public abstract class JkThrowableUtil {
 
     public static String toString(Throwable t, boolean simpleClassName) {
         StringBuilder sb = new StringBuilder();
