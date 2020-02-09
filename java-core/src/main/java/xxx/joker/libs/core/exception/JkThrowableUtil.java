@@ -16,6 +16,14 @@ abstract class JkThrowableUtil {
         return sb.toString().trim();
     }
 
+    public static void doSafe(Runnable action) {
+        try {
+            action.run();
+        } catch (Throwable t) {
+            throw new JkRuntimeException(t);
+        }
+    }
+
     public static String toStringShort(Throwable t, boolean simpleClassName) {
         return strf("{}: {}", simpleClassName ? t.getClass().getSimpleName() : t.getClass().getName(), t.getMessage());
     }
