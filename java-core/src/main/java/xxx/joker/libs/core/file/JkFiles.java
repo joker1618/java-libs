@@ -183,6 +183,9 @@ public class JkFiles {
 	public static String read(Path filePath) {
 		return JkStreams.joinLines(readLines(filePath, false, false));
 	}
+	public static String read(InputStream is) {
+		return JkStreams.joinLines(readLines(is));
+	}
 
 	public static List<String> readLines(InputStream is) {
 		try {
