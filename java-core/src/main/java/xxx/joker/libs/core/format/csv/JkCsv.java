@@ -70,6 +70,9 @@ public class JkCsv {
         return data;
     }
 
+    public JkCsvRow addDataLine(String... fields) {
+        return addDataLine(Arrays.asList(fields));
+    }
     public JkCsvRow addDataLine(List<String> line) {
         JkCsvRow row = new JkCsvRow(header, line);
         data.add(row);
