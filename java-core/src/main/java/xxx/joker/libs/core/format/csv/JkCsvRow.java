@@ -13,7 +13,7 @@ public class JkCsvRow {
     private List<String> origData;
     private List<String> currentData;
 
-    public JkCsvRow(List<String> header, List<String> origData) {
+    JkCsvRow(List<String> header, List<String> origData) {
         this.header = header;
         this.origData = origData;
         this.currentData = new ArrayList<>(origData);

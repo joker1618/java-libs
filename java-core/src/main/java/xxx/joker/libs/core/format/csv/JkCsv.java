@@ -6,10 +6,7 @@ import xxx.joker.libs.core.util.JkStrings;
 import xxx.joker.libs.core.util.JkStruct;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static xxx.joker.libs.core.format.csv.CsvConst.NEWLINE;
 import static xxx.joker.libs.core.format.csv.CsvConst.SEP_FIELD;
@@ -62,12 +59,21 @@ public class JkCsv {
         return csv;
     }
 
+    public void addHeaderFields(String... headerFields) {
+        header.addAll(Arrays.asList(headerFields));
+    }
     public List<String> getHeader() {
         return header;
     }
 
     public List<JkCsvRow> getData() {
         return data;
+    }
+
+    public JkCsvRow addDataLine(List<String> line) {
+        JkCsvRow row = new JkCsvRow(header, line);
+        data.add(row);
+        return row;
     }
 
     public List<String> toCsvLines() {
