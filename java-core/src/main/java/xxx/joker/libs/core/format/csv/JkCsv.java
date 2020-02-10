@@ -1,7 +1,9 @@
 package xxx.joker.libs.core.format.csv;
 
 import xxx.joker.libs.core.file.JkFiles;
+import xxx.joker.libs.core.format.JkFormatter;
 import xxx.joker.libs.core.lambda.JkStreams;
+import xxx.joker.libs.core.runtime.wrapper.TypeWrapper;
 import xxx.joker.libs.core.util.JkStrings;
 import xxx.joker.libs.core.util.JkStruct;
 
@@ -70,8 +72,9 @@ public class JkCsv {
         return data;
     }
 
-    public JkCsvRow addDataLine(String... fields) {
-        return addDataLine(Arrays.asList(fields));
+    public JkCsvRow addDataLine(Object... fields) {
+        List<String> list = map(toList(fields), String::valueOf);
+        return addDataLine(list);
     }
     public JkCsvRow addDataLine(List<String> line) {
         JkCsvRow row = new JkCsvRow(header, line);
