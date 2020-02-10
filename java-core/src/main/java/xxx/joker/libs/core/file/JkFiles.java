@@ -542,6 +542,16 @@ public class JkFiles {
 		return str.replaceAll("[\\\\/]*$", "").replaceAll(".*[\\\\/]", "");
 	}
 
+	public static Path replaceExtension(Path source, String extension) {
+		String ext = getExtension(source);
+		return Paths.get(source.toString().replaceAll(ext+"$", extension));
+	}
+	public static Path replaceFilename(Path source, String fileName) {
+		String fn = getFileName(source);
+		String ext = getExtension(source, true);
+		return Paths.get(source.toString().replaceAll(fn+ext+"$", fileName+ext));
+	}
+
 	public static Path getParent(Path path) {
 		Path parent = path.normalize().getParent();
 		if(parent == null) {
