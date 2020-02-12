@@ -237,6 +237,9 @@ public class JkFormatter {
 
         return o;
     }
+    public Object parseValue(String value, Class<?> clazz) {
+        return parseValue(value, new TypeWrapper(clazz));
+    }
     public Object parseValue(String value, TypeWrapper typeWrapper) {
         Object o = null;
 
@@ -485,6 +488,9 @@ public class JkFormatter {
         }
 
         return toRet;
+    }
+    public String formatValue(Object value, Class<?> clazz) {
+        return formatValue(value, new TypeWrapper(clazz));
     }
     public String formatValue(Object value, TypeWrapper typeWrapper) {
         String toRet;
