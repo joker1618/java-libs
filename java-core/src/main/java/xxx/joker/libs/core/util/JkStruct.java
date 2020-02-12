@@ -42,6 +42,11 @@ public class JkStruct {
         return keys;
     }
     @SafeVarargs
+    public static <K,V> K getMapKey(Map<K,V> map, Predicate<V>... valueFilters) {
+        List<K> keys = getMapKeys(map, valueFilters);
+        return keys.size() == 1 ? keys.get(0) : null;
+    }
+    @SafeVarargs
     public static <K,V> List<V> getMapValues(Map<K,V> map, Predicate<K>... keyFilters) {
         List<V> values = new ArrayList<>();
         map.entrySet().forEach(e -> {
