@@ -63,7 +63,18 @@ public class JkHtmlChars {
         return toRet;
     }
 
-    public static String escapeHtmlChars(String html) {
+    public static String escapeHtmlChars(String source) {
+        for(HtmlChar hc : CHAR_FULL_LIST) {
+            if(!hc.getAndCode().isEmpty()) {
+                source = source.replace(hc.getStringChar(), hc.getAndCode());
+            } else if(!hc.getHashtagCode().isEmpty()) {
+                source = source.replace(hc.getStringChar(), hc.getHashtagCode());
+            }
+        }
+        return source;
+    }
+
+    public static String unescapeHtmlChars(String html) {
         for(HtmlChar hc : CHAR_FULL_LIST) {
             if(!hc.getAndCode().isEmpty()) {
                 html = html.replace(hc.getAndCode(), hc.getStringChar());
@@ -76,7 +87,7 @@ public class JkHtmlChars {
     }
 
     public static List<String> escapeHtmlChars(List<String> source) {
-        return JkStreams.map(source, JkHtmlChars::escapeHtmlChars);
+        return JkStreams.map(source, JkHtmlChars::unescapeHtmlChars);
     }
 
     private static class HtmlChar {
