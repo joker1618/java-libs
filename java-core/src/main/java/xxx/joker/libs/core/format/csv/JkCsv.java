@@ -84,9 +84,12 @@ public class JkCsv {
     }
 
     public List<String> toCsvLines() {
+        return toCsvLines(SEP_FIELD.getSeparator());
+    }
+    public List<String> toCsvLines(String separator) {
         List<String> toRet = new ArrayList<>();
-        toRet.add(join(header, SEP_FIELD.getSeparator()));
-        map(getData(), JkCsvRow::getCurrentData).forEach(cd -> toRet.add(join(cd, SEP_FIELD.getSeparator())));
+        toRet.add(join(header, separator));
+        map(getData(), JkCsvRow::getCurrentData).forEach(cd -> toRet.add(join(cd, separator)));
         return toRet;
     }
 
