@@ -76,8 +76,9 @@ public class JkCsv {
         List<String> list = map(toList(fields), String::valueOf);
         return addDataLine(list);
     }
-    public JkCsvRow addDataLine(List<String> line) {
-        JkCsvRow row = new JkCsvRow(header, line);
+    public JkCsvRow addDataLine(List<?> line) {
+        List<String> strings = map(line, el -> JkFormatter.get().formatValue(el, el.getClass()));
+        JkCsvRow row = new JkCsvRow(header, strings);
         data.add(row);
         return row;
     }
