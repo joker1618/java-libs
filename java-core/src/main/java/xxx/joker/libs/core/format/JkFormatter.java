@@ -489,6 +489,9 @@ public class JkFormatter {
 
         return toRet;
     }
+    public String formatValue(Object value) {
+        return formatValue(value, value.getClass());
+    }
     public String formatValue(Object value, Class<?> clazz) {
         return formatValue(value, new TypeWrapper(clazz));
     }
