@@ -123,8 +123,12 @@ public interface JkRepo {
             return this;
         }
 
-        public Builder addClasses(Class<?>... clazzes) {
-            classes.addAll(toList(clazzes));
+        public Builder addClasses(Class<?>... classes) {
+            this.classes.addAll(toList(classes));
+            return this;
+        }
+        public Builder addClasses(Collection<Class<?>> classes) {
+            this.classes.addAll(classes);
             return this;
         }
 
