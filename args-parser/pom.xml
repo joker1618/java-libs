@@ -18,7 +18,7 @@
         <dependency>
             <groupId>xxx.joker.libs</groupId>
             <artifactId>java-core</artifactId>
-            <version>${java.libs.version}</version>
+            <version>${joker.java-libs.version}</version>
         </dependency>
     </dependencies>
 
