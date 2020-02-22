@@ -12,8 +12,7 @@ import java.util.*;
 
 import static xxx.joker.libs.core.format.csv.CsvConst.NEWLINE;
 import static xxx.joker.libs.core.format.csv.CsvConst.SEP_FIELD;
-import static xxx.joker.libs.core.lambda.JkStreams.join;
-import static xxx.joker.libs.core.lambda.JkStreams.map;
+import static xxx.joker.libs.core.lambda.JkStreams.*;
 import static xxx.joker.libs.core.util.JkConvert.toList;
 import static xxx.joker.libs.core.util.JkStrings.splitList;
 
@@ -35,13 +34,13 @@ public class JkCsv {
         this.data = new ArrayList<>();
         if(!lines.isEmpty()) {
             this.header = splitList(lines.remove(0), fieldSep);
-            this.data = map(lines, line -> new JkCsvRow(header, splitList(line, fieldSep)));
+            this.data = map(lines, line -> new JkCsvRow(() -> header, splitList(line, fieldSep)));
         }
     }
 
     public JkCsv(List<String> header, List<List<String>> dataLines) {
         this.header = new ArrayList<>(header);
-        this.data = map(dataLines, line -> new JkCsvRow(header, line));
+        this.data = map(dataLines, line -> new JkCsvRow(() -> header, line));
     }
 
     private void resetChanges() {
@@ -56,7 +55,7 @@ public class JkCsv {
         JkCsv csv = new JkCsv();
         if(!lines.isEmpty()) {
             csv.header.addAll(splitList(lines.remove(0), fieldSep));
-            csv.data.addAll(map(lines, line -> new JkCsvRow(csv.header, splitList(line, fieldSep))));
+            csv.data.addAll(map(lines, line -> new JkCsvRow(() -> csv.header, splitList(line, fieldSep))));
         }
         return csv;
     }
@@ -78,7 +77,7 @@ public class JkCsv {
     }
     public JkCsvRow addDataLine(List<?> line) {
         List<String> strings = map(line, el -> el == null ? CsvConst.PH_NULL : JkFormatter.get().formatValue(el, el.getClass()));
-        JkCsvRow row = new JkCsvRow(header, strings);
+        JkCsvRow row = new JkCsvRow(() -> header, strings);
         data.add(row);
         return row;
     }
