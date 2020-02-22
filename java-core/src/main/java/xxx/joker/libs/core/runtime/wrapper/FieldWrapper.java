@@ -72,7 +72,22 @@ public class FieldWrapper extends TypeWrapper {
 
     @Override
     public String toString() {
-        return strf("{} {}", super.toString(true), field.getName());
+        return toString(true);
+    }
+    public String toString(boolean simpleClassName) {
+        return strf("{} {}", super.toString(simpleClassName), field.getName());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FieldWrapper that = (FieldWrapper) o;
+        return Objects.equals(toString(false), that.toString(false));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(toString(false));
+    }
 }

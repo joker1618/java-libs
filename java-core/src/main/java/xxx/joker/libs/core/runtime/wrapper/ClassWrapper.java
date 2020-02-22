@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import static xxx.joker.libs.core.lambda.JkStreams.map;
 import static xxx.joker.libs.core.util.JkConvert.toList;
@@ -68,7 +69,19 @@ public class ClassWrapper {
 
     @Override
     public String toString() {
-        return strf("{}", wrappedClass());
+        return strf("{}", wrappedClassName());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClassWrapper that = (ClassWrapper) o;
+        return wrappedClass() == that.wrappedClass();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(wrappedClass());
+    }
 }
