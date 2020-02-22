@@ -231,13 +231,6 @@ public class JkReflection {
 					if (sf.getType() == tf.getType()) {
 						Object sval = getFieldValue(source, sf);
 						setFieldValue(target, tf, sval);
-					} else if (tf.getType() == String.class) {
-						String sval = fmt.formatFieldValue(getFieldValue(source, sf), sf);
-						setFieldValue(target, tf, sval);
-					} else if (sf.getType() == String.class) {
-						String sval = getFieldValue(source, sf);
-						Object o = fmt.parseFieldValue(sval, tf);
-						setFieldValue(target, tf, o);
 					} else {
 						String sval = fmt.formatFieldValue(getFieldValue(source, sf), sf);
 						Object o = fmt.parseFieldValue(sval, tf);
@@ -268,13 +261,6 @@ public class JkReflection {
 					if (sf.getType() == tf.getType()) {
 						Object sval = getFieldValue(source, sf);
 						setFieldValue(target, tf, sval);
-					} else if (tf.getType() == String.class) {
-						String sval = fmt.formatFieldValue(getFieldValue(source, sf), sf);
-						setFieldValue(target, tf, sval);
-					} else if (sf.getType() == String.class) {
-						String sval = getFieldValue(source, sf);
-						Object o = fmt.parseFieldValue(sval, tf);
-						setFieldValue(target, tf, o);
 					} else {
 						String sval = fmt.formatFieldValue(getFieldValue(source, sf), sf);
 						Object o = fmt.parseFieldValue(sval, tf);
