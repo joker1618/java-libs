@@ -18,7 +18,7 @@ public class JkZip {
 
     private static final int BUFFER_SIZE = 1024 * 500;
 
-    public static void unzipArchive(Path archivePath, Path outFolder) {
+    public static Path unzipArchive(Path archivePath, Path outFolder) {
         byte[] buffer = new byte[BUFFER_SIZE];
 
         try (FileInputStream fis = new FileInputStream(archivePath.toFile());
@@ -42,6 +42,7 @@ public class JkZip {
             }
 
             zis.closeEntry();
+            return outFolder;
 
         } catch (Exception ex) {
             throw new JkRuntimeException(ex, "Error decompressing archive {}", archivePath);
@@ -51,11 +52,11 @@ public class JkZip {
     /**
      * @param filesToZip files and folders
      */
-    public static void zipFiles(Path archivePath, Path... filesToZip) {
-        zipFiles(archivePath, Arrays.asList(filesToZip));
+    public static Path zipFiles(Path archivePath, Path... filesToZip) {
+        return zipFiles(archivePath, Arrays.asList(filesToZip));
     }
 
-    public static void zipFiles(Path archivePath, Collection<Path> filesToZip) {
+    public static Path zipFiles(Path archivePath, Collection<Path> filesToZip) {
         try {
             Files.createDirectories(JkFiles.getParent(archivePath));
             Path middleOutPath = JkFiles.safePath(archivePath);
@@ -72,6 +73,8 @@ public class JkZip {
             if(!JkFiles.areEquals(archivePath, middleOutPath)) {
                 JkFiles.move(middleOutPath, archivePath, true);
             }
+
+            return archivePath;
 
         } catch (IOException ex) {
             throw new JkRuntimeException(ex, "Error creating ZIP archive {}", archivePath);
