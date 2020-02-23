@@ -130,17 +130,12 @@ public class JkStreams {
 	public static <T> List<T> distinct(Collection<T> source, Comparator<T> comparator) {
 		return new ArrayList<>(new TreeSet<>(comparator));
 	}
-	public static <T> List<T> reversePositions(Collection<T> source) {
+	public static <T> List<T> descOrdered(Collection<T> source) {
 		List<T> list = sorted(source);
 		Collections.reverse(list);
 		return list;
 	}
-	public static <T> List<T> reverseOrder(Collection<T> source) {
-		List<T> list = sorted(source);
-		Collections.reverse(list);
-		return list;
-	}
-	public static <T> List<T> reverseOrder(Collection<T> source, Comparator<T> sorter) {
+	public static <T> List<T> descOrdered(Collection<T> source, Comparator<T> sorter) {
 		List<T> list = sorted(source, sorter);
 		Collections.reverse(list);
 		return list;

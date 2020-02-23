@@ -368,7 +368,7 @@ public class JkFiles {
 					Files.delete(file);
 				}
 				// Remove all subfolder, beginning with leaves
-				List<Path> subFolders = JkStreams.reverseOrder(filesMap.getOrDefault(false, Collections.emptyList()), Comparator.comparing(Path::getNameCount));
+				List<Path> subFolders = JkStreams.descOrdered(filesMap.getOrDefault(false, Collections.emptyList()), Comparator.comparing(Path::getNameCount));
 				for(Path subFolder : subFolders) {
 					Files.delete(subFolder);
 				}
