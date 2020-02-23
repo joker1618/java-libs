@@ -17,6 +17,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -543,8 +544,9 @@ public class JkFiles {
 	}
 
 	public static Path changeExtension(Path source, String extension) {
-		String ext = getExtension(source);
-		return Paths.get(source.toString().replaceAll(ext+"$", extension));
+		String ext = getExtension(source, true);
+		String newext = extension.isEmpty() ? "" : "." + extension;
+		return Paths.get(source.toString().replaceAll(Pattern.quote(ext)+"$", newext));
 	}
 	public static Path changeFileName(Path source, String newName, boolean keepExtension) {
 		String ext = keepExtension ? getExtension(source, true) : "";
