@@ -105,4 +105,9 @@ public class JkCsv {
             data.forEach(cr -> cr.removeCol(colName));
         }
     }
+
+    @Override
+    public String toString() {
+        return joinLines(toCsvLines());
+    }
 }
