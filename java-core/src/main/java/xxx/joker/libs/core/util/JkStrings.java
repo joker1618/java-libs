@@ -27,7 +27,7 @@ public class JkStrings {
 	 */
 	public static String strf(String format, Object... params) {
 		if(params.length == 0) {
-			return format;
+			return strLog("{}", format);
 		}
 
 		String toRet;
@@ -43,9 +43,6 @@ public class JkStrings {
 		}
 
 		return toRet;
-	}
-	public static String strf(Object obj) {
-		return strLog("{}", obj);
 	}
 	// Use String.format placeholders  (%s, %d, ...)
 	public static String strFmt(String format, Object... params) {
