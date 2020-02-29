@@ -271,14 +271,10 @@ public class JkFormatter {
                         LOG.warn("The List type '{}' is not managed", twClazz);
                     }
                 } else if(typeWrapper.isSet()) {
-                    if(typeWrapper.isOfClass(HashSet.class)) {
-                        o = new HashSet<>(parsedElems);
-                    } else if(typeWrapper.isOfClass(LinkedHashSet.class)) {
-                        o = new LinkedHashSet<>(parsedElems);
-                    } else if(typeWrapper.isOfClass(TreeSet.class)) {
+                    if(typeWrapper.isOfClass(TreeSet.class)) {
                         o = new TreeSet<>(parsedElems);
-                    } else if(typeWrapper.isOfClass(Set.class)) {
-                        o = twColl.isComparable() ? new TreeSet<>(parsedElems) : new LinkedHashSet<>(parsedElems);
+                    } else if(typeWrapper.isOfClass(Set.class, HashSet.class, LinkedHashSet.class)) {
+                        o = new LinkedHashSet<>(parsedElems);
                     } else {
                         LOG.warn("The Set type '{}' is not managed", twClazz);
                     }
@@ -302,14 +298,10 @@ public class JkFormatter {
                     Object v = unescValue == null ? null : parseValue(unescValue, twValue);
                     parsedEntries.put(k, v);
                 });
-                if(typeWrapper.isOfClass(HashMap.class)) {
-                    o = new HashMap<>(parsedEntries);
-                } else if(typeWrapper.isOfClass(TreeMap.class)) {
+                if(typeWrapper.isOfClass(TreeMap.class)) {
                     o = new TreeMap<>(parsedEntries);
-                } else if(typeWrapper.isOfClass(LinkedHashMap.class)) {
+                } else if(typeWrapper.isOfClass(Map.class, HashMap.class, LinkedHashMap.class)) {
                     o = parsedEntries;
-                } else if(typeWrapper.isOfClass(Map.class)) {
-                    o = twKey.isComparable() ? new TreeMap<>(parsedEntries) : new LinkedHashMap<>(parsedEntries);
                 } else {
                     LOG.warn("The Map type '{}' is not managed", twClazz);
                 }
