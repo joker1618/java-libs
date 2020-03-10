@@ -30,7 +30,9 @@ import java.util.function.Function;
 
 import static xxx.joker.libs.core.format.csv.CsvConst.*;
 import static xxx.joker.libs.core.lambda.JkStreams.filter;
+import static xxx.joker.libs.core.lambda.JkStreams.map;
 import static xxx.joker.libs.core.runtime.JkReflection.*;
+import static xxx.joker.libs.core.util.JkConvert.toLinkedHashSet;
 import static xxx.joker.libs.core.util.JkStrings.strf;
 
 /**
@@ -288,7 +290,7 @@ public class JkFormatter {
                 CsvPlaceholder sepEntries = SEP_MAP_ENTRIES;
                 CsvPlaceholder sepKeyValue = SEP_KEY_VALUE;
                 List<String> entries = JkStrings.splitList(value, sepEntries.getSeparator());
-                entries = JkStreams.map(entries, entry -> unescapeString(entry, false, sepEntries));
+                entries = map(entries, entry -> unescapeString(entry, false, sepEntries));
                 Map<Object, Object> parsedEntries = new LinkedHashMap<>();
                 entries.forEach(entry -> {
                     String[] split = JkStrings.splitArr(entry, sepKeyValue.getSeparator());
@@ -306,7 +308,7 @@ public class JkFormatter {
                     LOG.warn("The Map type '{}' is not managed", twClazz);
                 }
 
-            } else if(typeWrapper.instanceOf(Pair.class)) {
+            } else if(typeWrapper.isPair()) {
                 TypeWrapper twKey = typeWrapper.getParamTypes().get(0);
                 TypeWrapper twValue = typeWrapper.getParamTypes().get(1);
                 CsvPlaceholder sepKeyValue = SEP_KEY_VALUE;
@@ -481,9 +483,6 @@ public class JkFormatter {
 
         return toRet;
     }
-    public String formatValue(Object value) {
-        return formatValue(value, value.getClass());
-    }
     public String formatValue(Object value, Class<?> clazz) {
         return formatValue(value, new TypeWrapper(clazz));
     }
@@ -525,7 +524,7 @@ public class JkFormatter {
                 });
                 toRet = JkStreams.join(parts, sepEntries.getSeparator());
 
-            } else if(typeWrapper.instanceOf(Pair.class)) {
+            } else if(typeWrapper.isPair()) {
                 TypeWrapper twKey = typeWrapper.getParamTypes().get(0);
                 TypeWrapper twValue = typeWrapper.getParamTypes().get(1);
                 Pair<?,?> pair = (Pair) value;
@@ -695,4 +694,38 @@ public class JkFormatter {
     public void setFormatStaticFields(boolean formatStaticFields) {
         this.formatStaticFields = formatStaticFields;
     }
+
+    // Static methods
+    public static String formatValue(Object value) {
+        TypeWrapper tw = new TypeWrapper(value.getClass());
+        Object toFormat;
+
+        if(tw.isCollection()) {
+            Collection<?> coll = (Collection<?>) value;
+            List<String> stringColl = map(coll, JkFormatter::formatValue);
+            toFormat = tw.isSet() ? toLinkedHashSet(stringColl) : stringColl;
+            tw.getParamTypes().add(new TypeWrapper(String.class));
+
+        } else if(tw.isMap()) {
+            Map<?,?> map = (Map<?,?>) value;
+            Map<String,String> stringMap = new LinkedHashMap<>();
+            map.forEach((k,v) -> stringMap.put(formatValue(k), formatValue(v)));
+            toFormat = stringMap;
+            tw.getParamTypes().add(new TypeWrapper(String.class));
+            tw.getParamTypes().add(new TypeWrapper(String.class));
+
+        } else if(tw.isPair()) {
+            Pair<?,?> pair = (Pair<?,?>) value;
+            Pair<String,String> stringPair = Pair.of(formatValue(pair.getKey()), formatValue(pair.getValue()));
+            toFormat = stringPair;
+            tw.getParamTypes().add(new TypeWrapper(String.class));
+            tw.getParamTypes().add(new TypeWrapper(String.class));
+
+        } else {
+            toFormat = value;
+        }
+
+        return get().formatValue(toFormat, tw);
+    }
+
 }

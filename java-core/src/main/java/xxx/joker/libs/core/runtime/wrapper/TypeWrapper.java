@@ -1,5 +1,6 @@
 package xxx.joker.libs.core.runtime.wrapper;
 
+import org.apache.commons.lang3.tuple.Pair;
 import xxx.joker.libs.core.lambda.JkStreams;
 import xxx.joker.libs.core.runtime.JkReflection;
 
@@ -79,6 +80,9 @@ public class TypeWrapper {
 
     public boolean isSingleObject() {
         return !isCollection() && !isMap();
+    }
+    public boolean isPair() {
+        return isOfClass(Pair.class);
     }
     public boolean isMap() {
         return instanceOf(Map.class);
