@@ -73,7 +73,9 @@ public class JkTimer {
         for(int i = 0; i < marks.size(); i++) {
             long el = marks.get(i).getValue() - begin;
             lines.add(strf("{}|{}", marks.get(i).getKey(), JkDuration.strElapsed(el)));
+            begin = marks.get(i).getValue();
         }
+        lines.add(strf("TOTAL|{}", JkDuration.strElapsed(elapsed())));
         return JkOutput.columnsView(lines);
     }
 
