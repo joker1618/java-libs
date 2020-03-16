@@ -89,16 +89,16 @@ import static xxx.joker.libs.core.util.JkStrings.strf;
  *  - parsed
  *      Pair
  *
- *      List --> ArrayList
+ *      List: ArrayList
  *      ArrayList
  *      LinkedList
  *
- *      Set --> TreeSet if comparable, else LinkedHashSet
+ *      Set: TreeSet if comparable, else LinkedHashSet
  *      TreeSet
  *      LinkedHashSet
  *      HashSet
  *
- *      Map --> TreeMap if key is comparable, else LinkedHashMap
+ *      Map: TreeMap if key is comparable, else LinkedHashMap
  *      TreeMap
  *      LinkedHashMap
  *      HashMap

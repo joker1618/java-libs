@@ -50,7 +50,9 @@ public class JkZip {
     }
 
     /**
+     * @param archivePath output path
      * @param filesToZip files and folders
+     * @return output path
      */
     public static Path zipFiles(Path archivePath, Path... filesToZip) {
         return zipFiles(archivePath, Arrays.asList(filesToZip));

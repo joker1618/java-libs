@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * The field must have one of the following types:
  * - RepoEntity
- * - Collection<RepoEntity>
+ * - Collection&lt;RepoEntity&gt;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})

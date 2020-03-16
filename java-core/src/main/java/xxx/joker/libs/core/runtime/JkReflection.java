@@ -88,7 +88,7 @@ public class JkReflection {
 		return JkStreams.findUnique(findAllFields(sourceClass), f -> ignoreCase ? f.getName().equalsIgnoreCase(fieldName) : f.getName().equals(fieldName));
 	}
 
-	public static Enum getEnumByName(Class<?> enumClass, String enumName) {
+	public static Enum<?> getEnumByName(Class<?> enumClass, String enumName) {
 		Enum[] enumConstants = (Enum[]) enumClass.getEnumConstants();
 		for(Enum elem : enumConstants) {
 			if(elem.name().equals(enumName)) {
@@ -201,7 +201,7 @@ public class JkReflection {
 		}
 	}
 
-	/**
+	/*
 	 * @param fieldsToCopy can be the simple field name, if in both class the name
 	 *                     is equals, or in the form 'id=entityId' (source=target)
 	 */

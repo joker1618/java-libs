@@ -47,7 +47,7 @@ public class JkDebug {
             closed.add(dt);
         }
     }
-    /**
+    /*
      * Close the last timer with the same label
      */
     public static long stopStart(String labelToStop, String labelToStart) {

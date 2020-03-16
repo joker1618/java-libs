@@ -343,7 +343,6 @@ public class JkRepoFile implements JkRepo {
 
     /**
      * Remove resource files not used (when a resource is deleted, the file is not removed)
-     * @return
      */
     @Override
     public List<Path> cleanResources() {

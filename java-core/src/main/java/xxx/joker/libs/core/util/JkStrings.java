@@ -22,8 +22,12 @@ public class JkStrings {
 	 * 2) using placeholders like Logger ({})
 	 *
 	 * Count string 'format' occurrences of String.format placeholders (a) and {} placeholders (b):
-	 * if the number of (a) does not match the number of params and (b) match --> use (b) placeholder
-	 * else  --> use (a) placeholder
+	 * if the number of (a) does not match the number of params and (b) match: use (b) placeholder
+	 * else: use (a) placeholder
+	 *
+	 * @param format the format
+	 * @param params string parameters
+	 * @return the formatted string
 	 */
 	public static String strf(String format, Object... params) {
 		if(params.length == 0) {

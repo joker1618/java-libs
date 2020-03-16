@@ -2,10 +2,13 @@ package xxx.joker.libs.core.datetime;
 
 import org.apache.commons.lang3.tuple.Pair;
 import xxx.joker.libs.core.enumerative.JkSizeUnit;
+import xxx.joker.libs.core.format.JkOutput;
 
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+
+import static xxx.joker.libs.core.util.JkStrings.strf;
 
 public class JkTimer {
 
@@ -62,6 +65,16 @@ public class JkTimer {
 
     public String strElapsed() {
         return JkDuration.strElapsed(elapsed());
+    }
+
+    public String strMarks() {
+        List<String> lines = new ArrayList<>();
+        long begin = startTm;
+        for(int i = 0; i < marks.size(); i++) {
+            long el = marks.get(i).getValue() - begin;
+            lines.add(strf("{}|{}", marks.get(i).getKey(), JkDuration.strElapsed(el)));
+        }
+        return JkOutput.columnsView(lines);
     }
 
     public long getStartTm() {

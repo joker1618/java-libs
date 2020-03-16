@@ -15,6 +15,7 @@ public @interface EntityField {
      * - must be a Path
      * - is persisted as relative path  (from the resources folder)
      * - the field value will be an absolute path  (starting with ${resources_folder})
+     * @return a custom string representing the reference type
      */
     String refType() default "";
 

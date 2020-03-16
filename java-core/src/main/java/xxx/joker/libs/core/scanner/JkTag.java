@@ -41,7 +41,7 @@ public interface JkTag {
      */
     String getHtmlTag();
     /**
-     * @param includeTagName
+     * @param includeTagName include or not the tag name
      * @return raw html
      */
     String getHtmlTag(boolean includeTagName);
