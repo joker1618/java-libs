@@ -32,8 +32,8 @@ public class JkTimer {
         endTm = -1L;
     }
     
-    public void mark(String label) {
-        marks.add(Pair.of(label, nowMillis()));
+    public void mark(String label, Object... params) {
+        marks.add(Pair.of(strf(label, params), nowMillis()));
     }
 
     public long elapsed() {
