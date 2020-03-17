@@ -72,11 +72,14 @@ class DaoHandlerImpl implements DaoHandler {
                 });
                 fmtEntities.setFieldFormat(fw.getField(), o -> {
                     Path p = (Path) o;
-                    if(!p.isAbsolute()) {
-                        return p.toString();
-                    }
-                    if(p.startsWith(ctx.getResourcesFolder())) {
-                        return ctx.getResourcesFolder().relativize(p).toString();
+//                    if(!p.isAbsolute()) {
+//                        return p.toString();
+//                    }
+//                    if(p.startsWith(ctx.getResourcesFolder())) {
+//                        return ctx.getResourcesFolder().relativize(p).toString();
+//                    }
+                    if(p.toAbsolutePath().startsWith(ctx.getResourcesFolder().toAbsolutePath())) {
+                        return ctx.getResourcesFolder().toAbsolutePath().relativize(p.toAbsolutePath()).toString();
                     }
                     return p.toString();
                 });
