@@ -103,6 +103,7 @@ public class JkCsv {
         int index = JkStruct.indexOfIgnoreCase(header, colName);
         if(index != -1) {
             data.forEach(cr -> cr.removeCol(colName));
+            header.remove(index);
         }
     }
 

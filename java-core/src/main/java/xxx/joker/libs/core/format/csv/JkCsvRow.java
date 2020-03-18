@@ -72,7 +72,6 @@ public class JkCsvRow {
     public void removeCol(String colName) {
         int index = JkStruct.indexOfIgnoreCase(header.get(), colName);
         if(index != -1) {
-            header.get().remove(index);
             currentData.remove(index);
         }
     }
