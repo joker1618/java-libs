@@ -49,12 +49,8 @@ public class JkRepoFile implements JkRepo {
         this(repoFolder, dbName, classes, toList(packages));
     }
     protected JkRepoFile(Path repoFolder, String dbName, Collection<Class<?>> classes, Collection<String> packages) {
-        JkTimer timer = JkTimer.start();
         this.ctx = checkRepoAndCreateCtx(repoFolder, dbName, classes, packages);
-        LOG.debug("Context created in {}", timer.strElapsed());
-        timer.reset();
         initialize(ctx);
-        LOG.debug("Repo initialized in {}", timer.strElapsed());
     }
     private void initialize(RepoCtx ctx) {
         LOG.info("Init repo [folder={}, dbName={}]", ctx.getRepoFolder(), ctx.getDbName());

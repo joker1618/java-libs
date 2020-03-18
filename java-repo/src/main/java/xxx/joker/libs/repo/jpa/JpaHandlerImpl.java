@@ -2,6 +2,7 @@ package xxx.joker.libs.repo.jpa;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xxx.joker.libs.core.datetime.JkTimer;
 import xxx.joker.libs.core.lambda.JkStreams;
 import xxx.joker.libs.core.runtime.wrapper.TypeWrapper;
 import xxx.joker.libs.repo.config.RepoCtx;
@@ -327,6 +328,8 @@ class JpaHandlerImpl implements JpaHandler {
 
     private void initDataSets(List<DaoDTO> dtoList) {
         try {
+            JkTimer timer = JkTimer.start();
+
             ctx.getWriteLock().lock();
 
             List<RepoEntity> entities = JkStreams.map(dtoList, DaoDTO::getEntity);
@@ -357,7 +360,7 @@ class JpaHandlerImpl implements JpaHandler {
             indexManager.setSequenceValue(seqValue);
             updateIdSequenceProperty();
 
-            LOG.info("Initialized repo");
+            LOG.info("Initialized repo in {}", timer.strElapsed());
 
         } finally {
             ctx.getWriteLock().unlock();
