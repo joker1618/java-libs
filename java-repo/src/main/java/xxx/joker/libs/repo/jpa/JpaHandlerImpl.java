@@ -50,38 +50,8 @@ class JpaHandlerImpl implements JpaHandler {
 
         this.daoHandler = DaoHandler.createHandler(ctx);
 
-        // Check circular dependencies
-        checkCircularDependencies();
-
         // Init repo data sets
         initDataSets(daoHandler.readData());
-    }
-    private void checkCircularDependencies() {
-        Map<Class<?>, Set<Class<?>>> refMap = new HashMap<>();
-
-        for (RepoWClazz cw : ctx.getWClazzMap().values()) {
-            refMap.put(cw.getEClazz(), new HashSet<>());
-            for (RepoWField fw : cw.getFields()) {
-                List<Class<?>> classes = fw.retrieveEntityParametrizedTypes();
-                refMap.get(cw.getEClazz()).addAll(classes);
-            }
-        }
-
-        List<Class<?>> recursives = JkStreams.filter(refMap.keySet(), c -> isRecursive(refMap, c, c));
-        if(!recursives.isEmpty()) {
-            throw new RepoError(DESIGN_CIRCULAR_DEPENDENCIES, "Circular dependency found for classes: {}", recursives);
-        }
-    }
-    private boolean isRecursive(Map<Class<?>, Set<Class<?>>> refMap, Class<?> sourceClazz, Class<?> toCheck) {
-        Set<Class<?>> cset = refMap.get(toCheck);
-        if(cset.contains(sourceClazz)) 
-            return true;
-        
-        boolean res = false;
-        for (Class<?> c : cset) 
-            res |= isRecursive(refMap, sourceClazz, c);
-        
-        return res;
     }
 
     @Override

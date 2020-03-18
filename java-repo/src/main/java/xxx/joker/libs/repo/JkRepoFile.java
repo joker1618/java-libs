@@ -11,11 +11,13 @@ import xxx.joker.libs.repo.design.RepoEntity;
 import xxx.joker.libs.repo.design.entities.RepoProperty;
 import xxx.joker.libs.repo.design.entities.RepoResource;
 import xxx.joker.libs.repo.design.entities.RepoTags;
+import xxx.joker.libs.repo.exceptions.RepoError;
 import xxx.joker.libs.repo.jpa.JpaHandler;
 import xxx.joker.libs.repo.resources.AddType;
 import xxx.joker.libs.repo.resources.ResourceHandler;
 import xxx.joker.libs.repo.util.RepoUtil;
 import xxx.joker.libs.repo.wrapper.RepoWClazz;
+import xxx.joker.libs.repo.wrapper.RepoWField;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -25,6 +27,7 @@ import java.util.function.Predicate;
 import static xxx.joker.libs.core.lambda.JkStreams.*;
 import static xxx.joker.libs.core.util.JkConvert.toList;
 import static xxx.joker.libs.core.util.JkStrings.strf;
+import static xxx.joker.libs.repo.exceptions.ErrorType.DESIGN_CIRCULAR_DEPENDENCIES;
 
 public class JkRepoFile implements JkRepo {
 
@@ -65,7 +68,37 @@ public class JkRepoFile implements JkRepo {
         List<RepoWClazz> wcList = map(eClasses, ec -> RepoWClazz.get((Class<RepoEntity>)ec));
         wcList.forEach(RepoChecker::checkEntityClass);
 
-        return new RepoCtx(repoFolder, dbName, wcList);
+        RepoCtx ctx = new RepoCtx(repoFolder, dbName, wcList);
+        checkCircularDependencies(ctx);
+
+        return ctx;
+    }
+    private void checkCircularDependencies(RepoCtx ctx) {
+        Map<Class<?>, Set<Class<?>>> refMap = new HashMap<>();
+
+        for (RepoWClazz cw : ctx.getWClazzMap().values()) {
+            refMap.put(cw.getEClazz(), new HashSet<>());
+            for (RepoWField fw : cw.getFields()) {
+                List<Class<?>> classes = fw.retrieveEntityParametrizedTypes();
+                refMap.get(cw.getEClazz()).addAll(classes);
+            }
+        }
+
+        List<Class<?>> recursives = JkStreams.filter(refMap.keySet(), c -> isRecursive(refMap, c, c));
+        if(!recursives.isEmpty()) {
+            throw new RepoError(DESIGN_CIRCULAR_DEPENDENCIES, "Circular dependency found for classes: {}", recursives);
+        }
+    }
+    private boolean isRecursive(Map<Class<?>, Set<Class<?>>> refMap, Class<?> sourceClazz, Class<?> toCheck) {
+        Set<Class<?>> cset = refMap.get(toCheck);
+        if(cset.contains(sourceClazz))
+            return true;
+
+        boolean res = false;
+        for (Class<?> c : cset)
+            res |= isRecursive(refMap, sourceClazz, c);
+
+        return res;
     }
 
     @Override
