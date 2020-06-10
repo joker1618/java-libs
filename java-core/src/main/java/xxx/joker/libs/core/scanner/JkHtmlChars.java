@@ -86,7 +86,7 @@ public class JkHtmlChars {
         return html;
     }
 
-    public static List<String> escapeHtmlChars(List<String> source) {
+    public static List<String> unescapeHtmlChars(List<String> source) {
         return JkStreams.map(source, JkHtmlChars::unescapeHtmlChars);
     }
 

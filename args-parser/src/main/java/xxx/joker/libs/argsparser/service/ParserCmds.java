@@ -274,7 +274,7 @@ class ParserCmds {
             }
         }
 
-        return JkStreams.map(evolutions, String::new);
+        return JkStreams.map(evolutions, String::valueOf);
     }
 
     private char[] setUpChar(char[] arr, COption co) {
