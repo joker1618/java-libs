@@ -45,8 +45,7 @@ public class JfxTableCol<T, V> extends TableColumn<T, V> {
         if(StringUtils.isNotBlank(varName)) {
             col.setCellValueFactory(new PropertyValueFactory<>(varName));
         } else {
-            col.extractor = extractor;
-            col.setCellValueFactory(param -> new SimpleObjectProperty<>(extractor.apply(param.getValue())));
+            col.setExtractor(extractor);
         }
 
         if(formatter != null) {
@@ -75,6 +74,11 @@ public class JfxTableCol<T, V> extends TableColumn<T, V> {
 
     public void setExtractor(Function<T, V> extractor) {
         this.extractor = extractor;
+        if(extractor == null) {
+            setCellValueFactory(param -> new SimpleObjectProperty<>());
+        } else {
+            setCellValueFactory(param -> new SimpleObjectProperty<>(extractor.apply(param.getValue())));
+        }
     }
 
     public Function<V, String> getFormatter() {
@@ -89,8 +93,10 @@ public class JfxTableCol<T, V> extends TableColumn<T, V> {
                 super.updateItem(item, empty);
                 if (item == null || empty) {
                     setText(null);
-                } else {
+                } else if(formatter != null) {
                     setText(formatter.apply(item));
+                } else {
+                    setText(item.toString());
                 }
             }
         });

@@ -49,7 +49,7 @@ public class JfxTable<T> extends TableView<T> {
     public void setRowHeight(int headerHeight, int rowHeight) {
         this.headerHeight = headerHeight;
         this.rowHeight = rowHeight;
-        String newStyle = strf("-headerHeight: {}; -rowHeight: {}; {}", headerHeight, rowHeight, getStyle());
+        String newStyle = strf("-header-height: {}; -row-height: {}; {}", headerHeight, rowHeight, getStyle());
         setStyle(newStyle);
     }
 

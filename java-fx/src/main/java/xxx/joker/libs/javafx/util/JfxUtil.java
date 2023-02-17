@@ -20,8 +20,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import static xxx.joker.libs.core.util.JkStrings.strf;
-
 public class JfxUtil {
 
 	public static Window getWindow(Event e) {

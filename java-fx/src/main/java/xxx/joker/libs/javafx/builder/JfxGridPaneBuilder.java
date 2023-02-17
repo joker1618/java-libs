@@ -39,7 +39,6 @@ public class JfxGridPaneBuilder {
     }
 
     public JfxGridPaneBuilder addMulti(int row, int startCol, Node... nodes) {
-        int col = startCol;
         for(int i = 0; i < nodes.length; i++) {
             add(row, startCol + i, nodes[i]);
         }
@@ -79,7 +78,7 @@ public class JfxGridPaneBuilder {
         int maxRow = 1 + boxMap.keySet().stream().mapToInt(i -> i).max().orElse(-1);
         int maxCol = -1;
         for (Map<Integer, GpBox> map : boxMap.values()) {
-            Integer max = map.keySet().stream().mapToInt(i -> i).max().orElse(-1);
+            int max = map.keySet().stream().mapToInt(i -> i).max().orElse(-1);
             if(max > maxCol) {
                 maxCol = max;
             }
@@ -133,13 +132,13 @@ public class JfxGridPaneBuilder {
         }
     }
 
-    private class GpBox {
+    private static class GpBox {
         private int rowSpan = 1;
         private int colSpan = 1;
         private HBox hbox;
 
         public GpBox() {
-            this.hbox = new HBox(new Label(""));
+            this.hbox = new HBox(new Label(null));
         }
 
         public GpBox(HBox hbox, int rowSpan, int colSpan) {

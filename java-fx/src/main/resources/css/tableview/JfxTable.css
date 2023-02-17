@@ -1,36 +1,38 @@
 .jfxTable {
-    -fgColorOdd:   BLACK;
-    -bgColorOdd:   WHITE;
-    -fgColorEven:  BLACK;
-    -bgColorEven:  #e6f9ff;
-    -fgColorHover: WHITE;
-    -bgColorHover: #000033;
+    -fg-color-odd:   BLACK;
+    -bg-color-odd:   WHITE;
+    -fg-color-even:  BLACK;
+    -bg-color-even:  #e6f9ff;
+    -fg-color-hover: WHITE;
+    -bg-color-hover: #000033;
+    -fg-color-selected: -fg-color-hover;
+    -bg-color-selected: -bg-color-hover;
 
-    -headerHeight: 30;
-    -rowHeight: 25;
+    -header-height: 30;
+    -row-height: 25;
 }
 
 .column-header-background {
-    -fx-min-height: -headerHeight;
-    -fx-pref-height: -headerHeight;
+    -fx-min-height: -header-height;
+    -fx-pref-height: -header-height;
 }
 .table-row-cell {
-    -fx-min-height: -rowHeight;
-    -fx-pref-height: -rowHeight;
+    -fx-min-height: -row-height;
+    -fx-pref-height: -row-height;
 }
 
 .table-row-cell:odd {
-    -fx-background-color: -bgColorOdd;
+    -fx-background-color: -bg-color-odd;
 }
 .table-row-cell:odd .table-cell {
-    -fx-text-fill: -fgColorOdd;
+    -fx-text-fill: -fg-color-odd;
 }
 
 .table-row-cell:even {
-    -fx-background-color: -bgColorEven;
+    -fx-background-color: -bg-color-even;
 }
 .table-row-cell:even .table-cell {
-    -fx-text-fill: -fgColorEven;
+    -fx-text-fill: -fg-color-even;
 }
 
 .table-cell {
@@ -46,7 +48,7 @@
 .jfxTable:row-selection .table-row-cell:filled:selected:hover .table-cell,
 .jfxTable:row-selection .table-row-cell:filled:selected:focused:hover .table-cell,
 .jfxTable:row-selection .table-row-cell:filled:selected:focused  .table-cell {
-    -fx-text-fill: -fgColorHover;
+    -fx-text-fill: -fg-color-selected;
 }
 
 .table-row-cell:filled:selected,
@@ -54,5 +56,5 @@
 .jfxTable:row-selection .table-row-cell:filled:selected:hover,
 .jfxTable:row-selection .table-row-cell:filled:selected:focused:hover,
 .jfxTable:row-selection .table-row-cell:filled:selected:focused  {
-    -fx-background-color: -bgColorHover;
+    -fx-background-color: -bg-color-selected;
 }
